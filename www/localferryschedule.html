@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+     <meta name="format-detection" content="telephone=no" />
+     <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+     <link rel="stylesheet" type="text/css" href="css/index.css" />
+     <title>Ferry Schedule</title>
+     <style>
+            button {font-size: 12px;}
+            p {font-size:12px;}
+      </style>
+
+
+</head>
+<body>
+    <h1>Ferry Schedule for 7 Days</h1>
+    <p>&nbsp &nbsp &nbsp<button onclick="ShowFerrySchedule();">Full Ferry Schedule</button>
+    &nbsp &nbsp &nbsp<button onclick="ShowFerryLocation();">Current Ferry Location</button></p>
+    <div id="divTable">
+
+    </div>
+    <p id="schdate"></p>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/AIA.js"></script>
+
+ 
+    <script>
+
+        // loads the ferry schedule at pierce web page
+        function ShowFerrySchedule() {
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
+        }
+        function ShowFerryLocation() {
+            window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/");
+        }
+
+ 
+            /////////////////////////////////////////////////////////////////////////////////////////
+            // Loads the next ferry times into the global 'table' as a row for each run. 
+            // ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
+            function BuildFerrySchedule(ferrytimesS, ferrytimesA) {
+                var i;
+                var ft;
+                // roll through the ferry times, skipping runs that are not valid for today
+                for (i = 0; i < ferrytimesS.length; i = i + 2) {
+                    if (timehhmm >= ferrytimesS[i] && timehhmm >= ferrytimesA[i]) continue;  // skip ferrys that have alreaedy run
+                    // now determine if the next run will run today.  If it is a valid run, break out of loop.
+                    if (ValidFerryRun(ferrytimesS[i + 1])) {
+                        // Steelacoom
+                        var row1 = table.insertRow(-1);
+                        var row1col1 = row1.insertCell(0);
+						row1col1.style.border.width = 1;
+                        row1col1.innerHTML = FormatTime(ferrytimesS[i]);
+						row1col1.style.border = "thin solid black";
+                        // Anderson Island;
+                        var row1col2 = row1.insertCell(1);
+                        row1col2.innerHTML = FormatTime(ferrytimesA[i]);
+						row1col2.style.border = "thin solid black";
+                    }
+                }
+                return ;
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////
+            // create the ferry schedule table
+            //  creates the global 'table'
+            function createTable() {
+                // Create table.
+                table = document.createElement('table');
+				table.style.border = "thin solid black";
+				table.style.borderCollapse = "collapse";
+                // Insert New Row for table at index '0'.
+                var row1 = table.insertRow(0);
+                // Insert New Column for Row1 at index '0'.
+                var row1col1 = row1.insertCell(0);
+				row1col1.style.backgroundColor = "black";
+				row1col1.style.color = "white";
+                row1col1.innerHTML = 'Steilacoom';
+                // Insert New Column for Row1 at index '1'.
+                var row1col2 = row1.insertCell(1);
+				row1col2.style.backgroundColor = "black";
+				row1col2.style.color = "white";
+                row1col2.innerHTML = '| Anderson Island&nbsp';
+            }
+            
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // run the script
+           InitializeDates(0);
+            //alert("initialize dates done");
+            createTable();
+            //alert("create table done");
+
+            var row1 = table.insertRow(-1);
+            var row1col1 = row1.insertCell(0);
+			row1col1.style.backgroundColor = "blue";
+			row1col1.style.color = "white";
+            row1col1.innerHTML = 'TODAY';
+			row1col1 = row1.insertCell(1);
+			row1col1.style.backgroundColor = "blue";
+			row1col1.style.color = "gray";
+			row1col1.innerHTML = month + "/" + day;
+            BuildFerrySchedule(ferrytimeS, ferrytimeA);
+
+            // build next 6 days
+            timehhmm = 0;  // ignore current time
+            for (var i = 0; i < 7; i++) {
+                InitializeDates(1);  // tomorrow
+                //alert(monthday + " dow " + dayofweek);
+                row1 = table.insertRow(-1);
+                row1col1 = row1.insertCell(0);
+				row1col1.style.backgroundColor = "blue";
+				row1col1.style.color = "white";
+                row1col1.innerHTML = dayofweekname[dayofweek];
+				row1col1 = row1.insertCell(1);
+				row1col1.style.backgroundColor = "blue";
+				row1col1.style.color = "gray";
+				row1col1.innerHTML = month + "/" + day;
+                if (holiday) row1col1.innerHTML = "Holiday";
+                BuildFerrySchedule(ferrytimeS, ferrytimeA);
+            }
+            //alert("build ferry sch done");
+            //Append Table into div.
+            var div = document.getElementById('divTable');
+            div.appendChild(table);
+            document.getElementById('schdate').innerHTML = "Based on schedule as of " + scheduledate[0];             // mark schedule date
+            //alert("appended table to divTable");
+        </script>
+
+</body>
+</html>

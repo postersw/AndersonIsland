@@ -1,0 +1,117 @@
+// JavaScript source code specifically for Anderson Island Assistant
+// global date variables
+//  RFB 2/2/2016
+
+var table; // the schedule table as a DOM object
+var d; // date object
+var dayofweek;  // day of week in 0-6
+var letterofweek; // letter for day of week
+var timehhmm;  // hhmm in 24 hour format
+var year; // year 
+var month;  // month 1-12. note starts with 1
+var day; // day of month 1-31
+var monthday; // mmdd
+var laborday; // first monday in sept.  we need to compute this dyanmically
+var memorialday;  // last monday in may
+var thanksgiving;
+var holiday;  // true if  holiday
+var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+var dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+var scheduledate = ["5/1/2014"];
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Pad with leading zero
+function Leading0(num) {
+    if (num >= 10) return num;
+    else return "0" + num;
+}
+///////////////////////////////////////////////////////////////////////////////////////
+// return true if a holiday for the ferry schedule. input = month*100+day
+function IsHoliday(md) {
+    if (md == 1231 || md == 1232 || md == 0101) return true;
+    if (md == memorialday || md == 0703 || md == 0704 || md == laborday || md == thanksgiving || md == 1224 || md == 1225) return true;
+    return false;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+// initilize all date variables.  dateincr = 1 to go to tomorrow.
+function InitializeDates(dateincr) {
+    if (dateincr == 0) d = new Date();
+    else {
+        day = day + 1;
+        if ((day == 32) || (day > 28 && month == 1) || (day == 31 && (month == 8 || month == 3 || month == 5 || month == 10))) { day = 1; month++; }  // month overflow
+        d = new Date(year, month - 1, day);
+        //alert(" year=" + year + " day=" + day + " dow=" + d.getDay());
+    }
+    dayofweek = d.getDay();  // day of week in 0-6
+    letterofweek = "0123456".charAt(dayofweek); // letter for day of week
+    timehhmm = d.getHours() * 100 + d.getMinutes();  // hhmm in 24 hour format
+    month = d.getMonth() + 1;  // month 1-12. note starts with 1
+    day = d.getDate(); // day of month 1-31
+    monthday = month * 100 + day;
+    year = d.getFullYear();
+    // build holidays once only
+    if (dateincr == 0) {
+        // laborday // first monday in sept.  we need to compute this dyanmically
+        var dlabordate = new Date(year, 9, 1); // earlies possible date
+        var dlabor = dlabordate.getDay();
+        if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
+        else if (dlabor = 0) laborday = 902;  // monday = 1... Sat=6
+        else laborday = 901;
+        // memorial day last monday in may
+        var dmemdate = new Date(year, 5, 25); // earliest possible date memorial day
+        var memday = dmemdate.getDay();
+        if (memday > 1) memorialday = 525 + 8 - memday;  // monday = 1... Sat=6
+        else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
+        else memorialday = 525;
+        // thanksgiving
+        var dthanksdate = new Date(year, 11, 24);// earliest possible 4th thursday (4) in november
+        var dthanks = dthanksdate.getDay();
+        if (dthanks < 5) thanksgiving = 1124 + 4 - dthanks;
+        else if (dthanks == 5) thanksgiving = 1130;
+        else thanksgiving = 1129;
+    }
+    // compute holidays
+    holiday = IsHoliday(monthday);
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// return true if a valid ferry time, else false.
+// the crazy special rules go here.
+// flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules 
+
+function ValidFerryRun(flag) {
+    if (flag == "*") return true; // good every day
+    if (holiday && (flag.indexOf("H") > -1)) {
+        if (flag == "A") { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
+            if (dayofweek != 0 && dayofweek != 6 && ((mmdd == 1231) || (mmdd = 1224) || (mmdd = 0703))) return true;
+        } else return true;  // holiday
+    }
+    if (flag.indexOf(letterofweek) > -1) return true;  // if day of week is encoded
+    // special cases F, skip 1st and 3rd wednesday of every month
+    if (flag == "F") {
+        if (dayofweek != 3) return true;  // if not wednesday, accept it
+        week = Math.floor((day - 1) / 7);  // week: 0,1,2,3
+        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
+    }
+    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
+        if ((dayofweek == 5) && ((monthday >= laborday) || (monthday <= 0630))) return true;
+    }
+    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
+        if ((dayofweek == 5) && (monthday >= 0701) && (monthday <= laborday)) return true;
+    }
+    return false; // not a valid run;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+// format ferry time for display. 
+//  ft = time in hhmm 24 hour form. 
+//  returns string of time in 12 hour form.
+function FormatTime(ft) {
+    var ampm;
+    if (ft < 1199) ampm = " am";
+    else ampm = " pm";
+    if (ft < 1299) return "&nbsp " + ft.toString() + ampm;
+    else return "&nbsp " + (ft - 1200).toString() + ampm;
+}

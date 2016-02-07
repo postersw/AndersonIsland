@@ -1,0 +1,202 @@
+﻿<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Anderson Island Assistant</title>
+    <style>
+        button {
+            font-size: 20px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div data-role="content"></div>
+        <h1>Andersion Island Assistant</h1>
+        <hr />
+        <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
+        <p style="font-size:18px">
+            FERRY:
+            <button onclick="ShowFerrySchedule();">Times</button>
+            <button onclick="ShowFerryCams();">Cams</button>
+            <button onclick="ShowFerry();">Home</button></p>
+        <p id="ferrytimes">Next Ferry: </p>
+
+        <p>
+            <button onclick="ShowComingEvents();">COMING EVENTS</button></p>
+        <p>
+            <button onclick="ShowTides();">TIDES</button>
+        &nbsp;&nbsp;&nbsp;Next High:  Low: 
+              
+                <p>
+        <button onclick="ShowAIHS();">HISTORICAL SOCIETY</button></p>
+        <p>
+            <button onclick="ShowCommClub();">COMMUNITY CLUB</button></p>
+        <p>
+            <button onclick="ShowRiviera();">RIVIERA</button>&nbsp;&nbsp;
+                <button onclick="ShowParks();">PARKS</button>&nbsp;&nbsp;
+                <button onclick="ShowStore();">STORE</button>&nbsp;</p>
+        <p><button onclick="ShowMap();">MAP</button></p>
+    </div>
+    <div id="deviceready" class="blink">
+        <p class="event listening">Connecting to Device</p>
+        <p class="event received">Device is Ready</p>
+    </div>
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/AIA.js"></script>
+
+    <script>
+        // global date variables. note: scope is for one page only.
+        //var d; // date object
+        //var dayofweek;  // day of week in 0-6
+        //var letterofweek; // letter for day of week
+        //var timehhmm;  // hhmm in 24 hour format
+        //var month;  // month 1-12. note starts with 1
+        //var day; // day of month 1-31
+        //var year; // year nnnn
+        //var monthday; // mmdd
+        //var laborday; // first monday in sept.  we need to compute this dyanmically
+        //var memorialday;  // last monday in may
+        //var thanksgiving;
+        //var holiday;  // true if  holiday
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // load web pages
+        function ShowFerry() {
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
+        }
+
+        function ShowFerrySchedule() {
+            window.open("localferryschedule.html");
+            //window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
+        }
+        function ShowFerryCams() {
+            window.open("ferrywebcams.html");
+        }
+        function ShowCommClub() {
+            window.open("http://www.andersonislandcc.org");
+        }
+        function ShowComingEvents() {
+            window.open("comingevents.html"); //("http://www.andersonislandcc.org/calendar/");
+        }
+        function ShowAIHS() {
+            window.open("http://andersonislandhs.org/");
+        }
+        // query for tide times at noaa
+        function ShowTides() {
+            InitializeDates(0);
+            var startdate = year.toString() + Leading0(month) + Leading0(day);
+            InitializeDates(1);
+            var enddate = year.toString() + Leading0(month) + Leading0(day);
+            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + startdate + "&endDate=" + enddate + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit");
+            //window.open("http://www.co-ops.nos.noaa.gov/noaatidepredictions/NOAATidesFacade.jsp?Stationid=9446705");
+        }
+        function ShowMap() {
+            window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4")
+        }
+        function ShowRiviera() {
+            window.open("http://rivieracommunityclub.com/")
+        }
+        function ShowParks() {
+            window.open("http://andersonislandparks.org/")
+        }
+        function ShowStore() {
+            window.open("http://www.andersonislandgeneralstore.com")
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // return the next ferry time as a string. ferrytimes is the array of times and days;
+        function FindNextFerryTime(ferrytimes) {
+            var i;
+            // roll through the ferry times, skipping runs that are not valid for today
+            for (i = 0; i < ferrytimes.length; i = i + 2) {
+                if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+                // now determine if the next run will run today.  If it is a valid run, break out of loop.
+                if (ValidFerryRun(ferrytimes[i + 1])) break;
+            }
+
+            // we ran out of the schedule today so give the 1st run for tomorrow
+            if (i >= ferrytimes.length) {
+                i = 0;
+                // need to compute if tomorrow is a holiday
+                if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
+            }
+
+            // convert to a string and add am or pm and optionally tomorrow
+            var ft = FormatTime(ferrytimes[i]);
+            if (ferrytimes[i] < timehhmm) ft = ft + " tomorrow";
+                // calculate difference from now
+            else {
+                var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100); // time in min
+                var ftm = (Math.floor(ferrytimes[i] / 100) * 60) + (ferrytimes[i] % 100);
+                var diffm = ftm - tm; // diff in minutes
+                //alert(diffm);
+                ft = ft + " (in " + Math.floor(diffm / 60) + ":" + Leading0(diffm % 60) + ")";
+            }
+            return ft;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Finds the next ferry times and puts them into the Dom.
+        function WriteNextFerryTimes() {
+            // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
+            // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
+            //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+            //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+            // at this point, i = the next valid ferry run
+            var v = "Next Steilacoom: ";
+            if (holiday) v = "Hoilday Steilacoom: "
+            var ft;
+            v = v + FindNextFerryTime(ferrytimeS) + "<br/>Next AI: " + FindNextFerryTime(ferrytimeA);
+            document.getElementById("ferrytimes").innerHTML = v;
+
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //  update the next ferry times every minute
+        function timerUp() {
+            WriteNextFerryTimes();
+            // anything else you want to do every minute.
+        }
+    </script>
+
+    <!-- actual javascript execution begins here:-->
+    <script type="text/javascript">
+        app.initialize();
+        InitializeDates(0);
+        WriteNextFerryTimes();
+        setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+    </script>
+</body>
+</html>
