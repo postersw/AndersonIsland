@@ -139,6 +139,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // return the next ferry time as a string. ferrytimes is the array of times and days;
         function FindNextFerryTime(ferrytimes) {
+            InitializeDates(0);
             var i;
             // roll through the ferry times, skipping runs that are not valid for today
             for (i = 0; i < ferrytimes.length; i = i + 2) {
