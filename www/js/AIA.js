@@ -7,6 +7,8 @@ var d; // date object
 var dayofweek;  // day of week in 0-6
 var letterofweek; // letter for day of week
 var timehhmm;  // hhmm in 24 hour format
+var timehh; // time in hours
+var timemm; // time in seconds
 var year; // year 
 var month;  // month 1-12. note starts with 1
 var day; // day of month 1-31
@@ -25,7 +27,7 @@ var scheduledate = ["5/1/2014"];
 // Pad with leading zero
 function Leading0(num) {
     if (num >= 10) return num;
-    else return "0" + num;
+    else return "0" + Number(num);
 }
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
@@ -35,7 +37,7 @@ function IsHoliday(md) {
     return false;
 }
 /////////////////////////////////////////////////////////////////////////////////////////
-// initilize all date variables.  dateincr = 1 to go to tomorrow.
+// initilize all date variables.  dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1).
 function InitializeDates(dateincr) {
     if (dateincr == 0) d = new Date();
     else {
@@ -112,6 +114,19 @@ function FormatTime(ft) {
     var ampm;
     if (ft < 1199) ampm = " am";
     else ampm = " pm";
-    if (ft < 1299) return "&nbsp " + ft.toString() + ampm;
-    else return "&nbsp " + (ft - 1200).toString() + ampm;
+    if (ft < 1299) return Leading0(Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
+    else return Leading0(Math.floor(ft / 100)-12) + ":" + Leading0(ft % 100) + ampm;
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+// timediff - returns formatted time difference between 2 times (in either order)
+//  hhmm1 = hours*100 + min; hhmm2 = hours*100 + min
+//  returns string: hh:mm which is hhmm2 = hhmm1
+function timeDiff(hhmm1, hhmm2) {
+    var tm = (Math.floor(hhmm1 / 100) * 60) + (hhmm1 % 100); // time in min
+    var ftm = (Math.floor(hhmm2 / 100) * 60) + (hhmm2 % 100);
+    var diffm = ftm - tm; // diff in minutes
+    if (diffm < 0) diffm = tm - ftm; // reverse
+    //alert(diffm);
+   return + Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
+
 }
