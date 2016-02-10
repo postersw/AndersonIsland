@@ -17,6 +17,7 @@
 
 </head>
 <body>
+    <div class="app">  
     <h1>Ferry Schedule for 7 Days</h1>
     <p>&nbsp &nbsp &nbsp<button onclick="ShowFerrySchedule();">Full Ferry Schedule</button>
     &nbsp &nbsp &nbsp<button onclick="ShowFerryLocation();">Current Ferry Location</button></p>
@@ -24,6 +25,9 @@
 
     </div>
     <p id="schdate"></p>
+
+    </div>
+
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/AIA.js"></script>
@@ -118,7 +122,7 @@
                 row1col1.innerHTML = dayofweekname[dayofweek];
 				row1col1 = row1.insertCell(1);
 				row1col1.style.backgroundColor = "blue";
-				row1col1.style.color = "gray";
+				row1col1.style.color = "white";
 				row1col1.innerHTML = month + "/" + day;
                 if (holiday) row1col1.innerHTML = "Holiday";
                 BuildFerrySchedule(ferrytimeS, ferrytimeA);

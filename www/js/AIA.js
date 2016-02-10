@@ -114,19 +114,24 @@ function FormatTime(ft) {
     var ampm;
     if (ft < 1199) ampm = " am";
     else ampm = " pm";
-    if (ft < 1299) return Leading0(Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
+    if (ft < 100) return "12:" + +Leading0(ft % 100) + ampm;
+    else if (ft < 1299) return Leading0(Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
     else return Leading0(Math.floor(ft / 100)-12) + ":" + Leading0(ft % 100) + ampm;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
-// timediff - returns formatted time difference between 2 times (in either order)
+// timediff - returns formatted time difference between 2 times 
+// time1 is assumed to be now and time2 in the future.  So the diff is time2 - time1. 
 //  hhmm1 = hours*100 + min; hhmm2 = hours*100 + min
 //  returns string: hh:mm which is hhmm2 = hhmm1
 function timeDiff(hhmm1, hhmm2) {
+    var diffm = RawTimeDiff(hhmm1, hhmm2);
+    return Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
+}
+////////////////////////////////////////////////////////////////////////////////////
+// RawTimeDiff returns the time difference in minutes; hhmm2 - hhmm1
+function RawTimeDiff(hhmm1, hhmm2) {
     var tm = (Math.floor(hhmm1 / 100) * 60) + (hhmm1 % 100); // time in min
     var ftm = (Math.floor(hhmm2 / 100) * 60) + (hhmm2 % 100);
-    var diffm = ftm - tm; // diff in minutes
-    if (diffm < 0) diffm = tm - ftm; // reverse
-    //alert(diffm);
-   return + Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
-
+    if (ftm < tm) ftm = ftm + 24 * 60;
+    return ftm - tm; // diff in minutes
 }
