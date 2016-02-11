@@ -3,8 +3,8 @@
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
-        id        = "com.phonegap.andersonisland"
-        version   = "1.0.0">
+        id        = "org.anderson-island.andersonislandassistant"
+        version   = "0.1.0">
 
     <name>Anderson Island Assistant</name>
 
@@ -12,7 +12,7 @@
         Lots of good Anderson Island stuff, all in one place.
     </description>
 
-    <author href="http://postersw.com/andersonisland" email="support@postersw.com">
+    <author href="http://anderson-island.org/about" email="support@postersw.com">
         Bob Bedoll, Poster Software
     </author>
 
@@ -29,7 +29,7 @@
     <!-- Customize your app and platform with the preference element. -->
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
     <preference name="target-device"              value="universal" />      <!-- all: possible values handset, tablet, or universal -->
-    <preference name="fullscreen"                 value="true" />           <!-- all: hides the status bar at the top of the screen -->
+    <preference name="fullscreen"                 value="false" />           <!-- all: hides the status bar at the top of the screen -->
     <preference name="webviewbounce"              value="true" />           <!-- ios: control whether the screen 'bounces' when scrolled beyond the top -->
     <preference name="prerendered-icon"           value="true" />           <!-- ios: if icon is prerendered, iOS will not apply it's gloss to the app's icon on the user's home screen -->
     <preference name="stay-in-webview"            value="false" />          <!-- ios: external links should open in the default browser, 'true' would use the webview the app lives in -->

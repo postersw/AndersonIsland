@@ -37,9 +37,7 @@ body {
     );
     background-attachment:fixed; */
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
-    font-size:18px;
-    height:100%;
-    margin:0px;
+    font-size:argin:0px;
     padding:0px;
     /*text-transform:uppercase;*/
     width:100%;
@@ -48,19 +46,19 @@ body {
 /* Portrait layout (default) */
 .app {
     /*background:url(../img/logo.png) no-repeat center top; *//* 170px x 200px */
-    position:absolute;            /* position in the center of the screen */
-    left:50%;
-    top:5%;
-    height:50px;                   /* text area height */
-    width:325px;                   /* text area width 225*/
-    text-align:left;
-    padding:0px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) was  padding:180px 0px 0px 0px;  */
-    margin:0px 0px 0px -150px;  /* offset vertical: half of image height and text area height */
+   /* position:absolute;  */          /* position in the center of the screen */
+    /*left:50%;*/
+   /* top:5%;*/
+    /*height:50px; */                  /* text area height */
+    /*width:325px; */                  /* text area width 225*/
+    text-align:left; /*left;*/
+    /*padding:0px 0px 0px 0px;  */   /* image height is 200px (bottom 20px are overlapped with text) was  padding:180px 0px 0px 0px;  */
+    /*margin:0px 0px 0px -150px;*/  /* offset vertical: half of image height and text area height */
                                    /* offset horizontal: half of text area width margin:-115px 0px 0px -150px;*/
+
 }
 
-/* Landscape layout (with min-width) */
-@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
+/* Landscape layout (with min-enn and (min-aspect-ratio: 1/1) and (min-width:400px) {
     .app {
         background-position:left center;
         padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
@@ -70,8 +68,15 @@ body {
 }
 
 h1 {
-    font-size:24px;
+    font-size:medium; /*24px;*/
     font-weight:normal;
+    padding-left:50px;
+    overflow:visible;
+    padding:0px;
+    text-align:center;
+}
+
+.event {ont-weight:normal;
     margin:0px;
     overflow:visible;
     padding:0px;

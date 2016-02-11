@@ -20,12 +20,12 @@
     <div class="app">
         <h1>COMING EVENTS</h1>
           <p>CALENDARS:
-        <button onclick="ShowCC();">Community Club</button>
-        <button onclick="ShowCC();">Riviera</button>
+        <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Community Club</button>
+        <button onclick="window.open('http://rivieracommunityclub.com/event-calendar'));">Riviera</button>
         <button onclick="ShowCC();">Historical Society</button>
               </p>
               <hr />
-        <table style="border:thin solid black">
+        <table id='table' style="border:thin solid black">
             <tr style="background-color:black;color:white">
                 <td> DATE</td>
                 <td> DAY</td>
@@ -84,11 +84,5 @@
 
     <script>
 
-        function ShowCC() {
-            window.open("http://www.andersonislandcc.org/calendar/");
-        }
-        function ShowRivera() {
-            window.open("http://rivieracommunityclub.com/event-calendar");
-        }
 
     </script>
