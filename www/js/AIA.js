@@ -21,6 +21,12 @@ var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200
 var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
 var dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 var scheduledate = ["5/1/2014"];
+// open hours format is array of strings, 1 string per business 
+// each string is: name(phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
+//   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
+var openHours = ["<a href='http://www.andersonislandgeneralstore'>Store</a> (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,",
+                 "<a href='http://rivieracommunityclub.com/amenities/restaurant'>Restaurant</a> (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,",
+                  "<a href='https://www.co.pierce.wa.us/index.aspx?NID=1541'>Dump</a> (884-4072),1000-1400,1300-1700,,,,,"];
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +123,16 @@ function FormatTime(ft) {
     if (ft < 100) return "12:" + +Leading0(ft % 100) + ampm;
     else if (ft < 1299) return Leading0(Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
     else return Leading0(Math.floor(ft / 100)-12) + ":" + Leading0(ft % 100) + ampm;
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+//  shorttime - shortest possible time
+function ShortTime(ft) {
+        var ampm;
+        if (ft < 1199) ampm = "a";
+        else ampm = "p";
+        if (ft < 100) return "12:" + Leading0(ft % 100) + ampm;
+        else if (ft < 1299) return (Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
+        else return (Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 // timediff - returns formatted time difference between 2 times 

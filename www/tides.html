@@ -2,7 +2,6 @@
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<head>
     <meta charset="utf-8" />
      <meta name="format-detection" content="telephone=no" />
      <meta name="msapplication-tap-highlight" content="no" />
@@ -15,10 +14,9 @@
             p {font-size:12px;}
       </style>
 </head>
-</head>
 <body>
     <div class="app">
-<h1>Tides at Yoman Point (ferry dock)</h1>
+<h1>Tides at Yoman Point <br />(ferry dock)</h1>
     <p id="current">Please wait for tide data .... </p>
     <div id="divTable">
     
@@ -144,7 +142,7 @@
                             var h = json.response.periods[i].dateTimeISO.substring(11, 13); // tide hour
                             var mi = json.response.periods[i].dateTimeISO.substring(14, 16);  // time min
                             tidehhmm = (Number(h) * 100) + Number(mi);
-                            row1col1.innerHTML = FormatTime(tidehhmm);
+                            row1col1.innerHTML = "&nbsp" + ShortTime(tidehhmm);
                             row1col1.style.border = "thin solid black";
                             var mi = json.response.periods[i].dateTimeISO.substring(14, 16);
                             // if time is old, color row gray
@@ -152,7 +150,7 @@
                                 row1.style.color = "lightgray";
                                 if (json.response.periods[i].type == 'h') currentTide = "Outgoing since " ;  // incoming outgoing flag
                                 else currentTide = "Incoming since ";
-                                currentTide += FormatTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
+                                currentTide += ShortTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
                                 oldtideheight = Number(json.response.periods[i].heightFT);
                                 oldtidetime = tidehhmm;
                             } else {
@@ -167,7 +165,7 @@
                                     var hilow;
                                     if (json.response.periods[i].type == 'h') hilow = 'High';
                                     else hilow = 'Low';
-                                    currentTide += "<br/>" + hilow + " tide will be " + json.response.periods[i].heightFT + " ft. at " + FormatTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                                    currentTide += "<br/>" + hilow + " tide will be " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
                                 }
                             }
 

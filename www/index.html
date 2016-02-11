@@ -1,7 +1,6 @@
 ﻿<!DOCTYPE html>
 <!--
     Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
-    CHANGE MADE 4:53 pm on 2/6. Can I commit this?
 
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -45,48 +44,47 @@
         <h1>Anderson Island Assistant</h1>
         <hr />
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
-        <p style="font-size:18px">
-            FERRY:
-            <button onclick="ShowFerrySchedule();">Times</button>
+        <p style="font-size:18px;color:blue">
+            FERRY
+            <button onclick="window.open('localferryschedule.html');">Times</button>
             <button onclick="ShowFerryCams();">Cams</button>
-            <button onclick="ShowFerry();">Home</button></p>
-        <p id="ferrytimes">Next Ferry: </p>
+            <button onclick="ShowFerry();">Home</button>
+            <p id="ferrytimes" style="font-size:small">Next Ferry: </p>
         <hr />
+            <span style="font-size:18px;color:darkgreen">
+            OUTSIDE </span>
+            <button onclick="ShowTides();">Tides</button>
+            <button onclick="ShowWeather();">Weather</button>
+            <button onclick="ShowMap();">Map</button>
+            <p style="margin-left:25%"><button onclick="ShowBurnBan();">Burn Ban</button>
+                </p>
 
-            <button onclick="ShowTides();">TIDES</button> &nbsp&nbsp
-            <button onclick="ShowWeather();">WEATHER</button>
         <hr />
+        <span style="font-size:18px;color:darkmagenta">
+            EVENTS </span>
+            <button onclick="window.open('comingevents.html');">Upcoming</button>
 
-        <p>
-            <button onclick="ShowComingEvents();">COMING EVENTS</button></p>
+         <hr />
+            <span style="font-size:18px;color:darkslateblue">OPEN HOURS</span>
+            <button onclick="window.open('openhours.html');">Show all</button><br />
+             <p id="openhours" style="font-size:small">
+            </p>
+         <hr />   
+            <span style="font-size:18px;color:darkred">
+             EMERGENCY </span><button onclick="window.open('emergencycontacts.html');">Contacts</button>
+             <button onclick="window.open('http://www.tannerelectric.coop/outages');">Tanner</button>
+         <hr />
+             <span style="font-size:18px;color:black">ISLAND INFORMATION </span><br />
 
-        <hr />
-
-         <p><button onclick="ShowMap();">MAP</button> &nbsp&nbsp&nbsp
-         <button onclick="ShowBurnBan();">Burn Status</button></p>      
-             <hr /><p style="font-size:small">
-            Business Hours: <br />
-            Store: M-Th 7a-8p, F 7a-9p, Sa 8a-9p, Su 10a-6p <br />
-            Dump: Sun 10a-2p, Mon 1p-5p<br /> 
-            Restaurant: W 4-8p,Th-F 4-9p,Sa 9:30a-9p,Su 9:30a-7p
-             </p>
-            <hr />   
- 
-            <hr />
-                <p>
-        <button onclick="ShowAIHS();">Historical Society</button>
-
-            <button onclick="ShowCommClub();">Community Club</button> &nbsp
-                    
-            <button onclick="ShowRiviera();">Riviera</button>&nbsp;
-                <button onclick="ShowParks();">Parks</button>&nbsp;
-                <button onclick="ShowStore();">Store</button>&nbsp;
-       
-         <button onclick="ShowVIP();">Island Patrol</button>&nbsp;
-         <button onclick="ShowTanner();">Tanner Electric</button>&nbsp;
-            <button onclick="Showpcfd27();">Fire District</button>&nbsp;
-        </p>
-
+            <button style="width:100%" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />
+            <button style="width:100%" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />                    
+            <button style="width:100%" onclick="window.open('http://rivieracommunityclub.com');">Riviera</button><br />
+            <button style="width:100%" onclick="window.open('http://andersonislandparks.org');">Parks</button><br />
+            <button style="width:100%" onclick="window.open('http://www.andersonislandgeneralstore.com');">Store</button><br />
+            <button style="width:100%" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
+            <button style="width:100%" onclick="window.open('http://www.andersonislandsafety.org');">Island Patrol</button><br />
+            <button style="width:100%" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
+            <button style="width:100%" onclick="window.open('http://www.pcfd27.com');">Fire District</button><br />
 
     </div>
     <div id="deviceready" class="blink">
@@ -119,22 +117,16 @@
             window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
         }
 
-        function ShowFerrySchedule() {
-            window.open("localferryschedule.html");
-            //window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
-        }
+        //function ShowFerrySchedule() {
+        //    window.open("localferryschedule.html");
+        //    //window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
+        //}
         function ShowFerryCams() {
             window.open("ferrywebcams.html");
         }
-        function ShowCommClub() {
-            window.open("http://www.andersonislandcc.org");
-        }
-        function ShowComingEvents() {
-            window.open("comingevents.html"); //("http://www.andersonislandcc.org/calendar/");
-        }
-        function ShowAIHS() {
-            window.open("http://andersonislandhs.org/");
-        }
+        //function ShowComingEvents() {
+        //    window.open("comingevents.html"); //("http://www.andersonislandcc.org/calendar/");
+        //}
         // query for tide times at noaa
         function ShowTides() {
              window.open("tides.html");
@@ -146,29 +138,9 @@
         function ShowMap() {
             window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4")
         }
-        function ShowRiviera() {
-            window.open("http://rivieracommunityclub.com/")
-        }
-        function ShowParks() {
-            window.open("http://andersonislandparks.org/")
-        }
-        function ShowStore() {
-            window.open("http://www.andersonislandgeneralstore.com")
-        }
+        
         function ShowBurnBan() {
             window.open("http://www.pscleanair.org/priorities/woodheating/Pages/burnbans.aspx")
-        }
-        function ShowCAB() {
-            window.open("http://www.aicab.org");
-        }
-        function ShowVIP() {
-            window.open("http://www.andersonislandsafety.org");
-        }
-        function ShowTanner() {
-            window.open("http://www.tannerelectric.coop");
-        }
-        function Showpcfd27() {
-            window.open("http://www.pfcd27.com");
         }
 
 
@@ -192,15 +164,10 @@
             }
 
             // convert to a string and add am or pm and optionally tomorrow
-            var ft = FormatTime(ferrytimes[i]);
+            var ft = ShortTime(ferrytimes[i]);
             if (ferrytimes[i] < timehhmm) ft = ft + " tomorrow";
-                // calculate difference from now
+                
             else {
-                //var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100); // time in min
-                //var ftm = (Math.floor(ferrytimes[i] / 100) * 60) + (ferrytimes[i] % 100);
-                //var diffm = ftm - tm; // diff in minutes
-                ////alert(diffm);
-                //ft = ft + " (in " + Math.floor(diffm / 60) + ":" + Leading0(diffm % 60) + ")";
                 ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
             }
             return ft;
@@ -222,6 +189,54 @@
 
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // ShowOpenHours - shows whether something is open or closed
+        function ShowOpenHours() {
+            // openHours format is array of strings, 1 string per business Defined in AIA.js.
+            // each string is: name (phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
+            //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
+            var openlist = "";
+            // read open hours from master source
+            //  1. load it from browser persistant store. 
+            //  2. if not there, use the hardwired default.
+            //  3. read latest version from anderson-island.org asynchronously and update persistant store and then rerun loop below if it has changed.
+
+            // loop through the openHours array (each string entry is one business)
+            for (var i = 0; i < openHours.length; i++) {
+                var a = openHours[i].split(",");  // parse it into an array
+                var store = a[0].split("("); // strip out phone number
+                openlist += store[0] + ":";
+                var opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+                var opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
+                var closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+                //alert(openlist );
+                // test for closed
+                if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
+                    openlist += " <span style='color:darkred'> Closed. </span>";
+                    // find next open time
+                    j = dayofweek + 1; if (j == 7) j = 0;
+                    // if it opens tomorrow
+                    if (a[j + 1]) {  
+                        openlist += " Opens tomorrow at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                        continue;
+                    }
+                    // not open tomorrow. find next open day.
+                    while (true) {
+                        j++;  if (j == 7) j = 0; // handle day rollover
+                        if (a[j + 1] != "") { // open day found
+                            openlist += " Opens " + dayofweekname[j] + " at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                            break;
+                        }
+                    } // while loop
+                    
+                } else {
+                    // its open
+                    openlist += " <span style='color:green'> Open </span>till " + ShortTime(closetime) + " today<br/>";
+                }
+            } // end for
+            document.getElementById("openhours").innerHTML = openlist;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         //  update the next ferry times every minute
         function timerUp() {
@@ -235,6 +250,7 @@
         app.initialize();
         InitializeDates(0);
         WriteNextFerryTimes();
+        ShowOpenHours(); //  open hours
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
     </script>
 </body>

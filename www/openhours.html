@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Open Hours</title>
+    <style>
+        button {
+            font-size: 18px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Open Hours</h1>
+        <p id="openhours"></p>
+
+        </div>
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/AIA.js"></script>
+
+    <script>
+       /////////////////////////////////////////////////////////////////////////////////////////
+       // ShowOpenHours - shows whether something is open or closed
+        // openHours (global) is array of strings defined in AIA.js, 1 string per business 
+       // each string is: name,Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
+       //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
+        function ShowOpenHours() {
+            var openlist = "";
+            // read open hours from master source
+            //  1. load it from browser persistant store. 
+            //  2. if not there, use the hardwired default.
+            //  3. read latest version from anderson-island.org asynchronously and update persistant store and then rerun loop below if it has changed.
+
+            // loop through the openHours array (each string entry is one business)
+            for (var i = 0; i < openHours.length; i++) {
+                var a = openHours[i].split(",");  // parse it into an array
+                openlist += "<p style=font-size:small>" + a[0] + GetOpenStatus(a) + ":<br/>";  // name of business
+                // loop through Sun - Sat
+                for (j = 0; j < 7; j++) {
+                    var opentimetoday = a[j + 1]; // hhmm-hhmm open today
+                    if (opentimetoday != "") {
+                        var opentime = opentimetoday.substring(0, 4); // open time hhmm
+                        var closetime = opentimetoday.substring(5, 9); // close time hhmm
+                        openlist += dayofweekname[j].substring(0, 2) + "&nbsp" + ShortTime(opentime) + "-" + ShortTime(closetime) + ",&nbsp";
+                    }
+                } // for loop for each day
+                openlist += "</p>"
+                document.getElementById("openhours").innerHTML = openlist;
+            } // for loop for each business
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // GetOpenStatus - determine if business is open & reeturn string
+        //  entry: a = array of openTime for 1 business
+        //  exit: returns string
+        function GetOpenStatus(a) {
+            var opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+            var opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
+            var closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+            var openlist = "";
+            // test for closed
+            if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
+                openlist += " <span style='color:darkred'> Closed. </span>";
+                // find next open time
+                j = dayofweek + 1; if (j == 7) j = 0;
+                // if it opens tomorrow
+                if (a[j + 1]) {  
+                    openlist += " Opens tomorrow at " + ShortTime(a[j + 1].substring(0, 4));
+                    return openlist;
+                }
+                // not open tomorrow. find next open day.
+                while (true) {
+                    j++;  if (j == 7) j = 0; // handle day rollover
+                    if (a[j + 1] != "") { // open day found
+                        openlist += " Opens " + dayofweekname[j] + " at " + ShortTime(a[j + 1].substring(0, 4));
+                        return openlist;
+                    }
+                } // while loop
+                    
+            } else {
+                // its open
+                openlist += " <span style='color:green'> Open </span>till " + ShortTime(closetime) + " today" ;
+                return openlist;
+            }
+        }
+ </script>
+
+    <!-- actual javascript execution begins here:-->
+    <script type="text/javascript">
+        InitializeDates(0);
+        ShowOpenHours(); //  open hours
+    </script>
+</body>
+</html>
