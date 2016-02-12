@@ -11,7 +11,7 @@ var timehh; // time in hours
 var timemm; // time in seconds
 var year; // year 
 var month;  // month 1-12. note starts with 1
-var day; // day of month 1-31
+var dayofmonth; // day of month 1-31
 var monthday; // mmdd
 var laborday; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
@@ -20,6 +20,7 @@ var holiday;  // true if  holiday
 var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
 var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
 var dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+var dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var scheduledate = ["5/1/2014"];
 // open hours format is array of strings, 1 string per business 
 // each string is: name(phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
@@ -44,37 +45,42 @@ function IsHoliday(md) {
 }
 /////////////////////////////////////////////////////////////////////////////////////////
 // initilize all date variables.  dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1).
+// sets the date globals above
 function InitializeDates(dateincr) {
     if (dateincr == 0) d = new Date();
     else {
-        day = day + 1;
-        if ((day == 32) || (day > 28 && month == 1) || (day == 31 && (month == 8 || month == 3 || month == 5 || month == 10))) { day = 1; month++; }  // month overflow
-        d = new Date(year, month - 1, day);
+        // on entry month=1-12, day=1-31, year = 20xx
+        dayofmonth = dayofmonth + 1;
+        if ((dayofmonth == 32) || (dayofmonth > 28 && month == 2) || (dayofmonth == 31 && (month == 9 || month == 4 || month == 6 || month == 11))) {
+            dayofmonth = 1; month++;
+            if (month == 13) { month = 1; year++;}
+        }  // month overflow
+        d = new Date(year, month - 1, dayofmonth);
         //alert(" year=" + year + " day=" + day + " dow=" + d.getDay());
     }
     dayofweek = d.getDay();  // day of week in 0-6
     letterofweek = "0123456".charAt(dayofweek); // letter for day of week
     timehhmm = d.getHours() * 100 + d.getMinutes();  // hhmm in 24 hour format
-    month = d.getMonth() + 1;  // month 1-12. note starts with 1
-    day = d.getDate(); // day of month 1-31
-    monthday = month * 100 + day;
+    month = d.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
+    dayofmonth = d.getDate(); // day of month 1-31
+    monthday = month * 100 + dayofmonth;
     year = d.getFullYear();
     // build holidays once only
     if (dateincr == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
-        var dlabordate = new Date(year, 9, 1); // earlies possible date
+        var dlabordate = new Date(year, 8, 1); // earlies possible date
         var dlabor = dlabordate.getDay();
         if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
         else if (dlabor = 0) laborday = 902;  // monday = 1... Sat=6
         else laborday = 901;
         // memorial day last monday in may
-        var dmemdate = new Date(year, 5, 25); // earliest possible date memorial day
+        var dmemdate = new Date(year, 4, 25); // earliest possible date memorial day
         var memday = dmemdate.getDay();
         if (memday > 1) memorialday = 525 + 8 - memday;  // monday = 1... Sat=6
         else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
         else memorialday = 525;
         // thanksgiving
-        var dthanksdate = new Date(year, 11, 24);// earliest possible 4th thursday (4) in november
+        var dthanksdate = new Date(year, 10, 24);// earliest possible 4th thursday (4) in november
         var dthanks = dthanksdate.getDay();
         if (dthanks < 5) thanksgiving = 1124 + 4 - dthanks;
         else if (dthanks == 5) thanksgiving = 1130;
