@@ -72,6 +72,10 @@
             // test for closed
             if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                 openlist += " <span style='color:darkred'> Closed. </span>";
+                if (timehhmm < opentime) {
+                    openlist += " Opens today at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                    return openlist;
+                }
                 // find next open time
                 j = dayofweek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
