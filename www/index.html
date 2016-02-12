@@ -97,6 +97,7 @@
         <p class="event listening">Connecting to Device</p>
         <p class="event received">Device is Ready</p>
     </div>
+</div>
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
@@ -173,7 +174,8 @@
             }
 
             // convert to a string and add am or pm and optionally tomorrow
-            var ft = ShortTime(ferrytimes[i]);
+            var ft;
+            ft = ShortTime(ferrytimes[i]);
             if (ferrytimes[i] < timehhmm) ft = ft + " tomorrow";
                 
             else {
@@ -190,9 +192,9 @@
             //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
             //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
             // at this point, i = the next valid ferry run
-            var v = "Next Steilacoom: ";
+            var v;
+            v = "Next Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
-            var ft;
             v = v + FindNextFerryTime(ferrytimeS) + "<br/>Next AI: " + FindNextFerryTime(ferrytimeA);
             document.getElementById("ferrytimes").innerHTML = v;
 
@@ -205,7 +207,11 @@
             // each string is: name (phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
             //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
             var j;
-            var openlist = "";
+            var openlist;
+            var a;
+            var store;
+            var opentimetoday, opentime, closetime;
+            openlist = "";
             // read open hours from master source
             //  1. load it from browser persistant store. 
             //  2. if not there, use the hardwired default.
@@ -213,18 +219,18 @@
 
             // loop through the openHours array (each string entry is one business)
             for (var i = 0; i < openHours.length; i++) {
-                var a = openHours[i].split(",");  // parse it into an array
-                var store = a[0].split("("); // strip out phone number
+                a = openHours[i].split(",");  // parse it into an array
+                store = a[0].split("("); // strip out phone number
                 openlist += store[0] + ":";
-                var opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
-                var opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
-                var closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+                opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+                opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
+                closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
                 //alert(openlist );
                 // test for closed
                 if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                     openlist += " <span style='color:darkred'> Closed. </span>";
                     if (timehhmm < opentime) {
-                        openlist += " Opens today at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                        openlist += " Opens today at " + ShortTime(opentime) + "<br/>";
                         continue;
                     }
                     // find next open time

@@ -17,15 +17,18 @@ var laborday; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
 var holiday;  // true if  holiday
-var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-var dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-var dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-var scheduledate = ["5/1/2014"];
+var ferrytimeS, ferrytimeA;
+ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+var dayofweekname, dayofweekshort, scheduledate;
+dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+scheduledate = ["5/1/2014"];
 // open hours format is array of strings, 1 string per business 
 // each string is: name(phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
 //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
-var openHours = ["<a href='http://www.andersonislandgeneralstore'>Store</a> (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,",
+var openHours;
+openHours= ["<a href='http://www.andersonislandgeneralstore'>Store</a> (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,",
                  "<a href='http://rivieracommunityclub.com/amenities/restaurant'>Restaurant</a> (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,",
                   "<a href='https://www.co.pierce.wa.us/index.aspx?NID=1541'>Dump</a> (884-4072),1000-1400,1300-1700,,,,,"];
 
@@ -68,20 +71,23 @@ function InitializeDates(dateincr) {
     // build holidays once only
     if (dateincr == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
-        var dlabordate = new Date(year, 8, 1); // earlies possible date
-        var dlabor = dlabordate.getDay();
+        var dlabordate, dlabor;
+        dlabordate = new Date(year, 8, 1); // earlies possible date
+        dlabor = dlabordate.getDay();
         if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
         else if (dlabor = 0) laborday = 902;  // monday = 1... Sat=6
         else laborday = 901;
         // memorial day last monday in may
-        var dmemdate = new Date(year, 4, 25); // earliest possible date memorial day
-        var memday = dmemdate.getDay();
+        var dmemdate, memdate;
+        dmemdate = new Date(year, 4, 25); // earliest possible date memorial day
+        memday = dmemdate.getDay();
         if (memday > 1) memorialday = 525 + 8 - memday;  // monday = 1... Sat=6
         else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
         else memorialday = 525;
         // thanksgiving
-        var dthanksdate = new Date(year, 10, 24);// earliest possible 4th thursday (4) in november
-        var dthanks = dthanksdate.getDay();
+        var dthanksdate, dthanks;
+        dthanksdate = new Date(year, 10, 24);// earliest possible 4th thursday (4) in november
+        dthanks = dthanksdate.getDay();
         if (dthanks < 5) thanksgiving = 1124 + 4 - dthanks;
         else if (dthanks == 5) thanksgiving = 1130;
         else thanksgiving = 1129;
@@ -107,7 +113,7 @@ function ValidFerryRun(flag) {
     // special cases F, skip 1st and 3rd wednesday of every month
     if (flag == "F") {
         if (dayofweek != 3) return true;  // if not wednesday, accept it
-        week = Math.floor((day - 1) / 7);  // week: 0,1,2,3
+        week = Math.floor((dayofmonth - 1) / 7);  // week: 0,1,2,3
         if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
     }
     if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
@@ -146,14 +152,16 @@ function ShortTime(ft) {
 //  hhmm1 = hours*100 + min; hhmm2 = hours*100 + min
 //  returns string: hh:mm which is hhmm2 = hhmm1
 function timeDiff(hhmm1, hhmm2) {
-    var diffm = RawTimeDiff(hhmm1, hhmm2);
+    var diffm;
+    diffm = RawTimeDiff(hhmm1, hhmm2);
     return Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
 }
 ////////////////////////////////////////////////////////////////////////////////////
 // RawTimeDiff returns the time difference in minutes; hhmm2 - hhmm1
 function RawTimeDiff(hhmm1, hhmm2) {
-    var tm = (Math.floor(hhmm1 / 100) * 60) + (hhmm1 % 100); // time in min
-    var ftm = (Math.floor(hhmm2 / 100) * 60) + (hhmm2 % 100);
+    var tm, ftm;
+    tm = (Math.floor(hhmm1 / 100) * 60) + (hhmm1 % 100); // time in min
+    ftm = (Math.floor(hhmm2 / 100) * 60) + (hhmm2 % 100);
     if (ftm < tm) ftm = ftm + 24 * 60;
     return ftm - tm; // diff in minutes
 }

@@ -48,7 +48,7 @@
             table.style.border = "thin solid black";
             table.style.borderCollapse = "collapse";
             // Insert New Row for table at index '0'.
-            var row1 = table.insertRow(0);
+            var row1; row1 = table.insertRow(0);
             // Insert New Column for Row1 at index '0'.
             var row1col1 = row1.insertCell(0);
             row1col1.style.backgroundColor = "black";
@@ -74,13 +74,13 @@
         function CalculateCurrentTideHeight(newtidetime, oldtidetime, newtideheight, oldtideheight) {
             // calculate current tide height
             var tideheight;
-            var timedelta = RawTimeDiff(oldtidetime, newtidetime);
+            var timedelta; timedelta = RawTimeDiff(oldtidetime, newtidetime);
             var tidedelta, tideheight;
             var tidedelta = newtideheight - oldtideheight; // new tide - old tide; + for rising; - for falling
-            var currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
-            var timedelta6 = timedelta / 6; //minutes in current tide pseudo hour a little over 60. newtidetime - oldtidetime / 60.
-            var tidedelta12 = tidedelta / 12;
-            var currenttimeremainder = (currenttimedelta % timedelta6) / timedelta6; // faction of current pseudo hour
+            var currenttimedelta; currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
+            var timedelta6; timedelta6 = timedelta / 6; //minutes in current tide pseudo hour a little over 60. newtidetime - oldtidetime / 60.
+            var tidedelta12; tidedelta12 = tidedelta / 12;
+            var currenttimeremainder; currenttimeremainder = (currenttimedelta % timedelta6) / timedelta6; // faction of current pseudo hour
             // this code adds the tidedelta to the old tide in the ratio of :1/12, 2/12, 3/12, 3/12, 2/12, 1/12 . 
             if (currenttimedelta <= timedelta6) tideheight = oldtideheight + (tidedelta12 * currenttimeremainder);
             else if (currenttimedelta <= timedelta6 * 2) tideheight = oldtideheight + tidedelta12 + (tidedelta12 * 2 * currenttimeremainder);
@@ -119,13 +119,16 @@
                         olddate = json.response.periods[0].dateTimeISO.substring(5, 10);
 
                         // roll through the reply in jason.response.periods[i]
-                        for (var i = 0; i < json.response.periods.length; i++) {
+                        var i;
+                        for (i = 0; i < json.response.periods.length; i++) {
                             // if date changed, add a blank row
                              newdate = json.response.periods[i].dateTimeISO.substring(5, 10);
                              if (newdate != olddate) {
-                                 var row1 = table.insertRow(-1);
-                                 var row1col1 = row1.insertCell(0);
-                                 row1col1.innerHTML = " "
+                                 var row1; row1 = table.insertRow(-1);
+                                 var row1col1; row1.insertCell(0).innerHTML = " ";
+                                 row1.insertCell(1).innerHTML = " ";
+                                 row1.insertCell(2).innerHTML = " ";
+                                 row1.insertCell(3).innerHTML = " ";
                                  olddate = newdate;
                             }
                            // Insert New Row for table at end of table.
@@ -146,7 +149,7 @@
                             row1col1.style.border = "thin solid black";
                             var mi = json.response.periods[i].dateTimeISO.substring(14, 16);
                             // if time is old, color row gray
-                            if ((month>m) || (month==m && day>d) || (month == m && day == d && (timehhmm > tidehhmm))) {
+                            if ((month>m) || (month==m && dayofmonth>d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                                 row1.style.color = "lightgray";
                                 if (json.response.periods[i].type == 'h') currentTide = "Outgoing since " ;  // incoming outgoing flag
                                 else currentTide = "Incoming since ";
@@ -198,7 +201,7 @@
         // ShowCustom - get date for custom tides
         function ShowCustom() {
             InitializeDates(0);
-            var tidedate = prompt("Please enter the date as mm/dd", month + "/" + day);
+            var tidedate = prompt("Please enter the date as mm/dd", month + "/" + dayofmonth);
             if (tidedate == null) return;
             // validate the date
             var tda = tidedate.split("/");
@@ -223,7 +226,7 @@
 
         function ShowNOAA() {
             InitializeDates(0);
-            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + day + "&endDate=" + year + month + day + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit")
+            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + dayofmonth + "&endDate=" + year + month + dayofmonth + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit")
         }
 
 

@@ -56,13 +56,14 @@
                     // now determine if the next run will run today.  If it is a valid run, break out of loop.
                     if (ValidFerryRun(ferrytimesS[i + 1])) {
                         // Steelacoom
-                        var row1 = table.insertRow(-1);
-                        var row1col1 = row1.insertCell(0);
+                        var row1, row1col1, row1col2;
+                        row1 = table.insertRow(-1);
+                        row1col1 = row1.insertCell(0);
 						row1col1.style.border.width = 1;
                         row1col1.innerHTML = FormatTime(ferrytimesS[i]);
 						row1col1.style.border = "thin solid black";
                         // Anderson Island;
-                        var row1col2 = row1.insertCell(1);
+                        row1col2 = row1.insertCell(1);
                         row1col2.innerHTML = FormatTime(ferrytimesA[i]);
 						row1col2.style.border = "thin solid black";
                     }
@@ -74,45 +75,49 @@
             // create the ferry schedule table
             //  creates the global 'table'
             function createTable() {
+                var row1, row1col1, row1col2;
                 // Create table.
                 table = document.createElement('table');
 				table.style.border = "thin solid black";
 				table.style.borderCollapse = "collapse";
                 // Insert New Row for table at index '0'.
-                var row1 = table.insertRow(0);
+                row1 = table.insertRow(0);
                 // Insert New Column for Row1 at index '0'.
-                var row1col1 = row1.insertCell(0);
+                row1col1 = row1.insertCell(0);
 				row1col1.style.backgroundColor = "black";
 				row1col1.style.color = "white";
                 row1col1.innerHTML = 'Steilacoom';
                 // Insert New Column for Row1 at index '1'.
-                var row1col2 = row1.insertCell(1);
+                row1col2 = row1.insertCell(1);
 				row1col2.style.backgroundColor = "black";
 				row1col2.style.color = "white";
                 row1col2.innerHTML = '| Anderson Island&nbsp';
             }
             
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // run the script
-           InitializeDates(0);
+        // run the script
+            var row1, row1col1, row1col2;
+            InitializeDates(0);
+
             //alert("initialize dates done");
             createTable();
             //alert("create table done");
 
-            var row1 = table.insertRow(-1);
-            var row1col1 = row1.insertCell(0);
+            row1 = table.insertRow(-1);
+            row1col1 = row1.insertCell(0);
 			row1col1.style.backgroundColor = "blue";
 			row1col1.style.color = "white";
             row1col1.innerHTML = 'TODAY';
 			row1col1 = row1.insertCell(1);
 			row1col1.style.backgroundColor = "blue";
 			row1col1.style.color = "gray";
-			row1col1.innerHTML = month + "/" + day;
+			row1col1.innerHTML = month + "/" + dayofmonth;
             BuildFerrySchedule(ferrytimeS, ferrytimeA);
 
             // build next 6 days
             timehhmm = 0;  // ignore current time
-            for (var i = 0; i < 7; i++) {
+            var i;
+            for (i = 0; i < 7; i++) {
                 InitializeDates(1);  // tomorrow
                 //alert(monthday + " dow " + dayofweek);
                 row1 = table.insertRow(-1);
@@ -123,14 +128,13 @@
 				row1col1 = row1.insertCell(1);
 				row1col1.style.backgroundColor = "blue";
 				row1col1.style.color = "white";
-				row1col1.innerHTML = month + "/" + day;
+				row1col1.innerHTML = month + "/" + dayofmonth;
                 if (holiday) row1col1.innerHTML = "Holiday";
                 BuildFerrySchedule(ferrytimeS, ferrytimeA);
             }
             //alert("build ferry sch done");
             //Append Table into div.
-            var div = document.getElementById('divTable');
-            div.appendChild(table);
+            document.getElementById('divTable').appendChild(table);
             document.getElementById('schdate').innerHTML = "Based on schedule as of " + scheduledate[0];             // mark schedule date
             //alert("appended table to divTable");
         </script>

@@ -37,23 +37,25 @@
        // each string is: name,Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
        //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
         function ShowOpenHours() {
-            var openlist = "";
+            var openlist; openlist = "";
             // read open hours from master source
             //  1. load it from browser persistant store. 
             //  2. if not there, use the hardwired default.
             //  3. read latest version from anderson-island.org asynchronously and update persistant store and then rerun loop below if it has changed.
 
             // loop through the openHours array (each string entry is one business)
-            for (var i = 0; i < openHours.length; i++) {
-                var a = openHours[i].split(",");  // parse it into an array
-                openlist += "<p style=font-size:small>" + a[0] + GetOpenStatus(a) + ":<br/>";  // name of business
+            var i;
+            for (i = 0; i < openHours.length; i++) {
+                var a; a = openHours[i].split(",");  // parse it into an array
+                openlist += "<p style=font-size:small>" + a[0] + GetOpenStatus(a) + "<br/>";  // name of business
                 // loop through Sun - Sat
                 for (j = 0; j < 7; j++) {
-                    var opentimetoday = a[j + 1]; // hhmm-hhmm open today
+                    var opentimetoday, opentime, closetime;
+                    opentimetoday = a[j + 1]; // hhmm-hhmm open today
                     if (opentimetoday != "") {
-                        var opentime = opentimetoday.substring(0, 4); // open time hhmm
-                        var closetime = opentimetoday.substring(5, 9); // close time hhmm
-                        openlist += dayofweekname[j].substring(0, 2) + "&nbsp" + ShortTime(opentime) + "-" + ShortTime(closetime) + ",&nbsp";
+                        opentime = opentimetoday.substring(0, 4); // open time hhmm
+                        closetime = opentimetoday.substring(5, 9); // close time hhmm
+                        openlist += dayofweekshort[j] + ":" + ShortTime(opentime) + "-" + ShortTime(closetime) + "&nbsp";
                     }
                 } // for loop for each day
                 openlist += "</p>"
@@ -65,15 +67,16 @@
         //  entry: a = array of openTime for 1 business
         //  exit: returns string
         function GetOpenStatus(a) {
-            var opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
-            var opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
-            var closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
-            var openlist = "";
+            var opentimetoday, opentime, closetime;
+            opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+            opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
+            closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+            var openlist; openlist = "";
             // test for closed
             if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                 openlist += " <span style='color:darkred'> Closed. </span>";
                 if (timehhmm < opentime) {
-                    openlist += " Opens today at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                    openlist += " Opens today at " + ShortTime(opentime);
                     return openlist;
                 }
                 // find next open time
