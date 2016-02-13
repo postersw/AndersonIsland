@@ -36,52 +36,50 @@
         p {
             font-size: 14px;
         }
-        li {border-style:solid;border-width:thin;border-color:gray;padding:0;padding-top:5px;}
     </style>
 </head>
 <body>
     <div class="app">
         <div data-role="content"></div>
         <h1 style="font-size:24px">Anderson Island Assistant <button onclick="LocalMenu();">&#8801</button></h1>
-        <span style="font-size:smaller">Click on each item for more info. </span>
+         <div style="background-color:azure"><hr />
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
- <ul style="list-style-type:none;margin:0;padding:0">
-        <li style="background-color:azure" onclick="window.open('localferryschedule.html');">
+        <p style="font-size:18px;color:blue;margin-left:2%">
             FERRY
-            <button style="background-color:azure" onclick="window.open('localferryschedule.html');">Times</button>
-            <button style="background-color:azure" onclick="ShowFerryCams();">Cams</button>
-            <button style="background-color:azure"  onclick="ShowFerry();">Home</button>
+            <button onclick="window.open('localferryschedule.html');">Times</button>
+            <button onclick="ShowFerryCams();">Cams</button>
+            <button onclick="ShowFerry();">Home</button>
             <p id="ferrytimes" style="font-size:small;margin-left:4%">Next Ferry: </p>
-       </li>
-     <li style="background-color:honeydew"> 
-            <span style="font-size:18px;color:darkgreen;margin-left:0%">
+       </div>
+     <div style="background-color:honeydew"> <hr />
+            <span style="font-size:18px;color:darkgreen;margin-left:2%">
             OUTSIDE </span>
-            <button style="background-color:honeydew;" onclick="ShowTides();">Tides</button>
-            <button style="background-color:honeydew;" onclick="ShowWeather();">Weather</button>
-            <button style="background-color:honeydew;" onclick="ShowBurnBan();">Burn</button>
-            <button style="background-color:honeydew;" onclick="ShowMap();">Map</button>
+            <button onclick="ShowTides();">Tides</button>
+            <button onclick="ShowWeather();">Weather</button>
+            <button onclick="ShowBurnBan();">Burn</button>
+            <button onclick="ShowMap();">Map</button>
 
                
 
-        </li>
-
-                <li style="background-color:floralwhite;" onclick="window.open('comingevents.html?events')">
-        <span style="font-size:18px;color:darkmagenta;">
+        </div><div style="background-color:floralwhite"><hr />
+        <span style="font-size:18px;color:darkmagenta;margin-left:2%">
             CALENDAR </span>
             <button onclick="window.open('comingevents.html?events');">Events</button>
                   <button onclick="window.open('comingevents.html?activities');">Activities</button>
             <p id="nextevent">Next Event:</p>
-        </li>
+        </div>
+        <div style="background-color:beige"> <hr />
+            <span style="font-size:18px;color:darkslateblue;margin-left:2%">OPEN HOURS</span>
+            <button onclick="window.open('openhours.html');">Show all</button><br />
+             <p id="openhours" style="font-size:small;margin-left:4%">
+            </p>
 
-
-         <li style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html'">  
-            <span style="font-size:18px;color:darkred">
+          </div><div style="background-color:antiquewhite">  <hr />
+            <span style="font-size:18px;color:darkred;margin-left:2%">
              EMERGENCY </span><button onclick="window.open('emergencycontacts.html');">Contacts</button>
              <button onclick="window.open('http://www.tannerelectric.coop/outages');">Tanner</button>
 
-         </li>
-      <li>
-          <li >
+         </div><div style="margin-left:2%"><hr />
              <span style="font-size:18px;color:black">ISLAND INFORMATION </span><br />
 
             <button style="width:100%" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />
@@ -92,12 +90,10 @@
             <button style="width:100%" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
             <button style="width:100%" onclick="window.open('http://www.andersonislandsafety.org');">Island Patrol</button><br />
             <button style="width:100%" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
-
-       </li>
-          <li>
+ 
+       </div><hr />
             <button style="width:100%" onclick="window.open('aboutus.html');">About Us</button><br />
- </li>
-          </ul>
+ 
 
     <div id="deviceready" class="blink">
         <p class="event listening">Connecting to Device</p>
