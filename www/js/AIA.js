@@ -24,14 +24,19 @@ var dayofweekname, dayofweekshort, scheduledate;
 dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 scheduledate = ["5/1/2014"];
-// open hours format is array of strings, 1 string per business 
+
+// openHours format is array of strings, 1 string per business 
 // each string is: name(phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
 //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
 var openHours;
 openHours= ["<a href='http://www.andersonislandgeneralstore'>Store</a> (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,",
                  "<a href='http://rivieracommunityclub.com/amenities/restaurant'>Restaurant</a> (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,",
                   "<a href='https://www.co.pierce.wa.us/index.aspx?NID=1541'>Dump</a> (884-4072),1000-1400,1300-1700,,,,,"];
+var openHoursLastUpdate; // time of last update
 
+// tides
+var nextTides; // string of next tides for the main page
+var tidesLastUpdate; // time of last update
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Pad with leading zero

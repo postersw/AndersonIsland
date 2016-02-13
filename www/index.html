@@ -60,7 +60,7 @@
             <button style="background-color:honeydew;width:25%" onclick="ShowBurnBan();">BurnBan</button>
            <p id="weather" style="font-size:small;margin-top:4px;margin-bottom:0px">Current weather: </p>
            <p id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </p>
-           <p id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Tides: </p>
+           <p id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px"></p>
          </li>
 
         <li style="background-color:honeydew" onclick="ShowMap();"> 
@@ -130,6 +130,7 @@
         //var memorialday;  // last monday in may
         //var thanksgiving;
         //var holiday;  // true if  holiday
+        var updateMinutes; // minutes since last update
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
@@ -281,7 +282,7 @@
                         //alert("json success");
                         // pick out the return variables
                         var r = json.response.ob;
-                        var current = "Currently " + r.weather + ", " + r.tempF + "&degF, " + " wind " + r.windDir + " " + r.windMPH + " mph " +
+                        var current = "Currently: " + r.tempF + "&degF, " + r.weather + ", " + " wind " + r.windDir + " " + r.windMPH + " mph " +
                             ", " + r.precipIN + " precip."
                         //document.getElementById("forecast").innerHTML = current;
                         $("#weather").html(current); // jquery equivalent. Is this really easier?
@@ -304,7 +305,7 @@
                 success: function (json) {
                     if (json.success == true) {
                         var r = json.response[0].periods[0];
-                        $("#forecast").html("Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather);
+                        $("#forecast").html("Forecast: Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather);
                     }
                     else {
                         alert('An error occurred: ' + json.error.description);
@@ -313,24 +314,59 @@
             });  // end of ajax call
         }  // end of function
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        // getTides - uses stored data from tides page
+        function getTides() {
+            document.getElementById("tides").innerHTML = localStorage.getItem("nextTides");
+            //alert(localStorage.getItem("nextTides"));
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         //  update the next ferry times every minute
         function timerUp() {
+            // everything you want to do every minute.
             WriteNextFerryTimes();
-            // anything else you want to do every minute.
+            getTides(); // does not query.
+            ShowOpenHours();
+
+            // everything you want to do every 10 minutes
+            if (updateMinutes % 10) {
+                getCurrentWeather();
+            }
+            // everything you want to do every 30 minutes
+            if (updateMinutes % 30) {
+                getCurrentWeather();
+            }
+            updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
         }
+
+        /////////////////////////////////////////////////////////////////////////////
+        // focus and blur events
+        function focusEvent() {
+            setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+            updateMinutes = 0;
+            timerUp();
+        }
+        function blurEvent() {
+            clearInterval(0); // TURN OFF TIMER WHEN FOCUS IS LOST
+         }
+
     </script>
 
     <!-- actual javascript execution begins here:-->
     <script type="text/javascript">
         app.initialize();
         InitializeDates(0);
+        updateMinutes = 0;
         WriteNextFerryTimes();
         ShowOpenHours(); //  open hours
         document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         getCurrentWeather(); // gets weather async
         getForecast(); // gets forecast async
+        getTides();
+        window.addEventListener("focus", focusEvent);
+        window.addEventListener("blur", blurEvent);
     </script>
 </body>
 </html>

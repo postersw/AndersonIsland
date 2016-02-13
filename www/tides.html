@@ -39,6 +39,7 @@
 
         var currentTide;  // incoming or outgoing
 
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // create the ferry schedule table
         //  creates the global 'table'
@@ -169,6 +170,7 @@
                                     if (json.response.periods[i].type == 'h') hilow = 'High';
                                     else hilow = 'Low';
                                     currentTide += "<br/>" + hilow + " tide will be " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                                    localStorage.setItem("nextTides", "Tides: " + hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm));
                                 }
                             }
 
