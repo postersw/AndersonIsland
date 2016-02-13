@@ -43,41 +43,48 @@
     <div class="app">
         <div data-role="content"></div>
         <h1 style="font-size:24px">Anderson Island Assistant <button onclick="LocalMenu();">&#8801</button></h1>
-        <span style="font-size:smaller">Click on each item for more info. </span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <ul style="list-style-type:none;margin:0;padding:0">
-        <li style="background-color:azure" onclick="window.open('localferryschedule.html');">
+        <li style="background-color:azure" >
             FERRY
-            <button style="background-color:azure" onclick="window.open('localferryschedule.html');">Times</button>
-            <button style="background-color:azure" onclick="ShowFerryCams();">Cams</button>
-            <button style="background-color:azure"  onclick="ShowFerry();">Home</button>
-            <p id="ferrytimes" style="font-size:small;margin-left:4%">Next Ferry: </p>
+            <button style="background-color:azure;width:33%" onclick="window.open('localferryschedule.html');" >Schedule</button>
+            <button style="background-color:azure;width:33%" onclick="ShowFerryCams();">WebCams</button>
+            <p id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px">Next : </p>
        </li>
+
      <li style="background-color:honeydew"> 
             <span style="font-size:18px;color:darkgreen;margin-left:0%">
             OUTSIDE </span>
-            <button style="background-color:honeydew;" onclick="ShowTides();">Tides</button>
-            <button style="background-color:honeydew;" onclick="ShowWeather();">Weather</button>
-            <button style="background-color:honeydew;" onclick="ShowBurnBan();">Burn</button>
-            <button style="background-color:honeydew;" onclick="ShowMap();">Map</button>
+            <button style="background-color:honeydew;width:25%" onclick="ShowTides();">Tides</button>
+            <button style="background-color:honeydew;width:25%" onclick="ShowWeather();">Weather</button>
+            <button style="background-color:honeydew;width:25%" onclick="ShowBurnBan();">BurnBan</button>
+           <p id="weather" style="font-size:small;margin-top:4px;margin-bottom:0px">Current weather: </p>
+           <p id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </p>
+           <p id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Tides: </p>
+         </li>
 
-               
-
+        <li style="background-color:honeydew" onclick="ShowMap();"> 
+        <span style="font-size:18px;color:darkgreen;margin-left:0%">
+            MAP </span>             
         </li>
 
-                <li style="background-color:floralwhite;" onclick="window.open('comingevents.html?events')">
+        <li style="background-color:floralwhite;" onclick="window.open('comingevents.html?events')">
         <span style="font-size:18px;color:darkmagenta;">
             CALENDAR </span>
-            <button onclick="window.open('comingevents.html?events');">Events</button>
-                  <button onclick="window.open('comingevents.html?activities');">Activities</button>
-            <p id="nextevent">Next Event:</p>
+            <button  style="background-color:floralwhite;width:33%" onclick="window.open('comingevents.html?events');">Events</button>
+                  <button style="background-color:floralwhite;width:33%" onclick="window.open('comingevents.html?activities');">Activities</button>
+            <p id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Event:</p>
         </li>
 
+     <li style="background-color:beige" onclick="window.open('openhours.html');">
+            <span style="font-size:18px;color:darkslateblue;">OPEN HOURS</span>
+             <p id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
+            </p>
 
-         <li style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html'">  
+         <li style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html')">  
             <span style="font-size:18px;color:darkred">
-             EMERGENCY </span><button onclick="window.open('emergencycontacts.html');">Contacts</button>
-             <button onclick="window.open('http://www.tannerelectric.coop/outages');">Tanner</button>
+             EMERGENCY </span><button style="background-color:antiquewhite;width:33%" onclick="window.open('emergencycontacts.html');">Contacts</button>
+             <button style="background-color:antiquewhite;width:33%" onclick="window.open('http://www.tannerelectric.coop/outages');">Tanner</button>
 
          </li>
       <li>
@@ -104,7 +111,7 @@
         <p class="event received">Device is Ready</p>
     </div>
 </div>
-
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/AIA.js"></script>
@@ -201,7 +208,7 @@
             var v;
             v = "Next Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
-            v = v + FindNextFerryTime(ferrytimeS) + "<br/>Next AI: " + FindNextFerryTime(ferrytimeA);
+            v = v + FindNextFerryTime(ferrytimeS) + "; AI: " + FindNextFerryTime(ferrytimeA);
             document.getElementById("ferrytimes").innerHTML = v;
 
         }
@@ -263,6 +270,49 @@
             return openlist;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
+        // getCurrentWeather  
+        function getCurrentWeather() {
+            $.ajax({
+                url: 'http://api.aerisapi.com/observations/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                dataType: 'jsonp',
+                success: function (json) {
+                    if (json.success == true) {
+                        //alert("json success");
+                        // pick out the return variables
+                        var r = json.response.ob;
+                        var current = "Currently " + r.weather + ", " + r.tempF + "&degF, " + " wind " + r.windDir + " " + r.windMPH + " mph " +
+                            ", " + r.precipIN + " precip."
+                        //document.getElementById("forecast").innerHTML = current;
+                        $("#weather").html(current); // jquery equivalent. Is this really easier?
+                    }
+                    else {
+                        alert('An error occurred: ' + json.error.description);
+                    }
+                }
+            });
+        } // end of function
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // getForecast
+        // get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // License as of 2/8/16 is for 750 hits/day for free.
+        function getForecast() {
+            $.ajax({
+                url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                dataType: 'jsonp',
+                success: function (json) {
+                    if (json.success == true) {
+                        var r = json.response[0].periods[0];
+                        $("#forecast").html("Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather);
+                    }
+                    else {
+                        alert('An error occurred: ' + json.error.description);
+                    }
+                }
+            });  // end of ajax call
+        }  // end of function
+
         /////////////////////////////////////////////////////////////////////////////////////
         //  update the next ferry times every minute
         function timerUp() {
@@ -279,6 +329,8 @@
         ShowOpenHours(); //  open hours
         document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+        getCurrentWeather(); // gets weather async
+        getForecast(); // gets forecast async
     </script>
 </body>
 </html>

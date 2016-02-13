@@ -165,3 +165,4 @@ function RawTimeDiff(hhmm1, hhmm2) {
     if (ftm < tm) ftm = ftm + 24 * 60;
     return ftm - tm; // diff in minutes
 }
+
