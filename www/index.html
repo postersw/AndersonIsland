@@ -188,6 +188,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // return the next ferry time as a string. ferrytimes is the array of times and days;
         function FindNextFerryTime(ferrytimes) {
+            ferrytimes = ferrytimes.split(",");
             InitializeDates(0);
             var i;
             // roll through the ferry times, skipping runs that are not valid for today
@@ -226,7 +227,12 @@
             var v;
             v = "Next Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
-            v = v + FindNextFerryTime(ferrytimeS) + "; AI: " + FindNextFerryTime(ferrytimeA);
+            var lftS = localStorage.getItem("ferrytimess");
+            if (lftS === null) lftS = "545,H123456A,645,*,800,*,900,*,1000,F,1200,*,1410,*,510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y";
+            var lftA = localStorage.getItem("ferrytimesA");
+            if (lftA === null) lftA = "615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y";
+
+            v = v + FindNextFerryTime(lftS) + "; AI: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v;
 
         }
@@ -242,21 +248,22 @@
             var a;
             var store;
             var opentimetoday, opentime, closetime;
+            var openHours;
+            if (localStorage.getItem("openhours")===null) return;
+            openHours = localStorage.getItem("openhours");
+            if(openHours === null) return;
+            if(openHours == "") return;
+            openHours = openHours.split("\n");
             openlist = "";
-            // read open hours from master source
-            //  1. load it from browser persistant store. 
-            //  2. if not there, use the hardwired default.
-            //  3. read latest version from anderson-island.org asynchronously and update persistant store and then rerun loop below if it has changed.
 
             // loop through the openHours array (each string entry is one business)
-            for (var i = 0; i < openHours.length; i++) {
+            for (var i = 0; i < openHours.length-1; i++) {
                 a = openHours[i].split(",");  // parse it into an array
                 store = a[0].split("("); // strip out phone number
                 openlist += store[0] + ":";
                 opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
                 opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
                 closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
-                //alert(openlist );
                 // test for closed
                 if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                     openlist += " <span style='color:darkred'> Closed. </span>";
@@ -426,6 +433,66 @@
             return;
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        //  GetDailyCache - retrieves the daily cache into the local storage objects 
+        //  Load from server using ajax async request.
+        //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
+        function GetDailyCache() {
+            // ajax async request
+            $.ajax({
+                url: "dailycache.txt",
+                success: function (data) {
+                    ReloadDailyCache(data);
+                    localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
+                    //alert("coming events loaded at " + monthday);
+                }
+            });
+            //alert("comingevents.txt requested");
+            return;
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // ReloadDailyCache - parses the daily cache into its parts in local storage
+        function ReloadDailyCache(data) {
+            data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
+            var rows = data.split("\n"); //split into lines
+            if (rows[0] != "DAILYCACHE") {
+                alert("could not load updated values for ferry times and open hours");
+                return;
+            }
+            //alert("loading daily cache");
+            localStorage.setItem("dailycacheloaded", monthday); // remember date time
+            for (var i = 0; i < rows.length; i++) {
+                //alert("'" + rows[i] + "'");
+                switch (rows[i]) {
+                    case "FERRYTIMESS": // steilacoom times
+                        localStorage.setItem("ferrytimess", rows[i+1]);
+                        i++;
+                        break;
+                    case "FERRYTIMESA":  // AI times
+                        localStorage.setItem("ferrytimesa", rows[i+1]);
+                        i++;
+                        WriteNextFerryTimes();
+                        break;
+                    case "SCHEDULEDATE":  // ferry schedule date
+                        localStorage.setItem("scheduledate", rows[i+1]);
+                        i++;
+                        break;
+                    case "OPENHOURS":  // form a single concatenated 
+                        i++;
+                        var openh = "";
+                        while ((i < rows.length) && (rows[i] != "OPENHOURSEND")) {
+                            openh += rows[i] + "\n";
+                            i++;
+                        }
+                        localStorage.setItem("openhours", openh);
+                        i++;
+                        ShowOpenHours();
+                        break;
+                    case "LINKS":
+                }
+            }
+        }
         /////////////////////////////////////////////////////////////////////////////////////
         //  update the next ferry times every minute
         function timerUp() {
@@ -486,6 +553,11 @@
         getCurrentWeather(); // gets weather async
         getForecast(); // gets forecast async
         getTideData(); // gets tides async
+
+        //reload the 'dailycache' cache if the day has changed.
+        var dailycacheloaded = localStorage.getItem("dailycacheloaded");
+        //if (dailycacheloaded != monthday) GetDailyCache();  // don't reload data on same day
+        GetDailyCache();//////////////////////////////////////debug
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
     </script>
