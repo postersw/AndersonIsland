@@ -1,0 +1,9 @@
+0207;1530;1830;E;Super Bowl Sunday;Lakeshore Restaurant;Riviera;Watch the superbowl and eat some good food
+213;1900;2200;E;Karaoke with Kim;Lakeshore Restaurant;Riviera
+0214;1100;1400;S;Valentine's Day Brunch Buffet;Lakeshore Restaurant;Riviera
+0217;1900;2100;M;Park Board;Community Club;Parks
+0223;1000;1200;M;AICC Board Meeting;Community Club;Community Club;
+0223;1200;1300;M;AICC General Meeting;Community Club;Community Club
+0227;1800;2000;S;AIHS Potluck;Community Club;AIHS
+0228;1600;1900;E;Oscars with Tapas Dinner;Lakeshore Restaurant;Riviera
+0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Restaurant;Rivera;$7 cover. RSVP 884-3344

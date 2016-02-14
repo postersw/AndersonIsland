@@ -23,10 +23,11 @@
         <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Community Club</button>
         <button onclick="window.open('http://rivieracommunityclub.com/event-calendar');">Riviera</button>
         <button onclick="ShowCC();">Historical Society</button>
+              <button onclick="GetComingEvents();">Refresh</button>
               </p>
               <hr />
         TYPE: A=activity, E=Entertainment, M=Meeting, S=special event
-        <table id='table' style="border:thin solid black">
+        <table id='table' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td>DAY</td>
                 <td> DATE</td>
@@ -44,6 +45,7 @@
     </div>
 </body>
 </html>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/AIA.js"></script>
@@ -58,16 +60,16 @@
         //  type=M (meeting), A (activity), E (Entertainment), S (special event), 
         //  event = brief event description, location = , sponsor = , 
         var localCE;
-        localCE = ["0207;1530;1830;E;Super Bowl Sunday;Lakeshore Restaurant;Riviera;Watch the superbowl and eat some good food",
-                   "213;1900;2200;E;Karaoke with Kim;Lakeshore Restaurant;Riviera",
-                   "0214;1100;1400;S;Valentine's Day Brunch Buffet;Lakeshore Restaurant;Riviera",
-                   "0217;1900;2100;M;Park Board;Community Club;Parks",
-                   "0223;1000;1200;M;AICC Board Meeting;Community Club;Community Club;",
-                   "0223;1200;1300;M;AICC General Meeting;Community Club;Community Club",
-                   "0227;1800;2000;S;AIHS Potluck;Community Club;AIHS",
-                   "0228;1600;1900;E;Oscars with Tapas Dinner;Lakeshore Restaurant;Riviera",
-                   "0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Restaurant;Rivera;$7 cover. RSVP 884-3344"
-        ]
+        //localCE = ["0207;1530;1830;E;Super Bowl Sunday;Lakeshore Restaurant;Riviera;Watch the superbowl and eat some good food",
+        //           "213;1900;2200;E;Karaoke with Kim;Lakeshore Restaurant;Riviera",
+        //           "0214;1100;1400;S;Valentine's Day Brunch Buffet;Lakeshore Restaurant;Riviera",
+        //           "0217;1900;2100;M;Park Board;Community Club;Parks",
+        //           "0223;1000;1200;M;AICC Board Meeting;Community Club;Community Club;",
+        //           "0223;1200;1300;M;AICC General Meeting;Community Club;Community Club",
+        //           "0227;1800;2000;S;AIHS Potluck;Community Club;AIHS",
+        //           "0228;1600;1900;E;Oscars with Tapas Dinner;Lakeshore Restaurant;Riviera",
+        //           "0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Restaurant;Rivera;$7 cover. RSVP 884-3344"
+        //]
 
         // CER coming events recurring: is an array of strings. 
         // Each string is: startdate;enddate;recurrence;starttime;endtime;type;event;location;sponsor;description;exception dates
@@ -82,77 +84,166 @@
         var localCER;
         localCER = ["0208;0408;0900;1000;W1;A;Yoga;Marth Smith Room;Rivera"]
 
-        var CE;
+        var CE="";
         var CER;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        //  GetComingEvents - retrieves the coming events into the CE structure
-        //  Try local cache. If empty use backup.
-        //  Load from server.
-        //  Store into local cache.
+        //  GetComingEvents - retrieves the coming events into the comingevents local storage object
+        //  Load from server using ajax async request.
+        //  Store into local cache at 'comingevents'.  monthday of loaded stored into local cache at 'comingeventsloaded'
         function GetComingEvents(){
-            // first try
-            CE = localCE;
-            CER = localCER;
+            // ajax async request
+            //$.get("comingevents.txt", ComingEventsReceived());
+            $.ajax({
+                url: "comingevents.txt",
+                success: function (data) {
+                    //alert("Data: " + data + "\nStatus: " + status);
+                    localStorage.setItem("comingevents", data);
+                    localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
+                    //alert("coming events loaded at " + monthday);
+                    DisplayComingEvents();  // build table
+                }
+            });
+            //alert("comingevents.txt requested");
             return;
+        }
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // ComingEventsReceived - called after the ajax request succeeds
+        function ComingEventsReceived(data, status) {
+            alert("Data: " + data + "\nStatus: " + status);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEvents - display the events in the CE abnd CER structure
+        // This version is driven by the data in the CE array, which MUST be sorted.
+        // data is in localStorage "comingevents"
         function DisplayComingEvents(){
- 
+
             var i;
             var row;
             var col;
+            var idayofweek; // 0-6
+            var lastdayofweek=0; // 0-6 of previous row
             var datefmt; // formatted date
             var table // ref to table
             table = document.getElementById("table");
             var iCE; // iterator through CE
-            iCE = 0; 
+            iCE = 0;
             var aCE; // CE split array 
-            if (CE.length > 0) aCE = CE[iCE].split(';');  // split the string the first time
 
-            // roll through the next 30 days
-            for (i = 1; i < 31; i++) {
+            CE = localStorage.getItem("comingevents").split("\n");  // break it up into rows
+            if (CE == "") return;
+            // clear table
+            while (table.rows.length > 1) {
+                table.deleteRow(-1);
+            }
+            // calculate end month day
+            var endmmdd;
+            endmmdd = (month + 1) * 100 + dayofmonth;
 
-                // is there a recurrint event today
-                var aCER;
-
+            // roll through the CE array
+            for (iCE = 0; iCE < CE.length; iCE++) {
+                aCE = CE[iCE].split(';');  // split the string
                 //  advance schedule date to today
-                while ((iCE < CE.length) && (monthday > Number(aCE[0]))) {
-                    iCE++;
-                    if(iCE == CE.length)break;
-                    aCE = CE[iCE].split(';');  // split the string
-                } //  advance schedule date to today
+                var dateCE = Number(aCE[0]); // mmdd
+                if(dateCE > endmmdd) return; // past one month
+                if(dateCE < monthday ) continue; // if before today
+                if(dateCE == monthday && Number(aCE[2]) < (timehhmm + 10) ) continue; // end time not reached.
+                // found it
+                datefmt = aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
 
-                // loop through schedule for today, leaving iCE at next event
-                while ((iCE < CE.length) && (monthday = Number(aCE[0]))) {
-                    datefmt = (monthday / 100).toFixed(0) + "/" + (monthday % 100); //month + "/" + Leading0(dayofmonth);
+                var dd = new Date(datefmt + "/" + year); // wont work for next year
+                idayofweek = dd.getDay();
+                // add a row for new week. won't work if schedule days are both same day of week
+                if (idayofweek < lastdayofweek) {
                     row = table.insertRow(-1);
-                    col = row.insertCell(0); col.innerHTML = dayofweekshort[dayofweek]; // day of week
-                    col = row.insertCell(1); col.innerHTML = datefmt; // date
-                    col = row.insertCell(2); col.innerHTML = ShortTime(aCE[1]);  // start
-                    col = row.insertCell(3); col.innerHTML = ShortTime(aCE[2]); // end
-                    col = row.insertCell(4); col.innerHTML = aCE[3];//type
-                    col = row.insertCell(5); col.innerHTML = aCE[4];//event
-                    col = row.insertCell(6); col.innerHTML = aCE[5];//where
-                    if (aCE.length >= 7) { col = row.insertCell(7); col.innerHTML = aCE[6]; }// sponsor
-                    if (aCE.length >= 8) { col = row.insertCell(8); col.innerHTML = aCE[7]; }// more
-                    iCE++;
-                    if (iCE == CE.length) break;
-                    aCE = CE[iCE].split(';');  // split the string
-                }
+                    for (i = 0; i < 7; i++) {
+                        row.insertCell(i).innerHTML = "";
+                    }
+                } 
+                // add a new table row
+                row = table.insertRow(-1);
+                row.style.border = "solid thin black";
+                row.style.border.width = 1;
+                if (dateCE == monthday && Number(aCE[2]) > (timehhmm + 10)) row.style.fontWeight="bold"; // end time not reached.
+                col = row.insertCell(0); col.innerHTML = dayofweekshort[idayofweek]; // day of week
+                //col.style.border = "solid thin black";
+                col = row.insertCell(1); col.innerHTML = datefmt; // date
+                col = row.insertCell(2); col.innerHTML = ShortTime(aCE[1]);  // start
+                col.style.textAlign = "right";
+                col = row.insertCell(3); col.innerHTML = ShortTime(aCE[2]); // end
+                col.style.textAlign = "right";
+                col = row.insertCell(4); col.innerHTML = aCE[3];//type
+                col.style.textAlign = "center";
+                col = row.insertCell(5); col.innerHTML = aCE[4];//event
+                col = row.insertCell(6); col.innerHTML = aCE[5];//where
+                col = row.insertCell(7);
+                if (aCE.length >= 7) col.innerHTML = aCE[6]; // sponsor
+                else col.innerHTML = "";
+                col = row.insertCell(8);
+                if (aCE.length >= 8) col.innerHTML = aCE[7];
+                else col.innerHTML = ""; // more
+                lastdayofweek = idayofweek;
+            } // end loop through CE
+        }
 
-                InitializeDates(1); // bump dates by 1  This is slow but might be fast enough
-            } // end for
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // DisplayComingEvents - display the events in the CE abnd CER structure
+        // This version is date driven.
+        //function DisplayComingEvents(){
+ 
+        //    var i;
+        //    var row;
+        //    var col;
+        //    var datefmt; // formatted date
+        //    var table // ref to table
+        //    table = document.getElementById("table");
+        //    var iCE; // iterator through CE
+        //    iCE = 0; 
+        //    var aCE; // CE split array 
+        //    if (CE.length > 0) aCE = CE[iCE].split(';');  // split the string the first time
 
-        } // end function
+        //    // roll through the next 30 days
+        //    for (i = 1; i < 31; i++) {
+        //        // is there a recurrint event today
+        //        var aCER;
+        //        //  advance schedule date to today
+        //        while ((iCE < CE.length) && (monthday > Number(aCE[0]))) {
+        //            iCE++;
+        //            if(iCE == CE.length)break;
+        //            aCE = CE[iCE].split(';');  // split the string
+        //        } //  advance schedule date to today
+        //        // loop through schedule for today, leaving iCE at next event
+        //        while ((iCE < CE.length) && (monthday = Number(aCE[0]))) {
+        //            datefmt = (monthday / 100).toFixed(0) + "/" + (monthday % 100); //month + "/" + Leading0(dayofmonth);
+        //            row = table.insertRow(-1);
+        //            col = row.insertCell(0); col.innerHTML = dayofweekshort[dayofweek]; // day of week
+        //            col = row.insertCell(1); col.innerHTML = datefmt; // date
+        //            col = row.insertCell(2); col.innerHTML = ShortTime(aCE[1]);  // start
+        //            col = row.insertCell(3); col.innerHTML = ShortTime(aCE[2]); // end
+        //            col = row.insertCell(4); col.innerHTML = aCE[3];//type
+        //            col = row.insertCell(5); col.innerHTML = aCE[4];//event
+        //            col = row.insertCell(6); col.innerHTML = aCE[5];//where
+        //            if (aCE.length >= 7) { col = row.insertCell(7); col.innerHTML = aCE[6]; }// sponsor
+        //            if (aCE.length >= 8) { col = row.insertCell(8); col.innerHTML = aCE[7]; }// more
+        //            iCE++;
+        //            if (iCE == CE.length) break;
+        //            aCE = CE[iCE].split(';');  // split the string
+        //        }
+        //        InitializeDates(1); // bump dates by 1  This is slow but might be fast enough
+        //    } // end for
+        //} // end function
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         // script execution starts here
-        InitializeDates(0);
-        GetComingEvents();
-        DisplayComingEvents();
+        $(document).ready(function(){
+            InitializeDates(0);
+            DisplayComingEvents();  //display stored data
+            var comingeventloaded = localStorage.getItem("comingeventsloaded");
+            if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
+
+        })
 
     </script>

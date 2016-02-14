@@ -54,6 +54,12 @@
             <span style="font-size:18px;color:darkblue;margin-left:0%">FERRY WEBCAMS </span>
         </li>
 
+          <li style="background-color:lightcyan"  onclick="ShowTides();"> 
+            <span style="font-size:18px;color:darkblue;margin-left:0%">
+            TIDES </span>
+         <span id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</span>
+         </li>
+
      <li style="background-color:honeydew"  onclick="ShowWeather();"> 
             <span style="font-size:18px;color:darkgreen;margin-left:0%">
             WEATHER </span>
@@ -62,21 +68,12 @@
 
          </li>
 
-     <li style="background-color:honeydew"  onclick="ShowTides();"> 
-            <span style="font-size:18px;color:darkgreen;margin-left:0%">
-            TIDES </span>
-         <span id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</span>
-         </li>
+
       <li style="background-color:honeydew"  onclick="ShowBurnBan();"> 
             <span style="font-size:18px;color:darkgreen;margin-left:0%">
             BURN BAN </span>
          <span id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">No Burn Ban</span>
          </li>
-
-        <li style="background-color:honeydew" onclick="ShowMap();"> 
-        <span style="font-size:18px;color:darkgreen;margin-left:0%">
-            MAP </span>             
-        </li>
 
         <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?events');">
         <span style="font-size:18px;color:darkmagenta;">
@@ -99,7 +96,12 @@
             <span style="font-size:18px;color:darkred">
              EMERGENCY CONTACTS </span>
          </li>
-      <li>
+
+        <li style="background-color:skyblue" onclick="ShowMap();"> 
+        <span style="font-size:18px;color:darkblue;margin-left:0%">
+            MAP </span>             
+        </li>
+
           <li >
              <span style="font-size:18px;color:black">ISLAND INFORMATION </span><br />
 
@@ -336,6 +338,94 @@
             //alert(localStorage.getItem("nextTides"));
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // License as of 2/8/16 is for 750 hits/day for free.
+        function getTideData() {
+            var hilow;
+            var nextTides;
+            var oldtide = -1;
+            $.ajax({
+                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=-10hours&to=+14hours',
+                dataType: 'jsonp',
+                success: function (json) {
+
+                    if (json.success == true) {
+                        // roll through the reply in jason.response.periods[i]
+                        var i;
+                        for (i = 0; i < json.response.periods.length; i++) {
+                            var m = json.response.periods[i].dateTimeISO.substring(5, 7);
+                            var d = json.response.periods[i].dateTimeISO.substring(8, 10);
+                            var h = json.response.periods[i].dateTimeISO.substring(11, 13); // tide hour
+                            var mi = json.response.periods[i].dateTimeISO.substring(14, 16);  // time min
+                            var tidehhmm = (Number(h) * 100) + Number(mi);
+                            if (json.response.periods[i].type == 'h') hilow = '&nbsphigh';
+                            else hilow = '&nbsplow';
+                            // if tide is past, color row gray
+                            if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
+                                oldtide = 0;
+                            } else if ((oldtide == 0)) {
+                                nextTides = "Tides: " + hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                            } else if (oldtide == 1) {  // save next tide
+                                nextTides += hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                                localStorage.setItem("nextTides", nextTides); // save tide
+                                getTides(); // display it
+                                return;
+                            }
+                        }
+                    }
+                    else {
+                    }
+                }
+            });
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        // DisplayNextEvent
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        // DisplayComingEvents - display the events in the 'comingevents' structure
+        function DisplayNextEvents(){
+            var datefmt; // formatted date
+            var iCE; // iterator through CE
+            var aCE; // CE split array 
+            CE = localStorage.getItem("comingevents").split("\n");  // break it up into rows
+            if (CE == "") return;
+            // roll through the next 30 days
+            for (iCE = 0; iCE < CE.length; iCE++) {
+                aCE = CE[iCE].split(';');  // split the string
+                //  advance schedule date to today
+                if(Number(aCE[0]) < monthday ) continue; // not there yet
+                if(Number(aCE[0]) == monthday && Number(aCE[2]) < timehhmm ) continue; // not there yet
+                // fount it
+                datefmt = (monthday / 100).toFixed(0) + "/" + (monthday % 100);
+                return dayofweekshort[dayofweek] + " " + datefmt + " " + ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]) + " " + aCE[4] + " at " + aCE[5];
+            }
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        //  GetComingEvents - retrieves the coming events into the comingevents local storage object
+        //  Load from server using ajax async request.
+        //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
+        function GetComingEvents() {
+            // ajax async request
+            //$.get("comingevents.txt", ComingEventsReceived());
+            $.ajax({
+                url: "comingevents.txt",
+                success: function (data) {
+                    //alert("Data: " + data + "\nStatus: " + status);
+                    localStorage.setItem("comingevents", data);
+                    localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
+                    //alert("coming events loaded at " + monthday);
+                    $("#nextevent").html(DisplayNextEvents());
+                }
+            });
+            //alert("comingevents.txt requested");
+            return;
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         //  update the next ferry times every minute
         function timerUp() {
@@ -345,12 +435,13 @@
             getTides(); // does not query.
             ShowOpenHours();
 
-            // everything you want to do every 10 minutes
-            if ((updateMinutes % 10)==0) {
+            // everything you want to do every 20 minutes
+            if ((updateMinutes % 20)==0) {
                 getCurrentWeather();
             }
             // everything you want to do every 30 minutes
-            if ((updateMinutes % 30)==0) {
+            if ((updateMinutes % 30) == 0) {
+                getTideData();
                 getCurrentWeather();
             }
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
@@ -378,11 +469,17 @@
         localStorage.setItem("updateminutes", "0");
         WriteNextFerryTimes();
         ShowOpenHours(); //  open hours
+
+        // display next event. reload the 'comingevent' cache if the day has changed.
+        $("#nextevent").html(DisplayNextEvents());
+        var comingeventloaded = localStorage.getItem("comingeventsloaded");
+        if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
+
         document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         getCurrentWeather(); // gets weather async
         getForecast(); // gets forecast async
-        getTides();
+        getTideData(); // gets tides async
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
     </script>

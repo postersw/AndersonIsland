@@ -101,9 +101,10 @@
  
             var olddate, newdate; // dates
             var ampm; // am or pm
-            var oldtide = true; // true for tides older than current time
+            var oldtide = -1; // true for tides older than current time
             var oldtideheight; // saved tide hight for last tide
-
+            var hilow;
+            var nextTides;
             $("#tideButton").hide();  // hide the user button
             $.ajax({
                 url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
@@ -148,36 +149,37 @@
                             tidehhmm = (Number(h) * 100) + Number(mi);
                             row1col1.innerHTML = "&nbsp" + ShortTime(tidehhmm);
                             row1col1.style.border = "thin solid black";
-                            var mi = json.response.periods[i].dateTimeISO.substring(14, 16);
-                            // if time is old, color row gray
-                            if ((month>m) || (month==m && dayofmonth>d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
+                            if (json.response.periods[i].type == 'h') hilow = '&nbsphigh';
+                            else hilow = '&nbsplow';
+                            // if tide is past, color row gray
+                            if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                                 row1.style.color = "lightgray";
-                                if (json.response.periods[i].type == 'h') currentTide = "Outgoing since " ;  // incoming outgoing flag
+                                if (json.response.periods[i].type == 'h') currentTide = "Outgoing since ";  // incoming outgoing flag
                                 else currentTide = "Incoming since ";
                                 currentTide += ShortTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
                                 oldtideheight = Number(json.response.periods[i].heightFT);
                                 oldtidetime = tidehhmm;
-                            } else {
-                                // if this is the next tide, bold it and calculate approx height
-                                if (oldtide && (oldtidetime>0)) {
-                                    row1.style.fontWeight = "bold";
-                                    oldtide = false;
-                                    // calculate current tide height
-                                    var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(json.response.periods[i].heightFT), oldtideheight);
-                                    currentTide += "<br/>Approximate height: " + tideheight.toFixed(1) + " ft.";
-                                    // calculate time till next tide
-                                    var hilow;
-                                    if (json.response.periods[i].type == 'h') hilow = 'High';
-                                    else hilow = 'Low';
-                                    currentTide += "<br/>" + hilow + " tide will be " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
-                                    localStorage.setItem("nextTides", "Tides: " + hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm));
-                                }
+                                oldtide = 0;
+                            } else if ((oldtide == 0) ) {
+
+                                // this is the next tide, bold it and calculate approx height                             
+                                row1.style.fontWeight = "bold";
+                                oldtide = 1;
+                                // calculate current tide height
+                                var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(json.response.periods[i].heightFT), oldtideheight);
+                                currentTide += "<br/>Approximate height: " + tideheight.toFixed(1) + " ft.";
+                                // calculate time till next tide                                 
+                                currentTide += "<br/>" + hilow + " tide will be " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                                nextTides = "Tides: " + hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";                        
+                            } else if(oldtide == 1) {  // save next tide
+                                oldtide = 2;
+                                nextTides += hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                                localStorage.setItem("nextTides", nextTides); // save tide
                             }
 
                             // type
                             row1col1 = row1.insertCell(2);
-                            if (json.response.periods[i].type == 'h') row1col1.innerHTML = '&nbsp high';
-                            else row1col1.innerHTML = '&nbsp low';
+                            row1col1.innerHTML = hilow;
                             row1col1.style.border = "thin solid black";
                             // height
                             row1col1 = row1.insertCell(3);
@@ -191,7 +193,7 @@
                         //$('#js').html('The current weather in Seattle is ' + ob.weather.toLowerCase() + ' with a temperature of ' + ob.tempF + '°');
                     }
                     else {
-                        alert('An error occurred: ' + json.error.description);
+                        alert('Could not retrieve tide information: ' + json.error.description);
                     }
                 }   
             });
