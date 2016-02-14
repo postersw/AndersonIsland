@@ -435,10 +435,16 @@
             getTides(); // does not query.
             ShowOpenHours();
 
+            // everything you want to do every 5 minutes
+            if ((updateMinutes % 5) == 0) {
+                DisplayNextEvents();
+            }
+
             // everything you want to do every 20 minutes
             if ((updateMinutes % 20)==0) {
                 getCurrentWeather();
             }
+
             // everything you want to do every 30 minutes
             if ((updateMinutes % 30) == 0) {
                 getTideData();

@@ -115,8 +115,8 @@
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayComingEvents - display the events in the CE abnd CER structure
-        // This version is driven by the data in the CE array, which MUST be sorted.
+        // DisplayComingEvents - display the events in the 'comingevents' cache, with is a copy of the comingevents txt file.
+        //  which MUST be sorted.
         // data is in localStorage "comingevents"
         function DisplayComingEvents(){
 
@@ -240,7 +240,7 @@
         // script execution starts here
         $(document).ready(function(){
             InitializeDates(0);
-            DisplayComingEvents();  //display stored data
+            DisplayComingEvents();  //display stored data in case we can't successfully reload the comingevents cache
             var comingeventloaded = localStorage.getItem("comingeventsloaded");
             if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
 
