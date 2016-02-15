@@ -18,17 +18,23 @@
     <div class="app">
 <h1>Tides at Yoman Point <br />(ferry dock)</h1>
     <p id="current">Please wait for tide data .... </p>
-    <div id="divTable">
-    
-    </div>
+        <table id='table' style="border:thin solid black;border-collapse:collapse">
+            <tr style="background-color:black;color:white">
+                <td>Date</td>
+                <td>| Time&nbsp</td>
+                <td>| Type&nbsp</td>
+                <td>| Feet&nbsp</td>
+            </tr>
+        </table>
     <hr />
     <p id="demo">
     <button id="tideButton" onclick="ShowCustom();" hidden="hidden">Get Tides for other days</button>
     </p>
 
      <p>These tide predictions are provided for 
-         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">station id 9446705 by NOAA</a>  through Aeris. 
-         Approximate current height calculated using <a href="https://en.wikipedia.org/wiki/Rule_of_twelfths"> Rule of Twelves.</a></p>
+         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">station id 9446705 by NOAA</a>  through Aeris. <br />
+         Approximate current height calculated using <a href="https://en.wikipedia.org/wiki/Rule_of_twelfths"> Rule of Twelves.</a><br />
+        This page updates every minute.</p>
      </div>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -40,38 +46,13 @@
         var currentTide;  // incoming or outgoing
 
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // create the ferry schedule table
-        //  creates the global 'table'
-        function createTable() {
-            // Create table.
-            table = document.createElement('table');
-            table.style.border = "thin solid black";
-            table.style.borderCollapse = "collapse";
-            // Insert New Row for table at index '0'.
-            var row1; row1 = table.insertRow(0);
-            // Insert New Column for Row1 at index '0'.
-            var row1col1 = row1.insertCell(0);
-            row1col1.style.backgroundColor = "black";
-            row1col1.style.color = "white";
-            row1col1.innerHTML = 'Date';
-            // Insert New Column for Row1 at index '1'.
-            row1col1 = row1.insertCell(1);
-            row1col1.style.backgroundColor = "black";
-            row1col1.style.color = "white";
-            row1col1.innerHTML = '| Time&nbsp';
-            row1col1 = row1.insertCell(2);
-            row1col1.style.backgroundColor = "black";
-            row1col1.style.color = "white";
-            row1col1.innerHTML = '| Type&nbsp';
-            row1col1 = row1.insertCell(3);
-            row1col1.style.backgroundColor = "black";
-            row1col1.style.color = "white";
-            row1col1.innerHTML = '| Feet&nbsp';
-        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Calculate current tide height using the rule of 12s (tide rise in hour: 1/12, 2/12, 3/12, 3/12, 2/12, 1/12
+        // entry: newtidetime = next hi/low tide time
+        //        oldtidetime = previous hi/low tide time
+        //        newtideheight, oldtideheight = next and previous tide heights;
+        //  returns current tide height
         function CalculateCurrentTideHeight(newtidetime, oldtidetime, newtideheight, oldtideheight) {
             // calculate current tide height
             var tideheight;
@@ -94,11 +75,11 @@
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // used only for custom date queries, not for normal tides.
         // License as of 2/8/16 is for 750 hits/day for free.
         //  fromdate = optional starting date for the tides
-        function getTideData(fromdate) {
- 
- 
+        //  data is used to display tide data. It is not stored.
+        function getTideData(fromdate) { 
             var olddate, newdate; // dates
             var ampm; // am or pm
             var oldtide = -1; // true for tides older than current time
@@ -124,11 +105,15 @@
         }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // ShowTideData - show the data in the periods array
+        //  entry periods = array of data returned by aeris. Each array entry is one tide period.
         function ShowTideData(periods) {
-            // roll through the reply in jason.response.periods[i]
+
+            var table = document.getElementById("table");
+            clearTable(table);
             olddate = periods[0].dateTimeISO.substring(5, 10);
             var oldtide = -1;
             var i;
+            // roll through the reply in jason.response.periods[i]
             for (i = 0; i <periods.length; i++) {
                 // if date changed, add a blank row
                 newdate = periods[i].dateTimeISO.substring(5, 10);
@@ -141,6 +126,7 @@
                     olddate = newdate;
                 }
                 // Insert New Row for table at end of table.
+
                 var row1 = table.insertRow(-1);
 
                 // Insert New Column for date
@@ -202,7 +188,8 @@
  
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // ShowCustom - get date for custom tides
+        // ShowCustom - get date for custom tides, call the aeris query, and display the result.
+        //
         function ShowCustom() {
             InitializeDates(0);
             var tidedate = prompt("Please enter the date as mm/dd", month + "/" + dayofmonth);
@@ -228,21 +215,44 @@
 
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////
+        // ShowNOAA - query NOAA for the tide page
         function ShowNOAA() {
             InitializeDates(0);
             window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + dayofmonth + "&endDate=" + year + month + dayofmonth + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit")
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////
+        //  update the next ferry times every minute, but don't requery.  Requery is done by index.html every day.
+        function timerUp() {
+            InitializeDates(0);
+            var periods = JSON.parse(localStorage.getItem("jsontides"));
+            ShowTideData(periods);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////
+        // focus and blur events
+        function focusEvent() {
+            setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+            localStorage.setItem("updateminutes", "0");
+            timerUp();
+        }
+        function blurEvent() {
+            clearInterval(0); // TURN OFF TIMER WHEN FOCUS IS LOST
+        }
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // run the script
+        // run the script which gets the tide data from localStorage and displays it.
+        // tides query is done in index.html.
         InitializeDates(0);
-        createTable();
+        // show the tide data in the jsontides global
         var periods = JSON.parse(localStorage.getItem("jsontides"));
         ShowTideData(periods);
-        var div = document.getElementById('divTable');
-        div.appendChild(table);
-
+        // set up auto refresh.
+        setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+        window.addEventListener("focus", focusEvent);
+        window.addEventListener("blur", blurEvent);
     </script>
 </body>
 </html>

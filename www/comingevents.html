@@ -130,11 +130,8 @@
             var aCE; // CE split array 
 
             CE = localStorage.getItem("comingevents").split("\n");  // break it up into rows
-            if (CE == "") return;
-            // clear table
-            while (table.rows.length > 1) {
-                table.deleteRow(-1);
-            }
+            if (CE == "") return;     
+            clearTable(table); // clear table
             // calculate end month day
             var endmmdd;
             endmmdd = (month + 1) * 100 + dayofmonth;

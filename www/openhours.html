@@ -22,7 +22,16 @@
 <body>
     <div class="app">
         <h1>Open Hours</h1>
-        <p id="openhours"></p>
+        <p>Touch an entry for more information.</p>
+        <table id='table' style="border:thin solid black;border-collapse:collapse">
+            <tr style="background-color:black;color:white">
+                <td>Location</td>
+               
+
+            </tr>
+
+
+        </table>
 
         </div>
 
@@ -37,7 +46,9 @@
        // each string is: name,Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
        //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
         function ShowOpenHours() {
-            var openlist; openlist = "";
+            var openlist;
+            table = document.getElementById("table");
+
             // read open hours from master source
             var openHours = localStorage.getItem("openhours");
             openHours = openHours.split("\n");
@@ -46,7 +57,7 @@
             var i;
             for (i = 0; i < openHours.length-1; i++) {
                 var a; a = openHours[i].split(",");  // parse it into an array
-                openlist += "<p style=font-size:small>" + a[0] + GetOpenStatus(a) + "<br/>";  // name of business
+                openlist = a[0] + GetOpenStatus(a) + "<br/>";  // name of business
                 // loop through Sun - Sat
                 for (j = 0; j < 7; j++) {
                     var opentimetoday, opentime, closetime;
@@ -57,8 +68,12 @@
                         openlist += dayofweekshort[j] + ":" + ShortTime(opentime) + "-" + ShortTime(closetime) + "&nbsp";
                     }
                 } // for loop for each day
-                openlist += "</p>"
-                document.getElementById("openhours").innerHTML = openlist;
+                var row = table.insertRow(-1);
+                var s = '' + a[8] + '';
+                if (a[8] != "") row.onclick = function () { window.open(s); };
+                var cell = row.insertCell(0);
+                cell.innerHTML = openlist + "<br/>";
+                cell.style.border = "thin solid black";
             } // for loop for each business
         }
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +88,7 @@
             var openlist; openlist = "";
             // test for closed
             if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
-                openlist += " <span style='color:darkred'> Closed. </span>";
+                openlist += " <span style='color:red'> Closed. </span>";
                 if (timehhmm < opentime) {
                     openlist += " Opens today at " + ShortTime(opentime);
                     return openlist;

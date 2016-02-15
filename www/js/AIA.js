@@ -171,3 +171,11 @@ function RawTimeDiff(hhmm1, hhmm2) {
     return ftm - tm; // diff in minutes
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+// clear table. Deletes all rows but the first.
+function clearTable(table) {
+    // clear table
+    while (table.rows.length > 1) {
+        table.deleteRow(-1);
+    }
+}

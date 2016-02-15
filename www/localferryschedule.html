@@ -22,9 +22,13 @@
     <button style="width:45%" onclick="ShowFerryLocation();">Ferry Location</button>
      <button   style="width:45%" onclick="ShowFerry();">Ferry Web Site</button>
         <p> </p>
-    <div id="divTable">
-
-    </div>
+        <table id='table' style="border:thin solid black;border-collapse:collapse">
+            <tr style="background-color:black;color:white">
+                <td>Steilacoom</td>
+                <td>| Anderson Island&nbsp</td>
+            </tr>
+        </table>
+        <hr />
     <p id="schdate"></p>
 
     </div>
@@ -35,6 +39,7 @@
 
  
     <script>
+        var table; // pointer to table
 
         // loads the ferry schedule at pierce web page
         function ShowFerrySchedule() {
@@ -61,48 +66,25 @@
                         row1 = table.insertRow(-1);
                         row1col1 = row1.insertCell(0);
 						row1col1.style.border.width = 1;
-                        row1col1.innerHTML = FormatTime(ferrytimesS[i]);
+                        row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
 						row1col1.style.border = "thin solid black";
                         // Anderson Island;
                         row1col2 = row1.insertCell(1);
-                        row1col2.innerHTML = FormatTime(ferrytimesA[i]);
+                        row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
 						row1col2.style.border = "thin solid black";
                     }
                 }
                 return ;
             }
 
-            /////////////////////////////////////////////////////////////////////////////////////////
-            // create the ferry schedule table
-            //  creates the global 'table'
-            function createTable() {
-                var row1, row1col1, row1col2;
-                // Create table.
-                table = document.createElement('table');
-				table.style.border = "thin solid black";
-				table.style.borderCollapse = "collapse";
-                // Insert New Row for table at index '0'.
-                row1 = table.insertRow(0);
-                // Insert New Column for Row1 at index '0'.
-                row1col1 = row1.insertCell(0);
-				row1col1.style.backgroundColor = "black";
-				row1col1.style.color = "white";
-                row1col1.innerHTML = 'Steilacoom';
-                // Insert New Column for Row1 at index '1'.
-                row1col2 = row1.insertCell(1);
-				row1col2.style.backgroundColor = "black";
-				row1col2.style.color = "white";
-                row1col2.innerHTML = '| Anderson Island&nbsp';
-            }
-            
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+           
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // run the script
             var row1, row1col1, row1col2;
             InitializeDates(0);
 
-            //alert("initialize dates done");
-            createTable();
-            //alert("create table done");
+            table = document.getElementById("table");
+            clearTable(table);
 
             row1 = table.insertRow(-1);
             row1col1 = row1.insertCell(0);
