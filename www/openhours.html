@@ -33,19 +33,18 @@
     <script>
        /////////////////////////////////////////////////////////////////////////////////////////
        // ShowOpenHours - shows whether something is open or closed
-        // openHours (global) is array of strings defined in AIA.js, 1 string per business 
+        // openHours (global) is a string consisting of strings (rows) of store hours, separated by /n.
        // each string is: name,Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
        //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
         function ShowOpenHours() {
             var openlist; openlist = "";
             // read open hours from master source
-            //  1. load it from browser persistant store. 
-            //  2. if not there, use the hardwired default.
-            //  3. read latest version from anderson-island.org asynchronously and update persistant store and then rerun loop below if it has changed.
+            var openHours = localStorage.getItem("openhours");
+            openHours = openHours.split("\n");
 
             // loop through the openHours array (each string entry is one business)
             var i;
-            for (i = 0; i < openHours.length; i++) {
+            for (i = 0; i < openHours.length-1; i++) {
                 var a; a = openHours[i].split(",");  // parse it into an array
                 openlist += "<p style=font-size:small>" + a[0] + GetOpenStatus(a) + "<br/>";  // name of business
                 // loop through Sun - Sat

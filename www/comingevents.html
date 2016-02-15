@@ -30,11 +30,11 @@
         <table id='table' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td>DAY</td>
-                <td> DATE</td>
+                <td>&nbsp</td>
                 <td>START</td>
                 <td>END</td>
                 <td>TYPE</td>
-                <td>EVENT</td>
+                <td>&nbsp&nbsp&nbspEVENT&nbsp&nbsp&nbsp</td>
                 <td>LOCATION</td>
                 <td>SPONSOR</td>
                 <td>MORE...</td>
@@ -45,7 +45,7 @@
     </div>
 </body>
 </html>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/AIA.js"></script>
@@ -93,15 +93,12 @@
         //  Store into local cache at 'comingevents'.  monthday of loaded stored into local cache at 'comingeventsloaded'
         function GetComingEvents(){
             // ajax async request
-            //$.get("comingevents.txt", ComingEventsReceived());
             $.ajax({
                 url: "comingevents.txt",
                 success: function (data) {
-                    //alert("Data: " + data + "\nStatus: " + status);
                     localStorage.setItem("comingevents", data);
                     localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
-                    //alert("coming events loaded at " + monthday);
-                    DisplayComingEvents();  // build table
+                    DisplayComingEvents();
                 }
             });
             //alert("comingevents.txt requested");
@@ -110,9 +107,9 @@
         
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // ComingEventsReceived - called after the ajax request succeeds
-        function ComingEventsReceived(data, status) {
-            alert("Data: " + data + "\nStatus: " + status);
-        }
+        //function ComingEventsReceived(data, status) {
+        //    alert("Data: " + data + "\nStatus: " + status);
+        //}
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEvents - display the events in the 'comingevents' cache, with is a copy of the comingevents txt file.
@@ -124,7 +121,7 @@
             var row;
             var col;
             var idayofweek; // 0-6
-            var lastdayofweek=0; // 0-6 of previous row
+            var lastdayofweek=100; // 0-6 of previous row
             var datefmt; // formatted date
             var table // ref to table
             table = document.getElementById("table");
@@ -155,13 +152,24 @@
 
                 var dd = new Date(datefmt + "/" + year); // wont work for next year
                 idayofweek = dd.getDay();
+
                 // add a row for new week. won't work if schedule days are both same day of week
                 if (idayofweek < lastdayofweek) {
                     row = table.insertRow(-1);
-                    for (i = 0; i < 7; i++) {
-                        row.insertCell(i).innerHTML = "";
+                    row.style.backgroundColor = "lightblue";
+                    // test for this week
+                    if ((idayofweek >= dayofweek) && ((dateCE - monthday) <= 6)) {
+                        row.insertCell(0).innerHTML = "This";
+                        row.insertCell(1).innerHTML = "Week";
+                    } else {
+                        row.insertCell(0).innerHTML = "&nbsp";
+                        row.insertCell(1).innerHTML = "&nbsp";
                     }
-                } 
+                    for (i = 2; i < 9; i++) {
+                        row.insertCell(i).innerHTML = "&nbsp";
+                    }
+                }
+
                 // add a new table row
                 row = table.insertRow(-1);
                 row.style.border = "solid thin black";
@@ -238,12 +246,12 @@
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         // script execution starts here
-        $(document).ready(function(){
+        
             InitializeDates(0);
             DisplayComingEvents();  //display stored data in case we can't successfully reload the comingevents cache
             var comingeventloaded = localStorage.getItem("comingeventsloaded");
             if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
 
-        })
+        
 
     </script>

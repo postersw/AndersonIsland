@@ -324,7 +324,7 @@
         // License as of 2/8/16 is for 750 hits/day for free.
         function getForecast() {
             $.ajax({
-                url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=today&to=+48hours',
                 dataType: 'jsonp',
                 success: function (json) {
                     if (json.success == true) {
@@ -338,55 +338,65 @@
             });  // end of ajax call
         }  // end of function
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
-        // getTides - uses stored data from tides page
-        function getTides() {
-            document.getElementById("tides").innerHTML = localStorage.getItem("nextTides");
-            //alert(localStorage.getItem("nextTides"));
-        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
         // License as of 2/8/16 is for 750 hits/day for free.
+        function ShowNextTides() {
+            var hilow;
+            var nextTides;
+            var oldtide = -1;
+            var json = localStorage.getItem("jsontides");
+            if (json === null) return;
+            var periods = JSON.parse(json); // parse it
+            // roll through the reply in jason.response.periods[i]
+            var i;
+            for (i = 0; i < periods.length; i++) {
+                var thisperiod = periods[i];
+                var m = Number(thisperiod.dateTimeISO.substring(5, 7));
+                var d = Number(thisperiod.dateTimeISO.substring(8, 10));
+                var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
+                var mi =Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
+                var tidehhmm = ((h) * 100) + (mi);
+                if (thisperiod.type == 'h') hilow = '&nbsphigh';
+                else hilow = '&nbsplow';
+                // if tide is past, color row gray
+                if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
+                    oldtide = 0;
+                } else if (oldtide != 1) {
+                    nextTides = "Tides: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    oldtide = 1;
+                } else if (oldtide == 1) {  // save next tide
+                    nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    document.getElementById("tides").innerHTML = nextTides;
+                    return;
+                }
+            }
+         }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // getTideData - call the aeri api and store the response as a local storage string
+        //
         function getTideData() {
             var hilow;
             var nextTides;
             var oldtide = -1;
             $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=-10hours&to=+14hours',
+                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=-20hours&to=+48hours',
                 dataType: 'jsonp',
                 success: function (json) {
 
                     if (json.success == true) {
-                        // roll through the reply in jason.response.periods[i]
-                        var i;
-                        for (i = 0; i < json.response.periods.length; i++) {
-                            var m = json.response.periods[i].dateTimeISO.substring(5, 7);
-                            var d = json.response.periods[i].dateTimeISO.substring(8, 10);
-                            var h = json.response.periods[i].dateTimeISO.substring(11, 13); // tide hour
-                            var mi = json.response.periods[i].dateTimeISO.substring(14, 16);  // time min
-                            var tidehhmm = (Number(h) * 100) + Number(mi);
-                            if (json.response.periods[i].type == 'h') hilow = '&nbsphigh';
-                            else hilow = '&nbsplow';
-                            // if tide is past, color row gray
-                            if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
-                                oldtide = 0;
-                            } else if ((oldtide == 0)) {
-                                nextTides = "Tides: " + hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
-                            } else if (oldtide == 1) {  // save next tide
-                                nextTides += hilow + " " + json.response.periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
-                                localStorage.setItem("nextTides", nextTides); // save tide
-                                getTides(); // display it
-                                return;
-                            }
-                        }
-                    }
-                    else {
+                        localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json structure
+                        localStorage.setItem("tidestime", monthday);
+                        ShowNextTides();
+                    } else {
                     }
                 }
             });
         }
 
+      
         ////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayNextEvent
 
@@ -397,7 +407,9 @@
             var datefmt; // formatted date
             var iCE; // iterator through CE
             var aCE; // CE split array 
-            CE = localStorage.getItem("comingevents").split("\n");  // break it up into rows
+            CE = localStorage.getItem("comingevents");
+            if(CE===null)return;
+            CE = CE.split("\n");  // break it up into rows
             if (CE == "") return;
             // roll through the next 30 days
             for (iCE = 0; iCE < CE.length; iCE++) {
@@ -438,6 +450,7 @@
         //  Load from server using ajax async request.
         //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
         function GetDailyCache() {
+            getTideData();
             // ajax async request
             $.ajax({
                 url: "dailycache.txt",
@@ -497,9 +510,9 @@
         //  update the next ferry times every minute
         function timerUp() {
             updateMinutes = Number(localStorage.getItem("updateminutes"));
-            // everything you want to do every minute.
+            // everything you want to do every minute. These all go against localStorage strings, so no query
             WriteNextFerryTimes();
-            getTides(); // does not query.
+            ShowNextTides(); // .
             ShowOpenHours();
 
             // everything you want to do every 5 minutes
@@ -514,7 +527,6 @@
 
             // everything you want to do every 30 minutes
             if ((updateMinutes % 30) == 0) {
-                getTideData();
                 getCurrentWeather();
             }
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
@@ -552,7 +564,7 @@
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         getCurrentWeather(); // gets weather async
         getForecast(); // gets forecast async
-        getTideData(); // gets tides async
+        ShowNextTides(); // gets tides async
 
         //reload the 'dailycache' cache if the day has changed.
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
