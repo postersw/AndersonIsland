@@ -26,6 +26,7 @@
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" /> <!--device-dpi" />-->
+<link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Anderson Island Assistant</title>
     <style>
@@ -38,6 +39,8 @@
         }
         li {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;padding-left:6px}
     </style>
+
+
 </head>
 <body>
     <div class="app">
@@ -86,8 +89,8 @@
             <span id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</span>
         </li>
 
-     <li style="background-color:beige" onclick="window.open('openhours.html');">
-            <span style="font-size:18px;color:darkslateblue;">OPEN HOURS</span>
+     <li style="background-color:lightyellow" onclick="window.open('openhours.html');">
+            <span style="font-size:18px;color:darkorange;">OPEN HOURS</span>
              <span id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
             </span>
          </li>
@@ -324,7 +327,7 @@
         // License as of 2/8/16 is for 750 hits/day for free.
         function getForecast() {
             $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=today&to=+48hours',
+                url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
                 dataType: 'jsonp',
                 success: function (json) {
                     if (json.success == true) {
@@ -364,7 +367,7 @@
                 if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                     oldtide = 0;
                 } else if (oldtide != 1) {
-                    nextTides = "Tides: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    nextTides = "Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
                     oldtide = 1;
                 } else if (oldtide == 1) {  // save next tide
                     nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
@@ -402,7 +405,7 @@
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayComingEvents - display the events in the 'comingevents' structure
+        // DisplayComingEvents - display the events in the 'comingevents'  local storage object
         function DisplayNextEvents(){
             var datefmt; // formatted date
             var iCE; // iterator through CE
@@ -417,9 +420,11 @@
                 //  advance schedule date to today
                 if(Number(aCE[0]) < monthday ) continue; // not there yet
                 if(Number(aCE[0]) == monthday && Number(aCE[2]) < timehhmm ) continue; // not there yet
-                // fount it
-                datefmt = (monthday / 100).toFixed(0) + "/" + (monthday % 100);
-                return dayofweekshort[dayofweek] + " " + datefmt + " " + ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]) + " " + aCE[4] + " at " + aCE[5];
+                // found it
+                if (Number(aCE[0]) == monthday) datefmt = "Today";
+                else if (GetDayofWeek(aCE[0]) > dayofweek) { datefmt = dayofweekshort[GetDayofWeek(aCE[0])]; }
+                else datefmt = dayofweekshort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(3, 5);
+                return datefmt + " " + ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]) + " " + aCE[4] + " at " + aCE[5];
             }
         }
 

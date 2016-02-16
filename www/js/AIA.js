@@ -102,6 +102,12 @@ function InitializeDates(dateincr) {
 
 }
 
+///////////////////////////////////////////////////////////////////////////////////////
+// GetDayofWeek - returns 0-6 for an arbitrary date in mmdd format. this year assumed.
+function GetDayofWeek(mmdd) {
+    var d = new Date(year, Number(mmdd.substring(0, 2)) -1, Number(mmdd.substring(2, 4) ));
+    return d.getDay();
+}
 /////////////////////////////////////////////////////////////////////////////////////////
 // return true if a valid ferry time, else false.
 // the crazy special rules go here.
