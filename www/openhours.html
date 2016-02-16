@@ -57,7 +57,9 @@
             var i;
             for (i = 0; i < openHours.length-1; i++) {
                 var a; a = openHours[i].split(",");  // parse it into an array
-                openlist = a[0] + GetOpenStatus(a) + "<br/>";  // name of business
+                openlist = a[0] + GetOpenStatus(a) + "<br/>&nbsp&nbsp&nbsp";  // name of business
+                var phonenumber = a[0].split("(");
+                phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
                 // loop through Sun - Sat
                 for (j = 0; j < 7; j++) {
                     var opentimetoday, opentime, closetime;
@@ -70,12 +72,15 @@
                 } // for loop for each day
                 var row = table.insertRow(-1);
                 var s = '' + a[8] + '';
-                if (a[8] != "") row.onclick = function () { window.open(s); };
+                //if (a[8] != "") row.onclick = function () { window.open(s); };
                 var cell = row.insertCell(0);
-                cell.innerHTML = openlist + "<br/>";
+                cell.innerHTML = openlist + "<br/>" +
+                    "<button style='width:45%;' href=\"tel\:" + phonenumber[1] + "\">Call " + phonenumber[1] + "<button/>&nbsp&nbsp" +
+                    "<button style='width:45%;' onclick='window.open(\"" + a[8] + "\")'> Web Site<button/><br/>";
                 cell.style.border = "thin solid black";
             } // for loop for each business
         }
+
         ///////////////////////////////////////////////////////////////////////////////////////
         // GetOpenStatus - determine if business is open & reeturn string
         //  entry: a = array of openTime for 1 business

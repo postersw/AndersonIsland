@@ -18,7 +18,7 @@
 </head>
 <body>
     <div class="app">
-        <h1>COMING EVENTS</h1>
+        <h1 id="H1">COMING EVENTS</h1>
           <p>CALENDARS:
         <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Community Club</button>
         <button onclick="window.open('http://rivieracommunityclub.com/event-calendar');">Riviera</button>
@@ -112,24 +112,26 @@
         //}
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayComingEvents - display the events in the 'comingevents' cache, with is a copy of the comingevents txt file.
-        //  which MUST be sorted.
-        // data is in localStorage "comingevents"
-        function DisplayComingEvents(){
+        // DisplayComingEvents - display the events in the CE string, which is a copy of the comingevents txt file
+        //  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
+        // or 'comingactivities' localStorage items. 
+        // CE is a single big string containing multiple lines, so we split the string by \n.
+        function DisplayComingEvents(CE){
 
             var i;
             var row;
             var col;
             var idayofweek; // 0-6
-            var lastdayofweek=100; // 0-6 of previous row
+            var lastdayofweek = 100; // 0-6 of previous row
+            var previouseventdate; // date of previous event
             var datefmt; // formatted date
             var table // ref to table
             table = document.getElementById("table");
             var iCE; // iterator through CE
             iCE = 0;
             var aCE; // CE split array 
-
-            CE = localStorage.getItem("comingevents").split("\n");  // break it up into rows
+            if (CE == null) return;
+            CE = CE.split("\n");  // break it up into rows
             if (CE == "") return;     
             clearTable(table); // clear table
             // calculate end month day
@@ -169,12 +171,17 @@
 
                 // add a new table row
                 row = table.insertRow(-1);
-                row.style.border = "solid thin black";
+                row.style.border = "solid thin gray";
                 row.style.border.width = 1;
                 if (dateCE == monthday && Number(aCE[2]) > (timehhmm + 10)) row.style.fontWeight="bold"; // end time not reached.
-                col = row.insertCell(0); col.innerHTML = dayofweekshort[idayofweek]; // day of week
-                //col.style.border = "solid thin black";
-                col = row.insertCell(1); col.innerHTML = datefmt; // date
+                col = row.insertCell(0);
+                if (aCE[0] != previouseventdate) col.innerHTML = dayofweekshort[idayofweek]; // day of week
+                else col.innerHTML = "";
+                col = row.insertCell(1);
+                if (aCE[0] != previouseventdate)  col.innerHTML = datefmt; // date
+                else col.innerHTML = "";
+                //if ((iCE<CE.length-1) && (aCE[0] == CE[iCE + 1].substring(0, 4))) row.style.border = "solid thin lightgray";
+
                 col = row.insertCell(2); col.innerHTML = ShortTime(aCE[1]);  // start
                 col.style.textAlign = "right";
                 col = row.insertCell(3); col.innerHTML = ShortTime(aCE[2]); // end
@@ -190,6 +197,7 @@
                 if (aCE.length >= 8) col.innerHTML = aCE[7];
                 else col.innerHTML = ""; // more
                 lastdayofweek = idayofweek;
+                previouseventdate = aCE[0];
             } // end loop through CE
         }
 
@@ -243,11 +251,22 @@
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         // script execution starts here
+        //
+        // Note the parameter 'activities' returns activities, otherwise it returns events
         
-            InitializeDates(0);
-            DisplayComingEvents();  //display stored data in case we can't successfully reload the comingevents cache
-            var comingeventloaded = localStorage.getItem("comingeventsloaded");
-            if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
+        InitializeDates(0);
+        if (location.href.indexOf("activities") == -1) {
+            DisplayComingEvents(localStorage.getItem("comingevents"));  //display stored data in case we can't successfully reload the comingevents cache
+
+        } else {
+            document.getElementById("H1").innerHTML = "COMING ACTIVITIES"
+            DisplayComingEvents(localStorage.getItem("comingactivities"));  //display stored data in case we can't successfully reload the comingevents cache\
+            document.title = "Activities";
+        }
+
+        // don't bother to reload them because the index page caches them and refreshes them every night;
+        //var comingeventloaded = localStorage.getItem("comingeventsloaded");
+        //if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
 
         
 

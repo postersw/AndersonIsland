@@ -108,6 +108,22 @@ function GetDayofWeek(mmdd) {
     var d = new Date(year, Number(mmdd.substring(0, 2)) -1, Number(mmdd.substring(2, 4) ));
     return d.getDay();
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// DateDiff - return difference in days between 2 dates in our funky mmdd format (0101 - 1231)
+//  e.g. DateDiff(0122, 0102) = 20.  Handles rollover for a single year only.
+function DateDiff(mmdd1, mmdd2) {
+    var dayspermonth = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]; // cumulative days in year
+    if (mmdd1 == mmdd2) return 0;
+    var m1 = Math.floor(mmdd1 / 100);
+    var m2 = Math.floor(mmdd2 / 100);
+    var d1 = mmdd1 % 100;
+    var d2 = mmdd2 % 100;
+    var r = dayspermonth[m1] + d1 - dayspermonth[m2] - d2;
+    if (r < 0) r += 365;
+    return r;   
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // return true if a valid ferry time, else false.
 // the crazy special rules go here.

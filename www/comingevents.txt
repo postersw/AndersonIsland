@@ -4,6 +4,59 @@
 0217;1900;2100;M;Park Board;Comm Club;Parks
 0223;1000;1200;M;AICC Board Meeting;Comm Club;Community Club;
 0223;1200;1300;M;AICC General Meeting;Comm Club;Community Club
+0227;1030;1200;M;Rivera BOT;Rivera;Rivera
 0227;1800;2000;S;AIHS Potluck;Comm Club;AIHS
 0228;1600;1900;E;Oscars with Tapas Dinner;Lakeshore Restaurant;Riviera
 0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Restaurant;Rivera;$7 cover. RSVP 884-3344
+ACTIVITIES
+0211;1300;1500;A;Art Club;MSR @Rivera;Rivera
+0215;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0215;1000;1100;A;Line Dancing;Comm Club;Community Club
+0215;1830;1930;A;Zumba;MSR @Rivera;Rivera
+0216;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0216;1830;1930;A;Life Skills;MSR @Rivera;Rivera
+0217;1000;1100;A;Line Dancing;Comm Club;Community Club
+0217;1100;1200;A;Laughter Yoga;Community Club
+0217;1100;1500;A;Pierce County Library;Comm Club;Community Club
+0217;1830;1930;A;Zumba;MSR @Rivera;Rivera
+0217;1700;1900;A;Bingo;Lakeshore Rest;Rivera
+0218;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0218;1000;1500;A;AICC Crafts;Comm Club;Community Club
+0218;1300;1500;A;Art Club;MSR @Rivera;Rivera
+0219;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0219;1000;1400;A;Share and Care;Comm Club;Community Club
+0222;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0222;1000;1100;A;Line Dancing;Comm Club;Community Club
+0223;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0224;1100;1200;A;Laughter Yoga;Community Club
+0224;1100;1500;A;Pierce County Library;Comm Club;Community Club
+0224;1700;1900;A;Bingo;Lakeshore Rest;Rivera
+0224;1000;1100;A;Line Dancing;Comm Club;Community Club
+0225;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0225;1000;1500;A;AICC Crafts;Comm Club;Community Club
+0225;1300;1500;A;Art Club;MSR @Rivera;Rivera
+0226;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0226;1000;1400;A;Share and Care;Comm Club;Community Club
+0229;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0229;1000;1100;A;Line Dancing;Comm Club;Community Club
+0229;1830;1930;A;Zumba;MSR @Rivera;Rivera
+0301;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0301;1830;1930;A;Life Skills;MSR @Rivera;Rivera
+0302;1000;1100;A;Line Dancing;Comm Club;Community Club
+0302;1100;1200;A;Laughter Yoga;Community Club
+0302;1100;1500;A;Pierce County Library;Comm Club;Community Club
+0302;1830;1930;A;Zumba;MSR @Rivera;Rivera
+0302;1700;1900;A;Bingo;Lakeshore Rest;Rivera
+0303;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0303;1000;1500;A;AICC Crafts;Comm Club;Community Club
+0303;1300;1500;A;Art Club;MSR @Rivera;Rivera
+0304;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0304;1000;1400;A;Share and Care;Comm Club;Community Club
+0307;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0307;1000;1100;A;Line Dancing;Comm Club;Community Club
+0309;1000;1100;A;Line Dancing;Comm Club;Community Club
+0309;1100;1200;A;Laughter Yoga;Community Club
+0309;1100;1500;A;Pierce County Library;Comm Club;Community Club
+0310;0900;1000;A;Yoga;MSR @Rivera;Rivera
+0310;1000;1500;A;AICC Crafts;Comm Club;Community Club
+0311;1000;1400;A;Share and Care;Comm Club;Community Club

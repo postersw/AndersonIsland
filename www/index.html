@@ -75,7 +75,7 @@
       <li style="background-color:honeydew"  onclick="ShowBurnBan();"> 
             <span style="font-size:18px;color:darkgreen;margin-left:0%">
             BURN BAN </span>
-         <span id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">No Burn Ban</span>
+         <span id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Click for burn ban status.</span>
          </li>
 
         <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?events');">
@@ -85,7 +85,7 @@
         </li>
         <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?activities');">
         <span style="font-size:18px;color:darkmagenta;">
-            ACTIVITY </span>
+            ACTIVITIES </span>
             <span id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</span>
         </li>
 
@@ -405,12 +405,12 @@
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayComingEvents - display the events in the 'comingevents'  local storage object
-        function DisplayNextEvents(){
+        // DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' local storage object
+        //  object consists of rows (separated by /n) 1 for each event or activity
+        function DisplayNextEvents(CE){
             var datefmt; // formatted date
             var iCE; // iterator through CE
             var aCE; // CE split array 
-            CE = localStorage.getItem("comingevents");
             if(CE===null)return;
             CE = CE.split("\n");  // break it up into rows
             if (CE == "") return;
@@ -432,7 +432,7 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////
         //  GetComingEvents - retrieves the coming events into the comingevents local storage object
         //  Load from server using ajax async request.
-        //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
+        //  Store into local cache at 'comingevents' and 'comingactivities'  monthday of load stored into local cache at 'comingeventsloaded'
         function GetComingEvents() {
             // ajax async request
             //$.get("comingevents.txt", ComingEventsReceived());
@@ -440,10 +440,14 @@
                 url: "comingevents.txt",
                 success: function (data) {
                     //alert("Data: " + data + "\nStatus: " + status);
-                    localStorage.setItem("comingevents", data);
+                    var i = data.indexOf("ACTIVITIES");
+                    if(i==0) i=data.length; 
+                    localStorage.setItem("comingevents", data.substring(0, i));
+                    if(i<data.length) localStorage.setItem("comingactivities", data.substring(i+11, data.length));
                     localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
                     //alert("coming events loaded at " + monthday);
-                    $("#nextevent").html(DisplayNextEvents());
+                    $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
+                    $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
                 }
             });
             //alert("comingevents.txt requested");
@@ -570,9 +574,11 @@
         ShowOpenHours(); //  open hours
 
         // display next event. reload the 'comingevent' cache if the day has changed.
-        $("#nextevent").html(DisplayNextEvents());
+        $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
+        $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
         var comingeventloaded = localStorage.getItem("comingeventsloaded");
         if (comingeventloaded==null || comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
+        GetComingEvents();
 
         document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
