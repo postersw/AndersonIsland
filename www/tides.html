@@ -223,7 +223,7 @@
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
-        //  update the next ferry times every minute, but don't requery.  Requery is done by index.html every day.
+        //  update the remaining tide times every minute, but don't requery.  Requery is done by index.html every day.
         function timerUp() {
             InitializeDates(0);
             var periods = JSON.parse(localStorage.getItem("jsontides"));

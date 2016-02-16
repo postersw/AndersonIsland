@@ -455,7 +455,6 @@
         //  Load from server using ajax async request.
         //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
         function GetDailyCache() {
-            getTideData();
             // ajax async request
             $.ajax({
                 url: "dailycache.txt",
@@ -512,27 +511,37 @@
             }
         }
         /////////////////////////////////////////////////////////////////////////////////////
-        //  update the next ferry times every minute
+        //  update all data on a regular basis
+        //  also redisplay the next ferry times every minute
         function timerUp() {
             updateMinutes = Number(localStorage.getItem("updateminutes"));
             // everything you want to do every minute. These all go against localStorage strings, so no query
+
             WriteNextFerryTimes();
             ShowNextTides(); // .
             ShowOpenHours();
+
+            // reload daily stuff - ferry schedule, store hours, coming events, tides
+            var dailycacheloaded = localStorage.getItem("dailycacheloaded");
+            if ((dailycacheloaded!=null) && (Number(dailycacheloaded) != monthday)) {
+                GetDailyCache();  // don't reload data on same day
+                GetComingEvents();
+                getTideData();
+            }
 
             // everything you want to do every 5 minutes
             if ((updateMinutes % 5) == 0) {
                 DisplayNextEvents();
             }
 
-            // everything you want to do every 20 minutes
-            if ((updateMinutes % 20)==0) {
+            // everything you want to do every 15 minutes
+            if ((updateMinutes % 15)==0) {
                 getCurrentWeather();
             }
 
             // everything you want to do every 30 minutes
             if ((updateMinutes % 30) == 0) {
-                getCurrentWeather();
+                getForecast();
             }
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
             localStorage.setItem("updateminutes", updateMinutes);
@@ -563,13 +572,13 @@
         // display next event. reload the 'comingevent' cache if the day has changed.
         $("#nextevent").html(DisplayNextEvents());
         var comingeventloaded = localStorage.getItem("comingeventsloaded");
-        if (comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
+        if (comingeventloaded==null || comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
 
         document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         getCurrentWeather(); // gets weather async
         getForecast(); // gets forecast async
-        ShowNextTides(); // gets tides async
+        getTideData(); // gets tides async
 
         //reload the 'dailycache' cache if the day has changed.
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
