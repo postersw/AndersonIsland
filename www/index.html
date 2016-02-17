@@ -49,7 +49,7 @@
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Touch an entry for more information.</span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <ul style="list-style-type:none;margin:0;padding:0">
-        <li style="background-color:azure" onclick="window.open('localferryschedule.html');" >
+        <li style="background-color:azure" onclick="window.open('localferryschedule.html', '_parent');" >
             <span style="font-size:18px;color:darkblue;margin-left:0%">FERRY </span>
             <span id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px">Next : </span>
             </li>
@@ -126,11 +126,13 @@
  </li>
           </ul>
 
-    <div id="deviceready" class="blink">
+    <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
         <p class="event listening">Connecting to Device</p>
         <p class="event received">Device is Ready</p>
     </div>
 </div>
+
+
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
@@ -517,11 +519,13 @@
         }
         /////////////////////////////////////////////////////////////////////////////////////
         //  update all data on a regular basis
-        //  also redisplay the next ferry times every minute
+        //  also redisplay the next ferry times & tides & open hours every minute
+        //  update current weather every 15 minutes. update forecast every 30 minutes.
         function timerUp() {
             updateMinutes = Number(localStorage.getItem("updateminutes"));
-            // everything you want to do every minute. These all go against localStorage strings, so no query
 
+            // everything you want to do every minute. These all go against localStorage strings, so no query
+            InitializeDates(0);
             WriteNextFerryTimes();
             ShowNextTides(); // .
             ShowOpenHours();
@@ -569,8 +573,8 @@
     <script type="text/javascript">
         app.initialize();
         InitializeDates(0);
-        updateMinutes = 0;
-        localStorage.setItem("updateminutes", "0");
+        updateMinutes = 1;
+        localStorage.setItem("updateminutes", "1"); // start at 1 so the 1st timer call does not run stuff, but the focus event does
         WriteNextFerryTimes();
         ShowOpenHours(); //  open hours
 
@@ -578,7 +582,7 @@
         $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
         $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
         var comingeventloaded = localStorage.getItem("comingeventsloaded");
-        if (comingeventloaded==null || comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
+        //if (comingeventloaded==null || comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
         GetComingEvents();
 
         document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
