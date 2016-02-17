@@ -93,7 +93,7 @@
                 success: function (json) {
                     
                     if (json.success == true) {
-                        ShowTideData(json.response.periods);
+                        ShowTideData(json.response.periods, false);
                     }
                     else {
                         alert('Could not retrieve tide information: ' + json.error.description);
@@ -106,7 +106,8 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // ShowTideData - show the data in the periods array
         //  entry periods = array of data returned by aeris. Each array entry is one tide period.
-        function ShowTideData(periods) {
+        //        showcurrent = true to show current tides, else false
+        function ShowTideData(periods, showcurrent) {
 
             var table = document.getElementById("table");
             clearTable(table);
@@ -144,30 +145,33 @@
                 row1col1.style.border = "thin solid black";
                 if (periods[i].type == 'h') hilow = '&nbsphigh';
                 else hilow = '&nbsplow';
-                // if tide is past, color row gray
-                if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
-                    row1.style.color = "lightgray";
-                    if (periods[i].type == 'h') currentTide = "Outgoing since ";  // incoming outgoing flag
-                    else currentTide = "Incoming since ";
-                    currentTide += ShortTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
-                    oldtideheight = Number(periods[i].heightFT);
-                    oldtidetime = tidehhmm;
-                    oldtide = 0;
-                } else if ((oldtide < 1)) {
 
-                    // this is the next tide, bold it and calculate approx height                             
-                    row1.style.fontWeight = "bold";
-                    oldtide = 1;
-                    // calculate current tide height
-                    var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                    currentTide += "<br/>Approximate height: " + tideheight.toFixed(1) + " ft.";
-                    // calculate time till next tide                                 
-                    currentTide += "<br/>" + hilow + " tide will be " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
-                    nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
-                } else if (oldtide == 1) {  // save next tide
-                    oldtide = 2;
-                    nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
-                    localStorage.setItem("nextTides", nextTides); // save tide
+                // if tide is past, color row gray and show current tide info
+                if (showcurrent) {
+                    if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
+                        row1.style.color = "lightgray";
+                        if (periods[i].type == 'h') currentTide = "Outgoing since ";  // incoming outgoing flag
+                        else currentTide = "Incoming since ";
+                        currentTide += ShortTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
+                        oldtideheight = Number(periods[i].heightFT);
+                        oldtidetime = tidehhmm;
+                        oldtide = 0;
+                    } else if ((oldtide < 1)) {
+
+                        // this is the next tide, bold it and calculate approx height                             
+                        row1.style.fontWeight = "bold";
+                        oldtide = 1;
+                        // calculate current tide height
+                        var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
+                        currentTide += "<br/>Approximate height: " + tideheight.toFixed(1) + " ft.";
+                        // calculate time till next tide                                 
+                        currentTide += "<br/>" + hilow + " tide will be " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                        nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    } else if (oldtide == 1) {  // save next tide
+                        oldtide = 2;
+                        nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                        localStorage.setItem("nextTides", nextTides); // save tide
+                    }
                 }
 
                 // type
@@ -205,9 +209,6 @@
             if (isNaN(m) || isNaN(d) || (m < 1) || (m > 12) || (d < 1) || (d > 31)) {
                 alert("Invalid date. An example of a valid date is: 1/22");
                 return;
-            }            // clear table
-            while (table.rows.length > 1) {
-                table.deleteRow(-1);
             }
             // get new data
             tidedate = tidedate + "/" + year;
@@ -248,7 +249,7 @@
         InitializeDates(0);
         // show the tide data in the jsontides global
         var periods = JSON.parse(localStorage.getItem("jsontides"));
-        ShowTideData(periods);
+        ShowTideData(periods, true );
         // set up auto refresh.
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         window.addEventListener("focus", focusEvent);

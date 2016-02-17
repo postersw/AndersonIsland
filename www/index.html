@@ -422,6 +422,7 @@
                 if(Number(aCE[0]) == monthday && Number(aCE[2]) < timehhmm ) continue; // not there yet
                 // found it
                 if (Number(aCE[0]) == monthday) datefmt = "Today";
+                else if (Number(aCE[0]) == (monthday+1)) datefmt = "Tomorrow";
                 else if (GetDayofWeek(aCE[0]) > dayofweek) { datefmt = dayofweekshort[GetDayofWeek(aCE[0])]; }
                 else datefmt = dayofweekshort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(3, 5);
                 return datefmt + " " + ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]) + " " + aCE[4] + " at " + aCE[5];
