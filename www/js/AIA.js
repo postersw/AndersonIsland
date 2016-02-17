@@ -68,7 +68,9 @@ function InitializeDates(dateincr) {
     }
     dayofweek = d.getDay();  // day of week in 0-6
     letterofweek = "0123456".charAt(dayofweek); // letter for day of week
-    timehhmm = d.getHours() * 100 + d.getMinutes();  // hhmm in 24 hour format
+    timehh = d.getHours();
+    timemm = d.getMinutes();
+    timehhmm = timehh * 100 + timemm;  // hhmm in 24 hour format
     month = d.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
     dayofmonth = d.getDate(); // day of month 1-31
     monthday = month * 100 + dayofmonth;

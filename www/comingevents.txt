@@ -28,10 +28,10 @@ ACTIVITIES
 0222;0900;1000;A;Yoga;MSR @Rivera;Rivera
 0222;1000;1100;A;Line Dancing;Comm Club;Community Club
 0223;0900;1000;A;Fitness Class;MSR @Rivera;Rivera
+0224;1000;1100;A;Line Dancing;Comm Club;Community Club
 0224;1100;1200;A;Laughter Yoga;Community Club
 0224;1100;1500;A;Pierce County Library;Comm Club;Community Club
 0224;1700;1900;A;Bingo;Lakeshore Rest;Rivera
-0224;1000;1100;A;Line Dancing;Comm Club;Community Club
 0225;0900;1000;A;Yoga;MSR @Rivera;Rivera
 0225;1000;1500;A;AICC Crafts;Comm Club;Community Club
 0225;1300;1500;A;Art Club;MSR @Rivera;Rivera
