@@ -45,26 +45,26 @@
 <body>
     <div class="app">
         <div data-role="content"></div>
-        <h1 style="font-size:24px;margin-bottom:0px">Anderson Island Assistant <button onclick="LocalMenu();">&#8801</button></h1>
+        <h1 style="font-size:18px;margin-bottom:0px">Anderson Island Assistant <button onclick="LocalMenu();">&#8801</button></h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Touch an entry for more information.</span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <ul style="list-style-type:none;margin:0;padding:0">
         <li style="background-color:azure" onclick="window.open('localferryschedule.html', '_parent');" >
-            <span style="font-size:18px;color:darkblue;margin-left:0%">FERRY </span>
+            <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY </span>
             <span id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px">Next : </span>
             </li>
         <li style="background-color:azure" onclick="ShowFerryCams();" >
-            <span style="font-size:18px;color:darkblue;margin-left:0%">FERRY WEBCAMS </span>
+            <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY WEBCAMS </span>
         </li>
 
           <li style="background-color:lightcyan"  onclick="ShowTides();"> 
-            <span style="font-size:18px;color:darkblue;margin-left:0%">
+            <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
             TIDES </span>
          <span id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</span>
          </li>
 
      <li style="background-color:honeydew"  onclick="ShowWeather();"> 
-            <span style="font-size:18px;color:darkgreen;margin-left:0%">
+            <span style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
             WEATHER </span>
          <span id="weather" style="font-size:small;margin-top:4px;margin-bottom:0px">Current weather:</span> 
          <p id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </p>
@@ -73,40 +73,40 @@
 
 
       <li style="background-color:honeydew"  onclick="ShowBurnBan();"> 
-            <span style="font-size:18px;color:darkgreen;margin-left:0%">
+            <span style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
             BURN BAN </span>
          <span id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Click for burn ban status.</span>
          </li>
 
-        <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?events');">
-        <span style="font-size:18px;color:darkmagenta;">
+        <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?events', '_parent');">
+        <span style="font-size:18px;font-weight:bold;color:darkmagenta;">
             EVENTS </span>
             <span id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Event:</span>
         </li>
-        <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?activities');">
-        <span style="font-size:18px;color:darkmagenta;">
+        <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?activities', '_parent');">
+        <span style="font-size:18px;font-weight:bold;color:darkmagenta;">
             ACTIVITY </span>
             <span id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</span>
         </li>
 
-     <li style="background-color:lightyellow" onclick="window.open('openhours.html');">
-            <span style="font-size:18px;color:darkorange;">OPEN HOURS</span>
+     <li style="background-color:lightyellow" onclick="window.open('openhours.html', '_parent');">
+            <span style="font-size:18px;font-weight:bold;color:darkorange;">OPEN HOURS</span>
              <span id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
             </span>
          </li>
 
-         <li style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html')">  
-            <span style="font-size:18px;color:darkred">
+         <li style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html', '_parent')">  
+            <span style="font-size:18px;font-weight:bold;color:darkred">
              EMERGENCY CONTACTS </span>
          </li>
 
         <li style="background-color:skyblue" onclick="ShowMap();"> 
-        <span style="font-size:18px;color:darkblue;margin-left:0%">
+        <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
             MAP </span>             
         </li>
 
           <li >
-             <span style="font-size:18px;color:black">ISLAND INFORMATION </span><br />
+             <span style="font-size:18px;font-weight:bold;color:black">ISLAND INFORMATION </span><br />
 
             <button style="width:100%;padding:6px" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
@@ -123,8 +123,11 @@
        </li>
           <li>
             <button style="width:100%" onclick="window.open('aboutus.html');">About Us</button><br />
- </li>
-          </ul>
+         </li>
+     </ul>
+        <p id="updatetime" style="font-size:x-small">Data update time.</p>
+        <p id="reloadtime" style="font-size:x-small">Data reload time.</p>
+
 
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
         <p class="event listening">Connecting to Device</p>
@@ -153,7 +156,7 @@
         //var thanksgiving;
         //var holiday;  // true if  holiday
         var updateMinutes; // minutes since last update
-
+        var forceCacheReload; // true to force a cache reload
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
@@ -165,18 +168,18 @@
         //    //window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
         //}
         function ShowFerryCams() {
-            window.open("ferrywebcams.html");
+            window.open("ferrywebcams.html", '_parent');
         }
         //function ShowComingEvents() {
         //    window.open("comingevents.html"); //("http://www.andersonislandcc.org/calendar/");
         //}
         // query for tide times at noaa
         function ShowTides() {
-             window.open("tides.html");
+            window.open("tides.html", '_parent');
         }
         // query for tide times at noaa
         function ShowWeather() {
-            window.open("aiweather.html");
+            window.open("aiweather.html", '_parent');
         }
         function ShowMap() {
             window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4")
@@ -237,13 +240,15 @@
             var lftA = localStorage.getItem("ferrytimesA");
             if (lftA === null) lftA = "615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y";
 
-            v = v + FindNextFerryTime(lftS) + "; AI: " + FindNextFerryTime(lftA);
+            v = v + FindNextFerryTime(lftS) + "</br>&nbsp&nbsp&nbsp&nbsp Next AI: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v;
 
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // ShowOpenHours - shows whether something is open or closed
+        // ShowOpenHours - shows whether something is open or closed. 
+        //  exit: returns a display string with the open hours for all businesses.
+        //      if not data, forceCacheReload = true
         function ShowOpenHours() {
             // openHours format is array of strings, 1 string per business Defined in AIA.js.
             // each string is: name (phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
@@ -254,10 +259,13 @@
             var store;
             var opentimetoday, opentime, closetime;
             var openHours;
-            if (localStorage.getItem("openhours")===null) return;
+
             openHours = localStorage.getItem("openhours");
-            if(openHours === null) return;
-            if(openHours == "") return;
+            if (openHours === null) {
+                forceCacheReload = true;
+                return "";
+            }
+            if(openHours == "") return "";
             openHours = openHours.split("\n");
             openlist = "";
 
@@ -313,6 +321,7 @@
                         var r = json.response.ob;
                         var current =  r.tempF + "&degF, " + r.weather + ", " +  r.windDir + " " + r.windMPH + " mph " +
                             ", " + r.precipIN + " precip."
+                        localStorage.setItem("currentweather", current);
                         //document.getElementById("forecast").innerHTML = current;
                         $("#weather").html(current); // jquery equivalent. Is this really easier?
                     }
@@ -334,10 +343,12 @@
                 success: function (json) {
                     if (json.success == true) {
                         var r = json.response[0].periods[0];
-                        $("#forecast").html("Forecast: Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather);
+                        var forecast = "Forecast: Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather;
+                        localStorage.setItem("forecast", forecast);
+                        $("#forecast").html(forecast) = forecast;
                     }
                     else {
-                        alert('An error occurred: ' + json.error.description);
+                        alert('Could not load weather forecast: ' + json.error.description);
                     }
                 }
             });  // end of ajax call
@@ -347,12 +358,18 @@
         /////////////////////////////////////////////////////////////////////////////////////////////
         // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
         // License as of 2/8/16 is for 750 hits/day for free.
+        //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
+        //  exit: forceCacheReload = true to reload tide data.  
+        //          html populated.
         function ShowNextTides() {
             var hilow;
             var nextTides;
             var oldtide = -1;
             var json = localStorage.getItem("jsontides");
-            if (json === null) return;
+            if (json === null) {
+                forceCacheReload = true;
+                return;
+            }
             var periods = JSON.parse(json); // parse it
             // roll through the reply in jason.response.periods[i]
             var i;
@@ -413,7 +430,11 @@
             var datefmt; // formatted date
             var iCE; // iterator through CE
             var aCE; // CE split array 
-            if(CE===null)return;
+            if (CE === null) {
+                forceCacheReload = true;
+                return;
+            }
+            // break CE up into rows
             CE = CE.split("\n");  // break it up into rows
             if (CE == "") return;
             // roll through the next 30 days
@@ -468,6 +489,7 @@
                 success: function (data) {
                     ReloadDailyCache(data);
                     localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
+                    localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
                     //alert("coming events loaded at " + monthday);
                 }
             });
@@ -526,21 +548,13 @@
 
             // everything you want to do every minute. These all go against localStorage strings, so no query
             InitializeDates(0);
-            WriteNextFerryTimes();
-            ShowNextTides(); // .
-            ShowOpenHours();
+            document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
+            ShowCachedData();
 
             // reload daily stuff - ferry schedule, store hours, coming events, tides
             var dailycacheloaded = localStorage.getItem("dailycacheloaded");
-            if ((dailycacheloaded!=null) && (Number(dailycacheloaded) != monthday)) {
-                GetDailyCache();  // don't reload data on same day
-                GetComingEvents();
-                getTideData();
-            }
-
-            // everything you want to do every 5 minutes
-            if ((updateMinutes % 5) == 0) {
-                DisplayNextEvents();
+            if (forceCacheReload || (dailycacheloaded==null) || (Number(dailycacheloaded) != monthday)) {
+                ReloadCachedData();
             }
 
             // everything you want to do every 15 minutes
@@ -554,6 +568,7 @@
             }
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
             localStorage.setItem("updateminutes", updateMinutes);
+
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -565,38 +580,77 @@
         }
         function blurEvent() {
             clearInterval(0); // TURN OFF TIMER WHEN FOCUS IS LOST
-         }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // show all cached data, i.e. all data in localStorage.
+        // Note: each routine is required to set 'forceCacheReload' = true if its local storage item is null.
+        function ShowCachedData() {
+            WriteNextFerryTimes();  // show cached ferry schedule
+            ShowNextTides(); // show cached tide data
+            document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
+            $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
+            $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
+
+            s = localStorage.getItem("forecast");
+            if (s == null) forceCacheReload = true;
+            else document.getElementById("forecast").innerHTML = s;
+
+            s = localStorage.getItem("currentweather"); // cached current weather
+            if (s == null) forceCacheReload = true;
+            else document.getElementById("weather").innerHTML = s;
+
+            document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("reloadtime");
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        // Reload cached data - calls all the ajax calls to get the data and recache it in localStorage.
+        //
+        function ReloadCachedData() {
+            alert("reload cached data");
+            GetDailyCache();  
+            GetComingEvents();
+            getTideData();
+            getForecast();
+            var d = new Date();
+            var reloadtime = d.toString();
+            localStorage.setItem("reloadtime", reloadtime);
+            document.getElementById("reloadtime").innerHTML = "Cached data from " + reloadtime; 
+        }
 
     </script>
-
+    
     <!-- actual javascript execution begins here:-->
     <script type="text/javascript">
+        //////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        //  MAIN APP CODE
+        //
+
         app.initialize();
         InitializeDates(0);
+        document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
         updateMinutes = 1;
         localStorage.setItem("updateminutes", "1"); // start at 1 so the 1st timer call does not run stuff, but the focus event does
-        WriteNextFerryTimes();
-        ShowOpenHours(); //  open hours
+        forceCacheReload = false; // cache reload not needed
 
-        // display next event. reload the 'comingevent' cache if the day has changed.
-        $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
-        $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
-        var comingeventloaded = localStorage.getItem("comingeventsloaded");
-        //if (comingeventloaded==null || comingeventloaded != monthday) GetComingEvents();  // don't reload data on same day
-        GetComingEvents();
+        //  Show the cached data
+        ShowCachedData();
 
-        document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
-        setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
-        getCurrentWeather(); // gets weather async
-        getForecast(); // gets forecast async
-        getTideData(); // gets tides async
+        getCurrentWeather(); // gets weather async every time.
 
-        //reload the 'dailycache' cache if the day has changed.
+        //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
-        //if (dailycacheloaded != monthday) GetDailyCache();  // don't reload data on same day
-        GetDailyCache();//////////////////////////////////////debug
+        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(timehhmm, localStorage.getItem("dailycacheloadedtime")) > 60) {
+            ReloadCachedData();
+        }
+
+        // set refresh timners
+        setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
+
+
     </script>
 </body>
 </html>

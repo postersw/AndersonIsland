@@ -68,14 +68,14 @@ body {
 }
 
 h1 {
-    font-size:medium; /*24px;*/
+    font-size:18px; /*24px;*/
     font-weight:normal;
     overflow:visible;
     padding:0px;
     text-align:center;
 }
 
-.event {ont-weight:normal;
+.event {font-weight:normal;
     margin:0px;
     overflow:visible;
     padding:0px;

@@ -11,7 +11,7 @@
     <title>Open Hours</title>
     <style>
         button {
-            font-size: 18px;
+            font-size: 14px;
         }
 
         p {
@@ -75,8 +75,8 @@
                 //if (a[8] != "") row.onclick = function () { window.open(s); };
                 var cell = row.insertCell(0);
                 cell.innerHTML = openlist + "<br/>" +
-                    "<button style='width:45%;' href=\"tel\:" + phonenumber[1] + "\">Call " + phonenumber[1] + "<button/>&nbsp&nbsp" +
-                    "<button style='width:45%;' onclick='window.open(\"" + a[8] + "\")'> Web Site<button/><br/>";
+                    "<button  style='width:45%' href=\"tel\:" + phonenumber[1] + "\">Call " + phonenumber[1] + "</button>" +
+                    "<button  style='width:45%' onclick='window.open(\"" + a[8] + "\")'> Web Site</button><br/>";
                 cell.style.border = "thin solid black";
             } // for loop for each business
         }
