@@ -45,7 +45,7 @@
 <body>
     <div class="app">
         <div data-role="content"></div>
-        <h1 style="font-size:18px;margin-bottom:0px">Anderson Island Assistant <button onclick="LocalMenu();">&#8801</button></h1>
+        <h1 style="font-size:18px;margin-bottom:0px">Anderson Island Assistant </h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Touch an entry for more information.</span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <ul style="list-style-type:none;margin:0;padding:0">
@@ -122,11 +122,19 @@
 
        </li>
           <li>
+            <button style="width:100%" onclick="ReloadCachedData();">Reload Data</button><br />
             <button style="width:100%" onclick="window.open('aboutus.html');">About Us</button><br />
+
          </li>
      </ul>
-        <p id="updatetime" style="font-size:x-small">Data update time.</p>
-        <p id="reloadtime" style="font-size:x-small">Data reload time.</p>
+        <!-- debugging times -->
+        <p> <span id="updatetime" style="font-size:x-small">Screen update time.</span>
+        <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
+        <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
+       <br /><span style="font-size:x-small">AIA ver: 2/18-1236</span>
+
+
+        </p>
 
 
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
@@ -215,7 +223,7 @@
 
             // convert to a string and add am or pm and optionally tomorrow
             var ft;
-            ft = ShortTime(ferrytimes[i]);
+            ft = VeryShortTime(ferrytimes[i]);
             if (ferrytimes[i] < timehhmm) ft = ft + " tomorrow";
                 
             else {
@@ -239,7 +247,6 @@
             if (lftS === null) lftS = "545,H123456A,645,*,800,*,900,*,1000,F,1200,*,1410,*,510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y";
             var lftA = localStorage.getItem("ferrytimesA");
             if (lftA === null) lftA = "615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y";
-
             v = v + FindNextFerryTime(lftS) + "</br>&nbsp&nbsp&nbsp&nbsp Next AI: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v;
 
@@ -273,7 +280,7 @@
             for (var i = 0; i < openHours.length-1; i++) {
                 a = openHours[i].split(",");  // parse it into an array
                 store = a[0].split("("); // strip out phone number
-                openlist += store[0] + ":";
+                openlist += "<span style='font-weight:bold'>" + store[0] + "</span>:";
                 opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
                 opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
                 closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
@@ -281,28 +288,28 @@
                 if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                     openlist += " <span style='color:darkred'> Closed. </span>";
                     if (timehhmm < opentime) {
-                        openlist += " Opens today at " + ShortTime(opentime) + "<br/>";
+                        openlist += " Opens today at " + VeryShortTime(opentime) + "<br/>";
                         continue;
                     }
                     // find next open time
                     j = dayofweek + 1; if (j == 7) j = 0;
                     // if it opens tomorrow
                     if (a[j + 1] != "") {  
-                        openlist += " Opens tomorrow at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                        openlist += " Opens tomorrow at " + VeryShortTime(a[j + 1].substring(0, 4)) + "<br/>";
                         continue;
                     }
                     // not open tomorrow. find next open day.
                     while (true) {
                         j++;  if (j == 7) j = 0; // handle day rollover
                         if (a[j + 1] != "") { // open day found
-                            openlist += " Opens " + dayofweekname[j] + " at " + ShortTime(a[j + 1].substring(0, 4)) + "<br/>";
+                            openlist += " Opens " + dayofweekname[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4)) + "<br/>";
                             break;
                         }
                     } // while loop
                     
                 } else {
                     // its open
-                    openlist += " <span style='color:green'> Open </span>till " + ShortTime(closetime) + " today<br/>";
+                    openlist += " <span style='color:green;font-weight:bold'> Open </span>till " + VeryShortTime(closetime) + " today<br/>";
                 }
             } // end for
             return openlist;
@@ -322,11 +329,12 @@
                         var current =  r.tempF + "&degF, " + r.weather + ", " +  r.windDir + " " + r.windMPH + " mph " +
                             ", " + r.precipIN + " precip."
                         localStorage.setItem("currentweather", current);
+                        localStorage.setItem("currentweathertime", timehhmm); // save the cache time
                         //document.getElementById("forecast").innerHTML = current;
                         $("#weather").html(current); // jquery equivalent. Is this really easier?
                     }
                     else {
-                        alert('An error occurred: ' + json.error.description);
+                        alert('Could not get current weather: ' + json.error.description);
                     }
                 }
             });
@@ -447,8 +455,8 @@
                 if (Number(aCE[0]) == monthday) datefmt = "Today";
                 else if (Number(aCE[0]) == (monthday+1)) datefmt = "Tomorrow";
                 else if (GetDayofWeek(aCE[0]) > dayofweek) { datefmt = dayofweekshort[GetDayofWeek(aCE[0])]; }
-                else datefmt = dayofweekshort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(3, 5);
-                return datefmt + " " + ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]) + " " + aCE[4] + " at " + aCE[5];
+                else datefmt = dayofweekshort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
+                return datefmt + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " at " + aCE[5];
             }
         }
 
@@ -490,6 +498,8 @@
                     ReloadDailyCache(data);
                     localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
                     localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
+                    document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + monthday + " @" + timehhmm;
+
                     //alert("coming events loaded at " + monthday);
                 }
             });
@@ -557,8 +567,8 @@
                 ReloadCachedData();
             }
 
-            // everything you want to do every 15 minutes
-            if ((updateMinutes % 15)==0) {
+            // everything you want to do every 20 minutes
+            if ((updateMinutes % 20)==0) {
                 getCurrentWeather();
             }
 
@@ -588,10 +598,12 @@
         function ShowCachedData() {
             WriteNextFerryTimes();  // show cached ferry schedule
             ShowNextTides(); // show cached tide data
+            document.getElementById("reloadtime").innerHTML = "show next tides";
             document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
+            document.getElementById("reloadtime").innerHTML = "show open hours";
             $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
             $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
-
+            document.getElementById("reloadtime").innerHTML =
             s = localStorage.getItem("forecast");
             if (s == null) forceCacheReload = true;
             else document.getElementById("forecast").innerHTML = s;
@@ -600,22 +612,21 @@
             if (s == null) forceCacheReload = true;
             else document.getElementById("weather").innerHTML = s;
 
-            document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("reloadtime");
+            document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
         // Reload cached data - calls all the ajax calls to get the data and recache it in localStorage.
         //
         function ReloadCachedData() {
-            alert("reload cached data");
+            //alert("reload cached data");
+            InitializeDates();
             GetDailyCache();  
             GetComingEvents();
             getTideData();
             getForecast();
-            var d = new Date();
-            var reloadtime = d.toString();
-            localStorage.setItem("reloadtime", reloadtime);
-            document.getElementById("reloadtime").innerHTML = "Cached data from " + reloadtime; 
+            getCurrentWeather();
+            document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime");
         }
 
     </script>
@@ -635,13 +646,20 @@
         forceCacheReload = false; // cache reload not needed
 
         //  Show the cached data
+        document.getElementById("reloadtime").innerHTML = "before show cached data";
         ShowCachedData();
 
-        getCurrentWeather(); // gets weather async every time.
-
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
+        var t = localStorage.getItem("currentweathertime");
+        if(t==null || RawTimeDiff(t, timehhmm) > 20) getCurrentWeather(); // gets weather async every time.
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
-        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(timehhmm, localStorage.getItem("dailycacheloadedtime")) > 60) {
+        if (dailycacheloaded == null) forceCacheReload = true;
+        var reloadreason="";
+        if (forceCacheReload) reloadreason = "Cache reload forced";
+        else if (dailycacheloaded != monthday) reloadreason = "dailycacheloaded != monthday";
+        else if (RawTimeDiff(localStorage.getItem("dailycacheloadedtime"), timehhmm) > 60) reloadreason = "RawTimeDiff " + RawTimeDiff(timehhmm, localStorage.getItem("dailycacheloadedtime"));
+        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(localStorage.getItem("dailycacheloadedtime"),timehhmm) > 60) {
+            document.getElementById("reloadreason").innerHTML = reloadreason;
             ReloadCachedData();
         }
 

@@ -175,6 +175,22 @@ function ShortTime(ft) {
         else if (ft < 1299) return (Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
         else return (Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
+////////////////////////////////////////////////////////////////////////////////////////////
+//  veryshorttime - shortest possible time
+//  like ShortTime but does not return minutes if not needed
+//  so it returns 1p, where ShortTime returns 1:00p;
+function VeryShortTime(ft) {
+    if (ft == 1200) return "noon";
+    if ((ft % 100) == 0) {
+        if (ft == 0) return "12a";
+        var h = (Math.floor(ft / 100));
+        if (ft < 1199) return h + "a";
+        else if (ft < 1299) return h + "p";
+        else return (h-12) + "p";
+    }
+    else return ShortTime(ft);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // timediff - returns formatted time difference between 2 times 
 // time1 is assumed to be now and time2 in the future.  So the diff is time2 - time1. 
