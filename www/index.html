@@ -37,6 +37,8 @@
         p {
             font-size: 14px;
         }
+        tr {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;}
+        td {padding-top:6px;padding-bottom:6px;}
         li {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;padding-left:6px}
     </style>
 
@@ -48,65 +50,71 @@
         <h1 style="font-size:18px;margin-bottom:0px">Anderson Island Assistant </h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Touch an entry for more information.</span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
- <ul style="list-style-type:none;margin:0;padding:0">
-        <li style="background-color:azure" onclick="window.open('localferryschedule.html', '_parent');" >
-            <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY </span>
-            <span id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px">Next : </span>
-            </li>
-        <li style="background-color:azure" onclick="ShowFerryCams();" >
-            <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY WEBCAMS </span>
-        </li>
+ <table style="border-collapse:collapse";>
+        <tr style="background-color:azure;" onclick="window.open('localferryschedule.html', '_parent');" >
+            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY </td>
+            <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px">Next : </td>
+        </tr>
 
-          <li style="background-color:lightcyan"  onclick="ShowTides();"> 
-            <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
-            TIDES </span>
-         <span id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</span>
-         </li>
+        <tr style="background-color:azure" onclick="ShowFerryCams();" >
+            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">WEBCAMS </td>
+        </tr>
 
-     <li style="background-color:honeydew"  onclick="ShowWeather();"> 
-            <span style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
-            WEATHER </span>
-         <span id="weather" style="font-size:small;margin-top:4px;margin-bottom:0px">Current weather:</span> 
-         <p id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </p>
+         <tr style="background-color:lightcyan"  onclick="ShowTides();"> 
+            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
+            TIDES </td>
+            <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</td>
+         </tr>
 
-         </li>
+        <tr style="background-color:honeydew"  onclick="ShowWeather();"> 
+            <td style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
+            WEATHER </td>
+            <td style="font-size:small;margin-top:4px;margin-bottom:0px">
+                <span id="weather" >Current weather:</span><br />
+                <span id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </span>
+            </td> 
+
+         </tr>
 
 
-      <li style="background-color:honeydew"  onclick="ShowBurnBan();"> 
-            <span style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
-            BURN BAN </span>
-         <span id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Click for burn ban status.</span>
-         </li>
+        <tr style="background-color:honeydew"  onclick="ShowBurnBan();"> 
+            <td style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
+            BURN BAN </td>
+            <td id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
+         </tr>
 
-        <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?events', '_parent');">
-        <span style="font-size:18px;font-weight:bold;color:darkmagenta;">
-            EVENTS </span>
-            <span id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Event:</span>
-        </li>
-        <li style="background-color:floralwhite;"  onclick="window.open('comingevents.html?activities', '_parent');">
-        <span style="font-size:18px;font-weight:bold;color:darkmagenta;">
-            ACTIVITY </span>
-            <span id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</span>
-        </li>
+        <tr style="background-color:floralwhite;"  onclick="window.open('comingevents.html?events', '_parent');">
+            <td style="font-size:18px;font-weight:bold;color:darkmagenta;">
+            EVENTS </td>
+            <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Event:</td>
+        </tr>
+        <tr style="background-color:floralwhite;"  onclick="window.open('comingevents.html?activities', '_parent');">
+            <td style="font-size:18px;font-weight:bold;color:darkmagenta;">
+            ACTIVITY </td>
+            <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</td>
+        </tr>
 
-     <li style="background-color:lightyellow" onclick="window.open('openhours.html', '_parent');">
-            <span style="font-size:18px;font-weight:bold;color:darkorange;">OPEN HOURS</span>
-             <span id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
-            </span>
-         </li>
+     <tr style="background-color:lightyellow" onclick="window.open('openhours.html', '_parent');">
+            <td style="font-size:18px;font-weight:bold;color:darkorange;">OPEN<br /> HOURS</td>
+             <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
+            </td>
+         </tr>
 
-         <li style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html', '_parent')">  
-            <span style="font-size:18px;font-weight:bold;color:darkred">
-             EMERGENCY CONTACTS </span>
-         </li>
+        <tr style="background-color:skyblue" onclick="ShowMap();"> 
+            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
+            MAP </td>  
+        </tr>
+         <tr style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html', '_parent')">  
+            <td style="font-size:18px;font-weight:bold;color:darkred" colspan="2">
+             EMERGENCY</td>
+         </tr>
+           
 
-        <li style="background-color:skyblue" onclick="ShowMap();"> 
-        <span style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
-            MAP </span>             
-        </li>
+              </table>
 
-          <li >
+          
              <span style="font-size:18px;font-weight:bold;color:black">ISLAND INFORMATION </span><br />
+ 
 
             <button style="width:100%;padding:6px" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
@@ -120,18 +128,15 @@
                          
 
 
-       </li>
-          <li>
+       
             <button style="width:100%" onclick="ReloadCachedData();">Reload Data</button><br />
             <button style="width:100%" onclick="window.open('aboutus.html');">About Us</button><br />
 
-         </li>
-     </ul>
-        <!-- debugging times -->
+         <!-- debugging times -->
         <p> <span id="updatetime" style="font-size:x-small">Screen update time.</span>
         <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
         <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-       <br /><span style="font-size:x-small">AIA ver: 2/18-1236</span>
+       <br /><span style="font-size:x-small">AIA ver: 2/19-0013</span>
 
 
         </p>
@@ -247,7 +252,7 @@
             if (lftS === null) lftS = "545,H123456A,645,*,800,*,900,*,1000,F,1200,*,1410,*,510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y";
             var lftA = localStorage.getItem("ferrytimesA");
             if (lftA === null) lftA = "615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y";
-            v = v + FindNextFerryTime(lftS) + "</br>&nbsp&nbsp&nbsp&nbsp Next AI: " + FindNextFerryTime(lftA);
+            v = v + FindNextFerryTime(lftS) + "</br>Next Anderson I.: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v;
 
         }
@@ -330,7 +335,6 @@
                             ", " + r.precipIN + " precip."
                         localStorage.setItem("currentweather", current);
                         localStorage.setItem("currentweathertime", timehhmm); // save the cache time
-                        //document.getElementById("forecast").innerHTML = current;
                         $("#weather").html(current); // jquery equivalent. Is this really easier?
                     }
                     else {
@@ -598,12 +602,10 @@
         function ShowCachedData() {
             WriteNextFerryTimes();  // show cached ferry schedule
             ShowNextTides(); // show cached tide data
-            document.getElementById("reloadtime").innerHTML = "show next tides";
             document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
-            document.getElementById("reloadtime").innerHTML = "show open hours";
             $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
             $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
-            document.getElementById("reloadtime").innerHTML =
+
             s = localStorage.getItem("forecast");
             if (s == null) forceCacheReload = true;
             else document.getElementById("forecast").innerHTML = s;
