@@ -47,7 +47,7 @@
 <body>
     <div class="app">
         <div data-role="content"></div>
-        <h1 style="font-size:18px;margin-bottom:0px">Anderson Island Assistant </h1>
+        <h1 style="font-size:18px;margin-bottom:0px;background-color:blue;color:white;">Anderson Island Assistant </h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Touch an entry for more information.</span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <table style="border-collapse:collapse";>
@@ -110,12 +110,12 @@
          </tr>
            
 
-              </table>
+   
 
           
-             <span style="font-size:18px;font-weight:bold;color:black">ISLAND INFORMATION </span><br />
+         <tr style="background-color:lightgray;" >
+             <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2"> ISLAND INFORMATION <br />
  
-
             <button style="width:100%;padding:6px" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
             <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />                 
@@ -125,18 +125,19 @@
             <button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com');">Riviera</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com');">Store</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
-                         
+             </td>            
+            </tr>
 
-
-       
-            <button style="width:100%" onclick="ReloadCachedData();">Reload Data</button><br />
-            <button style="width:100%" onclick="window.open('aboutus.html');">About Us</button><br />
-
+             <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedData();">Reload Data</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="window.open('aboutus.html', '_parent');">About Us</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
+                <a href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback";">Feedback</a></td></tr>
+            </table>
          <!-- debugging times -->
         <p> <span id="updatetime" style="font-size:x-small">Screen update time.</span>
         <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
         <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-       <br /><span style="font-size:x-small">AIA ver: 2/19-0013</span>
+       <br /><span style="font-size:x-small">AIA ver: 2/19-2127</span>
 
 
         </p>
@@ -252,7 +253,7 @@
             if (lftS === null) lftS = "545,H123456A,645,*,800,*,900,*,1000,F,1200,*,1410,*,510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y";
             var lftA = localStorage.getItem("ferrytimesA");
             if (lftA === null) lftA = "615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y";
-            v = v + FindNextFerryTime(lftS) + "</br>Next Anderson I.: " + FindNextFerryTime(lftA);
+            v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v;
 
         }
@@ -357,6 +358,7 @@
                         var r = json.response[0].periods[0];
                         var forecast = "Forecast: Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather;
                         localStorage.setItem("forecast", forecast);
+                        localStorage.setItem("forecasttime", timehhmm); // save time
                         $("#forecast").html(forecast) = forecast;
                     }
                     else {
@@ -377,6 +379,7 @@
             var hilow;
             var nextTides;
             var oldtide = -1;
+            var newtidetime, oldtidetime, newtideheight, oldtideheight;
             var json = localStorage.getItem("jsontides");
             if (json === null) {
                 forceCacheReload = true;
@@ -392,16 +395,21 @@
                 var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
                 var mi =Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
                 var tidehhmm = ((h) * 100) + (mi);
-                if (thisperiod.type == 'h') hilow = '&nbsphigh';
-                else hilow = '&nbsplow';
+                if (thisperiod.type == 'h') hilow = 'High';
+                else hilow = 'Low';
                 // if tide is past, color row gray
                 if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                     oldtide = 0;
+                    oldtidetime = tidehhmm; oldtideheight = thisperiod.heightFT;
                 } else if (oldtide != 1) {
-                    nextTides = "Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
+                    if (thisperiod.type == 'h') nextTides = "Incoming. Now ";
+                    else nextTides = "Outgoing. Now ";
+                    nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
+                         " (in " + timeDiff(timehhmm, tidehhmm) + ")<br/>";
                     oldtide = 1;
                 } else if (oldtide == 1) {  // save next tide
-                    nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
                     document.getElementById("tides").innerHTML = nextTides;
                     return;
                 }
@@ -571,15 +579,14 @@
                 ReloadCachedData();
             }
 
-            // everything you want to do every 20 minutes
-            if ((updateMinutes % 20)==0) {
-                getCurrentWeather();
-            }
+            // current weather every 20 
+            var t = localStorage.getItem("currentweathertime");
+            if (t == null || RawTimeDiff(t, timehhmm) > 20) getCurrentWeather(); // gets weather async every time.
 
             // everything you want to do every 30 minutes
-            if ((updateMinutes % 30) == 0) {
-                getForecast();
-            }
+            t = localStorage.getItem("forecasttime");
+            if (t == null || RawTimeDiff(t, timehhmm) > 30) getForecast(); // gets weather async every time.
+
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
             localStorage.setItem("updateminutes", updateMinutes);
 
@@ -614,7 +621,8 @@
             if (s == null) forceCacheReload = true;
             else document.getElementById("weather").innerHTML = s;
 
-            document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime");
+            document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
+                "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime");
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
@@ -628,7 +636,8 @@
             getTideData();
             getForecast();
             getCurrentWeather();
-            document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime");
+            document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
+                                "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime");
         }
 
     </script>
