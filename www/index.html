@@ -669,7 +669,7 @@
         if (forceCacheReload) reloadreason = "Cache reload forced";
         else if (dailycacheloaded != monthday) reloadreason = "dailycacheloaded != monthday";
         else if (RawTimeDiff(localStorage.getItem("dailycacheloadedtime"), timehhmm) > 60) reloadreason = "RawTimeDiff " + RawTimeDiff(timehhmm, localStorage.getItem("dailycacheloadedtime"));
-        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(localStorage.getItem("dailycacheloadedtime"),timehhmm) > 60) {
+        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(localStorage.getItem("dailycacheloadedtime"),timehhmm) > 720) {
             document.getElementById("reloadreason").innerHTML = reloadreason;
             ReloadCachedData();
         }
