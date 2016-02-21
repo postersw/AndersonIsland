@@ -8,6 +8,7 @@
 0227;1800;2000;S;AIHS Potluck;Comm Club;AIHS
 0228;1600;1900;E;Oscars with Tapas Dinner;Lakeshore Restaurant;Riviera
 0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Restaurant;Rivera;$7 cover. RSVP 884-3344
+0326;1800;2000;S;AIHS Potluck;Comm Club;AIHS
 ACTIVITIES
 0211;1300;1500;A;Art Club;MSR @Rivera;Rivera
 0215;0900;1000;A;Yoga;MSR @Rivera;Rivera

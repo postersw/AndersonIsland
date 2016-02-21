@@ -11,7 +11,7 @@
     <title>Open Hours</title>
     <style>
         button {
-            font-size: 18px;
+            font-size: 14px;
         }
 
         p {
@@ -57,7 +57,7 @@
             var i;
             for (i = 0; i < openHours.length-1; i++) {
                 var a; a = openHours[i].split(",");  // parse it into an array
-                openlist = a[0] + GetOpenStatus(a) + "<br/>&nbsp&nbsp&nbsp";  // name of business
+                openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>&nbsp&nbsp&nbsp";  // name of business
                 var phonenumber = a[0].split("(");
                 phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
                 // loop through Sun - Sat
@@ -75,8 +75,8 @@
                 //if (a[8] != "") row.onclick = function () { window.open(s); };
                 var cell = row.insertCell(0);
                 cell.innerHTML = openlist + "<br/>" +
-                    "<button style='width:45%;' href=\"tel\:" + phonenumber[1] + "\">Call " + phonenumber[1] + "<button/>&nbsp&nbsp" +
-                    "<button style='width:45%;' onclick='window.open(\"" + a[8] + "\")'> Web Site<button/><br/>";
+                    "<button  style='width:45%' href='tel:" + phonenumber[1] + "'>Call " + phonenumber[1] + "</button>" +
+                    "<button  style='width:45%' onclick='window.open(\"" + a[8] + "\")'> Web Site</button><br/>";
                 cell.style.border = "thin solid black";
             } // for loop for each business
         }
@@ -95,28 +95,28 @@
             if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                 openlist += " <span style='color:red'> Closed. </span>";
                 if (timehhmm < opentime) {
-                    openlist += " Opens today at " + ShortTime(opentime);
+                    openlist += " Opens today at " + VeryShortTime(opentime);
                     return openlist;
                 }
                 // find next open time
                 j = dayofweek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
                 if (a[j + 1]) {  
-                    openlist += " Opens tomorrow at " + ShortTime(a[j + 1].substring(0, 4));
+                    openlist += " Opens tomorrow at " + VeryShortTime(a[j + 1].substring(0, 4));
                     return openlist;
                 }
                 // not open tomorrow. find next open day.
                 while (true) {
                     j++;  if (j == 7) j = 0; // handle day rollover
                     if (a[j + 1] != "") { // open day found
-                        openlist += " Opens " + dayofweekname[j] + " at " + ShortTime(a[j + 1].substring(0, 4));
+                        openlist += " Opens " + dayofweekname[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4));
                         return openlist;
                     }
                 } // while loop
                     
             } else {
                 // its open
-                openlist += " <span style='color:green'> Open </span>till " + ShortTime(closetime) + " today" ;
+                openlist += " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
                 return openlist;
             }
         }

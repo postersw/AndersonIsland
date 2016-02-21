@@ -18,12 +18,11 @@
 </head>
 <body>
     <div class="app">
-        <h1 id="H1">COMING EVENTS</h1>
-          <p>CALENDARS:
-        <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Community Club</button>
+        <h1 style="font-size:12px" id="H1">COMING EVENTS</h1>
+          <p>CALENDARS:<br />
+        <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Comm Club</button>
         <button onclick="window.open('http://rivieracommunityclub.com/event-calendar');">Riviera</button>
-        <button onclick="ShowCC();">Historical Society</button>
-              <button onclick="GetComingEvents();">Refresh</button>
+        <button onclick="ShowCC();">Hist Society</button>
               </p>
               <hr />
        <button style="width:20%" onclick="DisplayComingEvents( GetEvents())">List</button>
@@ -38,7 +37,7 @@
 
   
         </table>
-         TYPE: A=activity, E=Entertainment, M=Meeting, S=special event
+         <!--TYPE: A=activity, E=Entertainment, M=Meeting, S=special event-->
     </div>
 </body>
 </html>
@@ -126,6 +125,7 @@
             if (CE == "") return;     
             clearTable(table); // clear table
             table.deleteRow(-1);
+            table.style = "width:150%";
             // add a new week header
             row = table.insertRow(-1);
             row.style.border = "solid thin gray";
@@ -133,10 +133,10 @@
             row.style.backgroundColor = "lightblue";
             row.style.fontWeight = "bold";
             col = row.insertCell(0); col.innerHTML = "Day";
-            col = row.insertCell(1); col.innerHTML = "Day";
-            col = row.insertCell(2); col.innerHTML = "Start";
-            col = row.insertCell(3); col.innerHTML = "End"; 
-            col = row.insertCell(4); col.innerHTML = "Type";
+            col = row.insertCell(1); col.innerHTML = "";
+            col = row.insertCell(2); col.innerHTML = "Time";
+            col = row.insertCell(3); col.innerHTML = ""; 
+            col = row.insertCell(4); col.innerHTML = "";
             col = row.insertCell(5); col.innerHTML = "Event"; 
             col = row.insertCell(6); col.innerHTML = "Location"; 
             col = row.insertCell(7); col.innerHTML = "Sponsor"; 
@@ -182,19 +182,24 @@
                 row.style.border.width = 1;
                 if (dateCE == monthday && Number(aCE[2]) > (timehhmm + 10)) row.style.fontWeight="bold"; // end time not reached.
                 col = row.insertCell(0);
-                if (aCE[0] != previouseventdate) col.innerHTML = dayofweekshort[idayofweek]; // day of week
+                if (aCE[0] != previouseventdate) col.innerHTML = dayofweekshort[idayofweek] + " " + datefmt; // day of week
                 else col.innerHTML = "";
                 col = row.insertCell(1);
-                if (aCE[0] != previouseventdate)  col.innerHTML = datefmt; // date
-                else col.innerHTML = "";
+                //if (aCE[0] != previouseventdate)  col.innerHTML = datefmt; // date
+                //else col.innerHTML = "";
                 //if ((iCE<CE.length-1) && (aCE[0] == CE[iCE + 1].substring(0, 4))) row.style.border = "solid thin lightgray";
 
-                col = row.insertCell(2); col.innerHTML = ShortTime(aCE[1]);  // start
-                col.style.textAlign = "right";
-                col = row.insertCell(3); col.innerHTML = ShortTime(aCE[2]); // end
-                col.style.textAlign = "right";
-                col = row.insertCell(4); col.innerHTML = aCE[3];//type
-                col.style.textAlign = "center";
+
+                col = row.insertCell(2);
+                col.innerHTML = VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]); // compressed time
+                //col.innerHTML = ShortTime(aCE[1]);  // start
+                //col.style.textAlign = "right";
+                col = row.insertCell(3);
+                //col.innerHTML = ShortTime(aCE[2]); // end
+                //col.style.textAlign = "right";
+                col = row.insertCell(4);
+                //col.innerHTML = aCE[3];//type
+                //col.style.textAlign = "center";
                 col = row.insertCell(5); col.innerHTML = aCE[4];//event
                 col = row.insertCell(6); col.innerHTML = aCE[5];//where
                 col = row.insertCell(7);
@@ -379,7 +384,7 @@
  
                 // add to entry
                 var e;
-                e = "<span style:'font-weight:bold'>" + ShortTime(aCE[1]) + "</span> " + aCE[4];// add time 
+                e = "<span style:'font-weight:bold'>" + VeryShortTime(aCE[1]) + "</span> " + aCE[4];// add time 
                 var id = aCE[0];
                 var c = document.getElementById(id);
                 c.innerHTML += e + "<br/>";

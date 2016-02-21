@@ -1,7 +1,9 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // JavaScript source code specifically for Anderson Island Assistant
-// global date variables
 //  RFB 2/2/2016
 
+/////////////////////////  DATE ///////////////////////////////////////////////////////////////////////
+// global date variables
 var table; // the schedule table as a DOM object
 var d; // date object
 var dayofweek;  // day of week in 0-6
@@ -38,12 +40,6 @@ var openHoursLastUpdate; // time of last update
 var nextTides; // string of next tides for the main page
 var tidesLastUpdate; // time of last update
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Pad with leading zero
-function Leading0(num) {
-    if (num >= 10) return num;
-    else return "0" + Number(num);
-}
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
 function IsHoliday(md) {
@@ -175,6 +171,22 @@ function ShortTime(ft) {
         else if (ft < 1299) return (Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
         else return (Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
+////////////////////////////////////////////////////////////////////////////////////////////
+//  veryshorttime - shortest possible time
+//  like ShortTime but does not return minutes if not needed
+//  so it returns 1p, where ShortTime returns 1:00p;
+function VeryShortTime(ft) {
+    if (ft == 1200) return "noon";
+    if ((ft % 100) == 0) {
+        if (ft == 0) return "12a";
+        var h = (Math.floor(ft / 100));
+        if (ft < 1199) return h + "a";
+        else if (ft < 1299) return h + "p";
+        else return (h-12) + "p";
+    }
+    else return ShortTime(ft);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // timediff - returns formatted time difference between 2 times 
 // time1 is assumed to be now and time2 in the future.  So the diff is time2 - time1. 
@@ -195,6 +207,8 @@ function RawTimeDiff(hhmm1, hhmm2) {
     return ftm - tm; // diff in minutes
 }
 
+//////////////////////////////////////   UTILITY ////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // clear table. Deletes all rows but the first.
 function clearTable(table) {
@@ -202,4 +216,41 @@ function clearTable(table) {
     while (table.rows.length > 1) {
         table.deleteRow(-1);
     }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Pad with leading zero
+function Leading0(num) {
+    if (num >= 10) return num;
+    else return "0" + Number(num);
+}
+
+
+//////////////////////////////////// TIDE STUFF /////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Calculate current tide height using the rule of 12s (tide rise in hour: 1/12, 2/12, 3/12, 3/12, 2/12, 1/12
+// entry: newtidetime = next hi/low tide time
+//        oldtidetime = previous hi/low tide time
+//        newtideheight, oldtideheight = next and previous tide heights;
+//  returns current tide height
+function CalculateCurrentTideHeight(newtidetime, oldtidetime, newtideheight, oldtideheight) {
+    // calculate current tide height
+    var tideheight;
+    var timedelta; timedelta = RawTimeDiff(oldtidetime, newtidetime);
+    var tidedelta, tideheight;
+    var tidedelta = newtideheight - oldtideheight; // new tide - old tide; + for rising; - for falling
+    var currenttimedelta; currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
+    var timedelta6; timedelta6 = timedelta / 6; //minutes in current tide pseudo hour a little over 60. newtidetime - oldtidetime / 60.
+    var tidedelta12; tidedelta12 = tidedelta / 12;
+    var currenttimeremainder; currenttimeremainder = (currenttimedelta % timedelta6) / timedelta6; // faction of current pseudo hour
+    // this code adds the tidedelta to the old tide in the ratio of :1/12, 2/12, 3/12, 3/12, 2/12, 1/12 . 
+    if (currenttimedelta <= timedelta6) tideheight = oldtideheight + (tidedelta12 * currenttimeremainder);
+    else if (currenttimedelta <= timedelta6 * 2) tideheight = oldtideheight + tidedelta12 + (tidedelta12 * 2 * currenttimeremainder);
+    else if (currenttimedelta <= timedelta6 * 3) tideheight = oldtideheight + tidedelta12 * 3 + (tidedelta12 * 3 * currenttimeremainder);
+    else if (currenttimedelta <= timedelta6 * 4) tideheight = oldtideheight + tidedelta12 * 6 + (tidedelta12 * 3 * currenttimeremainder);
+    else if (currenttimedelta <= timedelta6 * 5) tideheight = oldtideheight + tidedelta12 * 9 + (tidedelta12 * 2 * currenttimeremainder);
+    else tideheight = oldtideheight + tidedelta12 * 11 + (tidedelta12 * currenttimeremainder);
+    return tideheight;
 }
