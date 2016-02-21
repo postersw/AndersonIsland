@@ -32,6 +32,7 @@
     <style>
         button {
             font-size: 18px;
+            text-align:left;
         }
 
         p {
@@ -48,12 +49,12 @@
     <div class="app">
         <div data-role="content"></div>
         <h1 style="font-size:18px;margin-bottom:0px;background-color:blue;color:white;">Anderson Island Assistant </h1>
-        <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Touch an entry for more information.</span>
+        <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Tap an entry for more information.</span>
         <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <table style="border-collapse:collapse";>
         <tr style="background-color:azure;" onclick="window.open('localferryschedule.html', '_parent');" >
             <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY </td>
-            <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px">Next : </td>
+            <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;font-weight:bold">Next : </td>
         </tr>
 
         <tr style="background-color:azure" onclick="ShowFerryCams();" >
@@ -77,9 +78,9 @@
          </tr>
 
 
-        <tr style="background-color:honeydew"  onclick="ShowBurnBan();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
-            BURN BAN </td>
+        <tr style="background-color:lightyellow"  onclick="ShowBurnBan();"> 
+            <td style="font-size:18px;font-weight:bold;color:#ff3300;margin-left:0%">
+            BURNBAN </td>
             <td id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
          </tr>
 
@@ -94,29 +95,31 @@
             <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</td>
         </tr>
 
-     <tr style="background-color:lightyellow" onclick="window.open('openhours.html', '_parent');">
-            <td style="font-size:18px;font-weight:bold;color:darkorange;">OPEN<br /> HOURS</td>
+     <tr style="background-color:#f0f0f5" onclick="window.open('openhours.html', '_parent');">
+            <td style="font-size:18px;font-weight:bold;color:black;">OPEN<br /> HOURS</td>
              <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
             </td>
          </tr>
-
-        <tr style="background-color:skyblue" onclick="ShowMap();"> 
+                
+         <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
             <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
             MAP </td>  
+         </tr>
+
+        <tr style="background-color:antiquewhite;" onclick="window.open('http://www.tannerelectric.coop/andersonisland')">  
+            <td style="font-size:18px;font-weight:bold;color:#802b00">TANNER</td>
+            <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
+
         </tr>
          <tr style="background-color:antiquewhite;" onclick="window.open('emergencycontacts.html', '_parent')">  
             <td style="font-size:18px;font-weight:bold;color:darkred" colspan="2">
              EMERGENCY</td>
          </tr>
-           
-
-   
-
           
          <tr style="background-color:lightgray;" >
              <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2"> ISLAND INFORMATION <br />
  
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
+            <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
             <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />                 
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org');">Island Patrol</button><br />
@@ -137,7 +140,7 @@
         <p> <span id="updatetime" style="font-size:x-small">Screen update time.</span>
         <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
         <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-       <br /><span style="font-size:x-small">AIA ver: 2/19-2127</span>
+       <br /><span style="font-size:x-small">AIA ver: 0.1.221-0008</span>
 
 
         </p>
@@ -356,7 +359,7 @@
                 success: function (json) {
                     if (json.success == true) {
                         var r = json.response[0].periods[0];
-                        var forecast = "Forecast: Hi " + r.maxTempF + "&deg, Lo " + r.minTempF + "&deg, " + r.weather;
+                        var forecast = "Forecast: " + r.maxTempF + "&deg/" + r.minTempF + "&deg, " + r.weather;
                         localStorage.setItem("forecast", forecast);
                         localStorage.setItem("forecasttime", timehhmm); // save time
                         $("#forecast").html(forecast) = forecast;
@@ -414,6 +417,7 @@
                     return;
                 }
             }
+            forceCacheReload = true; // if we haven't gotten today's tides, reload it
          }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
