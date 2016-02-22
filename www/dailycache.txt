@@ -8,3 +8,16 @@ Store (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,080
 Restaurant (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,http://rivieracommunityclub.com/amenities/restaurant
 Dump (884-4072),1000-1400,1300-1700,,,,,,https://www.co.pierce.wa.us/index.aspx?NID=1541
 OPENHOURSEND
+EMERGENCY
+<tr><td><a href="tel:911"> All emergencies: 911</a> </td></tr>
+<tr><td><a href="tel:1-798-4333">  Crisis Line: 798-4333</a></td></tr>
+<tr><td><a href="tel:884-4040">  Fire Department: 884-4040</a></td></tr>
+<tr><td><a href="tel:884-4057"> Fire Department Burn Line: 884-4057</a></td></tr>
+<tr><td><a href="tel:1-800-562-9800">Pierce County Sheriff: 1-800-562-9800</a></td></tr>
+<tr><td><a href="tel:606-5273"> Fire Department Cell Phone:606-5273</a></td></tr>
+<tr><td><a href="tel:1-800-732-6985">  Poison Center: 1-800-732-6985</a></td></tr>
+<tr><td><a href="tel:884-4808">  Riviera Disaster Hot Line: 884-4808</a></td></tr>
+<tr><td><a href="tel:1-800-562-5632"> Red Tide:1-800-562-5632</a></td></tr>
+<tr><td><a href="tel:1-800-472-0208">Tanner Electric: 1-800-472-0208</a></td></tr>
+EMERGENCYEND
+// 2/21/16

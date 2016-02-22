@@ -18,8 +18,8 @@
     <div class="app">
 <h1 style="font-size:18px">Tides at Yoman Point <br />(ferry dock)</h1>
     <p id="current">Please wait for tide data .... </p>
-        <table id='table' style="border:thin solid black;border-collapse:collapse">
-            <tr style="background-color:black;color:white">
+        <table id='table' style="border:thin solid gray;border-collapse:collapse">
+            <tr style="background-color:gray;color:white">
                 <td>Date</td>
                 <td>| Time&nbsp</td>
                 <td>| Type&nbsp</td>
@@ -135,21 +135,21 @@
                 var m =Number(periods[i].dateTimeISO.substring(5, 7));
                 var d = Number(periods[i].dateTimeISO.substring(8, 10));
                 row1col1.innerHTML = m + "/" + d + '&nbsp';
-                row1col1.style.border = "thin solid black";
+                row1col1.style.border = "thin solid gray";
                 // time
                 row1col1 = row1.insertCell(1);
                 var h = Number(periods[i].dateTimeISO.substring(11, 13)); // tide hour
                 var mi = Number(periods[i].dateTimeISO.substring(14, 16));  // time min
                 tidehhmm = (Number(h) * 100) + Number(mi);
                 row1col1.innerHTML = "&nbsp" + ShortTime(tidehhmm);
-                row1col1.style.border = "thin solid black";
-                if (periods[i].type == 'h') hilow = '&nbsphigh';
-                else hilow = '&nbsplow';
+                row1col1.style.border = "thin solid gray";
+                if (periods[i].type == 'h') hilow = '&nbspHigh';
+                else hilow = '&nbspLow';
 
                 // if tide is past, color row gray and show current tide info
                 if (showcurrent) {
                     if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
-                        row1.style.color = "lightgray";
+                        row1.style.color = "gray";
                         if (periods[i].type == 'h') currentTide = "Outgoing since ";  // incoming outgoing flag
                         else currentTide = "Incoming since ";
                         currentTide += ShortTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
@@ -177,11 +177,11 @@
                 // type
                 row1col1 = row1.insertCell(2);
                 row1col1.innerHTML = hilow;
-                row1col1.style.border = "thin solid black";
+                row1col1.style.border = "thin solid gray";
                 // height
                 row1col1 = row1.insertCell(3);
                 row1col1.innerHTML = periods[i].heightFT;
-                row1col1.style.border = "thin solid black";
+                row1col1.style.border = "thin solid gray";
             }
             // now save the current tide
             document.getElementById("current").innerHTML = "Current tide is: " + currentTide;

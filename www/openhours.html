@@ -10,13 +10,18 @@
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Open Hours</title>
     <style>
-        button {
-            font-size: 14px;
-        }
-
         p {
             font-size: 14px;
         }
+        a {
+            -webkit-appearance: button;
+            -moz-appearance: button;
+
+            text-decoration: none;
+            color: initial;
+            padding: 6px;
+        }
+
     </style>
 </head>
 <body>
@@ -67,7 +72,7 @@
                     if (opentimetoday != "") {
                         opentime = opentimetoday.substring(0, 4); // open time hhmm
                         closetime = opentimetoday.substring(5, 9); // close time hhmm
-                        openlist += dayofweekshort[j] + ":" + ShortTime(opentime) + "-" + ShortTime(closetime) + "&nbsp";
+                        openlist += dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "&nbsp";
                     }
                 } // for loop for each day
                 var row = table.insertRow(-1);
@@ -75,8 +80,8 @@
                 //if (a[8] != "") row.onclick = function () { window.open(s); };
                 var cell = row.insertCell(0);
                 cell.innerHTML = openlist + "<br/>" +
-                    "<button  style='width:45%' href='tel:" + phonenumber[1] + "'>Call " + phonenumber[1] + "</button>" +
-                    "<button  style='width:45%' onclick='window.open(\"" + a[8] + "\")'> Web Site</button><br/>";
+                    "<a href='tel:" + phonenumber[1] + "'>Tap to Call " + phonenumber[1] + "</a>&nbsp&nbsp&nbsp&nbsp" +
+                    "<a href='" + a[8] + "'> Tab to visit Web Site</a><br/>";
                 cell.style.border = "thin solid black";
             } // for loop for each business
         }

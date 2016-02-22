@@ -37,6 +37,7 @@
 
   
         </table>
+        <p style="font-size:smaller">(rev 022211153)</p>
          <!--TYPE: A=activity, E=Entertainment, M=Meeting, S=special event-->
     </div>
 </body>
@@ -125,11 +126,9 @@
             if (CE == "") return;     
             clearTable(table); // clear table
             table.deleteRow(-1);
-            table.style = "width:150%";
             // add a new week header
             row = table.insertRow(-1);
             row.style.border = "solid thin gray";
-            row.style.border.width = 1;
             row.style.backgroundColor = "lightblue";
             row.style.fontWeight = "bold";
             col = row.insertCell(0); col.innerHTML = "Day";
@@ -166,20 +165,21 @@
                     // test for this week
                     if ((idayofweek >= dayofweek) && ((dateCE - monthday) <= 6)) {
                         row.insertCell(0).innerHTML = "This";
-                        row.insertCell(1).innerHTML = "Week";
+                        row.insertCell(1).innerHTML = "";
+                        row.insertCell(2).innerHTML = "Week";
                     } else {
                         row.insertCell(0).innerHTML = "&nbsp";
-                        row.insertCell(1).innerHTML = "&nbsp";
+                        row.insertCell(1).innerHTML = "";
+                        row.insertCell(2).innerHTML = "&nbsp";
                     }
-                    for (i = 2; i < 9; i++) {
+                    for (i = 3; i < 9; i++) {
                         row.insertCell(i).innerHTML = "&nbsp";
                     }
                 }
 
                 // add a new table row
                 row = table.insertRow(-1);
-                row.style.border = "solid thin gray";
-                row.style.border.width = 1;
+                row.style.border = "thin solid gray";//
                 if (dateCE == monthday && Number(aCE[2]) > (timehhmm + 10)) row.style.fontWeight="bold"; // end time not reached.
                 col = row.insertCell(0);
                 if (aCE[0] != previouseventdate) col.innerHTML = dayofweekshort[idayofweek] + " " + datefmt; // day of week
