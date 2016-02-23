@@ -140,9 +140,9 @@
             </tr>
 
              <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedData();">Reload Data</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="window.open('aboutus.html', '_parent');">About Us</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About Us</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
-                <a href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback";">Feedback</a></td></tr>
+                <a style="display:block;text-decoration:none;" href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback";">Feedback</a></td></tr>
             </table>
 
             </div>
@@ -267,6 +267,7 @@
 
 <!-- FERRY WEBCAMS ------------------------------------------------------------------------------------->
   <div id="ferrywebcampage" style="display:none">
+      <h1>FERRY WEBCAMS</h1>
            <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button><br />
         <strong>Steilacoom Camera </strong>- refreshes every minute<br>
         <br />
@@ -277,13 +278,29 @@
            <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
 
 </div>
+ <!-- ABOUT ------------------------------------------------------------------------------------->
+  <div id="aboutpage" style="display:none">
+    <h1> About</h1>
+      <button onclick="ShowMainPage();">&larr;BACK</button>
+    <p>The Anderson Island Assistant is a handy little mobile app whose purpose is to provide instant access 
+        to all sorts of good Anderson Island stuff, especially time-sensitive information.  
+        It is available now in beta-form as a web-based app from <a href="http://www.anderson-island.org">www.anderson-island.org</a>.
+        It will be available soon as as an Android phone app on Google Play.
+         It will be available after that as an app for iPhones on the iPhone App Store, and Windows phones at the Windows Store.
+       </p>
+        <hr />
+        <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
+        <p> <a style="display:block;text-decoration:none;background-color:lightgray;width:50%" href="mailto:support@postersw.com">Send feedback.</a></p>
+        <p>Contact us: Email: support@postersw.com.  Phone: 253-267-4936.</p>
+        <p>2/23/2016.</p>
+</div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
         <p> This page updates every minute.<br />
             <span id="updatetime" style="font-size:x-small">Screen update time.</span>
             <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-       <br /><span style="font-size:x-small">AIA Web Ver: 0.2.223-0017</span>
+       <br /><span style="font-size:x-small">AIA Web Ver: 0.2.223-0807</span>
 
 
         </p>
@@ -1630,12 +1647,20 @@
     </script>
 
     <script>
-    ////////////////////////////////////////////////////////////////////////////////////////////
+ //====ABOUT=========================================================================================
+
     // FERRY WEB CAM
         function ShowFerryWebCam() {
             ShowPage("ferrywebcampage");
             document.getElementById("steilacoomcam").setAttribute("src", "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg?random" + timehhmm.toFixed(0));
             document.getElementById("aicam").setAttribute("src", "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg?random" + timehhmm.toFixed(0));
+        }
+
+//====ABOUT=========================================================================================
+        /////////////////////////////////////////////////////////////////////////////////////
+        // About
+        function ShowAboutPage() {
+            ShowPage("aboutpage");
         }
     </script>
 
