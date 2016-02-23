@@ -140,9 +140,9 @@
             </tr>
 
              <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedData();">Reload Data</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About Us</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
-                <a style="display:block;text-decoration:none;" href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback";">Feedback</a></td></tr>
+                <a style="text-decoration:none;" href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback">Feedback</a></td></tr>
             </table>
 
             </div>
@@ -150,8 +150,10 @@
  <!-- FERRY ------------------------------------------------------------------------------------------>
     <div id="ferryschedulepage" style="display:none">
 
-    <h1 style="font-size:18px;background-color:blue;color:white;">Ferry Schedule</h1>
-            <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+    <h1>
+        <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        Ferry Schedule
+    </h1>
     <button style="width:32%" onclick="ShowFerryLocation();">Location</button>
      <button   style="width:32%" onclick="ShowFerry();">Web Site</button>
         <p> </p>
@@ -168,8 +170,10 @@
 
  <!-- OPEN HOURS ------------------------------------------------------------------------------------------>
     <div id="openhourspage" style="display:none">
-        <h1>Open Hours</h1>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <h1>
+            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            Open Hours
+        </h1>
         <p>Touch an entry for more information.</p>
         <table id='openhourstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
@@ -182,8 +186,14 @@
 <!-- COMING EVENTS ------------------------------------------------------------------------------------------>
 
     <div id="comingeventspage" style="display:none">
-        <h1 style="font-size:18px" id="comingeventsH1">COMING EVENTS</h1>
-        <button style="width:22%" onclick="ShowMainPage();">&larr;BACK</button>
+        <h1 id="comingeventsH1" style="display:none">
+            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            COMING EVENTS
+        </h1>
+        <h1 id="comingactivitiesH1" style="display:none">
+            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            COMING ACTIVITIES
+        </h1>
          
          <!--<p>CALENDARS:<br />
         <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Comm Club</button>
@@ -207,8 +217,10 @@
 <!--TIDES ------------------------------------------------------------------------------------------>
 
     <div id="tidespage" style="display:none">
-        <h1 style="font-size:18px">Tides at Yoman Point <br />(ferry dock)</h1>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <h1>
+            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            Tides at Yoman Point <br />(ferry dock)
+        </h1>
         <p id="tidepagecurrent">Please wait for tide data .... </p>
         <table id='tidestable' style="border:thin solid gray;border-collapse:collapse">
             <tr style="background-color:gray;color:white">
@@ -235,8 +247,8 @@
 <!--EMERGENCY ------------------------------------------------------------------------------------------>
 
     <div id="emergencypage" style="display:none">
-        <h1>Emergency Contacts</h1>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <h1><button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            Emergency Contacts</h1>
         <p>Tap a phone number to dial it.</p>
         <table id="emergencytable">
         </table>
@@ -244,8 +256,11 @@
         </div>
 <!--WEATHER -------------------------------------------------------------------------------------------->
  <div id="weatherpage" style="display:none">
-    <h1>Anderson Island Weather</h1>
-     <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+    <h1>
+        <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        Anderson Island Weather
+    </h1>
+
         <p id="currentweatherpage">Current weather: </p>
         <p id="forecastpage">Please wait for the forecast.</p>
        <table id='forecasttable' style="border:thin solid black;border-collapse:collapse">
@@ -267,8 +282,10 @@
 
 <!-- FERRY WEBCAMS ------------------------------------------------------------------------------------->
   <div id="ferrywebcampage" style="display:none">
-      <h1>FERRY WEBCAMS</h1>
-           <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button><br />
+      <h1>      
+          <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+          FERRY WEBCAMS
+      </h1>
         <strong>Steilacoom Camera </strong>- refreshes every minute<br>
         <br />
         <img id="steilacoomcam"  alt="Steilacoom Camera " src="icon.png"> 
@@ -280,8 +297,10 @@
 </div>
  <!-- ABOUT ------------------------------------------------------------------------------------->
   <div id="aboutpage" style="display:none">
-    <h1> About</h1>
-      <button onclick="ShowMainPage();">&larr;BACK</button>
+    <h1> 
+      <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+      About
+    </h1>
     <p>The Anderson Island Assistant is a handy little mobile app whose purpose is to provide instant access 
         to all sorts of good Anderson Island stuff, especially time-sensitive information.  
         It is available now in beta-form as a web-based app from <a href="http://www.anderson-island.org">www.anderson-island.org</a>.
@@ -290,9 +309,11 @@
        </p>
         <hr />
         <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
-        <p> <a style="display:block;text-decoration:none;background-color:lightgray;width:50%" href="mailto:support@postersw.com">Send feedback.</a></p>
-        <p>Contact us: Email: support@postersw.com.  Phone: 253-267-4936.</p>
+        <p> <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="mailto:support@postersw.com">Send Email</a>
+            <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="tel:253-267-4936">Call Us</a></p>
+        <p>Email: support@postersw.com.  Phone: 253-267-4936</p>
         <p>2/23/2016.</p>
+
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
@@ -300,7 +321,7 @@
             <span id="updatetime" style="font-size:x-small">Screen update time.</span>
             <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-       <br /><span style="font-size:x-small">AIA Web Ver: 0.2.223-0807</span>
+       <br /><span style="font-size:x-small">AIA Web Ver: 0.2.223-1133</span>
 
 
         </p>
@@ -1047,10 +1068,12 @@
             ShowPage("comingeventspage");
             InitializeDates(0);
             if (type == "events") {
-                document.getElementById("comingeventsH1").innerHTML = "COMING EVENTS"
+                document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
+                document.getElementById("comingactivitiesH1").setAttribute('style', 'display:none;');
             } else {
-                document.getElementById("comingeventsH1").innerHTML = "COMING ACTIVITIES"
-             }
+                document.getElementById("comingeventsH1").setAttribute('style', 'display:none;');
+                document.getElementById("comingactivitiesH1").setAttribute('style', 'display:normal;');
+            }
             DisplayComingEventsList(GetEvents())
         }
 
