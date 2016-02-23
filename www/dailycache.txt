@@ -5,6 +5,7 @@ FERRYTIMESA
 615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y;
 OPENHOURS
 Store (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,http://www.andersonislandgeneralstore.com
+Coffee Shop (884-4001),0800-1500,0530-2000,0530-1500,0530-1500,0530-1500,0530-2000,0800-2000,http://www.andersonislandgeneralstore.com
 Restaurant (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,http://rivieracommunityclub.com/amenities/restaurant
 Dump (884-4072),1000-1400,1300-1700,,,,,,https://www.co.pierce.wa.us/index.aspx?NID=1541
 OPENHOURSEND
