@@ -733,7 +733,7 @@
             // ajax async request
             //$.get("comingevents.txt", ComingEventsReceived());
             $.ajax({
-                url: "comingevents.txt",
+                url: "http://anderson-island.org/comingevents.txt",
                 success: function (data) {
                     //alert("Data: " + data + "\nStatus: " + status);
                     var i = data.indexOf("ACTIVITIES");
@@ -757,7 +757,7 @@
         function GetDailyCache() {
             // ajax async request
             $.ajax({
-                url: "dailycache.txt",
+                url: "http://anderson-island.org/dailycache.txt",
                 success: function (data) {
                     InitializeDates(0);
                     ReloadDailyCache(data);
