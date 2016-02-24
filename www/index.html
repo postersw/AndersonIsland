@@ -122,20 +122,8 @@
              EMERGENCY</td>
          </tr>
           
-         <tr style="background-color:lightgray;" >
-             <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2"> ISLAND INFORMATION <br />
- 
-            <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
-            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />                 
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org');">Island Patrol</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.yellowbook.com/local-business-directory/?where=anderson+island%2C+wa');">Local Businesses</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org');">Parks</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.doh.wa.gov/ehp/sf/biotoxin.htm');">Redtide Status (WA DOH)</button>
-            <button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com');">Riviera</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/');">Shellfish (WDFW)</button>
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com');">Store</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
+         <tr style="background-color:lightgray;" onclick="ShowLinksPage();">
+             <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2">ISLAND INFORMATION LINKS
              </td>            
             </tr>
 
@@ -189,18 +177,21 @@
         <h1 id="comingeventsH1" style="display:none">
             <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
             COMING EVENTS
+           <button style="background-color:blue;color:white;float:right" onclick="ShowOtherCalendars();">MORE</button>
         </h1>
         <h1 id="comingactivitiesH1" style="display:none">
             <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
             COMING ACTIVITIES
+            <button style="background-color:blue;color:white;float:right" onclick="ShowOtherCalendars();">MORE</button>
         </h1>
          
-         <!--<p>CALENDARS:<br />
-        <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Comm Club</button>
-        <button onclick="window.open('http://rivieracommunityclub.com/event-calendar');">Riviera</button>
-        <button onclick="ShowCC();">Hist Society</button>
-              </p>
-              <hr /> -->
+        <div id="othercalendars" style="display:none">
+            <p>CALENDARS:<br />
+            <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Comm Club</button>
+            <button onclick="window.open('http://rivieracommunityclub.com/event-calendar');">Riviera</button>
+            <button onclick="window.open('http://andersonislandhs.org');">Hist Society</button>
+            </p> 
+         </div>
 
        <button style="width:22%" onclick="DisplayComingEventsList( GetEvents())">List</button>
        <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
@@ -314,6 +305,24 @@
         <p>Email: support@postersw.com.  Phone: 253-267-4936</p>
         <p>2/23/2016.</p>
 
+</div>
+<!-- ISLAND INFORMATION LINKS ---------------------------------------------------------------------->
+<div id="linkspage" style="display:none">
+    <h1> 
+        <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        ISLAND INFORMATION LINKS
+    </h1>
+            <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
+            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />                 
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org');">Island Patrol</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.yellowbook.com/local-business-directory/?where=anderson+island%2C+wa');">Local Businesses</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org');">Parks</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.doh.wa.gov/ehp/sf/biotoxin.htm');">Redtide Status (WA DOH)</button>
+            <button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com');">Riviera</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/');">Shellfish (WDFW)</button>
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com');">Store</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
@@ -1065,6 +1074,7 @@
         //  entry   type = 'events' or 'activities'
         function DisplayComingEventsPage(type) {
             localStorage.setItem("eventtype", type);
+            document.getElementById("othercalendars").setAttribute("style", "display:none");
             ShowPage("comingeventspage");
             InitializeDates(0);
             if (type == "events") {
@@ -1086,6 +1096,11 @@
                 return localStorage.getItem("comingactivities");  //display stored data in case we can't successfully reload the comingevents cache\
             }
         }
+
+        function ShowOtherCalendars() {
+            document.getElementById("othercalendars").setAttribute("style", "display:normal");
+        }
+
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEventsList - display the events in the CE string, which is a copy of the comingevents txt file
         //  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
@@ -1684,6 +1699,13 @@
         // About
         function ShowAboutPage() {
             ShowPage("aboutpage");
+        }
+
+//====LINKS=========================================================================================
+        /////////////////////////////////////////////////////////////////////////////////////
+        // About
+        function ShowLinksPage() {
+            ShowPage("linkspage");
         }
     </script>
 

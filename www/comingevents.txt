@@ -16,11 +16,12 @@
 0526;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0526;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0507;1900;2100;E;AIA Spring Concert;Comm Club;AIA
+0528;1000;1300;E;Farm Day;Farm;AIHS
 0623;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0623;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
+0702;1100;1400;E;Salmon Bake;Farm;AIHS
 0728;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0728;1200;1300;M;AICC Annual Picnic/Potluck;Comm Club;Comm Club
-
 
 ACTIVITIES
 0211;1300;1500;A;Art Club;MSR-Rivera;Rivera
