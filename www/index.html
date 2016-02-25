@@ -330,7 +330,7 @@
             <span id="updatetime" style="font-size:x-small">Screen update time.</span>
             <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-       <br /><span style="font-size:x-small">AIA Web Ver: 0.3.223-2303</span>
+       <br /><span style="font-size:x-small">AIA Web Ver: 0.3.224-2341</span>
 
 
         </p>
@@ -364,6 +364,7 @@
         //var holiday;  // true if  holiday
         var updateMinutes; // minutes since last update
         var forceCacheReload; // true to force a cache reload
+        var forceTideReload;  // true to force tide reload
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
@@ -486,33 +487,6 @@
                 //opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
                 //closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
                 openlist += GetOpenStatus(a) + "<br/>";
-                //// test for closed
-                //if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
-                //    openlist += " <span style='color:darkred'> Closed. </span>";
-                //    if (timehhmm < opentime) {
-                //        openlist += " Opens today at " + VeryShortTime(opentime) + "<br/>";
-                //        continue;
-                //    }
-                //    // find next open time
-                //    j = dayofweek + 1; if (j == 7) j = 0;
-                //    // if it opens tomorrow
-                //    if (a[j + 1] != "") {  
-                //        openlist += " Opens tomorrow at " + VeryShortTime(a[j + 1].substring(0, 4)) + "<br/>";
-                //        continue;
-                //    }
-                //    // not open tomorrow. find next open day.
-                //    while (true) {
-                //        j++;  if (j == 7) j = 0; // handle day rollover
-                //        if (a[j + 1] != "") { // open day found
-                //            openlist += " Opens " + dayofweekname[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4)) + "<br/>";
-                //            break;
-                //        }
-                //    } // while loop
-                    
-            //    } else {
-            //        // its open
-            //        openlist += " <span style='color:green;font-weight:bold'> Open </span>till " + VeryShortTime(closetime) + " today<br/>";
-            //    }
             } // end for
             return openlist;
         }
@@ -560,6 +534,12 @@
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         // getCurrentWeather  
         function getCurrentWeather() {
+            //alert("getcurrentweather");
+            // kludge - exit right away
+            var t = localStorage.getItem("currentweathertime");
+            if (t != null && RawTimeDiff(t, timehhmm) < 20) return; // gets weather async every 20 min.
+            localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
+
             $.ajax({
                 url: 'http://api.aerisapi.com/observations/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
                 dataType: 'jsonp',
@@ -575,8 +555,15 @@
                         $("#weather").html(current); // jquery equivalent. Is this really easier?
                     }
                     else {
+                        // error, but Don't correct forecast. just leave the old one.
+                        // update the time so that we don't keep asking futilly.
                         //alert('Could not get current weather: ' + json.error.description);
-                        $("#weather").html("Current weather not available.");
+                        if (localStorage.getItem("currentweather") == null) { // if no current weather, set to 'not available'
+                            var current = "Current weather not available.";
+                            localStorage.setItem("currentweather", current);
+                            $("#weather").html(current);
+                        }
+                        localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
                     }
                 }
             });
@@ -587,6 +574,11 @@
         // get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
         // License as of 2/8/16 is for 750 hits/day for free.
         function getForecast() {
+            // kludge to prevent over fishing of forecast
+            var t = localStorage.getItem("forecasttime");
+            if (t != null && RawTimeDiff(t, timehhmm) < 180) return; // gets weather async every 20 min.
+            localStorage.setItem("forecasttime", timehhmm); // save the cache time so we don't keep asking forever
+
             $.ajax({
                 url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
                 dataType: 'jsonp',
@@ -599,8 +591,16 @@
                         $("#forecast").html(forecast);
                     }
                     else {
+                        // no error. Don't correct forecast. just leave the old one.
+                        // update the time so that we don't keep asking futilly.
                         //alert('Could not load weather forecast: ' + json.error.description);
-                        $("#forecast").html("Forecast is not available.");
+                        //$("#forecast").html("Forecast is not available.");
+                        if (localStorage.getItem("forecast") == null) { // if no current weather, set to 'not available'
+                            var current = "Current forecast not available.";
+                            localStorage.setItem("forecast", current);
+                            $("#forecast").html(current);
+                        }
+                        localStorage.setItem("forecasttime", timehhmm); // save time so we don't keep asking
                     }
                 }
             });  // end of ajax call
@@ -619,10 +619,13 @@
             var oldtide = -1;
             var newtidetime, oldtidetime, newtideheight, oldtideheight;
             var json = localStorage.getItem("jsontides");
+            // get tide data
             if (json === null) {
-                forceCacheReload = true;
+                forceTideReload = true;
+                document.getElementById("tides").innerHTML = "Tide data not available.";
                 return;
             }
+
             var periods = JSON.parse(json); // parse it
             // roll through the reply in jason.response.periods[i]
             var i;
@@ -657,7 +660,7 @@
                     return;
                 }
             }
-            forceCacheReload = true; // if we haven't gotten today's tides, reload it
+            forceTideReload = true; // if we haven't gotten today's tides, reload it
          }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -674,9 +677,11 @@
 
                     if (json.success == true) {
                         localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json structure
-                        localStorage.setItem("tidestime", monthday);
+                        localStorage.setItem("tidesloadedmmdd", monthday);
                         ShowNextTides();
                     } else {
+                        // error
+                        localStorage.setItem("tidesloadedmmdd", monthday);
                     }
                 }
             });
@@ -781,7 +786,8 @@
             data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
             //var rows = data.split("\n"); //split into lines
             if (data.substring(0,10) != "DAILYCACHE") {
-                alert("could not load updated values for ferry times and open hours");
+                //alert("could not load updated values for ferry times and open hours");
+                document.getElementById("reloadtime").innerHTML = "Could not load dailycache data.";
                 return;
             }
             //alert("loading daily cache");
@@ -837,7 +843,8 @@
             }
 
             // main page update
-
+            forceCacheReload = false;
+            forceTideReload = false;
             ShowCachedData();
 
             // reload daily stuff - ferry schedule, store hours, coming events, tides
@@ -850,9 +857,9 @@
             var t = localStorage.getItem("currentweathertime");
             if (t == null || RawTimeDiff(t, timehhmm) > 20) getCurrentWeather(); // gets weather async every 20 min.
 
-            // forecast every hour
+            // forecast every 4 hours
             t = localStorage.getItem("forecasttime");
-            if (t == null || RawTimeDiff(t, timehhmm) > 60) getForecast(); // gets weather async every hour.
+            if (t == null || RawTimeDiff(t, timehhmm) > 180) getForecast(); // gets weather async every 4 hour.
 
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
             localStorage.setItem("updateminutes", updateMinutes);
@@ -881,12 +888,10 @@
             $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
 
             s = localStorage.getItem("forecast");
-            if (s == null) forceCacheReload = true;
-            else document.getElementById("forecast").innerHTML = s;
+            if (s != null) document.getElementById("forecast").innerHTML = s;
 
             s = localStorage.getItem("currentweather"); // cached current weather
-            if (s == null) forceCacheReload = true;
-            else document.getElementById("weather").innerHTML = s;
+            if (s != null) document.getElementById("weather").innerHTML = s;
 
             document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
                 "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime");
@@ -904,7 +909,7 @@
             getForecast();
             getCurrentWeather();
             document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-                                "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime");
+                                "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime") + " Counter=" + updateMinutes;
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -1715,6 +1720,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////////////
         //  MAIN APP CODE
         //
+        var cacheReloadEvery = 720; // minutes
 
         app.initialize();
         localStorage.setItem("displaypage", "mainpage");
@@ -1723,23 +1729,27 @@
         updateMinutes = 1;
         localStorage.setItem("updateminutes", "1"); // start at 1 so the 1st timer call does not run stuff, but the focus event does
         forceCacheReload = false; // cache reload not needed
+        forceTideReload = false; 
 
         //  Show the cached data
-        document.getElementById("reloadtime").innerHTML = "before show cached data";
         ShowCachedData();
 
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
         var t = localStorage.getItem("currentweathertime");
-        if(t==null || RawTimeDiff(t, timehhmm) > 20) getCurrentWeather(); // gets weather async every time.
+        if (t == null || RawTimeDiff(t, timehhmm) > 20) getCurrentWeather(); // gets weather async every time.
+
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
         if (dailycacheloaded == null) forceCacheReload = true;
         var reloadreason="";
         if (forceCacheReload) reloadreason = "Cache reload forced";
         else if (dailycacheloaded != monthday) reloadreason = "dailycacheloaded != monthday";
-        else if (RawTimeDiff(localStorage.getItem("dailycacheloadedtime"), timehhmm) > 60) reloadreason = "RawTimeDiff " + RawTimeDiff(timehhmm, localStorage.getItem("dailycacheloadedtime"));
-        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(localStorage.getItem("dailycacheloadedtime"),timehhmm) > 720) {
+        else if (RawTimeDiff(localStorage.getItem("dailycacheloadedtime"), timehhmm) > cacheReloadEvery) reloadreason = "RawTimeDiff " + RawTimeDiff(timehhmm, localStorage.getItem("dailycacheloadedtime"));
+        if (forceCacheReload || (dailycacheloaded != monthday) || RawTimeDiff(localStorage.getItem("dailycacheloadedtime"), timehhmm) > cacheReloadEvery) {
             document.getElementById("reloadreason").innerHTML = reloadreason;
             ReloadCachedData();
+        } else if (forceTideReload) {  // special case to reload cache
+            t = localStorage.getItem("tidesloadedmmdd");
+            if (t == null || (t != monthday)) getTideData();
         }
 
         // set refresh timners
