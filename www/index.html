@@ -129,6 +129,7 @@
 
              <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedData();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="window.open('http://www.anderson-island.org/?new','_parent');">Update App</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
                 <a style="text-decoration:none;" href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback">Feedback</a></td></tr>
             </table>
@@ -331,7 +332,7 @@
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
             <span id="currentweathertime" style="font-size:x-small"></span>
        <br /><span style="font-size:x-small">Weather from OpenWeatherMap<br />
-           AIA Web Ver: 0.4.226-2330</span>
+           AIA Web Ver: 0.4.227-0925</span>
 
 
         </p>
@@ -752,7 +753,7 @@
             if (t != null && (Number(t)== monthday)) return; // gets tides async every day
 
             $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=-20hours&to=+48hours',
+                url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
                 dataType: 'jsonp',
                 success: function (json) {
 
