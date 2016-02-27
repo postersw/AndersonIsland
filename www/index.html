@@ -256,12 +256,11 @@
         <p id="forecastpage">Please wait for the forecast.</p>
        <table id='forecasttable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white;">
-                <td>DAY</td>
-                <td>HI&nbsp</td>
-                <td>LO&nbsp</td>
+                <td>DAY TIME</td>
+                <td>TEMP&nbsp</td>
                 <td>FORECAST</td>
-                <td>RAIN </td>
-                <td>WIND </td>
+                <td>RAIN in. </td>
+                <td>WIND mph</td>
             </tr>
         </table>
         <p>The forecast in yellow is for the 12 hour day.<br />
@@ -331,7 +330,8 @@
             <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
             <span id="currentweathertime" style="font-size:x-small"></span>
-       <br /><span style="font-size:x-small">AIA Web Ver: 0.3.225-2044. Weather from OpenWeatherMap.</span>
+       <br /><span style="font-size:x-small">Weather from OpenWeatherMap<br />
+           AIA Web Ver: 0.4.226-2310</span>
 
 
         </p>
@@ -603,11 +603,24 @@
                 url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
                 dataType: 'jsonp',
                 success: function (r) {
-                        var current = StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
-                            StripDecimal(r.wind.speed) + " mph ";// + ", " + r.precipitation.value + r.precipitation.value
-                        localStorage.setItem("currentweather", current);
-                        localStorage.setItem("currentweathertime", timehhmm); // save the cache time
-                        $("#weather").html(current); // jquery equivalent. Is this really easier?
+                    // short form
+                    var rain;
+                    if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
+                    else rain = (Number(r.rain["3h"])/25.4).toFixed(2);
+                    var current = StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
+                        StripDecimal(r.wind.speed) + " mph, " + rain + " rain" ;// + ", " + r.precipitation.value + r.precipitation.value
+                    localStorage.setItem("currentweather", current);
+                    localStorage.setItem("currentweathertime", timehhmm); // save the cache time
+                    $("#weather").html(current); // jquery equivalent. Is this really easier?
+                    // detailed
+                    dsr = new Date(Number(r.sys.sunrise)*1000);
+                    dss = new Date(Number(r.sys.sunset) * 1000);
+                    var currentlong = "Currently " + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
+                        r.main.humidity + "% RH, wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
+                         ", " + rain + " in. rain, " +
+                        "<br/>Sunrise at " + dsr.toLocaleTimeString() + ", Sunset at " + dss.toLocaleTimeString();
+
+                    localStorage.setItem("currentweatherlong", currentlong);
                     }
             });
         } // end of function
@@ -656,7 +669,7 @@
             function getForecast() {
                 // kludge to prevent over fishing of forecast
                 var t = localStorage.getItem("forecasttime");
-                if (t != null && RawTimeDiff(t, timehhmm) < 120) return; // gets weather forecast async every 120 min.
+                if (t != null && RawTimeDiff(t, timehhmm) < 60) return; // gets weather forecast async every 60 min.
                 localStorage.setItem("forecasttime", timehhmm); // save the cache time so we don't keep asking forever
 
                 $.ajax({
@@ -735,6 +748,9 @@
             var hilow;
             var nextTides;
             var oldtide = -1;
+            var t = localStorage.getItem("tidesloadedmmdd");
+            if (t != null && (Number(t)== monthday)) return; // gets tides async every day
+
             $.ajax({
                 url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=-20hours&to=+48hours',
                 dataType: 'jsonp',
@@ -746,7 +762,7 @@
                         ShowNextTides();
                     } else {
                         // error
-                        localStorage.setItem("tidesloadedmmdd", monthday);
+                        //localStorage.setItem("tidesloadedmmdd", monthday);
                     }
                 }
             });
@@ -831,7 +847,7 @@
                     ReloadDailyCache(data);
                     localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
                     localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
-                    document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + monthday + " @" + timehhmm;
+                    DisplayLoadTimes();
 
                     //alert("coming events loaded at " + monthday);
                 }
@@ -850,7 +866,7 @@
             //var rows = data.split("\n"); //split into lines
             if (data.substring(0,10) != "DAILYCACHE") {
                 //alert("could not load updated values for ferry times and open hours");
-                document.getElementById("reloadtime").innerHTML = "Could not load dailycache data.";
+                document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
                 return;
             }
             //alert("loading daily cache");
@@ -906,8 +922,7 @@
             }
 
             // main page update
-            forceCacheReload = false;
-            forceTideReload = false;
+
             ShowCachedData();
 
             // reload daily stuff - ferry schedule, store hours, coming events, tides
@@ -915,6 +930,9 @@
             if ((dailycacheloaded==null) || (Number(dailycacheloaded) != monthday)) {
                 ReloadCachedData();
             }
+
+            // get tides once/day
+            getTideData();
 
             // current weather every 20 
             getCurrentWeather(); // gets weather async every 20 min. Timer is in routine.
@@ -924,7 +942,7 @@
 
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
             localStorage.setItem("updateminutes", updateMinutes);
-
+            DisplayLoadTimes();
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -954,8 +972,7 @@
             s = localStorage.getItem("currentweather"); // cached current weather
             if (s != null) document.getElementById("weather").innerHTML = s;
 
-            document.getElementById("reloadtime").innerHTML = "Cached data from " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-                "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime");
+            DisplayLoadTimes();
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
@@ -966,13 +983,21 @@
             InitializeDates(0);
             GetDailyCache();  // no limit
             GetComingEvents();// no limit
+            localStorage.removeItem("tidesloadedmmdd"); // force tides
             getTideData();// no limit
             localStorage.removeItem("forecasttime"); // force forecast reload at start of new day
             getForecast();// limited to every 120 min
             localStorage.removeItem("currentweathertime"); // force weather reload at start of new day
             getCurrentWeather();// limited to every 20 min
+            DisplayLoadTimes();
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        // DisplayLoadTimes() displays time data loaded
+        function DisplayLoadTimes() {
             document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-                                "; Forecast: " + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime") + " Counter=" + updateMinutes;
+                                "<br/>Tides:" + localStorage.getItem("tidesloadedmmdd") + "; Forecast:" + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime") + " Counter:" + updateMinutes;
+
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -1652,12 +1677,97 @@
         function ShowWeatherPage() {
             ShowPage("weatherpage");
             InitializeDates(0);
-            getCurrentWeatherPage();
+            document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong");
             getWeatherForecastPage("today");
         }
         /////////////////////////////////////////////////////////////////////////////////////////////
-        // get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // get weather data using the AERIS  api and returning a jsonp structure. This is the only way to get data from a different web site.
         // License as of 2/8/16 is for 750 hits/day for free.
+        //  fromdate = optional starting date for the weather.  Deprecated 2/26/16.
+        //function getWeatherForecastPageAERIS(fromdate) {
+        //    var olddate, newdate; // dates
+        //    var ampm; // am or pm
+        //    var currentTemp;
+
+        //    //$("#tideButton").hide();  // hide the user button
+
+        //    $.ajax({
+        //        // url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+        //        url: 'http://api.aerisapi.com/forecasts/98303?filter=daynight&client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+        //        dataType: 'jsonp',
+        //        success: function (json) {
+
+        //            if (json.success == true) {
+
+        //                //debug - display the return
+        //                //alert("json success");
+        //                //var output;
+        //                //output = JSON.stringify(json);
+        //                //alert(output);
+        //                // document.getElementById("forecast").innerHTML = output;
+
+        //                var resp = json.response[0].periods;
+        //                var mydayofweek = dayofweek;
+        //                var firstrow = true;  // true for first row
+        //                // roll through the reply in jason.response.periods[i]
+        //                var table = document.getElementById("forecasttable");
+        //                clearTable(table);
+        //                for (var i = 0; i < resp.length; i++) {
+        //                    // if date changed, add a blank row
+        //                    var r = resp[i];
+
+        //                    // Insert New Row for table at end of table.
+        //                    var row1 = table.insertRow(-1);
+        //                    if (r.isDay) row1.style.backgroundColor = "lightyellow";
+        //                    else row1.style.backgroundColor = "lightgray";
+
+        //                    // Insert New Column for date
+        //                    var row1col1 = row1.insertCell(0);
+        //                    //var m = r.dateTimeISO.substring(5, 7);
+        //                    //var d = r.dateTimeISO.substring(8, 10);
+        //                    //row1col1.innerHTML = m + "/" + d + '&nbsp';
+        //                    if (r.isDay || firstrow) row1col1.innerHTML = dayofweekname[mydayofweek].substring(0, 3);
+        //                    firstrow = false;
+        //                    row1col1.style.border = "thin solid gray";
+        //                    // high
+        //                    row1col1 = row1.insertCell(1);
+        //                    if (r.maxTempF != null) row1col1.innerHTML = r.maxTempF + "&deg";
+        //                    row1col1.style.border = "thin solid gray";
+        //                    // low
+        //                    row1col1 = row1.insertCell(2);
+        //                    if (r.minTempF != null) row1col1.innerHTML = r.minTempF + "&deg";
+        //                    row1col1.style.border = "thin solid gray";
+        //                    // weather
+        //                    row1col1 = row1.insertCell(3);
+        //                    row1col1.innerHTML = r.weather;
+        //                    row1col1.style.border = "thin solid gray";
+        //                    // rain
+        //                    row1col1 = row1.insertCell(4);
+        //                    row1col1.innerHTML = r.pop + "% &nbsp" + r.precipIN + " in.";
+        //                    row1col1.style.border = "thin solid gray";
+        //                    // wind
+        //                    row1col1 = row1.insertCell(5);
+        //                    row1col1.innerHTML = r.windDir + " " + r.windSpeedMPH + " mph";
+        //                    row1col1.style.border = "thin solid gray";
+
+        //                    // bump day if we just did a night
+        //                    if (r.isDay == false) {
+        //                        mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
+        //                    }
+        //                }  // for end
+        //                document.getElementById("forecastpage").innerHTML = "Data from " + FormatTime(timehhmm) + " and does not automatically refresh.";
+        //            }
+        //            else {
+        //                //alert('An error occurred: ' + json.error.description);
+        //                document.getElementById("forecastpage").innerHTML = "Forecast Unavailable." + json.error.description;
+        //            }
+        //        }
+        //    });  // end of ajax call
+        //}  // end of function
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        // get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // License as of 2/25/16 is for 60 hits/minute for free.
         //  fromdate = optional starting date for the weather
         function getWeatherForecastPage(fromdate) {
             var olddate, newdate; // dates
@@ -1667,103 +1777,99 @@
             //$("#tideButton").hide();  // hide the user button
 
             $.ajax({
-                // url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
-                url: 'http://api.aerisapi.com/forecasts/98303?filter=daynight&client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
                 dataType: 'jsonp',
                 success: function (json) {
-
-                    if (json.success == true) {
-
-                        //debug - display the return
-                        //alert("json success");
-                        //var output;
-                        //output = JSON.stringify(json);
-                        //alert(output);
-                        // document.getElementById("forecast").innerHTML = output;
-
-                        var resp = json.response[0].periods;
+                    //var r = json.list[0];
+                    //var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
+                     //   r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
+                        var resp = json.list;
                         var mydayofweek = dayofweek;
                         var firstrow = true;  // true for first row
-                        // roll through the reply in jason.response.periods[i]
+                        var olddate = "";
+                        // roll through the reply in jason.list[i]
                         var table = document.getElementById("forecasttable");
+                        // don't clear the table so it is there in case we don't have network coverage for a new forecast
                         clearTable(table);
                         for (var i = 0; i < resp.length; i++) {
                             // if date changed, add a blank row
                             var r = resp[i];
 
-                            // Insert New Row for table at end of table.
+                            // Insert New Row for table for new day 
                             var row1 = table.insertRow(-1);
-                            if (r.isDay) row1.style.backgroundColor = "lightyellow";
-                            else row1.style.backgroundColor = "lightgray";
+                            var newdate = r.dt_txt.substring(5, 11);// date
+                            if (newdate != olddate) {
+                                row1 = table.insertRow(-1); // dummy row
+                                row1col1 = row1.insertCell(0); row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
+                                var dow = GetDayofWeek(newdate.substring(0, 2) + newdate.substring(3, 5));
+                                row1col1.innerHTML = dayofweekshort[dow] + " " + newdate;
+                                olddate = newdate;
+                            }
+                            var row1 = table.insertRow(-1);
+                            var t = r.dt_txt.substring(11, 13) * 100;  // hh00
+                            if ((t < 900) || (t > 1800)) row1.style.backgroundColor = "lightgray";
+                            else row1.style.backgroundColor = "lightyellow";
 
-                            // Insert New Column for date
+                            // Insert New Column for time
                             var row1col1 = row1.insertCell(0);
-                            //var m = r.dateTimeISO.substring(5, 7);
-                            //var d = r.dateTimeISO.substring(8, 10);
-                            //row1col1.innerHTML = m + "/" + d + '&nbsp';
-                            if (r.isDay || firstrow) row1col1.innerHTML = dayofweekname[mydayofweek].substring(0, 3);
+                            row1col1.innerHTML = "&nbsp&nbsp&nbsp" + VeryShortTime(t);  // time
                             firstrow = false;
                             row1col1.style.border = "thin solid gray";
-                            // high
+                            // high/low
                             row1col1 = row1.insertCell(1);
-                            if (r.maxTempF != null) row1col1.innerHTML = r.maxTempF + "&deg";
-                            row1col1.style.border = "thin solid gray";
-                            // low
-                            row1col1 = row1.insertCell(2);
-                            if (r.minTempF != null) row1col1.innerHTML = r.minTempF + "&deg";
+                            row1col1.innerHTML = StripDecimal(r.main.temp_max) + "&deg";
                             row1col1.style.border = "thin solid gray";
                             // weather
-                            row1col1 = row1.insertCell(3);
-                            row1col1.innerHTML = r.weather;
+                            row1col1 = row1.insertCell(2);
+                            row1col1.innerHTML = r.weather[0].description;
                             row1col1.style.border = "thin solid gray";
                             // rain
-                            row1col1 = row1.insertCell(4);
-                            row1col1.innerHTML = r.pop + "% &nbsp" + r.precipIN + " in.";
+                            row1col1 = row1.insertCell(3);
+                            var rain;
+                            if (typeof r.rain == 'undefined' || typeof r.rain["3h"]== 'undefined') rain = "0";
+                            else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
+                            row1col1.innerHTML = rain;
                             row1col1.style.border = "thin solid gray";
                             // wind
-                            row1col1 = row1.insertCell(5);
-                            row1col1.innerHTML = r.windDir + " " + r.windSpeedMPH + " mph";
+                            row1col1 = row1.insertCell(4);
+                            row1col1.innerHTML = DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed);
                             row1col1.style.border = "thin solid gray";
 
-                            // bump day if we just did a night
-                            if (r.isDay == false) {
-                                mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
-                            }
+                            //// bump day if we just did a night
+                            //if (r.isDay == false) {
+                            //    mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
+                            //}
                         }  // for end
                         document.getElementById("forecastpage").innerHTML = "Data from " + FormatTime(timehhmm) + " and does not automatically refresh.";
                     }
-                    else {
-                        //alert('An error occurred: ' + json.error.description);
-                        document.getElementById("forecastpage").innerHTML = "Forecast Unavailable." + json.error.description;
-                    }
-                }
+                
             });  // end of ajax call
         }  // end of function
         /////////////////////////////////////////////////////////////////////////////////////////////
         // get current weather observation data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
         //for documentation see: http://www.aerisweather.com/support/docs/api/reference/endpoints/observations/
         // License as of 2/8/16 is for 750 hits/day for free.
-        function getCurrentWeatherPage() {
-            $.ajax({
-                url: 'http://api.aerisapi.com/observations/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
-                dataType: 'jsonp',
-                success: function (json) {
-                    if (json.success == true) {
-                        // pick out the return variables
-                        var r = json.response.ob;
-                        var current = "Currently " + r.weather + ", " + r.tempF + "&degF, " + r.humidity + "% RH, wind " + r.windDir + " " + r.windMPH + " mph " +
-                            ", " + r.precipIN + " in. rain, " +
-                            "<br/>Sunrise at " + r.sunriseISO.substring(11, 19) + ", Sunset at " + r.sunsetISO.substring(11, 19);
-                        //document.getElementById("forecast").innerHTML = current;
-                        $("#currentweatherpage").html(current); // jquery equivalent. Is this really easier?
-                    }
-                    else {
-                        //alert('An error occurred: ' + json.error.description);
-                        $("#currentweatherpage").html("Current weather is unavailable. " + json.error.description);
-                    }
-                }
-            });
-        }
+        //function getCurrentWeatherPage() {
+        //    $.ajax({
+        //        url: 'http://api.aerisapi.com/observations/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+        //        dataType: 'jsonp',
+        //        success: function (json) {
+        //            if (json.success == true) {
+        //                // pick out the return variables
+        //                var r = json.response.ob;
+        //                var current = "Currently " + r.weather + ", " + r.tempF + "&degF, " + r.humidity + "% RH, wind " + r.windDir + " " + r.windMPH + " mph " +
+        //                    ", " + r.precipIN + " in. rain, " +
+        //                    "<br/>Sunrise at " + r.sunriseISO.substring(11, 19) + ", Sunset at " + r.sunsetISO.substring(11, 19);
+        //                //document.getElementById("forecast").innerHTML = current;
+        //                $("#currentweatherpage").html(current); // jquery equivalent. Is this really easier?
+        //            }
+        //            else {
+        //                //alert('An error occurred: ' + json.error.description);
+        //                $("#currentweatherpage").html("Current weather is unavailable. " + json.error.description);
+        //            }
+        //        }
+        //    });
+        //}
 
     </script>
 
@@ -1832,14 +1938,14 @@
         }
 
         // tide reload every day
-        t = localStorage.getItem("tidesloadedmmdd");
-        if (t == null || (Number(t) != monthday)) getTideData();
+         getTideData();
 
 
         // set refresh timners
         setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
+        DisplayLoadTimes();
 
 
     </script>
