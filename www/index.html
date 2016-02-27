@@ -331,7 +331,7 @@
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
             <span id="currentweathertime" style="font-size:x-small"></span>
        <br /><span style="font-size:x-small">Weather from OpenWeatherMap<br />
-           AIA Web Ver: 0.4.226-2310</span>
+           AIA Web Ver: 0.4.226-2330</span>
 
 
         </p>
@@ -1112,6 +1112,7 @@
             if (holiday) row1col1.innerHTML = "Holiday";
             BuildFerrySchedule(ferrytimeS, ferrytimeA);
         }
+        InitializeDates(0);  // reset dates back
         //alert("build ferry sch done");
         //Append Table into div.
         //document.getElementById('divTable').appendChild(table);
