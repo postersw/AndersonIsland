@@ -818,7 +818,7 @@
             //$.get("comingevents.txt", ComingEventsReceived());
             //                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
             $.ajax({
-                url: "comingevents.txt",
+                url: "comingevents.txt?" + timehhmm,
                 success: function (data) {
                     //alert("Data: " + data + "\nStatus: " + status);
                     var i = data.indexOf("ACTIVITIES");
@@ -842,7 +842,7 @@
         function GetDailyCache() {
             // ajax async request
             $.ajax({
-                url: "dailycache.txt", // for phone use fully qualified url http://anderson-island.org/
+                url: "dailycache.txt?" + timehhmm, // for phone use fully qualified url http://anderson-island.org/
                 success: function (data) {
                     InitializeDates(0);
                     ReloadDailyCache(data);

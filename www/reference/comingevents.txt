@@ -7,10 +7,12 @@
 0227;1030;1200;M;Rivera BOT;Rivera;Rivera
 0227;1800;2000;S;AIHS Potluck;Comm Club;AIHS
 0228;1600;1900;E;Oscars with Tapas Dinner;Lakeshore Rest;Riviera
+0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Rest;Rivera;$7 cover. RSVP 884-3344
+0306;1300;1500;E;March of Dimes Tea;8808 Villa Beach Road;Comm Club
+0312;1800;1900;E;Renovation & Celebration Event;Comm Club;Comm Club
 0324;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0324;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0326;1800;2000;S;AIHS Potluck;Comm Club;AIHS
-0305;1830;2130;E;Britnee Kellogg live music;Lakeshore Rest;Rivera;$7 cover. RSVP 884-3344
 0428;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0428;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0526;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
