@@ -6,6 +6,7 @@
 // global date variables
 var table; // the schedule table as a DOM object
 var d; // date object
+var timestamp; // unix seconds since 1970
 var dayofweek;  // day of week in 0-6
 var letterofweek; // letter for day of week
 var timehhmm;  // hhmm in 24 hour format
@@ -62,6 +63,7 @@ function InitializeDates(dateincr) {
         d = new Date(year, month - 1, dayofmonth);
         //alert(" year=" + year + " day=" + day + " dow=" + d.getDay());
     }
+    timestamp = Date.now();
     dayofweek = d.getDay();  // day of week in 0-6
     letterofweek = "0123456".charAt(dayofweek); // letter for day of week
     timehh = d.getHours();

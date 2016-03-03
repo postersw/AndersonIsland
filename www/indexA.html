@@ -56,14 +56,7 @@
         <div data-role="content"></div>
         <h1 style="font-size:18px;margin-bottom:0px;background-color:blue;color:white;">Anderson Island Assistant </h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Tap an entry for more information.</span>
-
-        <!--Alerts-->
-        <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none">
-            <span style="font-size:18px;font-weight:bold;color:red;margin-left:0%">ALERT</span>
-            <span id='alerttext' style="font-size:small;font-weight:bold;color:red;">alert information goes here</span>
-            <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
-        </div>
-
+        <!--<p>All sorts of usefull information in an up-to-date easy-to-use app.</p>-->
  <table style="border-collapse:collapse";>
         <tr style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
             <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY </td>
@@ -339,7 +332,7 @@
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
             <span id="currentweathertime" style="font-size:x-small"></span>
        <br /><span style="font-size:x-small">Weather from OpenWeatherMap<br />
-           AIA Web Ver: 0.4.302-1735</span>
+           AIA Web Ver: 0.4.301-2047</span>
 
 
         </p>
@@ -381,15 +374,24 @@
             //window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
         }
 
-
+        //function ShowFerrySchedule() {
+        //    window.open("localferryschedule.html");
+        //    //window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
+        //}
         function ShowFerryCams() {
             window.open("ferrywebcams.html", '_parent');
         }
-
+        //function ShowComingEvents() {
+        //    window.open("comingevents.html"); //("http://www.andersonislandcc.org/calendar/");
+        //}
+        // query for tide times at noaa
         function ShowTides() {
             window.open("tides.html", '_parent');
         }
-
+        // query for tide times at noaa
+        function ShowWeather() {
+            window.open("aiweather.html", '_parent');
+        }
         function ShowMap() {
             window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4")
         }
@@ -400,48 +402,6 @@
 
         function LocalMenu() {
 
-        }
-        //////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayAlertDetail() - show the alert detail
-        function DisplayAlertDetail() {
-            alert(localStorage.getItem('alertdetail'))
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayAlertInfo() {
-        function DisplayAlertInfo() {
-            if(localStorage.getItem("alerttext")==null || localStorage.getItem("alerttext") == "") {
-                document.getElementById("alertdiv").setAttribute('style', 'display:none;');
-            } else {
-                document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
-                document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
-            }
-        }
-        /////////////////////////////////////////////////////////////////////////////////////////////////
-        // getAlertInfo - gets the alert info from the server every 12 minutes and save it in alerttext and alertdetail
-        function getAlertInfo() {
-            var alerttimeout = 720; // alert timeout in sec 12 minutes
-            var timestamp = Date.now() / 1000; // time in sec
-            var t = localStorage.getItem("alerttime");
-            if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
-            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
-
-            $.ajax({
-                url: 'alert.txt',
-                dataType: 'text',
-                success: function (r) {
-                    if (r == "") {
-                        localStorage.setItem("alerttext", "");
-                        localStorage.setItem("alertdetail", "");
-                    } else {  // if there is an alert, save it
-                        r = r + "\n";
-                        var i = r.indexOf("\n");
-                        localStorage.setItem("alerttext", r.substr(0,i));
-                        localStorage.setItem("alertdetail", Date().toString() + r.substr(i));
-                    }
-                    DisplayAlertInfo();
-                }
-            });
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -792,22 +752,27 @@
             var t = localStorage.getItem("tidesloadedmmdd");
             if (t != null && (Number(t) == monthday)) return; // gets tides async every day
             //url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
-            //                url: 'gettides.php',
+
 
             $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
-                dataType: 'jsonp',
-                success: function (json) {
-
+                url: 'gettides.php',
+                dataType: 'text',
+                error: function(a,b) {
+                    alert(b);
+                },
+                success: function (responseText) {
+                    var json = JSON.parse(responseText);
                     if (json.success == true) {
                         localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json structure
                         localStorage.setItem("tidesloadedmmdd", monthday);
                         ShowNextTides();
                     } else {
+                        alert("failure");
                         // error
                         //localStorage.setItem("tidesloadedmmdd", monthday);
                     }
                 }
+
             });
         }
 
@@ -983,9 +948,6 @@
             // forecast every 4 hours
             getForecast(); // gets weather async every 4 hour. Timer is in routine.
 
-            // alerts every 12 minutes
-            getAlertInfo();
-
             updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
             localStorage.setItem("updateminutes", updateMinutes);
             DisplayLoadTimes();
@@ -1008,7 +970,6 @@
         function ShowCachedData() {
             WriteNextFerryTimes();  // show cached ferry schedule
             ShowNextTides(); // show cached tide data
-            DisplayAlertInfo();
             document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
             $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
             $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
@@ -1030,8 +991,6 @@
             InitializeDates(0);
             GetDailyCache();  // no limit
             GetComingEvents();// no limit
-            localStorage.removeItem("alerttime");
-            getAlertInfo();
             localStorage.removeItem("tidesloadedmmdd"); // force tides
             getTideData();// no limit
             localStorage.removeItem("forecasttime"); // force forecast reload at start of new day
@@ -1040,7 +999,6 @@
             getCurrentWeather();// limited to every 20 min
             DisplayLoadTimes();
         }
-
         function ReloadCachedDataButton() {
             ReloadCachedData();
             alert("Data has been reloaded.");
