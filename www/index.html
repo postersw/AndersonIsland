@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <!--
     Anderson Island Assistant.  Single page version.
-    Robert Bedoll. 2/23/16.   (indexMultipage is the old version with multiple HTML pages).
+    Robert Bedoll. 2/23/16. 
 
     Copyright (c) 2016 Robert Bedoll.
 
@@ -12,17 +12,7 @@
     distributed with this work for additional information
     regarding copyright ownership.  The ASF licenses this file
     to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
+    "License"); 
 -->
 <html>
 <head>
@@ -54,7 +44,7 @@
     <div class="app">
         <div id="mainpage" style="display:block">
         <div data-role="content"></div>
-        <h1 style="font-size:18px;margin-bottom:0px;background-color:blue;color:white;">Anderson Island Assistant </h1>
+        <h1 id="appheader" style="font-size:18px;margin-bottom:0px;background-color:blue;color:white;">Anderson Island Assistant </h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Tap an entry for more information.</span>
 
         <!--Alerts-->
@@ -310,7 +300,14 @@
         <p> <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="mailto:support@postersw.com">Send Email</a>
             <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="tel:253-267-4936">Call Us</a></p>
         <p>Email: support@postersw.com.  Phone: 253-267-4936</p>
-        <p>2/23/2016.</p>
+        <hr />
+        <div id="phoneweb">Web version.</div>
+      <span id="updatetime" style="font-size:x-small">Screen update time.</span>
+            <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
+            <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
+            <span id="currentweathertime" style="font-size:x-small"></span>
+       <br /><span style="font-size:x-small">Weather from OpenWeatherMap</span>
+
 
 </div>
 <!-- ISLAND INFORMATION LINKS ---------------------------------------------------------------------->
@@ -333,13 +330,9 @@
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
-        <p> This page updates every minute.<br />
-            <span id="updatetime" style="font-size:x-small">Screen update time.</span>
-            <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
-            <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-            <span id="currentweathertime" style="font-size:x-small"></span>
-       <br /><span style="font-size:x-small">Weather from OpenWeatherMap<br />
-           AIA Web Ver: 0.4.302-1735</span>
+
+         <p> This page updates every minute.<br />           
+        <span style="font-size:x-small">   AIA Web Ver: 0.4.304.1615</span>
 
 
         </p>
@@ -381,15 +374,6 @@
             //window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
         }
 
-
-        function ShowFerryCams() {
-            window.open("ferrywebcams.html", '_parent');
-        }
-
-        function ShowTides() {
-            window.open("tides.html", '_parent');
-        }
-
         function ShowMap() {
             window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4")
         }
@@ -400,6 +384,24 @@
 
         function LocalMenu() {
 
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
+        // Determine whether the file loaded from PhoneGap or not
+        function isPhoneGap() {
+            return (window.cordova || window.PhoneGap || window.phonegap)
+            && /^file:\/{3}[^\/]/i.test(window.location.href)
+            && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        // FixURL = make URL fully qualified if a phonegap app
+        //  entry   url = the url
+        //  eixt    returns url
+        function FixURL(url) {
+            url += "?" + timehhmm; // turn off cache
+            if (isPhoneGap() == false) return url;
+            return 'http://anderson-island.org/' + url;
         }
         //////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayAlertDetail() - show the alert detail
@@ -425,9 +427,10 @@
             var t = localStorage.getItem("alerttime");
             if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
             localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+            var myurl = FixURL('alert.txt');
 
             $.ajax({
-                url: 'alert.txt',
+                url: myurl,
                 dataType: 'text',
                 success: function (r) {
                     if (r == "") {
@@ -627,6 +630,7 @@
         //  DegToCompassPoints - converts degrees to compass points
         function DegToCompassPoints(d) {
             var cp = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"];
+            if (d == undefined) return "";
             return cp[Math.floor((Number(d)+22.5) / 45)];
         }
 
@@ -859,8 +863,9 @@
             // ajax async request
             //$.get("comingevents.txt", ComingEventsReceived());
             //                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
+            var myurl = FixURL("comingevents.txt");
             $.ajax({
-                url: "comingevents.txt?" + timehhmm,
+                url: myurl,
                 success: function (data) {
                     //alert("Data: " + data + "\nStatus: " + status);
                     var i = data.indexOf("ACTIVITIES");
@@ -883,8 +888,9 @@
         //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
         function GetDailyCache() {
             // ajax async request
+            var myurl = FixURL("dailycache.txt");
             $.ajax({
-                url: "dailycache.txt?" + timehhmm, // for phone use fully qualified url http://anderson-island.org/
+                url: myurl, // for phone use fully qualified url http://anderson-island.org/
                 success: function (data) {
                     InitializeDates(0);
                     ReloadDailyCache(data);
@@ -1943,6 +1949,7 @@
         // About
         function ShowAboutPage() {
             ShowPage("aboutpage");
+            if (isPhoneGap()) document.getElementById("phoneweb").innerHTML = "Phone version.";
         }
 
 //====LINKS=========================================================================================

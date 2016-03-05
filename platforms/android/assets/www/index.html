@@ -127,7 +127,7 @@
              </td>            
             </tr>
 
-             <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
+             <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedData();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="window.open('http://www.anderson-island.org/?new','_parent');">Update App</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
@@ -332,7 +332,7 @@
             <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
             <span id="currentweathertime" style="font-size:x-small"></span>
        <br /><span style="font-size:x-small">Weather from OpenWeatherMap<br />
-           AIA Web Ver: 0.4.301-2047</span>
+           AIA Web Ver: 0.4.229-2116</span>
 
 
         </p>
@@ -750,29 +750,22 @@
             var nextTides;
             var oldtide = -1;
             var t = localStorage.getItem("tidesloadedmmdd");
-            if (t != null && (Number(t) == monthday)) return; // gets tides async every day
-            //url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
-
+            if (t != null && (Number(t)== monthday)) return; // gets tides async every day
 
             $.ajax({
-                url: 'gettides.php',
-                dataType: 'text',
-                error: function(a,b) {
-                    alert(b);
-                },
-                success: function (responseText) {
-                    var json = JSON.parse(responseText);
+                url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
+                dataType: 'jsonp',
+                success: function (json) {
+
                     if (json.success == true) {
                         localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json structure
                         localStorage.setItem("tidesloadedmmdd", monthday);
                         ShowNextTides();
                     } else {
-                        alert("failure");
                         // error
                         //localStorage.setItem("tidesloadedmmdd", monthday);
                     }
                 }
-
             });
         }
 
@@ -998,10 +991,6 @@
             localStorage.removeItem("currentweathertime"); // force weather reload at start of new day
             getCurrentWeather();// limited to every 20 min
             DisplayLoadTimes();
-        }
-        function ReloadCachedDataButton() {
-            ReloadCachedData();
-            alert("Data has been reloaded.");
         }
 
         //////////////////////////////////////////////////////////////////////////////////////
