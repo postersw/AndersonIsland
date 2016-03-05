@@ -105,10 +105,18 @@ function InitializeDates(dateincr) {
 ///////////////////////////////////////////////////////////////////////////////////////
 // GetDayofWeek - returns 0-6 for an arbitrary date in mmdd format. this year assumed.
 function GetDayofWeek(mmdd) {
-    var d = new Date(year, Number(mmdd.substring(0, 2)) -1, Number(mmdd.substring(2, 4) ));
+    var mmdd = Number(mmdd);
+    var d = new Date(year, Math.floor(mmdd / 100) - 1, mmdd % 100);
     return d.getDay();
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
+// GetWeekofYear - returns week of year
+function GetWeekofYear(mmdd) {
+    var mmdd = Number(mmdd);
+    var januaryFirst = new Date(year, 0, 1);
+    var thedate = new Date(year, Math.floor(mmdd / 100) - 1, mmdd % 100);
+    return Math.floor((((thedate - januaryFirst) / 86400000) + januaryFirst.getDay()) / 7);
+}
 ////////////////////////////////////////////////////////////////////////////////////////////
 // DateDiff - return difference in days between 2 dates in our funky mmdd format (0101 - 1231)
 //  e.g. DateDiff(0122, 0102) = 20.  Handles rollover for a single year only.
