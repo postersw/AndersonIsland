@@ -56,12 +56,13 @@
             <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
         </tr>
 
-        <tr style="background-color:azure" onclick="ShowFerryWebCam();" >
-            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">WEBCAMS </td>
+        <tr style="background-color:azure" >
+            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0"  onclick="ShowFerryWebCam();">WEBCAMS </td>
+            <td style="font-size:18px;font-weight:bold;color:darkblue" onclick="ShowFerryLocation();" >&nbsp&nbsp&nbsp LOCATION </td>
         </tr>
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
-            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
+            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;margin-left:0%">
             TIDES </td>
             <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</td>
          </tr>
@@ -100,11 +101,6 @@
             </td>
          </tr>
                 
-         <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
-            MAP </td>  
-         </tr>
-
         <tr style="background-color:antiquewhite;" onclick="window.open('http://www.tannerelectric.coop/andersonisland')">  
             <td style="font-size:18px;font-weight:bold;color:#802b00">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
@@ -114,7 +110,11 @@
             <td style="font-size:18px;font-weight:bold;color:darkred" colspan="2">
              EMERGENCY CONTACTS</td>
          </tr>
-          
+
+          <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
+            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
+            MAP </td>  
+         </tr>
          <tr style="background-color:lightgray;" onclick="ShowLinksPage();">
              <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2">ISLAND INFORMATION LINKS
              </td>            
@@ -257,9 +257,8 @@
                 <td>WIND mph</td>
             </tr>
         </table>
-        <p>The forecast in yellow is for the 12 hour day.<br />
-            The forecast in gray is for the 12 hour night.<br />
-            Forecast data provided by AerisWeather.
+        <p>
+            Forecast data provided by OpenWeatherMap.
         </p>
              <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
      </div>
@@ -328,7 +327,7 @@
 
 
          <p> This page updates every minute.<br />           
-        <span style="font-size:x-small">   AIA Web Ver: 0.5.305.1600 </span>
+        <span style="font-size:x-small">   AIA Web Ver: 0.5.306.1216 </span>
 
 
         </p>
@@ -384,16 +383,17 @@
 
         function UpdateApp() {
             if (isPhoneGap()) return; // no update for phone version
-            window.open('http://www.anderson-island.org/?new', '_parent');
+            window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////
         // Determine whether the file loaded from PhoneGap or the web
-        //  exit    true if phonegap 
+        //  exit    true if phonegap, otherwise undefined. So test for true only.
         function isPhoneGap() {
-            return (window.cordova || window.PhoneGap || window.phonegap)
-            && /^file:\/{3}[^\/]/i.test(window.location.href)
+            var test = /^file:\/{3}[^\/]/i.test(window.location.href)
             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+            return test;
+            //(window.cordova || window.PhoneGap || window.phonegap) this returned undefined. 
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +401,7 @@
         //  entry   url = the url
         //  eixt    returns url
         function FixURL(url) {
-            url += "?" + timehhmm; // turn off cache
+            url += "?" + Date.now(); // turn off cache
             if (isPhoneGap() == false) return url;
             return 'http://anderson-island.org/' + url;
         }
@@ -642,9 +642,10 @@
         //  exit: saves "currentweathertime" and "currentweather"
         // actual json response {"coord":{"lon":-122.6,"lat":47.17},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"cmc stations","main":{"temp":54.18,"pressure":1023.6,"humidity":69,"temp_min":54.18,"temp_max":54.18,"sea_level":1034.45,"grnd_level":1023.6},"wind":{"speed":3.36,"deg":351.002},"clouds":{"all":0},"dt":1456447797,"sys":{"message":0.0082,"country":"US","sunrise":1456498595,"sunset":1456537846},"id":5812092,"name":"Steilacoom","cod":200}
         function getCurrentWeather() {
+            var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("currentweathertime");
-            if (t != null && RawTimeDiff(t, timehhmm) < 20) return; // gets weather async every 20 min.
-            localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
+            if (t != null && ((timestamp-t) < (15*60)) ) return; // gets weather async every 15 min.
+            localStorage.setItem("currentweathertime", timestamp); // save the cache time so we don't keep asking forever
 
             $.ajax({
                 url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
@@ -657,7 +658,6 @@
                     var current = StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
                         StripDecimal(r.wind.speed) + " mph, " + rain + " rain" ;// + ", " + r.precipitation.value + r.precipitation.value
                     localStorage.setItem("currentweather", current);
-                    localStorage.setItem("currentweathertime", timehhmm); // save the cache time
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
                     dsr = new Date(Number(r.sys.sunrise)*1000);
@@ -715,9 +715,10 @@
             // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
             function getForecast() {
                 // kludge to prevent over fishing of forecast
+                var timestamp = Date.now() / 1000; // time in sec
                 var t = localStorage.getItem("forecasttime");
-                if (t != null && RawTimeDiff(t, timehhmm) < 60) return; // gets weather forecast async every 60 min.
-                localStorage.setItem("forecasttime", timehhmm); // save the cache time so we don't keep asking forever
+                if (t != null && ((timestamp-t)<(60*60))) return; // gets weather forecast async every 60 min.
+                localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
 
                 $.ajax({
                     url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
@@ -727,7 +728,6 @@
                         var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
                             r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
                         localStorage.setItem("forecast", forecast);
-                        localStorage.setItem("forecasttime", timehhmm); // save time
                         $("#forecast").html(forecast);
                     }
                 });  // end of ajax call
@@ -1066,7 +1066,9 @@
         // DisplayLoadTimes() displays time data loaded
         function DisplayLoadTimes() {
             document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-                                "<br/>Tides:" + localStorage.getItem("tidesloadedmmdd") + "; Forecast:" + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime") + " Counter:" + updateMinutes;
+                                "<br/>Tides:" + localStorage.getItem("tidesloadedmmdd") +
+                                "<br/>Now: " + Math.ceil(Date.now() / 60000) + "; Forecast:" + Math.ceil(Number(localStorage.getItem("forecasttime")) / 60) + "; CurrentWeather:" + Math.ceil(Number(localStorage.getItem("currentweathertime")) / 60) +
+                                "<br/> Counter:" + updateMinutes;
 
         }
 
