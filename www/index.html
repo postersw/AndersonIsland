@@ -327,7 +327,7 @@
 
 
          <p> This page updates every minute.<br />           
-        <span style="font-size:x-small">   AIA Web Ver: 0.5.306.1444 </span>
+        <span style="font-size:x-small">   AIA Web Ver: 1.0.306.2334 </span>
 
 
         </p>
@@ -724,8 +724,17 @@
                     url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
                     dataType: 'jsonp',
                     success: function (json) {
+                        // get hi and low
+                        var i, t;
+                        var mint = 9999; var maxt = 0;
+                        // scan 8 periods for min and max
+                        for (i = 0; i < 8; i++) {
+                            t = Math.ceil(Number(json.list[i].main.temp_max ));
+                            if (t > maxt) maxt = t;
+                            if (t < mint) mint = t;
+                        }
                         var r = json.list[0];
-                        var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
+                        var forecast = "Forecast: " + maxt + "&deg/" + mint + "&deg, " +
                             r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
                         localStorage.setItem("forecast", forecast);
                         $("#forecast").html(forecast);
