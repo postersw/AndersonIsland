@@ -27,6 +27,9 @@
     <preference name="permissions"                value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
+    <preference name="splashscreen"               value="www/res/icon/android/icon-96-xhdpi.png" />
+    <preference name="SplashScreenDelay"          value="2000" />
+    <preference name="SplashMaintainAspectRatio"  value="false" />
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
     <preference name="target-device"              value="universal" />      <!-- all: possible values handset, tablet, or universal -->
     <preference name="fullscreen"                 value="false" />           <!-- all: hides the status bar at the top of the screen -->
@@ -52,7 +55,7 @@
     <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
   <!--<gap:plugin name="org.apache.cordova.camera" />-->
     <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
-    <gap:plugin name="org.apache.cordova.console" />
+     <!--<gap:plugin name="org.apache.cordova.console" />-->
     <!--<gap:plugin name="org.apache.cordova.contacts" />-->
     <gap:plugin name="org.apache.cordova.device" />
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
