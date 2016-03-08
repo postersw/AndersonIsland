@@ -21,14 +21,9 @@
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Anderson Island Assistant</title>
     <style>
-        button {
-            font-size: 14px;
-            text-align:left;
-        }
-
-        p {
-            font-size: 14px;
-        }
+        button {font-size: 14px; text-align:left;}
+        .buttonback {background-color:blue;border:none;color:white;float:left}
+        p {font-size: 14px;}
         tr {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;}
         td {padding-top:6px;padding-bottom:6px;}
         li {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;padding-left:6px}
@@ -134,12 +129,12 @@
     <div id="ferryschedulepage" style="display:none">
 
     <h1>
-        <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         Ferry Schedule
     </h1>
         <button style="width:32%" onclick="ScheduleByDate();">Dates</button>
         <button style="width:32%" onclick="ShowFerryLocation();">Location</button>
-        <button style="width:32%" onclick="ShowFerry();">Ferry Web Site</button>
+        <button style="width:32%" onclick="ShowFerry();">Web Site</button>
         <p> </p>
         <table id='ferrytable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
@@ -156,7 +151,7 @@
  <!-- OPEN HOURS ------------------------------------------------------------------------------------------>
     <div id="openhourspage" style="display:none">
         <h1>
-            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Open Hours
         </h1>
         <p>Touch an entry for more information.</p>
@@ -172,7 +167,7 @@
 
     <div id="comingeventspage" style="display:none">
         <h1 id="comingeventsH1" style="display:none">
-            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             COMING EVENTS
            <button style="background-color:blue;color:white;float:right" onclick="ShowOtherCalendars();">MORE</button>
         </h1>
@@ -206,7 +201,7 @@
 
     <div id="tidespage" style="display:none">
         <h1>
-            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Tides at Yoman Point <br />(ferry dock)
         </h1>
         <p id="tidepagecurrent">Please wait for tide data .... </p>
@@ -235,7 +230,7 @@
 <!--EMERGENCY ------------------------------------------------------------------------------------------>
 
     <div id="emergencypage" style="display:none">
-        <h1><button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        <h1><button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Emergency Contacts</h1>
         <p>Tap a phone number to dial it.</p>
         <table id="emergencytable">
@@ -245,7 +240,7 @@
 <!--WEATHER -------------------------------------------------------------------------------------------->
  <div id="weatherpage" style="display:none">
     <h1>
-        <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         Anderson Island Weather
     </h1>
 
@@ -269,7 +264,7 @@
 <!-- FERRY WEBCAMS ------------------------------------------------------------------------------------->
   <div id="ferrywebcampage" style="display:none">
       <h1>      
-          <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+          <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
           FERRY WEBCAMS
       </h1>
         <strong>Steilacoom Camera </strong>- refreshes every minute<br>
@@ -284,10 +279,11 @@
  <!-- ABOUT ------------------------------------------------------------------------------------->
   <div id="aboutpage" style="display:none">
     <h1> 
-      <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+      <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
       About
     </h1>
-    <p>The <span style="font-weight:bold">Anderson Island Assistant</span> is a handy little mobile app whose purpose is to provide instant access 
+    <p>The <span style="font-weight:bold">Anderson Island Assistant</span> is a handy little mobile app whose goal
+        in life is to make your life easier by providing instant access 
         to a wealth of time-sensitive Anderson Island information.  
         <br />iPhone users: Use the web-based app from <a href="http://www.anderson-island.org">www.anderson-island.org</a>. 
         An iPhone version of the app is coming soon.
@@ -299,21 +295,25 @@
         <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
         <p> <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="mailto:support@anderson-island.org">Send Email</a>
             <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="tel:253-267-4936">Call Us</a></p>
-        <p>Email: support@anderson-island.org  Phone: 253-267-4936</p>
+        <p>Email: support@anderson-island.org<br />  Phone: 253-267-4936</p>
         <hr />
-        <div id="phoneweb">Web version.</div>
-      <span id="updatetime" style="font-size:x-small">Screen update time.</span>
-            <span id="reloadtime" style="font-size:x-small">Data reload time.</span>
-            <span id="reloadreason" style="font-size:x-small">Data reload reason.</span>
-            <span id="currentweathertime" style="font-size:x-small"></span>
-       <br /><span style="font-size:x-small">Weather from OpenWeatherMap</span>
-
+          "Anderson Island Assistant" Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
+          <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+      <hr />
+        <span style="font-size:x-small">
+            <span id="phoneweb" >Web version.</span>
+            <span id="updatetime" >Screen update time.</span>
+            <span id="reloadtime">Data reload time.</span>
+            <span id="reloadreason" ></span>
+            <span id="currentweathertime" ></span>
+       <br />Weather from OpenWeatherMap
+      </div>
 
 </div>
 <!-- ISLAND INFORMATION LINKS ---------------------------------------------------------------------->
 <div id="linkspage" style="display:none">
     <h1> 
-        <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+        <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         ISLAND INFORMATION LINKS
     </h1>
             <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
@@ -331,7 +331,7 @@
  <!-- HELP ------------------------------------------------------------------------------------->
   <div id="helppage" style="display:none">
     <h1> 
-      <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+      <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
       Help
     </h1>
     <p>The Anderson Island Assistant is a handy little mobile app whose purpose is to provide instant access 
@@ -441,7 +441,7 @@
 
 
          <p> This page updates every minute.<br />           
-        <span style="font-size:x-small">   AIA Web Ver: 1.0.307.2200 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.0.308.1407 </span>
 
 
         </p>
@@ -460,23 +460,14 @@
     <script type="text/javascript" src="js/AIA.js"></script>
 
     <script>
-        // global date variables. note: scope is for one page only.
-        //var d; // date object
-        //var dayofweek;  // day of week in 0-6
-        //var letterofweek; // letter for day of week
-        //var timehhmm;  // hhmm in 24 hour format
-        //var month;  // month 1-12. note starts with 1
-        //var day; // day of month 1-31
-        //var year; // year nnnn
-        //var monthday; // mmdd
-        //var laborday; // first monday in sept.  we need to compute this dyanmically
-        //var memorialday;  // last monday in may
-        //var thanksgiving;
-        //var holiday;  // true if  holiday
-        var updateMinutes; // minutes since last update
+        // global date variables in AIA.js. note: scope is for one page only.
+        var updateCounter = 0; // counter of timer updates
+        var LastUpdatems = 0; // last update time in MS
         var forceCacheReload; // true to force a cache reload
         var forceTideReload;  // true to force tide reload
-        var mytimer;
+        var mytimer; // timer number
+        var AppStartedTime; // time app started in sec
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
@@ -999,7 +990,9 @@
             // ajax async request
             //$.get("comingevents.txt", ComingEventsReceived());
             //                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
-            var myurl = FixURL("comingevents.txt");
+            // changed 3/8/16 to use a php script;
+            //var myurl = FixURL("comingevents.txt");
+            var myurl = FixURL("getcomingevents.php");
             $.ajax({
                 url: myurl,
                 success: function (data) {
@@ -1086,14 +1079,16 @@
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
-        //  update all data on a regular basis
+        //  update all data on a regular basis. 
         //  also redisplay the next ferry times & tides & open hours every minute
         //  update current weather every 15 minutes. update forecast every 30 minutes.
+        //  Called every 60 secs and every time the main page is redisplayed.
         function timerUp() {
-            updateMinutes = Number(localStorage.getItem("updateminutes"));
 
             // everything you want to do every minute. These all go against localStorage strings, so no query
             InitializeDates(0);
+            LastUpdatems = timestampms;
+            updateCounter++;
             document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
 
             // special handling for other than the main page
@@ -1144,8 +1139,6 @@
             // alerts every 12 minutes
             getAlertInfo();
 
-            updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
-            localStorage.setItem("updateminutes", updateMinutes);
             DisplayLoadTimes();
         }
 
@@ -1153,7 +1146,6 @@
         // focus and blur events
         function focusEvent() {
             if (mytimer == null) {
-                localStorage.setItem("updateminutes", "0");
                 mytimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
                 timerUp(); // restart the timer if needed
             }
@@ -1219,12 +1211,12 @@
         //////////////////////////////////////////////////////////////////////////////////////
         // DisplayLoadTimes() displays time data loaded
         function DisplayLoadTimes() {
-            document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-                                "<br/>Tides:" + localStorage.getItem("tidesloadedmmdd") +
-                                "<br/>Now: " + Math.ceil(Date.now() / 60000) +
-                                "; Forecast:" + Math.ceil(Number(localStorage.getItem("forecasttime")) / 60) +
-                                "; CurrentWeather:" + Math.ceil(Number(localStorage.getItem("currentweathertime")) / 60) +
-                                "<br/> Counter:" + updateMinutes;
+            document.getElementById("reloadtime").innerHTML = "App started " + AppStartedDate + 
+                ", update counter: " + updateCounter +
+                ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
+                ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+                "<br/>Forecast:" + Math.ceil(((timestampms/1000)-Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
+                "CurrentWeather:" + Math.ceil(((timestampms/1000)-Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
 
         }
 
@@ -2182,9 +2174,10 @@
         app.initialize();
         localStorage.setItem("displaypage", "mainpage");
         InitializeDates(0);
+        AppStartedTime = timestampms;
+        AppStartedDate = monthday * 10000 + timehhmm;
+        LastUpdatems = timestampms;
         document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
-        updateMinutes = 1;
-        localStorage.setItem("updateminutes", "1"); // start at 1 so the 1st timer call does not run stuff, but the focus event does
         forceCacheReload = false; // cache reload not needed
         forceTideReload = false; 
 

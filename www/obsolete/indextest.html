@@ -56,12 +56,13 @@
             <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
         </tr>
 
-        <tr style="background-color:azure" onclick="ShowFerryWebCam();" >
-            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">WEBCAMS </td>
+        <tr style="background-color:azure" >
+            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0"  onclick="ShowFerryWebCam();">WEBCAMS </td>
+            <td style="font-size:18px;font-weight:bold;color:darkblue" onclick="ShowFerryLocation();" >&nbsp&nbsp&nbsp LOCATION </td>
         </tr>
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
-            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">
+            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;margin-left:0%">
             TIDES </td>
             <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</td>
          </tr>
@@ -100,11 +101,6 @@
             </td>
          </tr>
                 
-         <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
-            MAP </td>  
-         </tr>
-
         <tr style="background-color:antiquewhite;" onclick="window.open('http://www.tannerelectric.coop/andersonisland')">  
             <td style="font-size:18px;font-weight:bold;color:#802b00">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
@@ -114,17 +110,22 @@
             <td style="font-size:18px;font-weight:bold;color:darkred" colspan="2">
              EMERGENCY CONTACTS</td>
          </tr>
-          
+
+          <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
+            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
+            MAP </td>  
+         </tr>
          <tr style="background-color:lightgray;" onclick="ShowLinksPage();">
              <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2">ISLAND INFORMATION LINKS
              </td>            
             </tr>
 
              <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="UpdateApp()">Update App</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowPage('helppage')">Help</tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
-                <a style="text-decoration:none;" href="mailto:AIAfeedback@postersw.com?Subject=AIAFeedback">Feedback</a></td></tr>
+                <a style="text-decoration:none;" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
             </table>
 
             </div>
@@ -136,13 +137,15 @@
         <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
         Ferry Schedule
     </h1>
-    <button style="width:32%" onclick="ShowFerryLocation();">Ferry Location</button>
-     <button   style="width:32%" onclick="ShowFerry();">Ferry Web Site</button>
+        <button style="width:32%" onclick="ScheduleByDate();">Dates</button>
+        <button style="width:32%" onclick="ShowFerryLocation();">Location</button>
+        <button style="width:32%" onclick="ShowFerry();">Ferry Web Site</button>
         <p> </p>
         <table id='ferrytable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td>Steilacoom</td>
                 <td>| Anderson Island&nbsp</td>
+                <td>| Ketron&nbsp</td>
             </tr>
         </table>
         <hr />
@@ -257,9 +260,8 @@
                 <td>WIND mph</td>
             </tr>
         </table>
-        <p>The forecast in yellow is for the 12 hour day.<br />
-            The forecast in gray is for the 12 hour night.<br />
-            Forecast data provided by AerisWeather.
+        <p>
+            Forecast data provided by OpenWeatherMap.
         </p>
              <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
      </div>
@@ -285,11 +287,13 @@
       <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
       About
     </h1>
-    <p>The Anderson Island Assistant is a handy little mobile app whose purpose is to provide instant access 
-        to all sorts of good Anderson Island stuff, especially time-sensitive information.  
-        It is available now in beta-form as a web-based app from <a href="http://www.anderson-island.org">www.anderson-island.org</a>.
-        It will be available soon as as an Android phone app on Google Play.
-         It will be available after that as an app for iPhones on the iPhone App Store, and Windows phones at the Windows Store.
+    <p>The <span style="font-weight:bold">Anderson Island Assistant</span> is a handy little mobile app whose purpose is to provide instant access 
+        to a wealth of time-sensitive Anderson Island information.  
+        <br />iPhone users: Use the web-based app from <a href="http://www.anderson-island.org">www.anderson-island.org</a>. 
+        An iPhone version of the app is coming soon.
+        <br />Android phone users: Install the Android phone app from Google Play, 
+        or from <a href="http://www.anderson-island.org/AIA.apk">our web site.</a>. 
+        Note: to install from our web site you must change the settings on your phone. Click on Settings -> Security, scroll down to "Unknown Sources", and turn on the button that says 'Allow installation of apps from unknown sources'. 
        </p>
         <hr />
         <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
@@ -324,11 +328,120 @@
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com');">Store</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
 </div>
+ <!-- HELP ------------------------------------------------------------------------------------->
+  <div id="helppage" style="display:none">
+    <h1> 
+      <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
+      Help
+    </h1>
+    <p>The Anderson Island Assistant is a handy little mobile app whose purpose is to provide instant access 
+        to a wealth of up-to-the-minute Anderson Island information.  
+       </p>
+<table>
+    <tr>
+        <td style="color:darkblue;vertical-align:text-top">FERRY</td>
+        <td>Displays the time of next ferry to arrive at Anderson Island and Steilacoom, based on the <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">Pierce County PUBLISHED ferry schedule.</a>.
+            It is NOT updated if the ferry is late or out of service.
+            (Use the LOCATION button to see where the ferry actually is.)
+            <br />The time in parenthesis (e.g. in 0:34) is the time remaining until the ferry's scheduled departure. 
+            This information is updated every minute. <br />
+        <br />TAP to display the ferry schedule computed for the next 7 days, based on the 
+            <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">published ferry schedule.</a>
+            The schedule automatically factors in day-of-the-week, holidays, and other unique rules.
+            However, it is NOT updated if the ferry is late or out of service.
+            <br />"DATES" lets you get the ferry schedule for an arbitrary date. You will be prompted for the date.
+            <br />"FERRY LOCATION" displays the current location of the ferry. This information is maintained by Pierce County.
+            <br />"FERRY WEB SITE" brings up the full Pierce County Ferry web site, including fares, schedule, ticket purchase, etc.</br>
+    </tr>
+    <tr>
+        <td style="color:darkblue;vertical-align:text-top">WEBCAMS</td>
+        <td>Displays the web cams showing the ferry lines. These pictures are automatically updated every minute.</td>
+    </tr>
+    <tr>
+        <td style="color:darkblue;vertical-align:text-top">LOCATION</td>
+        <td>Displays the actual current location of the ferry in real time. This information is maintained by Pierce County and is updated every 5 seconds.</td>
+    </tr>
+    <tr>
+        <td style="color:blue;vertical-align:text-top">TIDES</td>
+        <td>Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock, 
+            station id 9446705).  This information is updated every minute.  
+            The current tide is interpolated using the 'rule of twelves'.
+         <br />TAP to display the projected tides for the next 3 days. Tides are provided by Aeris.com.
+            <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.</td>
+    </tr>
+    <tr>
+        <td style="color:darkgreen;vertical-align:text-top">WEATHER</td>
+        <td>Displays the current weather at Steilacoom, and the forcasted weather for 9 hours from now. 
+            Forecasted highs and lows are for the next 24 hours. This information is updated every 15 minutes.
+        <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap'.
+            <br />'yellow' rows represent daytime periods; 'gray' rows represent nighttime periods.
+    </td>
+    <tr>
+        <td style="color:#ff3300;vertical-align:text-top">BURNBAN</td>
+        <td>Tap to display the current PS Clean Air Agency burn-ban status. Anderson Island is part of "Peninsula". 
+            Note that this is the air-pollution burn ban only - it is NOT the burn-ban due to fire risk.
+            <a href="www.pscleanair.org">Click here for the full site.</a>
+        </td>
+    </tr>
+    <tr>
+        <td style="color:darkmagenta;vertical-align:text-top">EVENTS</td>
+        <td>Displays all the coming events for today, or the next coming event for any later day.<br />
+            TAP to display all the coming events for the next 6 months, in a scrolling list.
+            <br />"WEEK" will show the coming events for this week in a one-week grid.
+            <br />"MONTH" will show the coming events for the next 6 weeks in a monthly-calendar format.
+            <br />'Events' generally occur once/month or less frequently, and are usually meetings, entertainment, 
+            or special events.
+            <br /><a href="email:support@anderson-island.org">To add your events to this calendar, email us.</a>
+        </td>
+    </tr>
+        <tr>
+        <td style="color:darkmagenta;vertical-align:text-top">ACTIVITY</td>
+        <td>Activities are similar to EVENTS, but generally occur multiple times/month, often weekly.
+            <br /><a href="email:support@anderson-island.org">To add your activities to this calendar, email us.</a>
+        </td>
+    </tr>
+        <tr>
+        <td style="color:black;vertical-align:text-top">OPEN HOURS</td>
+        <td>Displays the 'open' status for the major island businesses.
+            <br />TAP to display the full weekly hours for each business, including easy contact information.
+            <br /><a href="email:support@anderson-island.org">To update your business hours, email us.</a>
+        </td>
+    </tr>
+        <tr>
+        <td style="color:brown;vertical-align:text-top">TANNER</td>
+        <td>TAP to display the current Anderson Island Outage status as maintained by TANNER Electric. 
+            This takes you to the Tanner web site.
+        </td>
+    </tr>
+    <tr>
+        <td style="color:darkred;vertical-align:text-top">EMERGENCY CONTACTS</td>
+        <td>TAP to display a list of emergency contacts.  Tap an entry to dial the phone number.
+            <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
+        </td>
+    </tr>
+    <tr>
+        <td style="color:blue;vertical-align:text-top">MAP</td>
+        <td>TAP to display a Google map of anderson island.</td>
+    </tr>
+    <tr>
+        <td style="color:black;vertical-align:text-top">ISLAND INFORMATION LINKS</td>
+        <td>TAP to display a list of links to important Anderson Island web sites.
+            Taping on a link opens that web site in your phone's browser.
+            <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
+        </td>
+    </tr>
+    <tr>
+        <td style="color:gray;vertical-align:text-top">Reload Data</td>
+        <td>TAP to reload the following data from the servers: Tides, Events, Activities, Open Hours, and the Weather.
+        </td>
+    </tr>
+</table>
+</div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
 
          <p> This page updates every minute.<br />           
-        <span style="font-size:x-small">   AIA Web Ver: 0.4.304.2232 </span>
+        <span style="font-size:x-small">   AIA Web Ver: 1.0.308.1320 </span>
 
 
         </p>
@@ -347,27 +460,18 @@
     <script type="text/javascript" src="js/AIA.js"></script>
 
     <script>
-        // global date variables. note: scope is for one page only.
-        //var d; // date object
-        //var dayofweek;  // day of week in 0-6
-        //var letterofweek; // letter for day of week
-        //var timehhmm;  // hhmm in 24 hour format
-        //var month;  // month 1-12. note starts with 1
-        //var day; // day of month 1-31
-        //var year; // year nnnn
-        //var monthday; // mmdd
-        //var laborday; // first monday in sept.  we need to compute this dyanmically
-        //var memorialday;  // last monday in may
-        //var thanksgiving;
-        //var holiday;  // true if  holiday
-        var updateMinutes; // minutes since last update
+        // global date variables in AIA.js. note: scope is for one page only.
+        var updateCounter = 0; // counter of timer updates
+        var LastUpdatems = 0; // last update time in MS
         var forceCacheReload; // true to force a cache reload
         var forceTideReload;  // true to force tide reload
+        var mytimer; // timer number
+        var AppStartedTime; // time app started in sec
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
-            DisplayFerrySchedulePage();
-            //window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
         }
 
         function ShowMap() {
@@ -384,16 +488,17 @@
 
         function UpdateApp() {
             if (isPhoneGap()) return; // no update for phone version
-            window.open('http://www.anderson-island.org/?new', '_parent');
+            window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////
         // Determine whether the file loaded from PhoneGap or the web
-        //  exit    true if phonegap 
+        //  exit    true if phonegap, otherwise undefined. So test for true only.
         function isPhoneGap() {
-            return (window.cordova || window.PhoneGap || window.phonegap)
-            && /^file:\/{3}[^\/]/i.test(window.location.href)
+            var test = /^file:\/{3}[^\/]/i.test(window.location.href)
             && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+            return test;
+            //(window.cordova || window.PhoneGap || window.phonegap) this returned undefined. 
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +506,7 @@
         //  entry   url = the url
         //  eixt    returns url
         function FixURL(url) {
-            url += "?" + timehhmm; // turn off cache
+            url += "?" + Date.now(); // turn off cache
             if (isPhoneGap() == false) return url;
             return 'http://anderson-island.org/' + url;
         }
@@ -450,9 +555,10 @@
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // return the next ferry time as a string. ferrytimes is the array of times and days;
-        function FindNextFerryTime(ferrytimes) {
-            ferrytimes = ferrytimes.split(",");
+        // return the next ferry time as a string. 
+        //      entry ferrytimes is the array of times and days (see ferrytimeA)
+        //            DoKetron = true to add ketron using ferrytimeK. kludge.
+        function FindNextFerryTime(ferrytimes, DoKetron) {
             InitializeDates(0);
             var i;
             // roll through the ferry times, skipping runs that are not valid for today
@@ -477,6 +583,13 @@
             else {
                 ft =ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
             }
+
+            // ketron only if there is a ketron run, and it is valid
+            if (DoKetron) {
+                if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
+                    ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + VeryShortTime(ferrytimeK[i]) + "</span>";
+                }
+            }
             return ft;
         }
 
@@ -489,16 +602,19 @@
             //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
             // at this point, i = the next valid ferry run
             var v;
-            v = "Next Steilacoom: ";
+            var str;
+            v = "Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
-            var lftS = localStorage.getItem("ferrytimess");
-            if (lftS === null) lftS = "545,H123456A,645,*,800,*,900,*,1000,F,1200,*,1410,*,510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y";
-            var lftA = localStorage.getItem("ferrytimesA");
-            if (lftA === null) lftA = "615,H123456A,730,*,830,*,930,*,1030,F,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y";
-            v = v + FindNextFerryTime(lftS);
+            var str = localStorage.getItem("ferrytimess");
+            if (str !=null) ferrytimeS = str.split(",");
+            str = localStorage.getItem("ferrytimesa");
+            if (str != null) ferrytimeA = str.split(",");
+            str = localStorage.getItem("ferrytimesk");
+            if (str != null) ferrytimeK = str.split(",");
+            v = v + FindNextFerryTime(ferrytimeS, false);
             // make it bold if not tomorrow
             if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-            var a = "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
+            var a = "</br>Anderson I: " + FindNextFerryTime(ferrytimeA, true);
             if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
             //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v + a;
@@ -552,7 +668,7 @@
             closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
             var openlist; openlist = "";
             // test for closed
-            if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
+            if (opentimetoday == "" || (timehhmm > closetime) || (timehhmm < opentime)) {
                 openlist += " <span style='color:red'> Closed. </span>";
                 if (timehhmm < opentime) {
                     openlist += " Opens today at " + VeryShortTime(opentime);
@@ -569,7 +685,7 @@
                 while (true) {
                     j++; if (j == 7) j = 0; // handle day rollover
                     if (a[j + 1] != "") { // open day found
-                        openlist += " Opens " + dayofweekname[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4));
+                        openlist += " Opens " + dayofweekshort[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4));
                         return openlist;
                     }
                 } // while loop
@@ -642,9 +758,10 @@
         //  exit: saves "currentweathertime" and "currentweather"
         // actual json response {"coord":{"lon":-122.6,"lat":47.17},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"cmc stations","main":{"temp":54.18,"pressure":1023.6,"humidity":69,"temp_min":54.18,"temp_max":54.18,"sea_level":1034.45,"grnd_level":1023.6},"wind":{"speed":3.36,"deg":351.002},"clouds":{"all":0},"dt":1456447797,"sys":{"message":0.0082,"country":"US","sunrise":1456498595,"sunset":1456537846},"id":5812092,"name":"Steilacoom","cod":200}
         function getCurrentWeather() {
+            var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("currentweathertime");
-            if (t != null && RawTimeDiff(t, timehhmm) < 20) return; // gets weather async every 20 min.
-            localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
+            if (t != null && ((timestamp-t) < (15*60)) ) return; // gets weather async every 15 min.
+            localStorage.setItem("currentweathertime", timestamp); // save the cache time so we don't keep asking forever
 
             $.ajax({
                 url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
@@ -657,7 +774,6 @@
                     var current = StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
                         StripDecimal(r.wind.speed) + " mph, " + rain + " rain" ;// + ", " + r.precipitation.value + r.precipitation.value
                     localStorage.setItem("currentweather", current);
-                    localStorage.setItem("currentweathertime", timehhmm); // save the cache time
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
                     dsr = new Date(Number(r.sys.sunrise)*1000);
@@ -715,19 +831,28 @@
             // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
             function getForecast() {
                 // kludge to prevent over fishing of forecast
+                var timestamp = Date.now() / 1000; // time in sec
                 var t = localStorage.getItem("forecasttime");
-                if (t != null && RawTimeDiff(t, timehhmm) < 60) return; // gets weather forecast async every 60 min.
-                localStorage.setItem("forecasttime", timehhmm); // save the cache time so we don't keep asking forever
+                if (t != null && ((timestamp-t)<(60*60))) return; // gets weather forecast async every 60 min.
+                localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
 
                 $.ajax({
                     url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
                     dataType: 'jsonp',
                     success: function (json) {
+                        // get hi and low
+                        var i, t;
+                        var mint = 9999; var maxt = 0;
+                        // scan 8 periods for min and max
+                        for (i = 0; i < 8; i++) {
+                            t = Math.ceil(Number(json.list[i].main.temp_max ));
+                            if (t > maxt) maxt = t;
+                            if (t < mint) mint = t;
+                        }
                         var r = json.list[0];
-                        var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
+                        var forecast = "Forecast: " + maxt + "&deg/" + mint + "&deg, " +
                             r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
                         localStorage.setItem("forecast", forecast);
-                        localStorage.setItem("forecasttime", timehhmm); // save time
                         $("#forecast").html(forecast);
                     }
                 });  // end of ajax call
@@ -865,7 +990,9 @@
             // ajax async request
             //$.get("comingevents.txt", ComingEventsReceived());
             //                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
-            var myurl = FixURL("comingevents.txt");
+            // changed 3/8/16 to use a php script;
+            //var myurl = FixURL("comingevents.txt");
+            var myurl = FixURL("getcomingevents.php");
             $.ajax({
                 url: myurl,
                 success: function (data) {
@@ -922,33 +1049,46 @@
             }
             //alert("loading daily cache");
             localStorage.setItem("dailycacheloaded", monthday); // remember date time
-            // alternate approach
-            //alert("Data: " + data + "\nStatus: " + status);
-            // FERRYTIMESS
+
             i1 = data.indexOf("FERRYTIMESS");
-            if (i1 == 0) i = data.length;
+            var i1e = data.indexOf("\n", i1 + 12);
+            if (i1 == 0) return;
+            localStorage.setItem("ferrytimess", data.substring(i1 + 12, i1e));
+
             i2 = data.indexOf("FERRYTIMESA");
+            if (i2 > 0) {
+                var i2e = data.indexOf("\n", i2 + 12);
+                localStorage.setItem("ferrytimesa", data.substring(i2 + 12, i2e));
+            } else localStorage.removeItem("ferrytimesa");
+
+            i2 = data.indexOf("FERRYTIMESK");
+            if (i2 > 0) {
+                var i2e = data.indexOf("\n", i2 + 12);
+                localStorage.setItem("ferrytimesk", data.substring(i2 + 12, i2e));
+            } else localStorage.removeItem("ferrytimesk");
+
             i3 = data.indexOf("OPENHOURS");
             i4 = data.indexOf("OPENHOURSEND");
+            localStorage.setItem("openhours", data.substring(i3 + 10, i4));
+
             var i5 = data.indexOf("EMERGENCY");
             var i6 = data.indexOf("EMERGENCYEND");
-            localStorage.setItem("ferrytimess", data.substring(i1 + 12, i2));
-            localStorage.setItem("ferrytimesa", data.substring(i2 + 12, i3));
-            localStorage.setItem("openhours", data.substring(i3 + 10, i4));
             if (i5 > 0) localStorage.setItem("emergency", data.substring(i5 + 10, i6));
             
             
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
-        //  update all data on a regular basis
+        //  update all data on a regular basis. 
         //  also redisplay the next ferry times & tides & open hours every minute
         //  update current weather every 15 minutes. update forecast every 30 minutes.
+        //  Called every 60 secs and every time the main page is redisplayed.
         function timerUp() {
-            updateMinutes = Number(localStorage.getItem("updateminutes"));
 
             // everything you want to do every minute. These all go against localStorage strings, so no query
             InitializeDates(0);
+            LastUpdatems = timestampms;
+            updateCounter++;
             document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
 
             // special handling for other than the main page
@@ -962,6 +1102,7 @@
                 case "openhourspage":
                     return;
                 case "tidespage":
+                    if (usertideselection) return;
                     var periods = JSON.parse(localStorage.getItem("jsontides"));
                     ShowTideDataPage(periods, true);
                     return;
@@ -970,6 +1111,10 @@
                 case "ferrywebcampage":
                     ShowFerryWebCam();
                     return; // how to force redisplay
+                case "aboutpage":
+                    DisplayLoadTimes();
+                    return;
+
             }
 
             // main page update
@@ -994,20 +1139,21 @@
             // alerts every 12 minutes
             getAlertInfo();
 
-            updateMinutes++; // do this last so the focus event will run all of these but really we should use the actual elapsed time, not a counter
-            localStorage.setItem("updateminutes", updateMinutes);
             DisplayLoadTimes();
         }
 
         /////////////////////////////////////////////////////////////////////////////
         // focus and blur events
         function focusEvent() {
-            setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
-            localStorage.setItem("updateminutes", "0");
-            timerUp();
+            if (mytimer == null) {
+                mytimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
+                timerUp(); // restart the timer if needed
+            }
         }
+
         function blurEvent() {
-            clearInterval(0); // TURN OFF TIMER WHEN FOCUS IS LOST
+            clearInterval(mytimer); // TURN OFF TIMER WHEN FOCUS IS LOST
+            mytimer = null;
         }
 
 
@@ -1065,8 +1211,12 @@
         //////////////////////////////////////////////////////////////////////////////////////
         // DisplayLoadTimes() displays time data loaded
         function DisplayLoadTimes() {
-            document.getElementById("reloadtime").innerHTML = "Cached data reloaded@ " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-                                "<br/>Tides:" + localStorage.getItem("tidesloadedmmdd") + "; Forecast:" + localStorage.getItem("forecasttime") + "; CurrentWeather:" + localStorage.getItem("currentweathertime") + " Counter:" + updateMinutes;
+            document.getElementById("reloadtime").innerHTML = "App started " + AppStartedDate + 
+                ", update counter: " + updateCounter +
+                ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
+                ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+                "<br/>Forecast:" + Math.ceil(((timestampms/1000)-Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
+                "CurrentWeather:" + Math.ceil(((timestampms/1000)-Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
 
         }
 
@@ -1114,7 +1264,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loads the next ferry times into the global 'table' as a row for each run. 
         // ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
-        function BuildFerrySchedule(ferrytimesS, ferrytimesA) {
+        function BuildFerrySchedule(ferrytimesS, ferrytimesA, ferrytimesK) {
             var i;
             var ft;
             // roll through the ferry times, skipping runs that are not valid for today
@@ -1134,61 +1284,88 @@
                     row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
                     row1col2.style.color = "darkblue";
                     row1col2.style.border = "thin solid black";
+                    // Ketron
+                    var row1col3 = row1.insertCell(2);
+                    if (ferrytimesK[i] != 0) {
+                        if (ValidFerryRun(ferrytimesK[i + 1])) {
+                            row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
+                            row1col3.style.color = "brown";
+                            row1col3.style.border = "thin solid black";
+                        }
+                    }
+
                 }
             }
             return;
         }
 
+        //////////////////////////////////////////////////////////////////////////////////
+        // ScheduleByDate - ask for date and then run schedule
+        function ScheduleByDate() {
+            var userdate = GetDateFromUser();
+            if (userdate == "") return;
+            DisplayFerrySchedule(userdate);
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // run the script
-    function DisplayFerrySchedulePage () {
-        var row1, row1col1, row1col2;
-        ShowPage("ferryschedulepage");
+        // Display the page
+        function DisplayFerrySchedulePage () {
+            ShowPage("ferryschedulepage");
+            DisplayFerrySchedule("");
+        }
+
+        ////////////////////////////////////////////////////////////////
+        // DisplayFerrySchedule displays the grid
+        //  entry date = "" for today, else mm/dd
+        function DisplayFerrySchedule(userdate) {
+            if (userdate == "") InitializeDates(0);
+            else InitializeDates(userdate);
 
 
-        InitializeDates(0);
+            table = document.getElementById("ferrytable");
+            localStorage.setItem("tabletoclear", "ferrytable");
+            clearTable(table);
 
-        table = document.getElementById("ferrytable");
-        localStorage.setItem("tabletoclear", "ferrytable");
-        clearTable(table);
-
-        row1 = table.insertRow(-1);
-        row1col1 = row1.insertCell(0);
-        row1col1.style.backgroundColor = "blue";
-        row1col1.style.color = "white";
-        row1col1.innerHTML = 'TODAY';
-        row1col1 = row1.insertCell(1);
-        row1col1.style.backgroundColor = "blue";
-        row1col1.style.color = "white";
-        row1col1.innerHTML = month + "/" + dayofmonth;
-        BuildFerrySchedule(ferrytimeS, ferrytimeA);
-
-        // build next 6 days
-        timehhmm = 0;  // ignore current time
-        var i;
-        for (i = 0; i < 7; i++) {
-            InitializeDates(1);  // tomorrow
-            //alert(monthday + " dow " + dayofweek);
             row1 = table.insertRow(-1);
             row1col1 = row1.insertCell(0);
             row1col1.style.backgroundColor = "blue";
             row1col1.style.color = "white";
-            row1col1.innerHTML = dayofweekname[dayofweek];
+            if (userdate == "") row1col1.innerHTML = 'TODAY';
+            else row1col1.innerHTML = dayofweekname[dayofweek];
             row1col1 = row1.insertCell(1);
             row1col1.style.backgroundColor = "blue";
             row1col1.style.color = "white";
-            row1col1.innerHTML = month + "/" + dayofmonth;
-            if (holiday) row1col1.innerHTML = "Holiday";
-            BuildFerrySchedule(ferrytimeS, ferrytimeA);
+            row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
+            row1col1 = row1.insertCell(2);
+            row1col1.style.backgroundColor = "blue";
+            BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+
+            // build next 6 days
+            timehhmm = 0;  // ignore current time
+            var i;
+            for (i = 0; i < 7; i++) {
+                InitializeDates(1);  // tomorrow
+                //alert(monthday + " dow " + dayofweek);
+                row1 = table.insertRow(-1);
+                row1col1 = row1.insertCell(0);
+                row1col1.style.backgroundColor = "blue";
+                row1col1.style.color = "white";
+                row1col1.innerHTML = dayofweekname[dayofweek];
+                row1col1 = row1.insertCell(1);
+                row1col1.style.backgroundColor = "blue";
+                row1col1.style.color = "white";
+                row1col1.innerHTML = month + "/" + dayofmonth + (holiday?" Holiday":"");
+                row1col1 = row1.insertCell(2);
+                row1col1.style.backgroundColor = "blue";
+                BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+            }
+            InitializeDates(0);  // reset dates back
+            //alert("build ferry sch done");
+            //Append Table into div.
+            //document.getElementById('divTable').appendChild(table);
+            //document.getElementById('schdate').innerHTML = "Based on schedule as of " + scheduledate[0];             // mark schedule date
+            //alert("appended table to divTable");
         }
-        InitializeDates(0);  // reset dates back
-        //alert("build ferry sch done");
-        //Append Table into div.
-        //document.getElementById('divTable').appendChild(table);
-        //document.getElementById('schdate').innerHTML = "Based on schedule as of " + scheduledate[0];             // mark schedule date
-        //alert("appended table to divTable");
-    }
     </script>
 
     <script>
@@ -1574,13 +1751,14 @@
 
     <script>
  //===== TIDES =======================================================================================
-        
+        var usertideselection = false; // true when user sets tides
         //////////////////////////////////////////////////////////////////////////////////////////////////
         // TidesDataPage
         function TidesDataPage() {
             InitializeDates(0);
             ShowPage("tidespage");
             // show the tide data in the jsontides global
+            usertideselection = false;
             var periods = JSON.parse(localStorage.getItem("jsontides"));
             ShowTideDataPage(periods, true );
         }
@@ -1677,13 +1855,24 @@
         //
         function ShowCustom() {
             InitializeDates(0);
-            var tidedate = prompt("Please enter the date as mm/dd", month + "/" + dayofmonth);
-            if (tidedate == null) return;
+            tidedate = GetDateFromUser();
+            if (tidedate == "") return;
+            usertideselection = true;
+            getCustomTideData(tidedate);
+
+        }
+
+        ///////////////////////////////////////////////////////////////////
+        // GetDateFromUser - asks user for date and returns as mm/dd/yy
+        //  return mm/dd/yy or ""
+        function GetDateFromUser() {
+            var tidedate = prompt("Please enter the date as mm/dd or mm/dd/yyyy", month + "/" + dayofmonth);
+            if (tidedate == null) return "";
             // validate the date
             var tda = tidedate.split("/");
-            if (tda.length != 2) {
+            if (tda.length != 2 && tda.length !=3) {
                 alert("Invalid date. An example of a valid date is: 1/22");
-                return;
+                return "";
             }
             var m = Number(tda[0]); // month
             var d = Number(tda[1]);  // day
@@ -1691,10 +1880,8 @@
                 alert("Invalid date. An example of a valid date is: 1/22");
                 return;
             }
-            // get new data
-            tidedate = tidedate + "/" + year;
-            getCustomTideData(tidedate);
-
+            if (tda.length == 3) return tidedate;
+            else return tidedate + "/" + year;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1987,9 +2174,10 @@
         app.initialize();
         localStorage.setItem("displaypage", "mainpage");
         InitializeDates(0);
+        AppStartedTime = timestampms;
+        AppStartedDate = monthday * 10000 + timehhmm;
+        LastUpdatems = timestampms;
         document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
-        updateMinutes = 1;
-        localStorage.setItem("updateminutes", "1"); // start at 1 so the 1st timer call does not run stuff, but the focus event does
         forceCacheReload = false; // cache reload not needed
         forceTideReload = false; 
 
@@ -2020,7 +2208,7 @@
 
 
         // set refresh timners
-        setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+        mytimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
         document.addEventListener("backbutton", backKeyDown, true);
