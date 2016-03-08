@@ -6,7 +6,7 @@
 // global date variables
 var table; // the schedule table as a DOM object
 var d; // date object
-var timestamp; // unix seconds since 1970
+var timestampms; // unix ms since 1970
 var dayofweek;  // day of week in 0-6
 var letterofweek; // letter for day of week
 var timehhmm;  // hhmm in 24 hour format
@@ -20,9 +20,15 @@ var laborday; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
 var holiday;  // true if  holiday
-var ferrytimeS, ferrytimeA;
-ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+var ferrytimeS, ferrytimeA, ferrytimeK;
+// ferry run times and flags. Heirarchy is:
+//  1. * overrides everything and means always.
+//  2. If a holidays, the run MUST have an H (or *).
+//  3. not a holiday. it goes if it has the day of the week (0-6).
+//  4. otherwise the special case rules are checked (AFHGXY)
+ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+ferrytimeK = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
 var dayofweekname, dayofweekshort, scheduledate;
 dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -44,26 +50,24 @@ var tidesLastUpdate; // time of last update
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
 function IsHoliday(md) {
-    if (md == 1231 || md == 1232 || md == 0101) return true;
-    if (md == memorialday || md == 0703 || md == 0704 || md == laborday || md == thanksgiving || md == 1224 || md == 1225) return true;
+    if (md == 1231 || md == 1232 || md == 101) return true;
+    if (md == memorialday || md == 703 || md == 704 || md == laborday || md == thanksgiving || md == 1224 || md == 1225) return true;
     return false;
 }
 /////////////////////////////////////////////////////////////////////////////////////////
-// initilize all date variables.  dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1).
+// initilize all date variables.  
+// entry: dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1 and reset time).
+//          mm/dd/yyyy for an arbitrary date
 // sets the date globals above
 function InitializeDates(dateincr) {
     if (dateincr == 0) d = new Date();
-    else {
-        // on entry month=1-12, day=1-31, year = 20xx
-        dayofmonth = dayofmonth + 1;
-        if ((dayofmonth == 32) || (dayofmonth > 28 && month == 2) || (dayofmonth == 31 && (month == 9 || month == 4 || month == 6 || month == 11))) {
-            dayofmonth = 1; month++;
-            if (month == 13) { month = 1; year++;}
-        }  // month overflow
-        d = new Date(year, month - 1, dayofmonth);
-        //alert(" year=" + year + " day=" + day + " dow=" + d.getDay());
+    else if (dateincr == 1) {
+        d.setDate(d.getDate() + 1); // bump by 1
+        d.setHours(0);d.setMinutes(0);d.setSeconds(0);
+    } else {
+        d = new Date(dateincr);
     }
-    timestamp = Date.now();
+    timestampms = d.getTime(); // milisec since 1970
     dayofweek = d.getDay();  // day of week in 0-6
     letterofweek = "0123456".charAt(dayofweek); // letter for day of week
     timehh = d.getHours();
@@ -80,7 +84,7 @@ function InitializeDates(dateincr) {
         dlabordate = new Date(year, 8, 1); // earlies possible date
         dlabor = dlabordate.getDay();
         if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
-        else if (dlabor = 0) laborday = 902;  // monday = 1... Sat=6
+        else if (dlabor == 0) laborday = 902;  // monday = 1... Sat=6
         else laborday = 901;
         // memorial day last monday in may
         var dmemdate, memdate;
@@ -135,27 +139,44 @@ function DateDiff(mmdd1, mmdd2) {
 /////////////////////////////////////////////////////////////////////////////////////////
 // return true if a valid ferry time, else false.
 // the crazy special rules go here.
-// flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules 
+// flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules
+//  A=July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
+//  F=every day except 1st and 3rd wednesdays of every month
+//  G=1st and 3rd Tue only
+//  X=Friday Only labor day-12/31, 0101-6/30,
+//  Y=Fridays only 7/1=labor day
 
 function ValidFerryRun(flag) {
-    if (flag == "*") return true; // good every day
-    if (holiday && (flag.indexOf("H") > -1)) {
-        if (flag == "A") { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
-            if (dayofweek != 0 && dayofweek != 6 && ((mmdd == 1231) || (mmdd = 1224) || (mmdd = 0703))) return true;
-        } else return true;  // holiday
+    if (flag.indexOf("*") > -1) return true; // good every day
+
+    // holiday - use holiday schedule only
+    if (holiday) {
+        if (flag.indexOf("H") > -1) { // yes a valid run
+            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
+                if (!((monthday == 1231) || (monthday == 1224) || (monthday == 703))) return true; // if not 7/3,...
+                if (dayofweek >= 1 && dayofweek <= 5) return true;
+                return false;
+            } else return true;  // holiday
+        } else return false;
     }
+
     if (flag.indexOf(letterofweek) > -1) return true;  // if day of week is encoded
     // special cases F, skip 1st and 3rd wednesday of every month
-    if (flag == "F") {
+    if (flag.indexOf("F") > -1) {
         if (dayofweek != 3) return true;  // if not wednesday, accept it
         week = Math.floor((dayofmonth - 1) / 7);  // week: 0,1,2,3
         if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
     }
+    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
+        if (dayofweek != 2) return false;  // if not tuesday reject it
+        week = Math.floor((dayofmonth - 1) / 7);  // week: 0,1,2,3
+        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
+    }
     if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
-        if ((dayofweek == 5) && ((monthday >= laborday) || (monthday <= 0630))) return true;
+        if ((dayofweek == 5) && ((monthday >= laborday) || (monthday <= 630))) return true;
     }
     if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
-        if ((dayofweek == 5) && (monthday >= 0701) && (monthday <= laborday)) return true;
+        if ((dayofweek == 5) && (monthday >= 701) && (monthday <= laborday)) return true;
     }
     return false; // not a valid run;
 }
@@ -263,4 +284,11 @@ function CalculateCurrentTideHeight(newtidetime, oldtidetime, newtideheight, old
     else if (currenttimedelta <= timedelta6 * 5) tideheight = oldtideheight + tidedelta12 * 9 + (tidedelta12 * 2 * currenttimeremainder);
     else tideheight = oldtideheight + tidedelta12 * 11 + (tidedelta12 * currenttimeremainder);
     return tideheight;
+    // alternate using cos
+    //var timedelta; timedelta = RawTimeDiff(oldtidetime, newtidetime);
+    //var currenttimedelta; currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
+    //var rad = currenttimedelta / timedelta * (Math.PI / 2);
+    //var tidedelta = newtideheight - oldtideheight; // new tide - old tide; + for rising; - for falling
+    //var tidedelta = Math.sin(rad) * tidedelta;
+    //return oldtideheight + tidedelta;
 }
