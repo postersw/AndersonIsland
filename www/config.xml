@@ -3,10 +3,11 @@
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
+        xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
         version   = "1.0.0"
-        versionCode="1"
-        versionName="1.0.0">
+        android:versionCode="1"
+        android:versionName="1.0.0">
 
     <name>Anderson Island Assistant</name>
 
