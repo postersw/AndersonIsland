@@ -2,6 +2,7 @@
 0306;1300;1500;E;March of Dimes Tea;8808 Villa Beach Road;Comm Club
 0309;0900;1200;E;Electrical Outage;110th and Cole Point;Tanner;
 0312;1800;1900;E;Renovation & Celebration Event;Comm Club;Comm Club
+0313;1500;1630;M;Commercial Shellfish Harvesting on AI;Fire Station;Nisqually Reserve
 0324;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0324;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0326;1800;2000;S;AIHS Potluck;Comm Club;AIHS

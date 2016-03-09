@@ -292,18 +292,17 @@
         instant access to a wealth of time-sensitive Anderson Island information.  
         <p><strong>iPhone users:</strong>  Use the web-based app from <a href="http://www.anderson-island.org">www.anderson-island.org</a>. 
         An iPhone version of the app is coming soon.
-        <p><strong>Android phone users:</strong> Install the Android phone app from Google Play, 
-        or from <a href="http://www.anderson-island.org/AIA.apk">our Anderson-Island.org web site.</a>. 
-        <br />Note: to install from our web site you must change the settings on your phone. Click on Settings -> Security, scroll down to "Unknown Sources", and turn on the button that says 'Allow installation of apps from unknown sources'. 
-       </p>
+        <p><strong>Android phone users:</strong> Install the Android phone app from 
+            <a href="https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant">Google Play.</a>
+        </p>
         <hr />
         <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
         <p> <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="mailto:support@anderson-island.org">Send Email</a>
             <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="tel:253-267-4936">Call Us</a></p>
         <p>Email: support@anderson-island.org<br />  Phone: 253-267-4936</p>
         <hr />
-          "Anderson Island Assistant" Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
-          <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+          <p style="font-size:small">Anderson Island Assistant" Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
+          <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.</p>
       <hr />
         <div style="font-size:x-small">
             <span id="phoneweb" >Web version.</span>
@@ -446,7 +445,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.0.309.0002 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.0.309.1400 </span>
 
 
         </p>
@@ -472,6 +471,8 @@
         var forceTideReload;  // true to force tide reload
         var mytimer; // timer number
         var AppStartedTime; // time app started in sec
+        var DisplayPage; // name of page being displayed
+        var tabletoclear; // name of table to clear
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
@@ -654,9 +655,6 @@
                 if (a[0] == "OPENHOURSEND") break;
                 store = a[0].split("("); // strip out phone number
                 openlist += "<span style='font-weight:bold'>" + store[0] + "</span>:";
-                //opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
-                //opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
-                //closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
                 openlist += GetOpenStatus(a) + "<br/>";
             } // end for
             return openlist;
@@ -1097,7 +1095,7 @@
             document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
 
             // special handling for other than the main page
-            switch (localStorage.getItem("displaypage")){
+            switch (DisplayPage){
                 case "comingeventspage":
                     return;
                 case "emergencypage":
@@ -1165,7 +1163,7 @@
 
         function backKeyDown() {
             // Call my back key code here.
-            if (localStorage.getItem("displaypage" == 'mainpage')) navigator.app.exitApp();
+            if (DisplayPage == 'mainpage') navigator.app.exitApp();
             ShowMainPage();
         }
 
@@ -1232,16 +1230,15 @@
         //  exit    displaypage = the new page
         function ShowPage(newpage) {
             // clear out rows of table for former page
-            var t = localStorage.getItem("tabletoclear");
-            if (t != null) {
-                var table = document.getElementById(t);
+            if (tabletoclear != null) {
+                var table = document.getElementById(tabletoclear);
                 if (table != null) clearTable(table);
-                localStorage.removeItem("tabletoclear");
+                tabletoclear = null;
             }
             // now switch to new page
-            document.getElementById(localStorage.getItem("displaypage")).setAttribute('style', 'display:none;');
+            document.getElementById(DisplayPage).setAttribute('style', 'display:none;');
             document.getElementById(newpage).setAttribute('style', 'display:block;');
-            localStorage.setItem("displaypage", newpage); // remember it
+            DisplayPage = newpage; // remember it
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1328,7 +1325,7 @@
 
 
             table = document.getElementById("ferrytable");
-            localStorage.setItem("tabletoclear", "ferrytable");
+            tabletoclear =  "ferrytable";
             clearTable(table);
 
             row1 = table.insertRow(-1);
@@ -1386,7 +1383,7 @@
             ShowPage("openhourspage");
             InitializeDates(0);
             table = document.getElementById("openhourstable");
-            localStorage.setItem("tabletoclear", "openhourstable");
+            tabletoclear =  "openhourstable";
             clearTable(table);
 
             // read open hours from master source
@@ -1475,7 +1472,7 @@
             var datefmt; // formatted date
             var table // ref to table
             table = document.getElementById("comingeventstable");
-            localStorage.setItem("tabletoclear", "comingeventstable");
+            tabletoclear =  "comingeventstable";
             var iCE; // iterator through CE
             iCE = 0;
             var aCE; // CE split array 
@@ -1775,7 +1772,7 @@
         function ShowTideDataPage(periods, showcurrent) {
 
             var table = document.getElementById("tidestable");
-            localStorage.setItem("tabletoclear", "tidestable");
+            tabletoclear =  "tidestable";
             clearTable(table);
             olddate = periods[0].dateTimeISO.substring(5, 10);
             var oldtide = -1;
@@ -2177,7 +2174,7 @@
         var cacheReloadEvery = 720; // minutes
 
         app.initialize();
-        localStorage.setItem("displaypage", "mainpage");
+        DisplayPage = "mainpage";
         InitializeDates(0);
         AppStartedTime = timestampms;
         AppStartedDate = monthday * 10000 + timehhmm;
