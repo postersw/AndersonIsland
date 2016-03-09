@@ -30,6 +30,7 @@
     <preference name="SplashScreen"               value="AImap.9" />
     <preference name="SplashScreenDelay"          value="2000" />
     <preference name="SplashMaintainAspectRatio"  value="false" />
+    <preference name="ShowSplashScreenSpinner" value="true" />
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
     <preference name="target-device"              value="universal" />      <!-- all: possible values handset, tablet, or universal -->
     <preference name="fullscreen"                 value="false" />           <!-- all: hides the status bar at the top of the screen -->
