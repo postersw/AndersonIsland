@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.0.0"
-        android:versionCode="42"
-        android:versionName="1.0.0">
+        version   = "1.0.308"
+        android:versionCode="43"
+        android:versionName="1.0.308">
 
     <name>Anderson Island Assistant</name>
 
@@ -30,8 +30,8 @@
     <preference name="permissions"                value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
-    <preference name="SplashScreen"               value="aimapx" />
-    <preference name="SplashScreenDelay"          value="2000" />
+    <preference name="SplashScreen"               value="screen" />
+    <preference name="SplashScreenDelay"          value="3000" />
     <preference name="SplashMaintainAspectRatio"  value="false" />
     <preference name="ShowSplashScreenSpinner" value="true" />
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
@@ -100,10 +100,10 @@
     <!-- Define app splash screen for each platform. -->
  
 
-    <gap:splash src="www/res/screen/android/aimapx.9.png"       gap:platform="android" gap:qualifier="port-ldpi" />
-    <gap:splash src="www/res/screen/android/aimapx.9.png"       gap:platform="android" gap:qualifier="port-mdpi" />
-    <gap:splash src="www/res/screen/android/aimapx.9.png"       gap:platform="android" gap:qualifier="port-hdpi" />
-    <gap:splash src="www/res/screen/android/aimapx.9.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
+    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-ldpi" />
+    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-mdpi" />
+    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-hdpi" />
+    <gap:splash src="www/res/screen/android/screen.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />

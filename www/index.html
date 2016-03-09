@@ -301,7 +301,6 @@
       <hr />
         <div style="font-size:x-small">
             <span id="phoneweb" >Web version.</span>
-            <span id="updatetime" >Screen update time.</span>
             <span id="reloadtime">Data reload time.</span>
             <span id="reloadreason" ></span>
             <span id="currentweathertime" ></span>
@@ -439,8 +438,9 @@
 <!-- debugging times ----------------------------------------------------------------------------------->
 
 
-         <p> This page updates every minute.<br />           
-        <span style="font-size:x-small">   AIA Ver: 1.0.308.1810 </span>
+         <p> Updates every minute.&nbsp  
+        <span id="updatetime" >Screen update time.</span><br />        
+        <span style="font-size:x-small">   AIA Ver: 1.0.308.2200 </span>
 
 
         </p>
@@ -1088,7 +1088,7 @@
             InitializeDates(0);
             LastUpdatems = timestampms;
             updateCounter++;
-            document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
+            document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
 
             // special handling for other than the main page
             switch (localStorage.getItem("displaypage")){
@@ -2176,7 +2176,7 @@
         AppStartedTime = timestampms;
         AppStartedDate = monthday * 10000 + timehhmm;
         LastUpdatems = timestampms;
-        document.getElementById("updatetime").innerHTML = "Screen updated at " + FormatTime(timehhmm);
+        document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
         forceCacheReload = false; // cache reload not needed
         forceTideReload = false; 
 
