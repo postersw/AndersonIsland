@@ -27,8 +27,8 @@
     <preference name="permissions"                value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
-    <preference name="SplashScreen"               value="screen" />
-    <preference name="SplashScreenDelay"          value="3000" />
+    <preference name="SplashScreen"               value="www/res/screen/android/AImap.9.png" />
+    <preference name="SplashScreenDelay"          value="2000" />
     <preference name="SplashMaintainAspectRatio"  value="false" />
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
     <preference name="target-device"              value="universal" />      <!-- all: possible values handset, tablet, or universal -->
