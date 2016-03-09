@@ -27,7 +27,7 @@
     <preference name="permissions"                value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
-    <preference name="SplashScreen"               value="AImap.9" />
+    <preference name="SplashScreen"               value="aimap.9.php" />
     <preference name="SplashScreenDelay"          value="2000" />
     <preference name="SplashMaintainAspectRatio"  value="false" />
     <preference name="ShowSplashScreenSpinner" value="true" />
@@ -97,10 +97,10 @@
     <!-- Define app splash screen for each platform. -->
  
 
-    <gap:splash src="www/res/screen/android/AImap.9.png"       gap:platform="android" gap:qualifier="port-ldpi" />
-    <gap:splash src="www/res/screen/android/AImap.9.png"       gap:platform="android" gap:qualifier="port-mdpi" />
-    <gap:splash src="www/res/screen/android/AImap.9.png"       gap:platform="android" gap:qualifier="port-hdpi" />
-    <gap:splash src="www/res/screen/android/AImap.9.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
+    <gap:splash src="www/res/screen/android/aimap.9.png"       gap:platform="android" gap:qualifier="port-ldpi" />
+    <gap:splash src="www/res/screen/android/aimap.9.png"       gap:platform="android" gap:qualifier="port-mdpi" />
+    <gap:splash src="www/res/screen/android/aimap.9.png"       gap:platform="android" gap:qualifier="port-hdpi" />
+    <gap:splash src="www/res/screen/android/aimap.9.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
