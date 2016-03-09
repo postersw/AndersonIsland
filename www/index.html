@@ -38,6 +38,12 @@
         <h1 id="appheader" style="font-size:18px;margin-bottom:0px;background-color:blue;color:white;">Anderson Island Assistant </h1>
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Tap an entry for more information.</span>
 
+        <!--App message-->
+        <div id='androidapp' style="display:none;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant');" >
+            <strong>The Anderson Island Assistant is now available as an official app for your Android phone at the Google Play Store.
+            Tap here to install the app.</strong><br />
+        </div>
+
         <!--Alerts-->
         <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none">
             <span style="font-size:18px;font-weight:bold;color:red;margin-left:0%">ALERT</span>
@@ -440,7 +446,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.0.308.2246 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.0.309.0002 </span>
 
 
         </p>
@@ -2178,7 +2184,15 @@
         LastUpdatems = timestampms;
         document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
         forceCacheReload = false; // cache reload not needed
-        forceTideReload = false; 
+        forceTideReload = false;
+
+        // point user to google play
+        if (!isPhoneGap()) {
+            if(navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+                document.getElementById("androidapp").setAttribute('style', 'display:block;');
+                document.getElementById("topline").innerHTML = "";
+            }
+        }
 
         //  Show the cached data
         ShowCachedData();
