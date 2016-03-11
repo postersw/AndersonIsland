@@ -1555,22 +1555,11 @@
                 if (iweek != lastweek) {
                     row = table.insertRow(-1);
                     row.style.backgroundColor = "azure";
+                    col = row.insertCell(0);
                     // test for this week
-                    if (iweek == thisweek) {
-                        col = row.insertCell(0).innerHTML = "This Week";
-
-                    } else {
-                        col = row.insertCell(0).innerHTML = "";
-                    }
-                    //col.style.backgroundColor = "azure";
-                    row.insertCell(1).innerHTML = "";
-                    row.insertCell(2).innerHTML = "";
-                    row.insertCell(3).innerHTML = "";
+                    if (iweek == thisweek) col.innerHTML = "This Week";
+                    else col.innerHTML = "";
                     col.colSpan = "4";
-                    //col.style.backgroundColor = "azure";
-                    //for (i = 3; i < ; i++) {
-                    //    row.insertCell(i).innerHTML = "";
-                    //}
                 }
 
                 // add a new table row
@@ -1604,7 +1593,8 @@
 
         function tabletext(tc) {
             var d = tc.substring(1);
-            alert(document.getElementById("S" + d).innerHTML);
+            var t = document.getElementById(tc).innerHTML + "\n" + document.getElementById("S" + d).innerHTML;
+            alert(t);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
