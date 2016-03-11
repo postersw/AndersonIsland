@@ -21,12 +21,43 @@
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Anderson Island Assistant</title>
     <style>
-        button {font-size: 14px; text-align:left;}
-        .buttonback {background-color:blue;border:none;color:white;float:left}
-        p {font-size: 14px;}
-        tr {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;}
-        td {padding-top:6px;padding-bottom:6px;}
-        li {border-style:solid;border-width:thin;border-color:gray;padding-top:6px;padding-bottom:6px;padding-left:6px}
+        button {
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .buttonback {
+            background-color: blue;
+            border: none;
+            color: white;
+            float: left;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        tr {
+            border-style: solid;
+            border-width: thin;
+            border-color: gray;
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+
+        td {
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+
+        li {
+            border-style: solid;
+            border-width: thin;
+            border-color: gray;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            padding-left: 6px;
+        }
     </style>
 
 
@@ -195,7 +226,7 @@
        <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
-
+        Tap event for more info.
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td></td>
@@ -447,7 +478,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.0.310.2320 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.0.311.1010 </span>
 
 
         </p>
@@ -479,13 +510,13 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
-            window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793","_system" );
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793", "_system");
         }
 
         function ShowMap() {
-            window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4", "_blank" );
+            window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4", "_blank");
         }
-        
+
         function ShowBurnBan() {
             window.open("http://wc.pscleanair.org/burnban411/", "_blank");
         }
@@ -527,7 +558,7 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayAlertInfo() {
         function DisplayAlertInfo() {
-            if(localStorage.getItem("alerttext")==null || localStorage.getItem("alerttext") == "") {
+            if (localStorage.getItem("alerttext") == null || localStorage.getItem("alerttext") == "") {
                 document.getElementById("alertdiv").setAttribute('style', 'display:none;');
             } else {
                 document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
@@ -554,7 +585,7 @@
                     } else {  // if there is an alert, save it
                         r = r + "\n";
                         var i = r.indexOf("\n");
-                        localStorage.setItem("alerttext", r.substr(0,i));
+                        localStorage.setItem("alerttext", r.substr(0, i));
                         localStorage.setItem("alertdetail", Date().toString() + r.substr(i));
                     }
                     DisplayAlertInfo();
@@ -587,9 +618,9 @@
             var ft;
             ft = VeryShortTime(ferrytimes[i]);
             if (ferrytimes[i] < timehhmm) ft = ft + " tomorrow";
-                
+
             else {
-                ft =ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
+                ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
             }
 
             // ketron only if there is a ketron run, and it is valid
@@ -614,7 +645,7 @@
             v = "Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
             var str = localStorage.getItem("ferrytimess");
-            if (str !=null) ferrytimeS = str.split(",");
+            if (str != null) ferrytimeS = str.split(",");
             str = localStorage.getItem("ferrytimesa");
             if (str != null) ferrytimeA = str.split(",");
             str = localStorage.getItem("ferrytimesk");
@@ -647,12 +678,12 @@
 
             openHours = localStorage.getItem("openhours");
             if (openHours === null) return "";
-            if(openHours == "") return "";
+            if (openHours == "") return "";
             openHours = openHours.split("\n");
             openlist = "";
 
             // loop through the openHours array (each string entry is one business)
-            for (var i = 0; i < openHours.length-1; i++) {
+            for (var i = 0; i < openHours.length - 1; i++) {
                 a = openHours[i].split(",");  // parse it into an array'
                 if (a[0] == "OPENHOURSEND") break;
                 store = a[0].split("("); // strip out phone number
@@ -706,8 +737,8 @@
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         // getCurrentWeather  
         //function getCurrentWeatherAERIS() {
-            //alert("getcurrentweather");
-            // kludge - exit right away
+        //alert("getcurrentweather");
+        // kludge - exit right away
         //    var t = localStorage.getItem("currentweathertime");
         //    if (t != null && RawTimeDiff(t, timehhmm) < 20) return; // gets weather async every 20 min.
         //    localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
@@ -755,7 +786,7 @@
         function DegToCompassPoints(d) {
             var cp = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"];
             if (d == undefined) return "";
-            return cp[Math.floor((Number(d)+22.5) / 45)];
+            return cp[Math.floor((Number(d) + 22.5) / 45)];
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -766,7 +797,7 @@
         function getCurrentWeather() {
             var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("currentweathertime");
-            if (t != null && ((timestamp-t) < (15*60)) ) return; // gets weather async every 15 min.
+            if (t != null && ((timestamp - t) < (15 * 60))) return; // gets weather async every 15 min.
             localStorage.setItem("currentweathertime", timestamp); // save the cache time so we don't keep asking forever
 
             $.ajax({
@@ -776,13 +807,13 @@
                     // short form
                     var rain;
                     if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
-                    else rain = (Number(r.rain["3h"])/25.4).toFixed(2);
+                    else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
                     var current = StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
-                        StripDecimal(r.wind.speed) + " mph, " + rain + " rain" ;// + ", " + r.precipitation.value + r.precipitation.value
+                        StripDecimal(r.wind.speed) + " mph, " + rain + " rain";// + ", " + r.precipitation.value + r.precipitation.value
                     localStorage.setItem("currentweather", current);
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
-                    dsr = new Date(Number(r.sys.sunrise)*1000);
+                    dsr = new Date(Number(r.sys.sunrise) * 1000);
                     dss = new Date(Number(r.sys.sunset) * 1000);
                     var currentlong = "Currently " + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
                         r.main.humidity + "% RH, wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
@@ -790,7 +821,7 @@
                         "<br/>Sunrise at " + dsr.toLocaleTimeString() + ", Sunset at " + dss.toLocaleTimeString();
 
                     localStorage.setItem("currentweatherlong", currentlong);
-                    }
+                }
             });
         } // end of function
 
@@ -831,38 +862,38 @@
         //    });  // end of ajax call
         //}  // end of function
 
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////
-            // getForecast using WorldWeatherMap. License for 
-            // get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
-            // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
-            function getForecast() {
-                // kludge to prevent over fishing of forecast
-                var timestamp = Date.now() / 1000; // time in sec
-                var t = localStorage.getItem("forecasttime");
-                if (t != null && ((timestamp-t)<(60*60))) return; // gets weather forecast async every 60 min.
-                localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // getForecast using WorldWeatherMap. License for 
+        // get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
+        function getForecast() {
+            // kludge to prevent over fishing of forecast
+            var timestamp = Date.now() / 1000; // time in sec
+            var t = localStorage.getItem("forecasttime");
+            if (t != null && ((timestamp - t) < (60 * 60))) return; // gets weather forecast async every 60 min.
+            localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
 
-                $.ajax({
-                    url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
-                    dataType: 'jsonp',
-                    success: function (json) {
-                        // get hi and low
-                        var i, t;
-                        var mint = 9999; var maxt = 0;
-                        // scan 8 periods for min and max
-                        for (i = 0; i < 8; i++) {
-                            t = Math.ceil(Number(json.list[i].main.temp_max ));
-                            if (t > maxt) maxt = t;
-                            if (t < mint) mint = t;
-                        }
-                        var r = json.list[0];
-                        var forecast = "Forecast: " + maxt + "&deg/" + mint + "&deg, " +
-                            r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
-                        localStorage.setItem("forecast", forecast);
-                        $("#forecast").html(forecast);
+            $.ajax({
+                url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
+                dataType: 'jsonp',
+                success: function (json) {
+                    // get hi and low
+                    var i, t;
+                    var mint = 9999; var maxt = 0;
+                    // scan 8 periods for min and max
+                    for (i = 0; i < 8; i++) {
+                        t = Math.ceil(Number(json.list[i].main.temp_max));
+                        if (t > maxt) maxt = t;
+                        if (t < mint) mint = t;
                     }
-                });  // end of ajax call
-            }  // end of function
+                    var r = json.list[0];
+                    var forecast = "Forecast: " + maxt + "&deg/" + mint + "&deg, " +
+                        r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
+                    localStorage.setItem("forecast", forecast);
+                    $("#forecast").html(forecast);
+                }
+            });  // end of ajax call
+        }  // end of function
         /////////////////////////////////////////////////////////////////////////////////////////////
         // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
         // License as of 2/8/16 is for 750 hits/day for free.
@@ -890,7 +921,7 @@
                 var m = Number(thisperiod.dateTimeISO.substring(5, 7));
                 var d = Number(thisperiod.dateTimeISO.substring(8, 10));
                 var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
-                var mi =Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
+                var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
                 var tidehhmm = ((h) * 100) + (mi);
                 if (thisperiod.type == 'h') hilow = 'High';
                 else hilow = 'Low';
@@ -917,7 +948,7 @@
                 }
             }
             forceTideReload = true; // if we haven't gotten today's tides, reload it
-         }
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // getTideData - call the aeri api and store the response as a local storage string
@@ -948,7 +979,7 @@
             });
         }
 
-      
+
         ////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayNextEvent
 
@@ -956,8 +987,8 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' local storage object
         //  object consists of rows (separated by /n) 1 for each event or activity
-        function DisplayNextEvents(CE){
-            var datefmt=""; // formatted date
+        function DisplayNextEvents(CE) {
+            var datefmt = ""; // formatted date
             var iCE; // iterator through CE
             var aCE; // CE split array 
             var aCEmonthday;
@@ -1004,9 +1035,9 @@
                 success: function (data) {
                     //alert("Data: " + data + "\nStatus: " + status);
                     var i = data.indexOf("ACTIVITIES");
-                    if(i==0) i=data.length; 
+                    if (i == 0) i = data.length;
                     localStorage.setItem("comingevents", data.substring(0, i));
-                    if(i<data.length) localStorage.setItem("comingactivities", data.substring(i+11, data.length));
+                    if (i < data.length) localStorage.setItem("comingactivities", data.substring(i + 11, data.length));
                     localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
                     //alert("coming events loaded at " + monthday);
                     $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
@@ -1049,7 +1080,7 @@
             var i1, i2, i3, i4;
             data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
             //var rows = data.split("\n"); //split into lines
-            if (data.substring(0,10) != "DAILYCACHE") {
+            if (data.substring(0, 10) != "DAILYCACHE") {
                 //alert("could not load updated values for ferry times and open hours");
                 document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
                 return;
@@ -1081,8 +1112,8 @@
             var i5 = data.indexOf("EMERGENCY");
             var i6 = data.indexOf("EMERGENCYEND");
             if (i5 > 0) localStorage.setItem("emergency", data.substring(i5 + 10, i6));
-            
-            
+
+
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1099,7 +1130,7 @@
             document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
 
             // special handling for other than the main page
-            switch (DisplayPage){
+            switch (DisplayPage) {
                 case "comingeventspage":
                     return;
                 case "emergencypage":
@@ -1130,7 +1161,7 @@
 
             // reload daily stuff - ferry schedule, store hours, coming events, tides
             var dailycacheloaded = localStorage.getItem("dailycacheloaded");
-            if ((dailycacheloaded==null) || (Number(dailycacheloaded) != monthday)) {
+            if ((dailycacheloaded == null) || (Number(dailycacheloaded) != monthday)) {
                 ReloadCachedData();
             }
 
@@ -1218,12 +1249,12 @@
         //////////////////////////////////////////////////////////////////////////////////////
         // DisplayLoadTimes() displays time data loaded
         function DisplayLoadTimes() {
-            document.getElementById("reloadtime").innerHTML = "App started " + AppStartedDate + 
+            document.getElementById("reloadtime").innerHTML = "App started " + AppStartedDate +
                 ", update counter: " + updateCounter +
                 ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
                 ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
-                "<br/>Forecast:" + Math.ceil(((timestampms/1000)-Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
-                "CurrentWeather:" + Math.ceil(((timestampms/1000)-Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
+                "<br/>Forecast:" + Math.ceil(((timestampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
+                "CurrentWeather:" + Math.ceil(((timestampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
 
         }
 
@@ -1254,16 +1285,16 @@
 
     </script>
     <script>
- //==== FERRY SCHEDULE =======================================================================================
+        //==== FERRY SCHEDULE =======================================================================================
 
         // FERRY SCHEDULE PAGE as a DIV.  Replaces 'localferryschedule.html'
 
         // loads the ferry schedule at pierce web page
         function ShowFerrySchedule() {
-            window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200", "_blank" );
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200", "_blank");
         }
         function ShowFerryLocation() {
-            window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/", "_blank" );
+            window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/", "_blank");
         }
 
 
@@ -1315,7 +1346,7 @@
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Display the page
-        function DisplayFerrySchedulePage () {
+        function DisplayFerrySchedulePage() {
             ShowPage("ferryschedulepage");
             DisplayFerrySchedule("");
         }
@@ -1329,7 +1360,7 @@
 
 
             table = document.getElementById("ferrytable");
-            tabletoclear =  "ferrytable";
+            tabletoclear = "ferrytable";
             clearTable(table);
 
             row1 = table.insertRow(-1);
@@ -1360,7 +1391,7 @@
                 row1col1 = row1.insertCell(1);
                 row1col1.style.backgroundColor = "blue";
                 row1col1.style.color = "white";
-                row1col1.innerHTML = month + "/" + dayofmonth + (holiday?" Holiday":"");
+                row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
                 row1col1 = row1.insertCell(2);
                 row1col1.style.backgroundColor = "blue";
                 BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
@@ -1375,7 +1406,7 @@
     </script>
 
     <script>
-//======== OPEN HOURS ============================================================================
+        //======== OPEN HOURS ============================================================================
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // ShowOpenHours - shows whether something is open or closed
@@ -1387,7 +1418,7 @@
             ShowPage("openhourspage");
             InitializeDates(0);
             table = document.getElementById("openhourstable");
-            tabletoclear =  "openhourstable";
+            tabletoclear = "openhourstable";
             clearTable(table);
 
             // read open hours from master source
@@ -1426,7 +1457,7 @@
     </script>
 
     <script>
-//========= COMING EVENTS ===========================================================================
+        //========= COMING EVENTS ===========================================================================
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEventsPage(type)
@@ -1470,13 +1501,13 @@
             var row;
             var col;
             var idayofweek;
-            var lastweek = 0; 
+            var lastweek = 0;
             var lastdayofweek = 100; // 0-6 of previous row
             var previouseventdate; // date of previous event
             var datefmt; // formatted date
             var table // ref to table
             table = document.getElementById("comingeventstable");
-            tabletoclear =  "comingeventstable";
+            tabletoclear = "comingeventstable";
             var iCE; // iterator through CE
             iCE = 0;
             var aCE; // CE split array 
@@ -1491,14 +1522,14 @@
             row.style.backgroundColor = "lightblue";
             row.style.fontWeight = "bold";
             col = row.insertCell(0); col.innerHTML = "Day";
-            col = row.insertCell(1); col.innerHTML = "";
-            col = row.insertCell(2); col.innerHTML = "Time";
-            col = row.insertCell(3); col.innerHTML = "";
-            col = row.insertCell(4); col.innerHTML = "";
-            col = row.insertCell(5); col.innerHTML = "Event";
-            col = row.insertCell(6); col.innerHTML = "Location";
-            col = row.insertCell(7); col.innerHTML = "Sponsor";
-            col = row.insertCell(8); col.innerHTML = "More...";
+            //col = row.insertCell(1); col.innerHTML = "";
+            col = row.insertCell(1); col.innerHTML = "Time";
+            //col = row.insertCell(3); col.innerHTML = "";
+            //col = row.insertCell(4); col.innerHTML = "";
+            col = row.insertCell(2); col.innerHTML = "Event";
+            col = row.insertCell(3); col.innerHTML = "Location";
+            //col = row.insertCell(7); col.innerHTML = "Sponsor";
+            //col = row.insertCell(8); col.innerHTML = "More...";
             // calculate end month day. 6 for events, 1 for activities.
             var endmmdd;
             if (localStorage.getItem("eventtype") == "events") endmmdd = (month + 6) * 100 + dayofmonth;
@@ -1526,17 +1557,20 @@
                     row.style.backgroundColor = "azure";
                     // test for this week
                     if (iweek == thisweek) {
-                        row.insertCell(0).innerHTML = "This";
-                        row.insertCell(1).innerHTML = "";
-                        row.insertCell(2).innerHTML = "Week";
+                        col = row.insertCell(0).innerHTML = "This Week";
+
                     } else {
-                        row.insertCell(0).innerHTML = "";
-                        row.insertCell(1).innerHTML = "";
-                        row.insertCell(2).innerHTML = "";
+                        col = row.insertCell(0).innerHTML = "";
                     }
-                    for (i = 3; i < 9; i++) {
-                        row.insertCell(i).innerHTML = "";
-                    }
+                    //col.style.backgroundColor = "azure";
+                    row.insertCell(1).innerHTML = "";
+                    row.insertCell(2).innerHTML = "";
+                    row.insertCell(3).innerHTML = "";
+                    col.colSpan = "4";
+                    //col.style.backgroundColor = "azure";
+                    //for (i = 3; i < ; i++) {
+                    //    row.insertCell(i).innerHTML = "";
+                    //}
                 }
 
                 // add a new table row
@@ -1547,32 +1581,30 @@
                 if (aCE[0] != previouseventdate) col.innerHTML = dayofweekshort[idayofweek] + " " + datefmt; // day of week
                 else col.innerHTML = "";
                 col = row.insertCell(1);
-                //if (aCE[0] != previouseventdate)  col.innerHTML = datefmt; // date
-                //else col.innerHTML = "";
-                //if ((iCE<CE.length-1) && (aCE[0] == CE[iCE + 1].substring(0, 4))) row.style.border = "solid thin lightgray";
-
-
-                col = row.insertCell(2);
-                col.innerHTML = VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]); // compressed time
-                //col.innerHTML = ShortTime(aCE[1]);  // start
-                //col.style.textAlign = "right";
-                col = row.insertCell(3);
-                //col.innerHTML = ShortTime(aCE[2]); // end
-                //col.style.textAlign = "right";
+                col.innerHTML = VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]); // compressed tim
+                var col2 = row.insertCell(2);
+                col2.innerHTML = aCE[4];//event
+                //col.onclick = function(){tabletext(this);}
+                col = row.insertCell(3); col.innerHTML = aCE[5];//where
+                // hidden cell with sponsor & more
                 col = row.insertCell(4);
-                //col.innerHTML = aCE[3];//type
-                //col.style.textAlign = "center";
-                col = row.insertCell(5); col.innerHTML = aCE[4];//event
-                col = row.insertCell(6); col.innerHTML = aCE[5];//where
-                col = row.insertCell(7);
-                if (aCE.length >= 7) col.innerHTML = aCE[6]; // sponsor
-                else col.innerHTML = "";
-                col = row.insertCell(8);
-                if (aCE.length >= 8) col.innerHTML = aCE[7];
-                else col.innerHTML = ""; // more
+                col.style = "display:none";
+                var t = "alert('";
+                if (aCE.length >= 7) t = "Sponsor: " + aCE[6]; // sponsor
+                if (aCE.length >= 8) t = t + " " + aCE[7];
+                col.innerHTML = t;
+                col.id = 'S' + iCE;
+                col2.id = "E" + iCE;
+                col2.onclick = function () { tabletext (this.id)}
+                //else col.innerHTML = ""; // more
                 lastweek = iweek;
                 previouseventdate = aCE[0];
             } // end loop through CE
+        }
+
+        function tabletext(tc) {
+            var d = tc.substring(1);
+            alert(document.getElementById("S" + d).innerHTML);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1756,7 +1788,7 @@
     </script>
 
     <script>
- //===== TIDES =======================================================================================
+        //===== TIDES =======================================================================================
         var usertideselection = false; // true when user sets tides
         //////////////////////////////////////////////////////////////////////////////////////////////////
         // TidesDataPage
@@ -1766,7 +1798,7 @@
             // show the tide data in the jsontides global
             usertideselection = false;
             var periods = JSON.parse(localStorage.getItem("jsontides"));
-            ShowTideDataPage(periods, true );
+            ShowTideDataPage(periods, true);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1776,7 +1808,7 @@
         function ShowTideDataPage(periods, showcurrent) {
 
             var table = document.getElementById("tidestable");
-            tabletoclear =  "tidestable";
+            tabletoclear = "tidestable";
             clearTable(table);
             olddate = periods[0].dateTimeISO.substring(5, 10);
             var oldtide = -1;
@@ -1853,7 +1885,7 @@
             // now save the current tide
             document.getElementById("tidepagecurrent").innerHTML = "Current tide is: " + currentTide;
             $("#tideButton").show();
-         }
+        }
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1876,7 +1908,7 @@
             if (tidedate == null) return "";
             // validate the date
             var tda = tidedate.split("/");
-            if (tda.length != 2 && tda.length !=3) {
+            if (tda.length != 2 && tda.length != 3) {
                 alert("Invalid date. An example of a valid date is: 1/22");
                 return "";
             }
@@ -1928,7 +1960,7 @@
 
      </script>
     <script>
-//====EMERGENCY=====================================================================================
+        //====EMERGENCY=====================================================================================
 
         //////////////////////////////////////////////////////////////////////////////////////
         // ShowEmergency
@@ -1939,7 +1971,7 @@
     </script>
 
     <script>
-//====WEATHER=====================================================================================
+        //====WEATHER=====================================================================================
         // Weather
         function ShowWeatherPage() {
             ShowPage("weatherpage");
@@ -2049,69 +2081,69 @@
                 success: function (json) {
                     //var r = json.list[0];
                     //var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
-                     //   r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
-                        var resp = json.list;
-                        var mydayofweek = dayofweek;
-                        var firstrow = true;  // true for first row
-                        var olddate = "";
-                        // roll through the reply in jason.list[i]
-                        var table = document.getElementById("forecasttable");
-                        // don't clear the table so it is there in case we don't have network coverage for a new forecast
-                        clearTable(table);
-                        for (var i = 0; i < resp.length; i++) {
-                            // if date changed, add a blank row
-                            var r = resp[i];
+                    //   r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
+                    var resp = json.list;
+                    var mydayofweek = dayofweek;
+                    var firstrow = true;  // true for first row
+                    var olddate = "";
+                    // roll through the reply in jason.list[i]
+                    var table = document.getElementById("forecasttable");
+                    // don't clear the table so it is there in case we don't have network coverage for a new forecast
+                    clearTable(table);
+                    for (var i = 0; i < resp.length; i++) {
+                        // if date changed, add a blank row
+                        var r = resp[i];
 
-                            // Insert New Row for table for new day 
-                            var row1 = table.insertRow(-1);
-                            var newdate = r.dt_txt.substring(5, 11);// date
-                            if (newdate != olddate) {
-                                row1 = table.insertRow(-1); // dummy row
-                                row1col1 = row1.insertCell(0);
-                                row1col1.colSpan = "5";
-                                //row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
-                                var dow = GetDayofWeek(newdate.substring(0, 2) + newdate.substring(3, 5));
-                                row1col1.innerHTML = dayofweekshort[dow] + " " + newdate;
-                                olddate = newdate;
-                            }
-                            var row1 = table.insertRow(-1);
-                            var t = r.dt_txt.substring(11, 13) * 100;  // hh00
-                            if ((t < 900) || (t > 1800)) row1.style.backgroundColor = "lightgray";
-                            else row1.style.backgroundColor = "lightyellow";
+                        // Insert New Row for table for new day 
+                        var row1 = table.insertRow(-1);
+                        var newdate = r.dt_txt.substring(5, 11);// date
+                        if (newdate != olddate) {
+                            row1 = table.insertRow(-1); // dummy row
+                            row1col1 = row1.insertCell(0);
+                            row1col1.colSpan = "5";
+                            //row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
+                            var dow = GetDayofWeek(newdate.substring(0, 2) + newdate.substring(3, 5));
+                            row1col1.innerHTML = dayofweekshort[dow] + " " + newdate;
+                            olddate = newdate;
+                        }
+                        var row1 = table.insertRow(-1);
+                        var t = r.dt_txt.substring(11, 13) * 100;  // hh00
+                        if ((t < 900) || (t > 1800)) row1.style.backgroundColor = "lightgray";
+                        else row1.style.backgroundColor = "lightyellow";
 
-                            // Insert New Column for time
-                            var row1col1 = row1.insertCell(0);
-                            row1col1.innerHTML = "&nbsp&nbsp&nbsp" + VeryShortTime(t);  // time
-                            firstrow = false;
-                            row1col1.style.border = "thin solid gray";
-                            // high/low
-                            row1col1 = row1.insertCell(1);
-                            row1col1.innerHTML = StripDecimal(r.main.temp_max) + "&deg";
-                            row1col1.style.border = "thin solid gray";
-                            // weather
-                            row1col1 = row1.insertCell(2);
-                            row1col1.innerHTML = r.weather[0].description;
-                            row1col1.style.border = "thin solid gray";
-                            // rain
-                            row1col1 = row1.insertCell(3);
-                            var rain;
-                            if (typeof r.rain == 'undefined' || typeof r.rain["3h"]== 'undefined') rain = "0";
-                            else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
-                            row1col1.innerHTML = rain;
-                            row1col1.style.border = "thin solid gray";
-                            // wind
-                            row1col1 = row1.insertCell(4);
-                            row1col1.innerHTML = DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed);
-                            row1col1.style.border = "thin solid gray";
+                        // Insert New Column for time
+                        var row1col1 = row1.insertCell(0);
+                        row1col1.innerHTML = "&nbsp&nbsp&nbsp" + VeryShortTime(t);  // time
+                        firstrow = false;
+                        row1col1.style.border = "thin solid gray";
+                        // high/low
+                        row1col1 = row1.insertCell(1);
+                        row1col1.innerHTML = StripDecimal(r.main.temp_max) + "&deg";
+                        row1col1.style.border = "thin solid gray";
+                        // weather
+                        row1col1 = row1.insertCell(2);
+                        row1col1.innerHTML = r.weather[0].description;
+                        row1col1.style.border = "thin solid gray";
+                        // rain
+                        row1col1 = row1.insertCell(3);
+                        var rain;
+                        if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
+                        else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
+                        row1col1.innerHTML = rain;
+                        row1col1.style.border = "thin solid gray";
+                        // wind
+                        row1col1 = row1.insertCell(4);
+                        row1col1.innerHTML = DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed);
+                        row1col1.style.border = "thin solid gray";
 
-                            //// bump day if we just did a night
-                            //if (r.isDay == false) {
-                            //    mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
-                            //}
-                        }  // for end
-                        document.getElementById("forecastpage").innerHTML = "Data from " + FormatTime(timehhmm) + " and does not automatically refresh.";
-                    }
-                
+                        //// bump day if we just did a night
+                        //if (r.isDay == false) {
+                        //    mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
+                        //}
+                    }  // for end
+                    document.getElementById("forecastpage").innerHTML = "Data from " + FormatTime(timehhmm) + " and does not automatically refresh.";
+                }
+
             });  // end of ajax call
         }  // end of function
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2143,16 +2175,16 @@
     </script>
 
     <script>
- //====ABOUT=========================================================================================
+        //====ABOUT=========================================================================================
 
-    // FERRY WEB CAM
+        // FERRY WEB CAM
         function ShowFerryWebCam() {
             ShowPage("ferrywebcampage");
             document.getElementById("steilacoomcam").setAttribute("src", "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg?random" + timehhmm.toFixed(0));
             document.getElementById("aicam").setAttribute("src", "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg?random" + timehhmm.toFixed(0));
         }
 
-//====ABOUT=========================================================================================
+        //====ABOUT=========================================================================================
         /////////////////////////////////////////////////////////////////////////////////////
         // About
         function ShowAboutPage() {
@@ -2161,7 +2193,7 @@
             DisplayLoadTimes();
         }
 
-//====LINKS=========================================================================================
+        //====LINKS=========================================================================================
         /////////////////////////////////////////////////////////////////////////////////////
         // About
         function ShowLinksPage() {
@@ -2171,7 +2203,7 @@
 
     <!-- actual javascript execution begins here:-->
     <script type="text/javascript">
- //======================================================================================================
+        //======================================================================================================
         /////////////////////////////////////////////////////////////////////////////////////////////////
         //  MAIN APP CODE
         //
@@ -2189,7 +2221,7 @@
 
         // point user to google play
         if (!isPhoneGap()) {  // if not phonegap
-            if(navigator.userAgent.toLowerCase().indexOf('chrome') > -1) { // if chrome for android
+            if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) { // if chrome for android
                 document.getElementById("androidapp").setAttribute('style', 'display:block;');
                 document.getElementById("topline").innerHTML = "";
             }
@@ -2211,14 +2243,13 @@
             reloadreason = "dailycacheloaded != monthday";
             forceCacheReload = true;
         }
-        if (forceCacheReload)
-        {
+        if (forceCacheReload) {
             document.getElementById("reloadreason").innerHTML = reloadreason;
             ReloadCachedData();
         }
 
         // tide reload every day
-         getTideData();
+        getTideData();
 
 
         // set refresh timners

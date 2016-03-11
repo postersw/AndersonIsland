@@ -104,6 +104,7 @@
     <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-mdpi" />
     <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-hdpi" />
     <gap:splash src="www/res/screen/android/screen.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
+    <gap:splash src="www/res/screen/ios/screen.png"         gap:platform="ios"     width="514" height="514" />
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
