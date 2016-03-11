@@ -447,7 +447,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.0.310.1323 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.0.310.1900 </span>
 
 
         </p>
@@ -632,7 +632,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // ShowOpenHours - shows whether something is open or closed. 
         //  Entry: openhours is a string in "openhours", loaded from 'dailycache.txt'
-        //  exit: returns a display string with the open hours for all businesses.
+        //  exit: sets the openhours element to the open hours string
         //     
         function ShowOpenHours() {
             // openHours format is array of strings, 1 string per business Defined in AIA.js.
@@ -659,7 +659,8 @@
                 openlist += "<span style='font-weight:bold'>" + store[0] + "</span>:";
                 openlist += GetOpenStatus(a) + "<br/>";
             } // end for
-            return openlist;
+            document.getElementById("openhours").innerHTML = openlist;
+            return;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -1019,7 +1020,7 @@
         ///////////////////////////////////////////////////////////////////////////////////////////////
         //  GetDailyCache - retrieves the daily cache into the local storage objects 
         //  Load from server using ajax async request.
-        //  Store into local cache at 'comingevents'.  monthday of load stored into local cache at 'comingeventsloaded'
+        //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
         function GetDailyCache() {
             // ajax async request
             var myurl = FixURL("dailycache.txt");
@@ -1030,12 +1031,13 @@
                     ReloadDailyCache(data);
                     localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
                     localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
+                    // now update stuff on mainpage that uses daily cache data
+                    ShowOpenHours();
+                    WriteNextFerryTimes();
                     DisplayLoadTimes();
-
-                    //alert("coming events loaded at " + monthday);
                 }
             });
-            //alert("comingevents.txt requested");
+
             return;
         }
 
@@ -1176,7 +1178,7 @@
             WriteNextFerryTimes();  // show cached ferry schedule
             ShowNextTides(); // show cached tide data
             DisplayAlertInfo();
-            document.getElementById("openhours").innerHTML = ShowOpenHours(); //  open hours
+            ShowOpenHours(); //  open hours
             $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
             $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
 
