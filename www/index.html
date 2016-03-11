@@ -39,7 +39,7 @@
         <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Tap an entry for more information.</span>
 
         <!--App message-->
-        <div id='androidapp' style="display:none;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant');" >
+        <div id='androidapp' style="display:none;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
             <strong>The Anderson Island Assistant is now available for free as an official app for your Android phone at the Google Play Store.
             Tap here to install the app.</strong><br />
         </div>
@@ -102,7 +102,7 @@
             </td>
          </tr>
                 
-        <tr style="background-color:#fff4b3;" onclick="window.open('http://www.tannerelectric.coop/andersonisland')">  
+        <tr style="background-color:#fff4b3;" onclick="window.open('http://www.tannerelectric.coop/andersonisland', '_blank')">  
             <td style="font-size:18px;font-weight:bold;color:#802b00">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
 
@@ -185,9 +185,9 @@
          
         <div id="othercalendars" style="display:none">
             <p>CALENDARS:<br />
-            <button onclick="window.open('http://www.andersonislandcc.org/calendar/');">Comm Club</button>
-            <button onclick="window.open('http://rivieracommunityclub.com/event-calendar');">Riviera</button>
-            <button onclick="window.open('http://andersonislandhs.org');">Hist Society</button>
+            <button onclick="window.open('http://www.andersonislandcc.org/calendar/', '_blank');">Comm Club</button>
+            <button onclick="window.open('http://rivieracommunityclub.com/event-calendar', '_blank');">Riviera</button>
+            <button onclick="window.open('http://andersonislandhs.org', '_blank');">Hist Society</button>
             </p> 
          </div>
 
@@ -321,17 +321,17 @@
         <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         ISLAND INFORMATION LINKS
     </h1>
-            <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org');">Citizens Advisory Board</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org');">Community Club</button><br />   
-            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org');">Historical Society</button><br />                 
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org');">Island Patrol</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.yellowbook.com/local-business-directory/?where=anderson+island%2C+wa');">Local Businesses</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org');">Parks</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.doh.wa.gov/ehp/sf/biotoxin.htm');">Redtide Status (WA DOH)</button>
-            <button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com');">Riviera</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/');">Shellfish (WDFW)</button>
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com');">Store</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop');">Tanner Electric</button><br />
+            <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org', '_system');">Citizens Advisory Board</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org', '_system');">Community Club</button><br />   
+            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org', '_system');">Historical Society</button><br />                 
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org', '_system');">Island Patrol</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.yellowbook.com/local-business-directory/?where=anderson+island%2C+wa', '_system');">Local Businesses</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org', '_system');">Parks</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.doh.wa.gov/ehp/sf/biotoxin.htm', '_system');">Redtide Status (WA DOH)</button>
+            <button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com', '_system');">Riviera</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/', '_system');">Shellfish (WDFW)</button>
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com', '_system');">Store</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop', '_system');">Tanner Electric</button><br />
 </div>
  <!-- HELP ------------------------------------------------------------------------------------->
   <div id="helppage" style="display:none">
@@ -479,15 +479,15 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
-            window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793");
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793","_blank" );
         }
 
         function ShowMap() {
-            window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4")
+            window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4", "_blank" );
         }
         
         function ShowBurnBan() {
-            window.open("http://wc.pscleanair.org/burnban411/")
+            window.open("http://wc.pscleanair.org/burnban411/", "_self");
         }
 
         function LocalMenu() {
@@ -1260,10 +1260,10 @@
 
         // loads the ferry schedule at pierce web page
         function ShowFerrySchedule() {
-            window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200");
+            window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200", "_blank" );
         }
         function ShowFerryLocation() {
-            window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/");
+            window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/", "_blank" );
         }
 
 
@@ -1923,7 +1923,7 @@
         // ShowNOAA - query NOAA for the tide page
         function ShowNOAA() {
             InitializeDates(0);
-            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + dayofmonth + "&endDate=" + year + month + dayofmonth + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit")
+            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + dayofmonth + "&endDate=" + year + month + dayofmonth + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit", "_blank");
         }
 
      </script>
