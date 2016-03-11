@@ -478,7 +478,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.0.311.1055 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.0.311.1120 </span>
 
 
         </p>
@@ -1528,6 +1528,8 @@
             //col = row.insertCell(4); col.innerHTML = "";
             col = row.insertCell(2); col.innerHTML = "Event";
             col = row.insertCell(3); col.innerHTML = "Location";
+            //col = row.insertCell(4);
+            //col.style = "display:none";
             //col = row.insertCell(7); col.innerHTML = "Sponsor";
             //col = row.insertCell(8); col.innerHTML = "More...";
             // calculate end month day. 6 for events, 1 for activities.
@@ -1577,9 +1579,10 @@
                 col = row.insertCell(3); col.innerHTML = aCE[5];//where
                 // hidden cell with sponsor & more
                 col = row.insertCell(4);
-                col.style = "display:none;width:0px";
+                col.style.display = "none";
+                //col.style = "visibility:hidden";
                 var t = "alert('";
-                if (aCE.length >= 7) t = "Sponsor: " + aCE[6]; // sponsor
+                if (aCE.length >= 7) t = aCE[6]; // sponsor
                 if (aCE.length >= 8) t = t + " " + aCE[7];
                 col.innerHTML = t;
                 col.id = 'S' + iCE;
@@ -1593,7 +1596,7 @@
 
         function tabletext(tc) {
             var d = tc.substring(1);
-            var t = document.getElementById(tc).innerHTML + "\n" + document.getElementById("S" + d).innerHTML;
+            var t = document.getElementById(tc).innerHTML + "\nSponsor: " + document.getElementById("S" + d).innerHTML;
             alert(t);
         }
 
