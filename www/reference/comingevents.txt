@@ -86,3 +86,38 @@ ACTIVITIES
 0331;1000;1500;A;AICC Crafts;Comm Club;Comm Club
 0331;1830;1930;A;Fitness Class;MSR-Rivera;Rivera
 0401;1000;1400;A;Share and Care;Comm Club;Comm Club
+0404;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0406;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0406;1100;1200;A;Laughter Yoga;Comm Club
+0406;1100;1500;A;Pierce County Lib;Comm Club;Comm Club
+0406;1830;1930;A;Zumba;MSR-Rivera;Rivera
+0406;1700;1900;A;Bingo;Lakeshore Rest;Rivera
+0407;0900;1000;A;Yoga;MSR-Rivera;Rivera
+0407;1000;1500;A;AICC Crafts;Comm Club;Comm Club
+0407;1300;1500;A;Art Club;MSR-Rivera;Rivera
+0408;0900;1000;A;Fitness Class;MSR-Rivera;Rivera
+0408;1000;1400;A;Share and Care;Comm Club;Comm Club
+0411;0900;1000;A;Yoga;MSR-Rivera;Rivera
+0411;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0413;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0413;1100;1200;A;Laughter Yoga;Comm Club
+0413;1100;1500;A;Pierce County Lib;Comm Club;Comm Club
+0414;1000;1500;A;AICC Crafts;Comm Club;Comm Club
+0415;1000;1400;A;Share and Care;Comm Club;Comm Club
+0418;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0420;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0420;1100;1200;A;Laughter Yoga;Comm Club
+0420;1100;1500;A;Pierce County Lib;Comm Club;Comm Club
+0421;1000;1500;A;AICC Crafts;Comm Club;Comm Club
+0422;1000;1400;A;Share and Care;Comm Club;Comm Club
+0425;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0427;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0427;1100;1200;A;Laughter Yoga;Comm Club
+0427;1100;1500;A;Pierce County Lib;Comm Club;Comm Club
+0428;1000;1500;A;AICC Crafts;Comm Club;Comm Club
+0429;1000;1400;A;Share and Care;Comm Club;Comm Club
+0502;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0504;1000;1100;A;Line Dancing;Comm Club;Comm Club
+0504;1100;1200;A;Laughter Yoga;Comm Club
+0504;1100;1500;A;Pierce County Lib;Comm Club;Comm Club
+0505;1000;1500;A;AICC Crafts;Comm Club;Comm Club
