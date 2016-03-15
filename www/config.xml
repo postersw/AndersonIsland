@@ -82,29 +82,35 @@
     -->
 
     <!-- Define app icon for each platform. -->
-    <icon src="icon.png" />
+    <icon src="www/icon.png" />
     <icon src="www/res/icon/android/icon-36-ldpi.png"   gap:platform="android"    gap:qualifier="ldpi" />
     <icon src="www/res/icon/android/icon-48-mdpi.png"   gap:platform="android"    gap:qualifier="mdpi" />
     <icon src="www/res/icon/android/icon-72-hdpi.png"   gap:platform="android"    gap:qualifier="hdpi" />
     <icon src="www/res/icon/android/icon-96-xhdpi.png"  gap:platform="android"    gap:qualifier="xhdpi" />
     <icon src="www/res/icon/blackberry/icon-80.png"     gap:platform="blackberry" />
     <icon src="www/res/icon/blackberry/icon-80.png"     gap:platform="blackberry" gap:state="hover"/>
+    <icon src="icon/ios/icon-57.png"            gap:platform="ios"        width="57" height="57" />
+    <icon src="icon/ios/icon-72.png"            gap:platform="ios"        width="72" height="72" />
+    <icon src="icon/ios/icon-57-2x.png"         gap:platform="ios"        width="114" height="114" />
+    <icon src="icon/ios/icon-72-2x.png"         gap:platform="ios"        width="144" height="144" />
+<!--
     <icon src="www/res/icon/ios/icon-57.png"            gap:platform="ios"        width="57" height="57" />
     <icon src="www/res/icon/ios/icon-72.png"            gap:platform="ios"        width="72" height="72" />
     <icon src="www/res/icon/ios/icon-57-2x.png"         gap:platform="ios"        width="114" height="114" />
     <icon src="www/res/icon/ios/icon-72-2x.png"         gap:platform="ios"        width="144" height="144" />
+    -->
     <icon src="www/res/icon/webos/icon-64.png"          gap:platform="webos" />
     <icon src="www/res/icon/windows-phone/icon-48.png"  gap:platform="winphone" />
     <icon src="www/res/icon/windows-phone/icon-173-tile.png" gap:platform="winphone"   gap:role="background" />
 
     <!-- Define app splash screen for each platform. -->
  
-
+    <icon src="icon.png"                                      gap:platform="ios"   />
     <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-ldpi" />
     <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-mdpi" />
     <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-hdpi" />
-    <gap:splash src="www/res/screen/android/screen.png"      gap:platform="android" gap:qualifier="port-xhdpi" />
-    <gap:splash src="www/res/screen/ios/screen.png"         gap:platform="ios"     width="514" height="514" />
+    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-xhdpi" />
+    <gap:splash src="www/res/screen/ios/screen.png"           gap:platform="ios"     width="514" height="514" />
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
