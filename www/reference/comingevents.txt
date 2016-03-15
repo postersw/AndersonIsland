@@ -3,19 +3,22 @@
 0309;0900;1200;E;Electrical Outage;110th and Cole Point;Tanner;
 0312;1800;1900;E;Renovation & Celebration Event;Comm Club;Comm Club
 0313;1500;1630;M;Commercial Shellfish Harvesting on AI;Fire Station;Nisqually Reserve
-0324;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
-0324;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0326;1800;2000;S;AIHS Potluck;Comm Club;AIHS
 0327;0930;1330;E;Easter Buffet Brunch;Restaurant;Rivera
-0428;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
-0428;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
+0329;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
+0329;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
+0408;1900;2100;M;AICAB meting;Comm Club;AICAB
+0423;1400;1600;M;Park Board meeting;Comm Club;Parks
+0426;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
+0426;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0507;1900;2100;E;AIA Spring Concert;Comm Club;AIA
-0526;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
-0526;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
+0524;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0528;1000;1300;E;Farm Day;Farm;AIHS
-0623;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
-0623;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
+0531;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
+0628;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
+0628;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0702;1100;1400;E;Salmon Bake;Farm;AIHS
+0708;1900;2100;M;AICAB meeting;Comm Club;AICAB
 0728;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0728;1200;1300;M;AICC Annual Picnic/Potluck;Comm Club;Comm Club
 
