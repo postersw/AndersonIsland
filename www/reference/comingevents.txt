@@ -8,6 +8,8 @@
 0329;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0329;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
 0408;1900;2100;M;AICAB meting;Comm Club;AICAB
+0409;1900;2100;E;Karaoke;Restaurant;Rivera
+0416;1900;2100;Michelle Limanni;Restaurant;Rivera
 0423;1400;1600;M;Park Board meeting;Comm Club;Parks
 0426;1000;1200;M;AICC Board Meeting;Comm Club;Comm Club;
 0426;1200;1300;M;AICC General Meeting;Comm Club;Comm Club
