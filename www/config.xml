@@ -106,11 +106,13 @@
     <!-- Define app splash screen for each platform. -->
  
     <icon src="icon.png"                                      gap:platform="ios"   />
-    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-ldpi" />
-    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-mdpi" />
-    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-hdpi" />
-    <gap:splash src="www/res/screen/android/screen.png"       gap:platform="android" gap:qualifier="port-xhdpi" />
-    <gap:splash src="www/res/screen/ios/screen.png"           gap:platform="ios"     width="514" height="514" />
+    <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-ldpi" />
+    <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-mdpi" />
+    <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-hdpi" />
+    <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-xhdpi" />
+    <splash scr="Default.png"                         platform="ios" width="320" height="480" />
+    <splash src="Default-568h-2x.png"                 platform="ios" width="320" height="480" />
+    <splash src="www/res/screen/ios/screen.png"       platform="ios"     width="514" height="514" />
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
