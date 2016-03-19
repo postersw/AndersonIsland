@@ -2,7 +2,8 @@
 <!--
     Anderson Island Assistant.  Single page version.
     Robert Bedoll. 2/23/16. 
-
+	ver 1.1.319: fix weather forecast gmt time conversion
+	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
     Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
@@ -477,7 +478,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.0.315.1400 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.1.319.2019 </span>
 
 
         </p>
@@ -597,13 +598,29 @@
         //      entry ferrytimes is the array of times and days (see ferrytimeA)
         //            DoKetron = true to add ketron using ferrytimeK. kludge.
         function FindNextFerryTime(ferrytimes, DoKetron) {
-            InitializeDates(0);
-            var i;
+            var ShowTimeDiff = false;
+			InitializeDates(0);	
+            var i = 0;
+			var ketron = false; //ketron run ;
+			var nruns = 0; 
+			var ft = ""; var ketront = "";
             // roll through the ferry times, skipping runs that are not valid for today
             for (i = 0; i < ferrytimes.length; i = i + 2) {
                 if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
                 // now determine if the next run will run today.  If it is a valid run, break out of loop.
-                if (ValidFerryRun(ferrytimes[i + 1])) break;
+                if (ValidFerryRun(ferrytimes[i + 1])){
+					ft = ft + VeryShortTime(ferrytimes[i]);
+					if (DoKetron) { // add ketron time for this run
+						if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
+							ketron = true;
+							ketront = ketront + VeryShortTime(ferrytimeK[i]);
+						} else ketront = ketront + " --- ";
+					}
+					if(nruns > 0) break;  // show 2 runs
+					ft = ft + ", "; 
+					ketront = ketront + ", "; 
+					nruns++;
+				};
             }
 
             // we ran out of the schedule today so give the 1st run for tomorrow
@@ -611,24 +628,14 @@
                 i = 0;
                 // need to compute if tomorrow is a holiday
                 if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
+				ft = ft + VeryShortTime(ferrytimes[i]) + " tomorrow";
             }
+			
+            if(ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
 
-            // convert to a string and add am or pm and optionally tomorrow
-            var ft;
-            ft = VeryShortTime(ferrytimes[i]);
-            if (ferrytimes[i] < timehhmm) ft = ft + " tomorrow";
-
-            else {
-                ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
-            }
-
-            // ketron only if there is a ketron run, and it is valid
-            if (DoKetron) {
-                if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
-                    ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + VeryShortTime(ferrytimeK[i]) + "</span>";
-                }
-            }
-            return ft;
+            // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
+            if(DoKetron && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
+			return ft;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1947,7 +1954,7 @@
         // ShowNOAA - query NOAA for the tide page
         function ShowNOAA() {
             InitializeDates(0);
-            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + dayofmonth + "&endDate=" + year + month + dayofmonth + "&datum=MLLW&unit=0&timeZone=0&format=html&Submit=Submit", "_blank");
+            window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + year + month + dayofmonth + "&endDate=" + year + month + dayofmonth + "&datum=MLLW&unit=0& =0&format=html&Submit=Submit", "_blank");
         }
 
      </script>
@@ -2078,29 +2085,37 @@
                     var mydayofweek = dayofweek;
                     var firstrow = true;  // true for first row
                     var olddate = "";
+					var row1;
                     // roll through the reply in jason.list[i]
                     var table = document.getElementById("forecasttable");
                     // don't clear the table so it is there in case we don't have network coverage for a new forecast
                     clearTable(table);
+					var fdate = new Date();
                     for (var i = 0; i < resp.length; i++) {
                         // if date changed, add a blank row
                         var r = resp[i];
+                        //var row1 = table.insertRow(-1);
+                        //var t = r.dt_txt.substring(11, 13) * 100;  // hh00
+						var timef = Number(r.dt);// unix gmt time in sec since 1970
+
+						fdate.setTime(timef * 1000);// force UTC
+						newdate = fdate.getDate(); //dd
+						var t = fdate.getHours() * 100 + fdate.getMinutes(); //hhmm
 
                         // Insert New Row for table for new day 
-                        var row1 = table.insertRow(-1);
-                        var newdate = r.dt_txt.substring(5, 11);// date
+
+                        //var newdate = r.dt_txt.substring(5, 11);// date
                         if (newdate != olddate) {
                             row1 = table.insertRow(-1); // dummy row
-                            row1col1 = row1.insertCell(0);
+                            var row1col1 = row1.insertCell(0);
                             row1col1.colSpan = "5";
                             //row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
-                            var dow = GetDayofWeek(newdate.substring(0, 2) + newdate.substring(3, 5));
-                            row1col1.innerHTML = dayofweekshort[dow] + " " + newdate;
+                            var dow = fdate.getDay();;
+                            row1col1.innerHTML = dayofweekshort[dow] + " " + fdate.getMonth() + "/" + newdate;
                             olddate = newdate;
                         }
-                        var row1 = table.insertRow(-1);
-                        var t = r.dt_txt.substring(11, 13) * 100;  // hh00
-                        if ((t < 900) || (t > 1800)) row1.style.backgroundColor = "lightgray";
+                        var row1 = table.insertRow(-1);						
+                        if ((t < 600) || (t > 1800)) row1.style.backgroundColor = "lightgray";
                         else row1.style.backgroundColor = "lightyellow";
 
                         // Insert New Column for time
@@ -2127,12 +2142,8 @@
                         row1col1 = row1.insertCell(4);
                         row1col1.innerHTML = DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed);
                         row1col1.style.border = "thin solid gray";
-
-                        //// bump day if we just did a night
-                        //if (r.isDay == false) {
-                        //    mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
-                        //}
                     }  // for end
+					
                     document.getElementById("forecastpage").innerHTML = "Data from " + FormatTime(timehhmm) + " and does not automatically refresh.";
                 }
 
