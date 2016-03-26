@@ -3,6 +3,8 @@
     Anderson Island Assistant.  Single page version.
     Robert Bedoll. 2/23/16. 
 	ver 1.1.319: fix weather forecast gmt time conversion
+	ver 1.2: add weather icons
+	ver 1.3.324: add pushbots
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -478,7 +480,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.1.319.2019 </span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.326.2000 </span>
 
 
         </p>
@@ -539,7 +541,10 @@
             return test;
             //(window.cordova || window.PhoneGap || window.phonegap) this returned undefined. 
         }
-
+		function isAndroid() {
+		            return ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
+					(navigator.userAgent.toLowerCase().indexOf('android') > -1);
+		}
         /////////////////////////////////////////////////////////////////////////////////////////////
         // FixURL = make URL fully qualified if a phonegap app
         //  entry   url = the url
@@ -812,16 +817,17 @@
                 success: function (r) {
                     // short form
                     var rain;
+					var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
                     if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
                     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
-                    var current = StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
+                    var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
                         StripDecimal(r.wind.speed) + " mph, " + rain + " rain";// + ", " + r.precipitation.value + r.precipitation.value
                     localStorage.setItem("currentweather", current);
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
                     dsr = new Date(Number(r.sys.sunrise) * 1000);
                     dss = new Date(Number(r.sys.sunset) * 1000);
-                    var currentlong = "Currently " + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
+                    var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
                         r.main.humidity + "% RH, wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
                          ", " + rain + " in. rain, " +
                         "<br/>Sunrise at " + dsr.toLocaleTimeString() + ", Sunset at " + dss.toLocaleTimeString();
@@ -2108,7 +2114,7 @@
                         if (newdate != olddate) {
                             row1 = table.insertRow(-1); // dummy row
                             var row1col1 = row1.insertCell(0);
-                            row1col1.colSpan = "5";
+                            row1col1.colSpan = "6";
                             //row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
                             var dow = fdate.getDay();;
                             row1col1.innerHTML = dayofweekshort[dow] + " " + fdate.getMonth() + "/" + newdate;
@@ -2124,22 +2130,24 @@
                         firstrow = false;
                         row1col1.style.border = "thin solid gray";
                         // high/low
-                        row1col1 = row1.insertCell(1);
+                        row1col1 = row1.insertCell(-1);
                         row1col1.innerHTML = StripDecimal(r.main.temp_max) + "&deg";
                         row1col1.style.border = "thin solid gray";
+						// icon
+						var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
                         // weather
-                        row1col1 = row1.insertCell(2);
-                        row1col1.innerHTML = r.weather[0].description;
+                        row1col1 = row1.insertCell(-1);
+                        row1col1.innerHTML = icon + r.weather[0].description;
                         row1col1.style.border = "thin solid gray";
                         // rain
-                        row1col1 = row1.insertCell(3);
+                        row1col1 = row1.insertCell(-1);
                         var rain;
                         if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
                         else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
                         row1col1.innerHTML = rain;
                         row1col1.style.border = "thin solid gray";
                         // wind
-                        row1col1 = row1.insertCell(4);
+                        row1col1 = row1.insertCell(-1);
                         row1col1.innerHTML = DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed);
                         row1col1.style.border = "thin solid gray";
                     }  // for end
@@ -2224,11 +2232,23 @@
 
         // point user to google play
         if (!isPhoneGap()) {  // if not phonegap
-            if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) { // if chrome for android
+            if (isAndroid()) { // if chrome for android
                 document.getElementById("androidapp").setAttribute('style', 'display:block;');
                 document.getElementById("topline").innerHTML = "";
             }
         }
+
+		//  pushbots
+		if(isPhoneGap() && isAndroid()) {
+			var Pushbots = PushbotsPlugin.initialize("andersonislandassistant", 
+				{"android":{"sender_id":"AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0"}});
+			Pushbots.on("notification:received", function(data){
+				alert("received:" + JSON.stringify(data));
+				});
+			Pushbots.on("notification:clicked", function(data){
+				alert("clicked:" + JSON.stringify(data));
+				});		
+		}
 
         //  Show the cached data
         ShowCachedData();
