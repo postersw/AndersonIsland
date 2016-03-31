@@ -2246,14 +2246,14 @@
 
 		//  pushbots
 		if(isPhoneGap() && isAndroid()) {
-			//var Pushbots = PushbotsPlugin.initialize("andersonislandassistant", 
-			//	{"android":{"sender_id":"AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0"}});
-			//Pushbots.on("notification:received", function(data){
-			//	alert("received:" + JSON.stringify(data));
-			//	});
-			//Pushbots.on("notification:clicked", function(data){
-			//	alert("clicked:" + JSON.stringify(data));
-			//	});		
+			var Pushbots = PushbotsPlugin.initialize("andersonislandassistant", 
+				{"android":{"sender_id":"AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0"}});
+			Pushbots.on("notification:received", function(data){
+				alert("received:" + JSON.stringify(data));
+				});
+			Pushbots.on("notification:clicked", function(data){
+				alert("clicked:" + JSON.stringify(data));
+				});		
 		}
 
         //  Show the cached data
