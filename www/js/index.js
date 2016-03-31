@@ -37,6 +37,7 @@ var app = {
     },
     // Update DOM on a Received Event. commented out on 2/16/16 because we don't need it.
     receivedEvent: function(id) {
+		//alert("device ready");
         //var parentElement = document.getElementById(id);
         //var listeningElement = parentElement.querySelector('.listening');
         //var receivedElement = parentElement.querySelector('.received');
