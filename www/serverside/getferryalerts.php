@@ -3,11 +3,12 @@
 //  getferryalerts - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
 //  alerts are cleared after 4 hours or if they are removed from the rss feed
 //  Bob Bedoll. 3/13/16.
+//		4/09/16. Changed alertfile to alert.txt
 //  Sample RSS feed:
 
 echo("PHP START");
 $alertclearhours = 5;  // hours to clear an alert
-$alertfile = "alerts.txt";  // alert file the phone reads
+$alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 $alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
 
