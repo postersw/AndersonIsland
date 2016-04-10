@@ -7,6 +7,7 @@
 //  Sample RSS feed:
 
 echo("PHP START");
+chdir("/home/postersw/public_html");
 $alertclearhours = 5;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
@@ -20,16 +21,19 @@ for($i=0; $i<10; $i++) {
     //echo("  |x->channel->title=" . $x->channel->title);
     if($title != "") break; // if we have content
 }
-if($title == "") exit(0); // if no reply 
+if($title == "") {
+	ClearAlertFile($alertfile, $alertlog);
+	logalertlast("no title");
+	exit(0); // if no reply 
+}
 // get actual message
 $title = $x->channel->item[0]->title; 
+if($title == "") {
+	ClearAlertFile($alertfile, $alertlog);
+	exit(0); // if no title 
+}
+
 $desc = $x->channel->item[0]->description;
-//echo('|x->channel->item[0]->title=' . $title);
-// //if ($title = "") {
-// //    ClearAlertFile();
-// //    echo ("no alert title");
-// //    exit();
-// //}
 $alertts = $x->channel->item[0]->pubDate;
 $alertts = substr($alertts, 5);
 $alertts[2] = "/";
@@ -55,10 +59,13 @@ $deltat = $t - $talert;
 
 // write alert to file
 //echo ("writing alert to file.");
-$alertts  = substr($alertts , 0, 20);
+$alertts  = substr($x->channel->item[0]->pubDate, 5, 20);
 $alertstring = $alertts . " " . $title . "\n" . $desc;
 $alc = file_get_contents($alertfile);  // read the alert file
-if($alc == $alertstring) return; // if already written
+if($alc == $alertstring) {
+	logalertlast("alert already written");
+	return; // if already written
+}
 
 // change it and log it
 $fh = fopen($alertfile, 'w');
@@ -69,13 +76,14 @@ fclose($fh);
 fwrite($fhl, date("Y-m-d-H-i-s") . "|" . $alertstring . "\n");
 fclose($fhl);  
 echo ("wrote to file: " . $alertstring);
+logalertlast("wrote to alert file");
 exit(0);
 
 /////////////////////////////////////////////////////////////////
 //  ClearAlertFile - writes an empty string to the alert file
 //
 function ClearAlertFile($alertfile, $alertlog) {
-     //echo ("clearalert called");
+     logalertlast("cleared alert file");
      $alc = file_get_contents($alertfile);
      if($alc=="") return; // if already empty
      
@@ -85,9 +93,20 @@ function ClearAlertFile($alertfile, $alertlog) {
      echo("ClearAlertFile cleared the $alertfile");
      // log it
      $fhl = fopen($alertlog, 'a');
-     fwrite($fhl, date("Y-m-d-H-i-s") . " Cleared alert file.\n");
+     fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file.\n");
      fclose($fhl);  
+	 logalertlast("physically cleared alert file");
      //echo("ClearAlertFile wrote to log");
+}
+
+/////////////////////////////////////////////////////////////////
+//  loglastalert - writes an  string to the alertlast file
+//
+function logalertlast($s) {
+	$alertlast = "alertlast.txt";
+    $fh = fopen($alertlast, 'w');
+    fwrite($fh, date("Y/m/d H:i:s") . $s);
+    fclose($fh);  
 }
  
 ?>
