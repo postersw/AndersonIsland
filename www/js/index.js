@@ -57,6 +57,6 @@ var app = {
 	}
 
 	function onResume() {
-		focusEvent();
+		//focusEvent();
 	}
 };
