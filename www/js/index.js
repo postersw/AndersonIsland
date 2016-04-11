@@ -34,6 +34,8 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+		document.addEventListener("pause", onPause, false);
+		document.addEventListener("resume", onResume, false);
 		window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", {"android":{"sender_id":"AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0"}});
     },
     // Update DOM on a Received Event. commented out on 2/16/16 because we don't need it.
@@ -47,4 +49,14 @@ var app = {
 
         //console.log('Received Event: ' + id);
     }
+	
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//  onResume
+	function onPause() {
+		//console.log("I've been paused");
+	}
+
+	function onResume() {
+		focusEvent();
+	}
 };
