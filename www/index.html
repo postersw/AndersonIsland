@@ -481,7 +481,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.3.0410.2243		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.0411.1722		</span>
 
 
         </p>
@@ -1196,10 +1196,13 @@
         /////////////////////////////////////////////////////////////////////////////
         // focus and blur events
         function focusEvent() {
-            if (mytimer == null) {
+            if (mytimer == null) {  // if timer is off
                 mytimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
                 timerUp(); // restart the timer if needed
-            }
+            } else {  
+				var d = new Date();
+				if((d.getTime() - LastUpdatems) > 60000) timerUp(); // if > 60 secs
+			}
         }
 
         function blurEvent() {
