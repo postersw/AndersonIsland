@@ -379,11 +379,10 @@
 <table>
     <tr>
         <td style="color:darkblue;vertical-align:text-top">FERRY</td>
-        <td>Displays the time of next ferry to arrive at Anderson Island and Steilacoom, based on the <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">Pierce County PUBLISHED ferry schedule.</a>.
+        <td>Displays the time of next 2 ferrys to arrive at Anderson Island and Steilacoom, based on the <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">Pierce County PUBLISHED ferry schedule.</a>.
             It is NOT updated if the ferry is late or out of service.
             (Use the LOCATION button to see where the ferry actually is.)
-            <br />The time in parenthesis (e.g. in 0:34) is the time remaining until the ferry's scheduled departure. 
-            This information is updated every minute. <br />
+            <br />The time becomes red within 12 minutes of the departure time.<br />
         <br />TAP to display the ferry schedule computed for the next 7 days, based on the 
             <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">published ferry schedule.</a>
             The schedule automatically factors in day-of-the-week, holidays, and other unique rules.
@@ -615,7 +614,11 @@
                 if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
                 // now determine if the next run will run today.  If it is a valid run, break out of loop.
                 if (ValidFerryRun(ferrytimes[i + 1])){
-					ft = ft + VeryShortTime(ferrytimes[i]);
+					if(RawTimeDiff(timehhmm, ferrytimes[i])<13) {
+						ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>";
+					} else {
+						ft = ft + VeryShortTime(ferrytimes[i]);
+					}
 					if (DoKetron) { // add ketron time for this run
 						if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
 							ketron = true;
@@ -1210,7 +1213,14 @@
             mytimer = null;
         }
 
+	/////////////////////////////////////////////////////////////////////////////////////////
+	//  onResume
+	function onPause() {
+	}
 
+	function onResume() {
+		focusEvent();
+	}
 
         function backKeyDown() {
             // Call my back key code here.
@@ -2290,6 +2300,8 @@
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
         document.addEventListener("backbutton", backKeyDown, true);
+		document.addEventListener("pause", onPause, false);
+		document.addEventListener("resume", onResume, false);
 
         DisplayLoadTimes();
 
