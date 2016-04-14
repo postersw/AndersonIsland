@@ -30,7 +30,7 @@
     <preference name="permissions"                value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
-    <preference name="SplashScreen"               value="screen" />
+    <preference name="SplashScreen"               value="Default.png" />
     <preference name="SplashScreenDelay"          value="3000" />
     <preference name="SplashMaintainAspectRatio"  value="false" />
     <preference name="ShowSplashScreenSpinner" value="true" />
@@ -108,6 +108,7 @@
  
     <icon src="icon.png"                                      gap:platform="ios"   />
     <icon src="icon.png"                                      gap:platform="android"   />
+    <splash src="Default.png"                             platform="android" />"
     <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-ldpi" />
     <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-mdpi" />
     <splash src="www/res/screen/android/screen.png"       platform="android" gap:qualifier="port-hdpi" />
