@@ -30,8 +30,8 @@
     <preference name="permissions"                value="none"/>
 
     <!-- Customize your app and platform with the preference element. -->
-    <preference name="SplashScreen"               value="Default.png" />
-    <preference name="SplashScreenDelay"          value="3000" />
+    <!-- <preference name="SplashScreen"               value="Default.png" />-->
+    <!-- <preference name="SplashScreenDelay"          value="3000" />-->
     <preference name="SplashMaintainAspectRatio"  value="false" />
     <preference name="ShowSplashScreenSpinner" value="true" />
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
