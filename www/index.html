@@ -2276,6 +2276,7 @@
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
         getCurrentWeather(); // gets weather async every 20 min.
         getForecast(); // updates forecast every 2 hrs
+        getAlertInfo(); // always get alert info every 12 minutes (time check is in routine)
 
         var reloadreason = "";
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
