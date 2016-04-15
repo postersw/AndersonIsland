@@ -1465,9 +1465,8 @@
                     if (opentimetoday != "") {
                         opentime = opentimetoday.substring(0, 4); // open time hhmm
                         closetime = opentimetoday.substring(5, 9); // close time hhmm
-                        openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime);
+                        openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "</nobr>";
                         if (j < 6) openlist += ", ";
-                        openlist += "</nobr>";
                     }
                 } // for loop for each day
                 var row = table.insertRow(-1);
