@@ -1465,7 +1465,8 @@
                     if (opentimetoday != "") {
                         opentime = opentimetoday.substring(0, 4); // open time hhmm
                         closetime = opentimetoday.substring(5, 9); // close time hhmm
-                        openlist += dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "&nbsp";
+                        openlist += dayofweekshort[j] + ":" + VeryShortTime(opentime) + "&#x2011" + VeryShortTime(closetime);
+                        if (j < 6) openlist += ", ";
                     }
                 } // for loop for each day
                 var row = table.insertRow(-1);
@@ -2258,10 +2259,6 @@
 
 		//  pushbots
 		if(isPhoneGap() && isAndroid()) {
-			//alert("initiliaing pushbots");
-			//window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", {"android":{"sender_id":"AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0"}});
-			// var Pushbots = PushbotsPlugin.initialize("andersonislandassistant", 
-				// {"android":{"sender_id":"AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0"}});
 			// Pushbots.on("notification:received", function(data){
 				// alert("received:" + JSON.stringify(data));
 				// });
@@ -2303,7 +2300,6 @@
         document.addEventListener("backbutton", backKeyDown, true);
 		document.addEventListener("pause", onPause, false);
 		document.addEventListener("resume", onResume, false);
-		//Pushbots.on("registered", function (token) { alert("Registration Id:" + token); });
 		DisplayLoadTimes();
 
 
