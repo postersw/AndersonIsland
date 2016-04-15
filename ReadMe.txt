@@ -17,3 +17,6 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 3/09/16  Google play store for version 1.0.308.2200 as ver 42. (does not show update time on bottom of main screen);
 
 3/15/16 PROBLEMS WITH IOS ICONS. MOVED TO ROOT DIRECTORY ABOVE WWW.
+3/18/16. Approved for Apple app store. 
+4/14/16. Uploaded to web. version 1.3.0414.  
+		This version also works with pushbots for android, but has not been deployed to the google play store.
