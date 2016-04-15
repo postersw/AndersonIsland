@@ -1455,7 +1455,7 @@
             var i;
             for (i = 0; i < openHours.length - 1; i++) {
                 var a; a = openHours[i].split(",");  // parse it into an array
-                openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>&nbsp&nbsp&nbsp";  // name of business
+                openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>";  // name of business
                 var phonenumber = a[0].split("(");
                 phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
                 // loop through Sun - Sat
@@ -1465,8 +1465,9 @@
                     if (opentimetoday != "") {
                         opentime = opentimetoday.substring(0, 4); // open time hhmm
                         closetime = opentimetoday.substring(5, 9); // close time hhmm
-                        openlist += dayofweekshort[j] + ":" + VeryShortTime(opentime) + "&#x2011" + VeryShortTime(closetime);
+                        openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime);
                         if (j < 6) openlist += ", ";
+                        openlist += "</nobr>";
                     }
                 } // for loop for each day
                 var row = table.insertRow(-1);
