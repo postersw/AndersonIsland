@@ -2152,7 +2152,7 @@
 						var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
                         // weather
                         row1col1 = row1.insertCell(-1);
-                        row1col1.innerHTML = icon + r.weather[0].description;
+                        row1col1.innerHTML = icon + "&nbsp " + r.weather[0].description;
                         row1col1.style.border = "thin solid gray";
                         // rain
                         row1col1 = row1.insertCell(-1);
