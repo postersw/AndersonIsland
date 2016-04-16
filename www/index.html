@@ -158,10 +158,14 @@
 
              <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2"> Notifications:
+                <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
+                <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
+                </td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowPage('helppage')">Help</tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
                 <a style="text-decoration:none;" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             </table>
 
             </div>
@@ -480,7 +484,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.3.0415.1311		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.0415.2226		</span>
 
 
         </p>
@@ -530,6 +534,35 @@
         function UpdateApp() {
             if (isPhoneGap()) return; // no update for phone version
             window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        // Notify.  Normal situation is notification is on, and the 'NotifyOff' flag is not there.
+        //          If notification is off, then 'NotifyOff' is present in local storage.
+        function NotifyOn() {
+            localStorage.removeItem('notifyoff');
+            if (isPhoneGap()) {
+                window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                NotifyColor(1);
+            }
+        }
+        function NotifyOff() {
+            localStorage.setItem('notifyoff', 'OFF');
+            if (isPhoneGap()) {
+                window.plugins.PushbotsPlugin.unregister();
+                NotifyColor(0);
+            }
+        }
+        //  Set the color of the notify on/off button.  
+        //      onoff = 1 for on, 0 for off.
+        function NotifyColor(onoff) {
+            if (onoff == 1) {
+                document.getElementById('notifyon').setAttribute("style", "color:black");
+                document.getElementById('notifyoff').setAttribute("style", "color:gray")
+            } else {
+                document.getElementById('notifyon').setAttribute("style", "color:gray");
+                document.getElementById('notifyoff').setAttribute("style", "color:black")
+            }
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////
@@ -2142,14 +2175,10 @@
         }
 
 		//  pushbots
-		if(isPhoneGap() && isAndroid()) {
-			// Pushbots.on("notification:received", function(data){
-				// alert("received:" + JSON.stringify(data));
-				// });
-			// Pushbots.on("notification:clicked", function(data){
-				// alert("clicked:" + JSON.stringify(data));
-				// });		
-		}
+        if(isPhoneGap() ) { 
+		    if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
+		    else NotifyColor(0);
+        }
 
         //  Show the cached data immediately.  
         ShowCachedData();
