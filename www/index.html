@@ -94,8 +94,10 @@
         </tr>
 
         <tr style="background-color:azure" >
-            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0"  onclick="ShowFerryWebCam();">WEBCAM</td>
-            <td style="font-size:18px;font-weight:bold;color:darkblue" onclick="ShowFerryLocation();" >&nbsp&nbsp&nbsp LOCATION </td>
+            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0" colspan="2"> 
+                <span onclick="ShowFerryWebCam()">&nbsp&nbsp  WEBCAM&nbsp&nbsp</span>
+                <span onclick="ShowFerryLocation()">&nbsp&nbsp LOCATION&nbsp</span>
+              </td>
         </tr>
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
@@ -154,17 +156,17 @@
          <tr style="background-color:lightgray;" onclick="ShowLinksPage();">
              <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2">ISLAND INFORMATION LINKS
              </td>            
-            </tr>
-
+         </tr>
+         <tr> <td style="font-size:18px;font-weight:bold;color:black" colspan="2" onclick="ShowPage('helppage')">Help</tr>
              <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="UpdateApp()">Update App</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2"> Notifications:
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
                 </td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowPage('helppage')">Help</tr>
+
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
-                <a style="text-decoration:none;" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
+                <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             </table>
 
@@ -177,9 +179,8 @@
         <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         Ferry Schedule
     </h1>
-        <button style="width:32%" onclick="ScheduleByDate();">Other Dates</button>
-        <button style="width:32%" onclick="ShowFerryLocation();">Location</button>
-        <button style="width:32%" onclick="ShowFerry();">Web Site</button>
+        <button style="width:40%" onclick="ScheduleByDate();">Other Dates</button>
+        <button style="width:40%" onclick="ShowFerry();">Web Site</button>
         <p> </p>
         <table id='ferrytable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
@@ -484,7 +485,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.3.0415.2226		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.0416.1640		</span>
 
 
         </p>
@@ -531,9 +532,17 @@
 
         }
 
+        // open the correct web page for an upgrade. If its web, force a page reload.
         function UpdateApp() {
-            if (isPhoneGap()) return; // no update for phone version
-            window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
+            if (isPhoneGap()) {
+                if (isAndroid()) {
+                    window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');
+                } else {
+                    window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');
+                }
+            } else {
+                window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
+            }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -701,12 +710,13 @@
             v = v + FindNextFerryTime(ferrytimeS, false);
             // make it bold if not tomorrow
             if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-            var a = "</br>Anderson I: " + FindNextFerryTime(ferrytimeA, true);
+            var a = "</br>Anderson:&nbsp&nbsp&nbsp " + FindNextFerryTime(ferrytimeA, true);
             if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
             //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v + a;
 
         }
+
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // ShowOpenHours - shows whether something is open or closed. 
