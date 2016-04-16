@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.0.3151733"
-        android:versionCode="43"
-        android:versionName="1.0.3151733">
+        version   = "1.3.4161640"
+        android:versionCode="130"
+        android:versionName="1.3.4161640">
 
     <name>Anderson Island Assistant</name>
 
