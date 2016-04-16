@@ -67,16 +67,20 @@ if($alc == $alertstring) {
 	return; // if already written
 }
 
-// change it and log it
+// write it to file, and log it
 $fh = fopen($alertfile, 'w');
 fwrite($fh, $alertstring);
 fclose($fh);
+
 // log it
  $fhl = fopen($alertlog, 'a');
 fwrite($fhl, date("Y-m-d-H-i-s") . "|" . $alertstring . "\n");
 fclose($fhl);  
 echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
+
+// now send alert using Pushbots and Google Cloud Messaging
+PushANotification( $alertts . " " . $title );
 exit(0);
 
 /////////////////////////////////////////////////////////////////
@@ -109,4 +113,27 @@ function logalertlast($s) {
     fclose($fh);  
 }
  
+
+////////////////////////////////////////////////////////////////////////
+//  Push notification - send a notificatyion using Pushbots to all android users
+function PushANotification($note) {
+    // Push The notification with parameters
+    require_once('PushBots.class.php');
+    $pb = new PushBots();
+    // Application ID
+    $appID = '570ab8464a9efaf47a8b4568';
+    // Application Secret
+    $appSecret = '297abd3ebd83cd643ea94cbc4536318d';
+    $pb->App($appID, $appSecret);
+ 
+    // Notification Settings
+    $pb->Alert($note);
+    $pb->Platform(1);  // android
+    // Push it !
+    $res = $pb->Push();
+    echo($res['status']);
+    echo($res['code']);
+    echo($res['data']);
+}
+
 ?>
