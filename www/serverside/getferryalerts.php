@@ -4,8 +4,10 @@
 //  alerts are cleared after 4 hours or if they are removed from the rss feed
 //  Bob Bedoll. 3/13/16.
 //		4/09/16. Changed alertfile to alert.txt
+//      4/16/16. Added call to pushbots. activated for android only.
+//      4/20/16. Shortened date displayed to user.
 //  Sample RSS feed:
-
+//
 echo("PHP START");
 chdir("/home/postersw/public_html");
 $alertclearhours = 5;  // hours to clear an alert
@@ -59,7 +61,7 @@ $deltat = $t - $talert;
 
 // write alert to file
 //echo ("writing alert to file.");
-$alertts  = substr($x->channel->item[0]->pubDate, 5, 20);
+$alertts  = substr($x->channel->item[0]->pubDate, 5, 7) . substr($x->channel->item[0]->pubDate, 17, 5);
 $alertstring = $alertts . " " . $title . "\n" . $desc;
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
@@ -74,12 +76,13 @@ fclose($fh);
 
 // log it
  $fhl = fopen($alertlog, 'a');
-fwrite($fhl, date("Y-m-d-H-i-s") . "|" . $alertstring . "\n");
+fwrite($fhl, date("Y/m/d H:i:s") . "|" . $alertstring . "\n");
 fclose($fhl);  
 echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
 
 // now send alert using Pushbots and Google Cloud Messaging
+$alertts  = substr($x->channel->item[0]->pubDate, 17, 5);
 PushANotification( $alertts . " " . $title );
 exit(0);
 
