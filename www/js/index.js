@@ -35,6 +35,7 @@ var app = {
     onDeviceReady: function () {
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
             window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+            window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }
         navigator.splashscreen.hide();
         app.receivedEvent('deviceready');

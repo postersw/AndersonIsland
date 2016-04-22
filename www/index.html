@@ -485,7 +485,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.3.0422.1500		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.0422.1443		</span>
 
 
         </p>
@@ -2188,7 +2188,6 @@
         if(isPhoneGap() ) { 
 		    if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
 		    else NotifyColor(0);
-		    window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }
 
         //  Show the cached data immediately.  
