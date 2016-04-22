@@ -6,6 +6,7 @@
 //		4/09/16. Changed alertfile to alert.txt
 //      4/16/16. Added call to pushbots. activated for android only.
 //      4/20/16. Shortened date displayed to user.
+//      4/22/16. Added IOS.
 //  Sample RSS feed:
 //
 echo("PHP START");
@@ -131,7 +132,7 @@ function PushANotification($note) {
  
     // Notification Settings
     $pb->Alert($note);
-    $pb->Platform(1);  // android
+    $pb->Platform(array("0","1"));  // android
     // Push it !
     $res = $pb->Push();
     echo($res['status']);
