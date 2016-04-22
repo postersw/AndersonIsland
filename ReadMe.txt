@@ -21,7 +21,11 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 4/14/16. Uploaded to web. version 1.3.0414.  
 		This version also works with pushbots for android, but has not been deployed to the google play store.
 4/16/16. Version 1.3.16. built and uploaded to google play store as ver 130. (actually build 131). Includes pushbots.
+		Includes Push notifications for andriod (pushbots), adds splash screen (which I may want to remove).
+		correct dates and icons for weather forecast, caching of the full weather forecast, 
+		minor formatting improvements and the on pause/on resume events.
 		In production on 4/16/16.  Pushbots works from getferryalerts.php.
+4/22/16. Version 1.3.16 submitted to apple app store as ver 1.3. profile AIADistributionPush.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
@@ -42,3 +46,21 @@ IOS DEBUG/BUILD
 	For deployment: click the Anderson Island certificate.  enter key pw=dd. Then build.  
 	The resulting ipa must be uploaded using the virtual mac.  This ipa can NOT be run directly on mom's phone or ipad.
 	Start the virtual mac.  Go to the apple dev site.  
+	NOTE: each 'certificate' has a P12 cert AND a provisioning profile.
+	IOS Development2 is the dev P12 and dev provisioning profile for org.anderson-island.*.  WONT work for PUSH.
+	AndersonIslandDevPush is the dev p12 and provisioning provile for org.anderson-island.andersonislandassistant. WILL work for push with the push P12.
+	Anderson Island Assistant is the distribution profile for org.anderson-island.*. WONT work for push.
+
+	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
+
+	iTunes install:
+	0. Windows Utilities -> Remote Desktop Connection -> LA051.macincloud.com:6000.
+	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
+	   on phonegap build, select the 'AIADistributionPush' key.  This enables push notifications. Then build.
+	1. download the ipa file to your desktop.
+	2. log in to developer.apple.com.  log in.  robertbedoll@gmail.com  pw=2E
+	3. select MyApps, then Anderson Island Assistant, 
+	4. Create a new version.  The ios version (like 1.3) should match the version in the comfig.xml of the app.
+	5. You will get a new page. fill out the what's new.
+	6. Start "Application Loader".   select Deliver Your App and click on 'Choose'.  
+	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
