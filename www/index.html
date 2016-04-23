@@ -143,8 +143,11 @@
         <tr style="background-color:#fff4b3;" onclick="window.open('http://www.tannerelectric.coop/andersonisland', '_blank' )">  
             <td style="font-size:18px;font-weight:bold;color:#802b00">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
-
         </tr>
+        <tr style="background-color:white;" onclick="ShowNews()")>  
+            <td style="font-size:18px;font-weight:bold;color:black" colspan="2">
+             NEWS</td>
+         </tr>
          <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">  
             <td style="font-size:18px;font-weight:bold;color:darkred" colspan="2">
              EMERGENCY CONTACTS</td>
@@ -331,11 +334,10 @@
     </h1>
     <p>The <span style="font-weight:bold">Anderson Island Assistant</span> gives you
         instant access to a wealth of time-sensitive Anderson Island information.  
-        <p><strong>iPhone/iPad users:</strong>  Install the free iPhone/iPad app from the Apple App Store.
+        <p><strong>iPhone/iPad users:</strong>  Install the free iPhone/iPad app from the
+            <a href="https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8"> Apple App Store.</a>
         <p><strong>Android phone users:</strong> Install the free Android phone app from 
             <a href="https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant">Google Play.</a><br />
-            OR <a href="http://www.anderson-island.org/AIA.apk">from our web site</a>. To install from our web site, you must first
-            give your phone permission to do this: select Settings -> Security, scroll down to 'Unknown Sources', and turn on 'Allow installation of apps from unknown sources'.
         </p>
         <hr />
         <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
@@ -457,6 +459,13 @@
             This takes you to the Tanner web site.
         </td>
     </tr>
+     <tr>
+        <td style="color:black;vertical-align:text-top">News</td>
+        <td>Displays news articles for Anderson Island.  To submit a news article, send it to 
+            support@anderson-island.org.
+        </td>
+    </tr>
+
     <tr>
         <td style="color:darkred;vertical-align:text-top">EMERGENCY CONTACTS</td>
         <td>TAP to display a list of emergency contacts.  Tap an entry to dial the phone number.
@@ -468,7 +477,7 @@
         <td>TAP to display a Google map of anderson island.</td>
     </tr>
     <tr>
-        <td style="color:black;vertical-align:text-top">ISLAND INFORMATION LINKS</td>
+        <td style="color:black;vertical-align:text-top">ISLAND<br />INFORMATION </td>
         <td>TAP to display a list of links to important Anderson Island web sites.
             Taping on a link opens that web site in your phone's browser.
             <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
@@ -479,6 +488,12 @@
         <td>TAP to reload the following data from the servers: Tides, Events, Activities, Open Hours, and the Weather.
         </td>
     </tr>
+    <tr>
+        <td style="color:black;vertical-align:text-top">Notify</td>
+        <td>Controls the PC Ferry Alert messages that show up on your phone's main screen. Tap 'OFF' to
+            turn these messages off. The ferry alerts will still show at the top of the screen for the AI App.
+        </td>
+    </tr>
 </table>
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
@@ -486,7 +501,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.3.0422.2032		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.0423.2032		</span>
 
 
         </p>
@@ -531,6 +546,10 @@
 
         function LocalMenu() {
 
+        }
+
+        function ShowNews() {
+            window.open('http://www.anderson-island.org/news.html', "_blank");
         }
 
         // open the correct web page for an upgrade. If its web, force a page reload.
