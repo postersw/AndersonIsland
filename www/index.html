@@ -5,6 +5,7 @@
 	ver 1.1.319: fix weather forecast gmt time conversion
 	ver 1.2: add weather icons
 	ver 1.3.0414: add pushbots
+    ver 1.3.0422: add pushbots.resetBadge
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -485,7 +486,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.3.0422.1443		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.3.0422.2032		</span>
 
 
         </p>
@@ -619,14 +620,19 @@
             var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("alerttime");
             if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
-            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
             var myurl = FixURL('alert.txt');
 
             $.ajax({
                 url: myurl,
                 dataType: 'text',
                 success: function (r) {
-                    if (r == "") {
+                    var timestamp = Date.now() / 1000; // time in sec
+                    localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+                    if (r == "") {  // if the alert is gone, clear it
+                        if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
+                            var a = localStorage.getItem('alerttext');
+                            if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+                        }
                         localStorage.setItem("alerttext", "");
                         localStorage.setItem("alertdetail", "");
                     } else {  // if there is an alert, save it
