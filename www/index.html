@@ -20,7 +20,8 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" /> <!--device-dpi" />-->
+    <!-- removed user-scalable=no, maximum-scale=1 -->
+    <meta name="viewport" content="initial-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" /> <!--device-dpi" />-->
 <link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>Anderson Island Assistant</title>
@@ -255,8 +256,10 @@
             Tides at Yoman Point <br />(ferry dock)
         </h1>
         <p id="tidepagecurrent">Please wait for tide data .... </p>
+        <canvas id="tidecanvas" width="300" height="300"></canvas>
+        <hr />
         <table id='tidestable' style="border:thin solid gray;border-collapse:collapse">
-            <tr style="background-color:gray;color:white">
+            <tr style="background-color:blue;color:white">
                 <td>Date</td>
                 <td>| Time&nbsp</td>
                 <td>| Type&nbsp</td>
@@ -270,8 +273,7 @@
 
      <p>These tide predictions are provided for 
          <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">station id 9446705 by NOAA</a>  through Aeris. <br />
-         Approximate current height calculated using <a href="https://en.wikipedia.org/wiki/Rule_of_twelfths"> Rule of Twelves.</a><br />
-        This page updates every minute.</p>
+         Approximate current height calculated using sine/cosine.</p>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
  
 
@@ -500,7 +502,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.4.0424.2300		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.4.0427.2200		</span>
 
 
         </p>
@@ -516,7 +518,7 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="js/AIA.js"></script>
+    <!-- <script type="text/javascript" src="js/AIA.js"></script> Moved to index.js on 4/25/16 -->
 
     <script>
         // global date variables in AIA.js. note: scope is for one page only.
@@ -1017,7 +1019,7 @@
             //                url: 'gettides.php',
 
             $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
+                url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours',
                 dataType: 'jsonp',
                 success: function (json) {
 
@@ -1027,6 +1029,7 @@
                         ShowNextTides();
                     } else {
                         // error
+                        alert("cant get tides");
                         //localStorage.setItem("tidesloadedmmdd", monthday);
                     }
                 }
@@ -1195,8 +1198,9 @@
                     return;
                 case "tidespage":
                     if (usertideselection) return;
-                    var periods = JSON.parse(localStorage.getItem("jsontides"));
-                    ShowTideDataPage(periods, true);
+                    TidesDataPage();
+                    //var periods = JSON.parse(localStorage.getItem("jsontides"));
+                    //ShowTideDataPage(periods, true);
                     return;
                 case "weatherpage":
                     return;
@@ -1328,6 +1332,7 @@
         //  'tabletoclear' = name of table to clear in former page
         //  exit    displaypage = the new page
         function ShowPage(newpage) {
+            if (DisplayPage == newpage) return;
             // clear out rows of table for former page
             if (tabletoclear != null) {
                 var table = document.getElementById(tabletoclear);
@@ -1856,13 +1861,18 @@
             // show the tide data in the jsontides global
             usertideselection = false;
             var periods = JSON.parse(localStorage.getItem("jsontides"));
-            ShowTideDataPage(periods, true);
+            var i = ShowTideDataPage(periods, true);
+            GraphTideData(periods[i - 1].heightFT, periods[i].heightFT, periods[i+1].heightFT, 
+                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // ShowTideData - show the data in the periods array
         //  entry periods = array of data returned by aeris. Each array entry is one tide period.
         //        showcurrent = true to show current tides, else false
+        //  exit  returns periods index of NEXT tide
+        //        fills the tidestable
+        //        sets tidepagecurrent to current tide
         function ShowTideDataPage(periods, showcurrent) {
 
             var table = document.getElementById("tidestable");
@@ -1871,6 +1881,9 @@
             olddate = periods[0].dateTimeISO.substring(5, 10);
             var oldtide = -1;
             var i;
+            var nexttidei;
+            var currentTide;
+
             // roll through the reply in jason.response.periods[i]
             for (i = 0; i < periods.length; i++) {
                 // if date changed, add a blank row
@@ -1900,16 +1913,18 @@
                 tidehhmm = (Number(h) * 100) + Number(mi);
                 row1col1.innerHTML = "&nbsp" + ShortTime(tidehhmm);
                 row1col1.style.border = "thin solid gray";
-                if (periods[i].type == 'h') hilow = '&nbspHigh';
-                else hilow = '&nbspLow';
-
+                if (periods[i].type == 'h') {
+                    hilow = '&nbspHigh';
+                    row1.style.background = "lightblue";
+                } else hilow = '&nbspLow';
                 // if tide is past, color row gray and show current tide info
                 if (showcurrent) {
                     if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                         row1.style.color = "gray";
-                        if (periods[i].type == 'h') currentTide = "Outgoing since ";  // incoming outgoing flag
-                        else currentTide = "Incoming since ";
-                        currentTide += ShortTime(tidehhmm) + " (duration: " + timeDiff(tidehhmm, timehhmm) + ")";
+                        currentTide = "<span style='font-size:14px;font-weight:bold;color:blue'>";
+                        if (periods[i].type == 'h') currentTide += "Outgoing since ";  // incoming outgoing flag
+                        else currentTide += "Incoming since ";
+                        currentTide += ShortTime(tidehhmm) + " (for " + timeDiff(tidehhmm, timehhmm) + ")";
                         oldtideheight = Number(periods[i].heightFT);
                         oldtidetime = tidehhmm;
                         oldtide = 0;
@@ -1918,11 +1933,12 @@
                         // this is the next tide, bold it and calculate approx height                             
                         row1.style.fontWeight = "bold";
                         oldtide = 1;
+                        nexttidei = i;
                         // calculate current tide height
                         var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                        currentTide += "<br/>Approximate height: " + tideheight.toFixed(1) + " ft.";
+                        currentTide += "<br/>Now: " + tideheight.toFixed(1) + " ft.";
                         // calculate time till next tide                                 
-                        currentTide += "<br/>" + hilow + " tide will be " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                        currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
                         nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
                     } else if (oldtide == 1) {  // save next tide
                         oldtide = 2;
@@ -1941,11 +1957,154 @@
                 row1col1.style.border = "thin solid gray";
             }
             // now save the current tide
-            document.getElementById("tidepagecurrent").innerHTML = "Current tide is: " + currentTide;
+            document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
             $("#tideButton").show();
+
+            return nexttidei; // return index
         }
 
+        /////////////////////////////////////////////////////////////////////////
+        //  GraphTideData
+        //  Entry: tide1t, tide2t, tide3t = 3 tide points in feet, text (HLH or LHL)
+        //         t1, t2, t3 = corresponding times in dateTimeISO text format
+        //         NOTE: current tide must be between t1 and t2
+        function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t) {
+            var canvas = document.getElementById("tidecanvas");
+            var axes = {}, ctx = canvas.getContext("2d");
+            var w = canvas.width; var h = canvas.height - 20;
 
+            // convert tides to numbers
+            tide1 = Number(tide1t); tide2 = Number(tide2t); tide3 = Number(tide3t);
+            var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3; LB = Math.floor(LB); // lower bound
+            var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3; UB = Math.floor(UB + 1.99); // upper bound
+            var pixelsfoot = h / (UB - LB);  // pixels per foot
+
+            // convert time to numbers as fp hours from 0 to 48.
+            var t1hhmm = Number(t1t.substring(11, 13)) * 100 + Number(t1t.substring(14, 16));
+            var t2hhmm = Number(t2t.substring(11, 13)) * 100 + Number(t2t.substring(14, 16));
+            var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
+            if (t2 < t1) t2 += 24; if (t3 < t2) t3 += 24;
+            var tLB = Math.floor(t1); // time lower bound
+            var tUB = Math.floor(t3 + .99); // time upper bound
+
+            var pixelshour = w / (tUB - tLB);
+            var x0 = 0; // x offset to 0
+
+            // draw background
+            ctx.fillStyle = "#B0E2FF";
+            ctx.fillRect(0, 0, w, h);
+
+            // draw y axis (tide feet)
+            ctx.beginPath();
+            ctx.strokeStyle = "rgb(128,128,128)";
+            ctx.moveTo(x0, 0); ctx.lineTo(x0, h);  // Y axis
+            ctx.stroke();
+
+            // draw tide grid lines
+            ctx.strokeStyle = "#ffffff";
+            // label x axis
+            var y = h;
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "#000000";
+            for (i = LB; i <= UB; i++) {
+                ctx.beginPath();
+                ctx.moveTo(x0, y); ctx.lineTo(w, y);
+                ctx.stroke();
+                ctx.fillText(i + " ft", x0, y);
+                y -= pixelsfoot;  // bump to next one
+            }
+
+            // Draw x axis (time)
+            var y0 = h;
+            ctx.strokeStyle = "rgb(128,128,128)";
+            ctx.beginPath();
+            ctx.moveTo(x0, y0); ctx.lineTo(w, y0);  // Y axis
+            ctx.stroke();
+            var x = pixelshour; var hr;
+            ctx.strokeStyle = "#ffffff";
+            // label the time
+            for (i = tLB + 1; i <= tUB; i++) {
+                hr = VeryShortTime(i<24? i * 100: (i-24)*100).substr(0, 2);
+                // draw verticals for time every 4 hours
+                if ((i % 4) == 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                }
+                ctx.fillText(hr, x-8, h+12);
+                x += pixelshour;  // bump to next one
+            }
+
+            // draw the 2 sine waves
+            DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, LB);
+            DrawCurve(ctx, tide2, tide3, t2, t3, pixelsfoot, pixelshour, h, tLB, LB);
+            DrawCurve(ctx, tide3, tide2, t3, t3 + 6, pixelsfoot, pixelshour, h, tLB, LB); // fill out last hour with made up tide
+
+            // draw vertical for t2 which is next high/low
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#A0A0A0";
+            ctx.beginPath();
+            x = (t2 - tLB) * pixelshour;
+            ctx.moveTo(x, h-(tide2-LB)*pixelsfoot); ctx.lineTo(x, h);
+            ctx.stroke();
+
+            // draw vertical now for current time
+            ctx.strokeStyle = "#ff0000";
+            var now = (timehh + timemm/60);
+            if (now < tLB) now += 24;
+            now = (now-tLB) * pixelshour;
+            ctx.beginPath();
+            ctx.moveTo(now, 14); ctx.lineTo(now, h);
+            ctx.stroke();
+            // calculate and display current value
+            var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
+            tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
+            ctx.fillStyle = "#ff0000";
+            ctx.font = "16px Arial";
+            ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now-pixelshour, 14);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        // DrawCurve - draw 1/2 a sine wave for tide1@t1 to tide2@t2
+        //  Entry: ctx = draw context;
+        //          tide1, tide2 = tide height in fp feet
+        //          t1, t2 = times in fp hours (0 - 48)
+        //          pixelsfoot, pixelshour = pixel scale
+        //          h = height in pixels, tLB = time lower bound in hours
+        function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, tideLB){
+            ctx.beginPath();
+            //ctx.lineWidth = thick;
+            var mtide = (tide1 + tide2) / 2; // mid
+            var dtide = Math.abs(tide2 - tide1) / 2; // delta
+            var dtide = (tide2 - tide1) / 2; // delta
+            var dt = t2 - t1;
+            var tide = tide1;
+            var t = t1;
+            var xscale = pixelshour; var yscale = pixelsfoot;
+            ctx.strokeStyle = "rgb(0, 0, 255)";
+            ctx.lineWidth = 2;
+            ctx.moveTo(xscale * (t - tLB), h - yscale * (tide - tideLB));
+            // loop througth time from t1 to t2 by .25 hour (15 min)
+            for (t = t1; t < (t2 + .25) ; t = t + .25) {
+                if (t > t2) t = t2;
+                var c = (t - t1) / dt * Math.PI;
+                /////if (tide2 > tide1) c = Math.cos(Math.PI - c);
+                /////else c = Math.cos(c);
+                c = Math.cos(Math.PI - c);
+                //if (tide2 < tide1) c = c * -1;
+                tide = mtide + dtide * c;
+                ctx.lineTo(xscale * (t - tLB), h - yscale * (tide-tideLB));
+            }
+            ctx.stroke();
+        }
+
+        // tHours: convert ISO datetime to floating point hours
+        function tHours(tISO) {
+            return Number(tISO.substring(11, 13)) + Number(tISO.substring(14, 16)) / 60;
+        }
+
+        
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // ShowCustom - get date for custom tides, call the aeris query, and display the result.
         //

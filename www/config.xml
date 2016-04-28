@@ -7,7 +7,7 @@
         id        = "org.anderson-island.andersonislandassistant"
         version   = "1.4.04242300"
         android:versionCode="130"
-        android:versionName="1.4.04242300">
+        android:versionName="1.4.04252300">
 
     <name>Anderson Island Assistant</name>
 
@@ -64,10 +64,10 @@
     <gap:plugin name="org.apache.cordova.device" />
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
     <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
-    <gap:plugin name="org.apache.cordova.dialogs" />
+    <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
     <!--<gap:plugin name="org.apache.cordova.file" />-->
     <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
-    <gap:plugin name="org.apache.cordova.geolocation" />
+    <!--<gap:plugin name="org.apache.cordova.geolocation" />-->
     <!--<gap:plugin name="org.apache.cordova.globalization" />-->
     <gap:plugin name="org.apache.cordova.inappbrowser" />
     <!--<gap:plugin name="org.apache.cordova.media" />-->
