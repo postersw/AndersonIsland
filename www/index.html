@@ -240,7 +240,7 @@
        <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
-        Tap event for more info.
+        Tap for info. &nbsp&nbsp (Meetings | <span style="color:blue">Events</span> | <span style="color:darkred">Shows</span>)
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td></td>
@@ -272,8 +272,8 @@
         </p>
 
      <p>These tide predictions are provided for 
-         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">station id 9446705 by NOAA</a>  through Aeris. <br />
-         Approximate current height calculated using sine/cosine.</p>
+         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">station id 9446705 </a>  through Aeris. <br />
+         Current height calculated using sine wave.</p>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
  
 
@@ -367,6 +367,7 @@
     </h1>
             <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org', '_system');">Citizens Advisory Board</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org', '_system');">Community Club</button><br />   
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.pcfd27.com', '_system');">Fire and Rescue</button><br />   
             <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org', '_system');">Historical Society</button><br />                 
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org', '_system');">Island Patrol</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org', '_system');">Parks</button><br />
@@ -502,7 +503,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.4.0427.2200		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.4.0429.1200		</span>
 
 
         </p>
@@ -1647,6 +1648,13 @@
                 col2.innerHTML = aCE[4];//event
                 //col.onclick = function(){tabletext(this);}
                 col = row.insertCell(3); col.innerHTML = aCE[5];//where
+                var color = "#000000";
+                switch (aCE[3]) {
+                    case "S": color = "#0000ff"; break; // special events
+                    case "E": color = "darkred"; break; // entertainment
+                }
+                col2.style.color = color;
+                col.style.color = color;
                 // hidden cell with sponsor & more
                 col = row.insertCell(4);
                 col.style.display = "none";
@@ -1904,7 +1912,7 @@
                 var row1col1 = row1.insertCell(0);
                 var m = Number(periods[i].dateTimeISO.substring(5, 7));
                 var d = Number(periods[i].dateTimeISO.substring(8, 10));
-                row1col1.innerHTML = m + "/" + d + '&nbsp';
+                row1col1.innerHTML = dayofweekshort[GetDayofWeek(m * 100 + d)] + " " + m + "/" + d + '&nbsp';
                 row1col1.style.border = "thin solid gray";
                 // time
                 row1col1 = row1.insertCell(1);
@@ -1914,14 +1922,17 @@
                 row1col1.innerHTML = "&nbsp" + ShortTime(tidehhmm);
                 row1col1.style.border = "thin solid gray";
                 if (periods[i].type == 'h') {
-                    hilow = '&nbspHigh';
-                    row1.style.background = "lightblue";
-                } else hilow = '&nbspLow';
+                    hilow = 'HIGH';
+                    row1.style.background = "azure";
+                } else {
+                    hilow = 'Low';
+                    row1.style.background = "lightyellow";
+                }
                 // if tide is past, color row gray and show current tide info
                 if (showcurrent) {
                     if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                         row1.style.color = "gray";
-                        currentTide = "<span style='font-size:14px;font-weight:bold;color:blue'>";
+                        currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
                         if (periods[i].type == 'h') currentTide += "Outgoing since ";  // incoming outgoing flag
                         else currentTide += "Incoming since ";
                         currentTide += ShortTime(tidehhmm) + " (for " + timeDiff(tidehhmm, timehhmm) + ")";
@@ -1971,11 +1982,11 @@
         function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t) {
             var canvas = document.getElementById("tidecanvas");
             var axes = {}, ctx = canvas.getContext("2d");
-            var w = canvas.width; var h = canvas.height - 20;
+            var w = canvas.width; var h = canvas.height;
 
             // convert tides to numbers
             tide1 = Number(tide1t); tide2 = Number(tide2t); tide3 = Number(tide3t);
-            var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3; LB = Math.floor(LB); // lower bound
+            var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3; LB = Math.floor(LB - .9); // lower bound
             var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3; UB = Math.floor(UB + 1.99); // upper bound
             var pixelsfoot = h / (UB - LB);  // pixels per foot
 
@@ -1984,7 +1995,7 @@
             var t2hhmm = Number(t2t.substring(11, 13)) * 100 + Number(t2t.substring(14, 16));
             var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
             if (t2 < t1) t2 += 24; if (t3 < t2) t3 += 24;
-            var tLB = Math.floor(t1); // time lower bound
+            var tLB = Math.floor(t1-1); // time lower bound
             var tUB = Math.floor(t3 + .99); // time upper bound
 
             var pixelshour = w / (tUB - tLB);
@@ -2002,11 +2013,11 @@
 
             // draw tide grid lines
             ctx.strokeStyle = "#ffffff";
-            // label x axis
-            var y = h;
+            // label x axis. skip bottom number because the time is shown there.
+            var y = h - pixelsfoot;
             ctx.font = "12px Arial";
-            ctx.fillStyle = "#000000";
-            for (i = LB; i <= UB; i++) {
+            ctx.fillStyle = "#0000ff";
+            for (i = LB+1; i <= UB; i++) {
                 ctx.beginPath();
                 ctx.moveTo(x0, y); ctx.lineTo(w, y);
                 ctx.stroke();
@@ -2017,14 +2028,16 @@
             // Draw x axis (time)
             var y0 = h;
             ctx.strokeStyle = "rgb(128,128,128)";
+            ctx.fillStyle = "#000000";
             ctx.beginPath();
             ctx.moveTo(x0, y0); ctx.lineTo(w, y0);  // Y axis
             ctx.stroke();
             var x = pixelshour; var hr;
             ctx.strokeStyle = "#ffffff";
             // label the time
-            for (i = tLB + 1; i <= tUB; i++) {
-                hr = VeryShortTime(i<24? i * 100: (i-24)*100).substr(0, 2);
+            for (i = tLB + 1; i < tUB; i++) {
+                hr = VeryShortTime(i < 24 ? i * 100 : (i - 24) * 100).substr(0, 2);
+                if (hr == "no") hr = "12";
                 // draw verticals for time every 4 hours
                 if ((i % 4) == 0) {
                     ctx.beginPath();
@@ -2032,7 +2045,7 @@
                     ctx.lineTo(x, h);
                     ctx.stroke();
                 }
-                ctx.fillText(hr, x-8, h+12);
+                ctx.fillText(hr, x-8, h-3);
                 x += pixelshour;  // bump to next one
             }
 
