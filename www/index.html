@@ -240,7 +240,11 @@
        <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
-        Tap for info. &nbsp&nbsp (Meetings | <span style="color:blue">Events</span> | <span style="color:darkred">Shows</span>)
+        Tap for info. &nbsp&nbsp 
+        [ <span style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
+        <span style="color:blue" onclick="SetEventFilter('S')">Events</span> | 
+        <span style="color:darkred" onclick="SetEventFilter('E')">Shows</span> |  
+         <span style="color:DarkGreen" onclick="SetEventFilter('')">All</span>  ]
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td></td>
@@ -1533,11 +1537,13 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEventsPage(type)
         //  entry   type = 'events' or 'activities'
+        var EventFilter = ""; //letter to filter for
         function DisplayComingEventsPage(type) {
             localStorage.setItem("eventtype", type);
             document.getElementById("othercalendars").setAttribute("style", "display:none");
             ShowPage("comingeventspage");
             InitializeDates(0);
+            EventFilter = ""; // clear filter
             if (type == "events") {
                 document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
                 document.getElementById("comingactivitiesH1").setAttribute('style', 'display:none;');
@@ -1560,6 +1566,11 @@
 
         function ShowOtherCalendars() {
             document.getElementById("othercalendars").setAttribute("style", "display:normal");
+        }
+
+        function SetEventFilter(f) {
+            EventFilter = f;
+            DisplayComingEventsList(GetEvents());
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1612,6 +1623,7 @@
             // roll through the CE array
             for (iCE = 0; iCE < CE.length; iCE++) {
                 aCE = CE[iCE].split(';');  // split the string
+                if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
                 //  advance schedule date to today
                 var dateCE = Number(aCE[0]); // mmdd
                 if (dateCE > endmmdd) return; // past one month
