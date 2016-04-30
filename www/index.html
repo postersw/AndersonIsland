@@ -1151,32 +1151,42 @@
             //alert("loading daily cache");
             localStorage.setItem("dailycacheloaded", monthday); // remember date time
 
-            i1 = data.indexOf("FERRYTIMESS");
-            var i1e = data.indexOf("\n", i1 + 12);
-            if (i1 == 0) return;
-            localStorage.setItem("ferrytimess", data.substring(i1 + 12, i1e));
+            //i1 = data.indexOf("FERRYTIMESS");
+            //var i1e = data.indexOf("\n", i1 + 12);
+            //if (i1 == 0) return;
+            //localStorage.setItem("ferrytimess", data.substring(i1 + 12, i1e));
+            parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
 
-            i2 = data.indexOf("FERRYTIMESA");
-            if (i2 > 0) {
-                var i2e = data.indexOf("\n", i2 + 12);
-                localStorage.setItem("ferrytimesa", data.substring(i2 + 12, i2e));
-            } else localStorage.removeItem("ferrytimesa");
-
-            i2 = data.indexOf("FERRYTIMESK");
-            if (i2 > 0) {
-                var i2e = data.indexOf("\n", i2 + 12);
-                localStorage.setItem("ferrytimesk", data.substring(i2 + 12, i2e));
-            } else localStorage.removeItem("ferrytimesk");
-
-            i3 = data.indexOf("OPENHOURS");
-            i4 = data.indexOf("OPENHOURSEND");
-            localStorage.setItem("openhours", data.substring(i3 + 10, i4));
-
-            var i5 = data.indexOf("EMERGENCY");
-            var i6 = data.indexOf("EMERGENCYEND");
-            if (i5 > 0) localStorage.setItem("emergency", data.substring(i5 + 10, i6));
-
-
+            //i2 = data.indexOf("FERRYTIMESA");
+            //if (i2 > 0) {
+            //    var i2e = data.indexOf("\n", i2 + 12);
+            //    localStorage.setItem("ferrytimesa", data.substring(i2 + 12, i2e));
+            //} else localStorage.removeItem("ferrytimesa");
+            parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
+            //i2 = data.indexOf("FERRYTIMESK");
+            //if (i2 > 0) {
+            //    var i2e = data.indexOf("\n", i2 + 12);
+            //    localStorage.setItem("ferrytimesk", data.substring(i2 + 12, i2e));
+            //} else localStorage.removeItem("ferrytimesk");
+            parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
+            //i3 = data.indexOf("OPENHOURS");
+            //i4 = data.indexOf("OPENHOURSEND");
+            //localStorage.setItem("openhours", data.substring(i3 + 10, i4));
+            parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");
+            //var i5 = data.indexOf("EMERGENCY");
+            //var i6 = data.indexOf("EMERGENCYEND");
+            //if (i5 > 0) localStorage.setItem("emergency", data.substring(i5 + 10, i6));
+            parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
+        }
+        // parseCache - returns the string from the daily cache
+        //  name = name of local storage item
+        //  startstr = starting string, endstr = ending string
+        function parseCache(data, name, startstr, endstr) {
+            var s = data.indexOf(startstr);
+            if (s < 0) return;
+            var e = data.indexOf(endstr, s + startstr.length + 1);
+            if (e < 0) return;
+            localStorage.setItem(name, data.substring(s + startstr.length + 1, e));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
