@@ -240,11 +240,12 @@
        <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
-        Tap for info. &nbsp&nbsp 
-        [ <span style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
-        <span style="color:blue" onclick="SetEventFilter('S')">Events</span> | 
-        <span style="color:darkred" onclick="SetEventFilter('E')">Shows</span> |  
-         <span style="color:DarkGreen" onclick="SetEventFilter('')">All</span>  ]
+        <div id="showevents" style="display:none">
+            Show  <span style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
+            <span style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
+            <span style="color:blue" onclick="SetEventFilter('S')">Events</span> | 
+            <span style="color:darkred" onclick="SetEventFilter('E')">Shows</span>  
+         </div>
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td></td>
@@ -1546,9 +1547,11 @@
             EventFilter = ""; // clear filter
             if (type == "events") {
                 document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
+                document.getElementById("showevents").setAttribute('style', 'display:normal;');
                 document.getElementById("comingactivitiesH1").setAttribute('style', 'display:none;');
             } else {
                 document.getElementById("comingeventsH1").setAttribute('style', 'display:none;');
+                document.getElementById("showevents").setAttribute('style', 'display:none;');
                 document.getElementById("comingactivitiesH1").setAttribute('style', 'display:normal;');
             }
             DisplayComingEventsList(GetEvents())
@@ -1660,11 +1663,8 @@
                 col2.innerHTML = aCE[4];//event
                 //col.onclick = function(){tabletext(this);}
                 col = row.insertCell(3); col.innerHTML = aCE[5];//where
-                var color = "#000000";
-                switch (aCE[3]) {
-                    case "S": color = "#0000ff"; break; // special events
-                    case "E": color = "darkred"; break; // entertainment
-                }
+                var color;
+                color = eventcolor(aCE[3]);
                 col2.style.color = color;
                 col.style.color = color;
                 // hidden cell with sponsor & more
@@ -1760,6 +1760,7 @@
                 var dateCE = Number(aCE[0]); // mmdd
                 if (dateCE > endmmdd) break; // past one week
                 if (dateCE < startmmdd) continue; // if before today
+                if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
                 // found it calculate cell;
                 hourCE = Math.floor(Number(aCE[1]) / 100);
                 datefmt = aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
@@ -1769,7 +1770,7 @@
                 // add to entry
                 var e = "";
                 if (aCE[1].substring(2, 4) != "00") e = ShortTime(aCE[1]) + " "; // add time if not one the hour
-                e += aCE[4];
+                e += "<span style=color:" + eventcolor(aCE[3]) + ">" + aCE[4] + "</span>";
                 var id = hourCE.toFixed(0) + (idayofweek + 1).toFixed(0);
                 var c = document.getElementById(id);
                 if (hourCE < 23) c.innerHTML += e + "<br/>";
@@ -1855,18 +1856,29 @@
                 var dateCE = Number(aCE[0]); // mmdd
                 if (dateCE > endmmdd) break; // past end of mothb
                 if (dateCE < startmmdd) continue; // if before start of month
+                if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
                 // found it calculate cell;
                 hourCE = Math.floor(Number(aCE[1]) / 100);
                 datefmt = aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
 
                 // add to entry
                 var e;
-                e = "<span style:'font-weight:bold'>" + VeryShortTime(aCE[1]) + "</span> " + aCE[4];// add time 
+                e = "<span style:'font-weight:bold'>" + VeryShortTime(aCE[1]) + "</span> " +
+                     "<span style=color:" + eventcolor(aCE[3]) + ">" + aCE[4] + "</span>";// add time 
                 var id = aCE[0];
                 var c = document.getElementById(id);
                 c.innerHTML += e + "<br/>";
             } // end for
         } // end function
+
+        // eventcolor - return the color for an event, based on the key (M, S, E)
+        function eventcolor(key) {
+            switch (key) {
+                case "S": return "#0000ff"; break; // special events
+                case "E": return "darkred"; break; // entertainment
+                default: return "#000000";
+            }
+        }
 
     </script>
 
