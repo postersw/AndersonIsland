@@ -241,10 +241,10 @@
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
         <div id="showevents" style="display:none">
-            Show  <span style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
-            <span style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
-            <span style="color:blue" onclick="SetEventFilter('S')">Events</span> | 
-            <span style="color:darkred" onclick="SetEventFilter('E')">Shows</span>  
+            Show  <span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
+            <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
+            <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
+            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Shows</span>  
          </div>
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
@@ -1539,12 +1539,15 @@
         // DisplayComingEventsPage(type)
         //  entry   type = 'events' or 'activities'
         var EventFilter = ""; //letter to filter for
+        var EventDisp = ""; // event display type, L, W, M
+
         function DisplayComingEventsPage(type) {
             localStorage.setItem("eventtype", type);
             document.getElementById("othercalendars").setAttribute("style", "display:none");
             ShowPage("comingeventspage");
             InitializeDates(0);
             EventFilter = ""; // clear filter
+            document.getElementById("eventA").style.fontWeight = "bold";
             if (type == "events") {
                 document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
                 document.getElementById("showevents").setAttribute('style', 'display:normal;');
@@ -1571,16 +1574,35 @@
             document.getElementById("othercalendars").setAttribute("style", "display:normal");
         }
 
+        ////////////////////////////////////////////////////////////////////////////////
+        // SetEventFilter - sets the filter letter and regenerates the display
+        //  Entry   f = A, M, S, E
         function SetEventFilter(f) {
+            // bold the selection
+            document.getElementById("eventA").style.fontWeight = "normal";
+            document.getElementById("eventM").style.fontWeight = "normal";
+            document.getElementById("eventS").style.fontWeight = "normal";
+            document.getElementById("eventE").style.fontWeight = "normal";
+            switch (f) {
+                case "": document.getElementById("eventA").style.fontWeight = "bold"; break;
+                case "M": document.getElementById("eventM").style.fontWeight = "bold"; break;
+                case "S": document.getElementById("eventS").style.fontWeight = "bold"; break;
+                case "E": document.getElementById("eventE").style.fontWeight = "bold"; break;
+            }
             EventFilter = f;
-            DisplayComingEventsList(GetEvents());
+
+            switch (EventDisp) {
+                case "L": DisplayComingEventsList(GetEvents()); break;
+                case "W": DisplayComingWeek(GetEvents()); break;
+                case "M": DisplayComingMonth(GetEvents()); break;
+            }
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayComingEventsList - display the events in the CE string, which is a copy of the comingevents txt file
         //  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
         // or 'comingactivities' localStorage items. 
-        // CE is a single big string containing multiple lines, so we split the string by \n.
+        //  entry   CE is a single big string containing multiple lines, so we split the string by \n.
         function DisplayComingEventsList(CE) {
             var i;
             var row;
@@ -1591,6 +1613,7 @@
             var previouseventdate; // date of previous event
             var datefmt; // formatted date
             var table // ref to table
+            EventDisp = "L";
             table = document.getElementById("comingeventstable");
             tabletoclear = "comingeventstable";
             var iCE; // iterator through CE
@@ -1700,6 +1723,7 @@
             var col;
             var datefmt; // formatted date
             var table // ref to table
+            EventDisp = "W";
             table = document.getElementById("comingeventstable");
             var iCE; // iterator through CE
             iCE = 0;
@@ -1787,6 +1811,7 @@
             var col;
             var datefmt; // formatted date
             var table // ref to table
+            EventDisp = "M";
             table = document.getElementById("comingeventstable");
             var iCE; // iterator through CE
             iCE = 0;
@@ -1822,7 +1847,7 @@
             ;
 
             // build the month table with all rows and columns
-            for (w = 1; w < 9; w++) {
+            for (w = 1; w < 12; w++) {
                 var rowN = table.insertRow(-1);
                 row = table.insertRow(-1);
                 //row.style.border = "thin solid blue";
@@ -1830,7 +1855,7 @@
                 for (i = 0; i < 7; i++) {
                     // cell with date
                     col = rowN.insertCell(i);
-                    if (dd == 1) col.innerHTML = (mm).toFixed(0) + "/" + (dd).toFixed(0);
+                    if (month != mm) col.innerHTML = (mm).toFixed(0) + "/" + (dd).toFixed(0);
                     else col.innerHTML = (dd).toFixed(0);
                     if (dayofmonth == dd && month == mm) col.style.backgroundColor = "yellow";
                     else col.style.backgroundColor = "azure";
@@ -1874,8 +1899,8 @@
         // eventcolor - return the color for an event, based on the key (M, S, E)
         function eventcolor(key) {
             switch (key) {
-                case "S": return "#0000ff"; break; // special events
-                case "E": return "darkred"; break; // entertainment
+                case "E": return "#0000ff"; break; // special events
+                case "S": return "darkred"; break; // entertainment
                 default: return "#000000";
             }
         }
