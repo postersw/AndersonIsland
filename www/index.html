@@ -6,6 +6,8 @@
 	ver 1.2: add weather icons
 	ver 1.3.0414: add pushbots
     ver 1.3.0422: add pushbots.resetBadge
+    ver 1.4.XXXX: Add tide graph.  Color code events and add filter.  Add Alert Cancel. Needs to be tested.
+                  Remove App Store message from non-mobile devices.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -241,6 +243,7 @@
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
         <div id="showevents" style="display:none">
+            Items on this page occur once/month or less. <br />
             Show  <span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
             <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
             <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
@@ -508,7 +511,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.4.0429.1200		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.4.0430.1200		</span>
 
 
         </p>
@@ -614,25 +617,43 @@
 		            return ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
 					(navigator.userAgent.toLowerCase().indexOf('android') > -1));
 		}
+
+        //isMobile - returns true if a Mobile browser (even if not PhoneGap), else false.  INDEPENDENT OF PHONEGAP.
+		function isMobile() {
+		    return /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+		}
         /////////////////////////////////////////////////////////////////////////////////////////////
         // FixURL = make URL fully qualified if a phonegap app
         //  entry   url = the url
         //  eixt    returns url
         function FixURL(url) {
             url += "?" + Date.now(); // turn off cache
-            if (isPhoneGap() == false) return url;
+            if (isPhoneGap() == false) {
+                if (document.URL.substr(0, 4) == "file") return document.URL.replace("index.html", "") + url;
+                else return url;
+            }
             return 'http://anderson-island.org/' + url;
         }
         //////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayAlertDetail() - show the alert detail
+        //  if user clicks CANCEL, the alert will be hidden until it changes
+        //  Exit:  alerthide set if user clicks cancel
         function DisplayAlertDetail() {
-            alert(localStorage.getItem('alerttext') + "\n" + localStorage.getItem('alertdetail'))
+            var r = confirm(localStorage.getItem('alerttext') + "\n" + localStorage.getItem('alertdetail')
+                + "\n\nClick CANCEL to hide this Alert");
+            if (r == false) {
+                localStorage.setItem("alerthide", "t");
+                DisplayAlertInfo();  // this will hide the alert
+            }
+
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayAlertInfo()  - sets the alerttext and sets the alertdiv = display:block if there is an alert
+        //  NOTE: if 'alerthide' exists, the alert will NOT be displayed.
         function DisplayAlertInfo() {
-            if (localStorage.getItem("alerttext") == null || localStorage.getItem("alerttext") == "") {
+            if (localStorage.getItem("alerttext") == null || localStorage.getItem("alerttext") == "" ||
+                localStorage.getItem("alerthide") != null) {
                 document.getElementById("alertdiv").setAttribute('style', 'display:none;');
             } else {
                 document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
@@ -641,6 +662,8 @@
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // getAlertInfo - gets the alert info from the server every 12 minutes and save it in alerttext and alertdetail
+        //  Entry   'alerthide' = true to hide the alert in 'alerttext'
+        //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
         function getAlertInfo() {
             var alerttimeout = 720; // alert timeout in sec 12 minutes
             var timestamp = Date.now() / 1000; // time in sec
@@ -661,11 +684,16 @@
                         }
                         localStorage.setItem("alerttext", "");
                         localStorage.setItem("alertdetail", "");
+                        localStorage.removeItem("alerthide");  // turn off hide
                     } else {  // if there is an alert, save it
                         r = r + "\n";
                         var i = r.indexOf("\n");
-                        localStorage.setItem("alerttext", r.substr(0, i));
-                        localStorage.setItem("alertdetail", r.substr(i));
+                        var atext = r.substr(0, i);
+                        if(atext != localStorage.getItem("alerttext")) {  // if alert changed
+                            localStorage.setItem("alerttext", atext);
+                            localStorage.setItem("alertdetail", r.substr(i));
+                            localStorage.removeItem("alerthide");  // turn off hide because alert changed
+                        }
                     }
                     DisplayAlertInfo();
                 }
@@ -771,15 +799,18 @@
             if (openHours == "") return "";
             openHours = openHours.split("\n");
             openlist = "";
+            var len = openHours.length - 1;
+            if (len > 3) len = 3;
 
             // loop through the openHours array (each string entry is one business)
-            for (var i = 0; i < openHours.length - 1; i++) {
+            for (var i = 0; i < len; i++) {
                 a = openHours[i].split(",");  // parse it into an array'
                 if (a[0] == "OPENHOURSEND") break;
                 store = a[0].split("("); // strip out phone number
                 openlist += "<span style='font-weight:bold'>" + store[0] + "</span>:";
                 openlist += GetOpenStatus(a) + "<br/>";
             } // end for
+            openlist += "More ...";
             document.getElementById("openhours").innerHTML = openlist;
             return;
         }
@@ -824,42 +855,7 @@
             }
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        // getCurrentWeather  
-        //function getCurrentWeatherAERIS() {
-        //alert("getcurrentweather");
-        // kludge - exit right away
-        //    var t = localStorage.getItem("currentweathertime");
-        //    if (t != null && RawTimeDiff(t, timehhmm) < 20) return; // gets weather async every 20 min.
-        //    localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
-
-        //    $.ajax({
-        //        url: 'http://api.aerisapi.com/observations/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
-        //        dataType: 'jsonp',
-        //        success: function (json) {
-        //            if (json.success == true) {
-        //                //alert("json success");
-        //                // pick out the return variables
-        //                var r = json.response.ob;
-        //                var current =  r.tempF + "&degF, " + r.weather + ", " +  r.windDir + " " + r.windMPH + " mph " +
-        //                    ", " + r.precipIN + " precip."
-        //                localStorage.setItem("currentweather", current);
-        //                localStorage.setItem("currentweathertime", timehhmm); // save the cache time
-        //                $("#weather").html(current); // jquery equivalent. Is this really easier?
-        //            }
-        //            else {
-        //                // error, but Don't correct forecast. just leave the old one.
-        //                // update the time so that we don't keep asking futilly.
-        //                //alert('Could not get current weather: ' + json.error.description);
-        //                //if (localStorage.getItem("currentweather") == null) { // if no current weather, set to 'not available'
-        //                var current = "Current weather not available.";
-        //                localStorage.setItem("currentweather", current);
-        //                $("#weather").html(current);
-        //                localStorage.setItem("currentweathertime", timehhmm); // save the cache time so we don't keep asking forever
-        //            }
-        //        }
-        //    });
-        //} // end of function
+        
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         // StripDecimal - strips out the decimal part of a numeric text string
@@ -1148,36 +1144,17 @@
                 document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
                 return;
             }
-            //alert("loading daily cache");
+
             localStorage.setItem("dailycacheloaded", monthday); // remember date time
-
-            //i1 = data.indexOf("FERRYTIMESS");
-            //var i1e = data.indexOf("\n", i1 + 12);
-            //if (i1 == 0) return;
-            //localStorage.setItem("ferrytimess", data.substring(i1 + 12, i1e));
             parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
-
-            //i2 = data.indexOf("FERRYTIMESA");
-            //if (i2 > 0) {
-            //    var i2e = data.indexOf("\n", i2 + 12);
-            //    localStorage.setItem("ferrytimesa", data.substring(i2 + 12, i2e));
-            //} else localStorage.removeItem("ferrytimesa");
             parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
-            //i2 = data.indexOf("FERRYTIMESK");
-            //if (i2 > 0) {
-            //    var i2e = data.indexOf("\n", i2 + 12);
-            //    localStorage.setItem("ferrytimesk", data.substring(i2 + 12, i2e));
-            //} else localStorage.removeItem("ferrytimesk");
             parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
-            //i3 = data.indexOf("OPENHOURS");
-            //i4 = data.indexOf("OPENHOURSEND");
-            //localStorage.setItem("openhours", data.substring(i3 + 10, i4));
             parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");
-            //var i5 = data.indexOf("EMERGENCY");
-            //var i6 = data.indexOf("EMERGENCYEND");
-            //if (i5 > 0) localStorage.setItem("emergency", data.substring(i5 + 10, i6));
             parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
+            parseCache(data, "morehours", "MOREHOURS", "MHEND");
+            parseCache(data, "links", "LINKS", "LINKSEND");
         }
+        /////////////////////////////
         // parseCache - returns the string from the daily cache
         //  name = name of local storage item
         //  startstr = starting string, endstr = ending string
@@ -1507,7 +1484,7 @@
             clearTable(table);
 
             // read open hours from master source
-            var openHours = localStorage.getItem("openhours");
+            var openHours = localStorage.getItem("openhours") + localStorage.getItem("morehours");
             openHours = openHours.split("\n");
 
             // loop through the openHours array (each string entry is one business)
@@ -1532,7 +1509,7 @@
                 var s = '' + a[8] + '';
                 //if (a[8] != "") row.onclick = function () { window.open(s); };
                 var cell = row.insertCell(0);
-                cell.innerHTML = openlist + "<br/><br/>" +
+                cell.innerHTML = openlist + "<br/><br/>&nbsp&nbsp" +
                     "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + phonenumber[1] + "'>Call " + phonenumber[1] + "</a>&nbsp&nbsp&nbsp&nbsp" +
                     "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + a[8] + "'>Web Site</a><br/>&nbsp";
                 cell.style.border = "thin solid black";
@@ -2428,8 +2405,8 @@
         forceCacheReload = false; // cache reload not needed
         forceTideReload = false;
 
-        // point user to google play
-        if (!isPhoneGap()) {  // if not phonegap
+        // point user to google play only if a mobile browser that is NOT PhoneGap
+        if (!isPhoneGap() && isMobile()) {  // if not phonegap
             if (isAndroid()) { // if chrome for android
                 document.getElementById("androidapp").setAttribute('style', 'display:block;');
                 document.getElementById("topline").innerHTML = "";
