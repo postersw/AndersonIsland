@@ -703,8 +703,8 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // return the next ferry time as a string. 
         //      entry ferrytimes is the array of times and days (see ferrytimeA)
-        //            DoKetron = true to add ketron using ferrytimeK. kludge.
-        function FindNextFerryTime(ferrytimes, DoKetron) {
+        //            ferrytimeK = true to add ketron using ferrytimeK. kludge.
+        function FindNextFerryTime(ferrytimes, ferrytimeK) {
             var ShowTimeDiff = false;
 			InitializeDates(0);	
             var i = 0;
@@ -721,7 +721,9 @@
 					} else {
 						ft = ft + VeryShortTime(ferrytimes[i]);
 					}
-					if (DoKetron) { // add ketron time for this run
+
+					if (ferrytimeK!="") { // add ketron time for this run
+
 						if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
 							ketron = true;
 							ketront = ketront + VeryShortTime(ferrytimeK[i]);
@@ -739,6 +741,7 @@
                 i = 0;
                 // need to compute if tomorrow is a holiday
                 if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
+            handle ferry schedule cutover
 				ft = ft + VeryShortTime(ferrytimes[i]) + " tomorrow";
             }
 			
@@ -750,7 +753,7 @@
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-        // Finds the next ferry times and puts them into the Dom.
+        // Finds the next ferry times and puts them into the Dom for the FRONT PAGE
         function WriteNextFerryTimes() {
             // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
             // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
@@ -761,16 +764,22 @@
             var str;
             v = "Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
+        move next 6 lines to LoadDailyCache, which should also set ferrytimeS2,...
             var str = localStorage.getItem("ferrytimess");
             if (str != null) ferrytimeS = str.split(",");
             str = localStorage.getItem("ferrytimesa");
             if (str != null) ferrytimeA = str.split(",");
             str = localStorage.getItem("ferrytimesk");
             if (str != null) ferrytimeK = str.split(",");
-            v = v + FindNextFerryTime(ferrytimeS, false);
+        if no cutover date or date < cutover date:
+                v = v + FindNextFerryTime(ferrytimeS, "");
+        else             v = v + FindNextFerryTime(ferrytimeS2, "");
             // make it bold if not tomorrow
             if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-            var a = "</br>Anderson:&nbsp&nbsp&nbsp " + FindNextFerryTime(ferrytimeA, true);
+            var a = "</br>Anderson:&nbsp&nbsp&nbsp " 
+         if no cutover date or date < cutover date:             
+                a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
+        else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
             if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
             //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1153,6 +1162,11 @@
             parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
             parseCache(data, "morehours", "MOREHOURS", "MHEND");
             parseCache(data, "links", "LINKS", "LINKSEND");
+            // new ferry schedule 
+            parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
+            parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
+            parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
+            parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2
         }
         /////////////////////////////
         // parseCache - returns the string from the daily cache
@@ -1437,8 +1451,10 @@
             row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
             row1col1 = row1.insertCell(2);
             row1col1.style.backgroundColor = "blue";
+        check date. if before cutover:
             BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-
+        else 
+            BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
             // build next 6 days
             timehhmm = 0;  // ignore current time
             var i;
@@ -1456,7 +1472,10 @@
                 row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
                 row1col1 = row1.insertCell(2);
                 row1col1.style.backgroundColor = "blue";
+            check date. if before cutover:
                 BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+            else 
+                BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
             }
             InitializeDates(0);  // reset dates back
             //alert("build ferry sch done");
