@@ -540,6 +540,19 @@
         var DisplayPage; // name of page being displayed
         var tabletoclear; // name of table to clear
 
+        // ferry run times and flags. Heirarchy is:
+        //  1. * overrides everything and means always.
+        //  2. If a holidays, the run MUST have an H (or *).
+        //  3. not a holiday. it goes if it has the day of the week (0-6).
+        //  4. otherwise the special case rules are checked (AFHGXY)
+        var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+        var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+        var ferrytimeK = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
+        var ferrytimeS2 = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+        var ferrytimeA2 = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+        var ferrytimeK2 = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
+        var ferrydate2 = 0;  // cutover time to ferrytimex2
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
@@ -741,7 +754,7 @@
                 i = 0;
                 // need to compute if tomorrow is a holiday
                 if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
-            handle ferry schedule cutover
+                //handle ferry schedule cutover
 				ft = ft + VeryShortTime(ferrytimes[i]) + " tomorrow";
             }
 			
@@ -764,26 +777,49 @@
             var str;
             v = "Steilacoom: ";
             if (holiday) v = "Hoilday Steilacoom: "
-        move next 6 lines to LoadDailyCache, which should also set ferrytimeS2,...
+            if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "");
+            else v = v + FindNextFerryTime(ferrytimeS2, "");
+            // make it bold if not tomorrow
+            if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
+            var a = "</br>Anderson:&nbsp&nbsp&nbsp " 
+            if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
+            else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
+            if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
+            //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
+            document.getElementById("ferrytimes").innerHTML = v + a;
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        //  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimex
+        //  Entry   localStorage items ferrytimesxx are set
+        //  Exit    arrays ferrytimexx are set 
+        function ParseFerryTimes() {
             var str = localStorage.getItem("ferrytimess");
             if (str != null) ferrytimeS = str.split(",");
             str = localStorage.getItem("ferrytimesa");
             if (str != null) ferrytimeA = str.split(",");
             str = localStorage.getItem("ferrytimesk");
             if (str != null) ferrytimeK = str.split(",");
-        if no cutover date or date < cutover date:
-                v = v + FindNextFerryTime(ferrytimeS, "");
-        else             v = v + FindNextFerryTime(ferrytimeS2, "");
-            // make it bold if not tomorrow
-            if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-            var a = "</br>Anderson:&nbsp&nbsp&nbsp " 
-         if no cutover date or date < cutover date:             
-                a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
-        else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
-            if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
-            //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
-            document.getElementById("ferrytimes").innerHTML = v + a;
+            var str = localStorage.getItem("ferrytimess2");
+            if (str != null) ferrytimeS2= str.split(",");
+            str = localStorage.getItem("ferrytimesa2");
+            if (str != null) ferrytimeA2 = str.split(",");
+            str = localStorage.getItem("ferrytimesk2");
+            if (str != null) ferrytimeK2 = str.split(",");
+            str = localStorage.getItem("ferrydate2");
+            if (str == null) return;
+            var d = new Date(str);  // convert ferry date 2 to ms
+            ferrytime2 = d.getTime(d); // ms till cutover
+        }
 
+        /////////////////////////////////////////////////////////////////////////
+        //  UseFerryTime1 - select ferrytime 1 or ferry time 2 based on cutover date
+        //  entry   ferrytime2 = cutover time in ms
+        //          timestampms = 'current' time for this function
+        //  exit    true to use ferrytime1, false to use ferrytime2
+        function UseFerryTime1() {
+            if ((ferrytime2 == 0) || (timestampms < ferrytime2)) return true
+            else return false;
         }
 
 
@@ -1166,7 +1202,8 @@
             parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
             parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
             parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
-            parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2
+            parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
+            ParseFerryTimes();
         }
         /////////////////////////////
         // parseCache - returns the string from the daily cache
@@ -1451,10 +1488,9 @@
             row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
             row1col1 = row1.insertCell(2);
             row1col1.style.backgroundColor = "blue";
-        check date. if before cutover:
-            BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-        else 
-            BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
+
+            if (UseFerryTime1()) BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+            else BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
             // build next 6 days
             timehhmm = 0;  // ignore current time
             var i;
@@ -1472,10 +1508,8 @@
                 row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
                 row1col1 = row1.insertCell(2);
                 row1col1.style.backgroundColor = "blue";
-            check date. if before cutover:
-                BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-            else 
-                BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
+                if (UseFerryTime1()) BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+                else BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
             }
             InitializeDates(0);  // reset dates back
             //alert("build ferry sch done");
@@ -2424,6 +2458,7 @@
         forceCacheReload = false; // cache reload not needed
         forceTideReload = false;
 
+
         // point user to google play only if a mobile browser that is NOT PhoneGap
         if (!isPhoneGap() && isMobile()) {  // if not phonegap
             if (isAndroid()) { // if chrome for android
@@ -2441,7 +2476,8 @@
 		    else NotifyColor(0);
         }
 
-        //  Show the cached data immediately.  
+        //  Show the cached data immediately. 
+        ParseFerryTimes();  // moved saved data into ferry time arrays
         ShowCachedData();
 
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.

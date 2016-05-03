@@ -76,15 +76,7 @@ var laborday; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
 var holiday;  // true if  holiday
-var ferrytimeS, ferrytimeA, ferrytimeK;
-// ferry run times and flags. Heirarchy is:
-//  1. * overrides everything and means always.
-//  2. If a holidays, the run MUST have an H (or *).
-//  3. not a holiday. it goes if it has the day of the week (0-6).
-//  4. otherwise the special case rules are checked (AFHGXY)
-ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-ferrytimeK = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
+
 var dayofweekname, dayofweekshort, scheduledate;
 dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

@@ -1,0 +1,34 @@
+DAILYCACHE
+FERRYTIMESS
+545,H123456A,645,*,800,*,900,*,1000,HF,1200,*,1410,*,1510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y
+FERRYTIMESA
+615,H123456A,730,*,830,*,930,*,1030,HF,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y;
+FERRYTIMESK
+0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,1800,*,0,,0,,2130,40,2250,X6H,2350,Y;
+FERRYTIMESS2
+401,H123456A,501,*,801,*,901,*,1001,HF,1201,*,1401,*,1501,*,1601,*,1701,*,1801,*,1901,*,2001,4560H,2201,X6H,2301,Y
+FERRYTIMESA2
+431,H123456A,531,*,831,*,931,*,1031,HF,1231,*,1431,*,1531,*,1631,*,1731,*,1831,*,1931,*,2031,4560H,2231,X6H,2331,Y;
+FERRYTIMESK2
+0,,532,*,0,,0,,1002,G,1232,*,0,,0,,0,,1802,*,0,,0,,2132,40,2252,X6H,2352,Y;
+FERRYDATE2
+6/1/2016
+OPENHOURS
+Store (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,http://www.andersonislandgeneralstore.com
+Coffee Shop (884-1644),0800-1500,0530-2000,0530-1500,0530-1500,0530-1500,0530-2000,0800-2000,http://www.andersonislandgeneralstore.com
+Restaurant (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,http://rivieracommunityclub.com/amenities/restaurant
+Dump (884-4072),1000-1400,1300-1700,,,,,,https://www.co.pierce.wa.us/index.aspx?NID=1541
+OPENHOURSEND
+EMERGENCY
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:911"> All emergencies: 911</a> </td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-798-4333">  Crisis Line: 798-4333</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:884-4040">  Fire Department: 884-4040</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:884-4057"> Fire Department Burn Line: 884-4057</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-9800">Pierce County Sheriff: 1-800-562-9800</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:606-5273"> Fire Department Cell Phone:606-5273</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-732-6985">  Poison Center: 1-800-732-6985</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:884-4808">  Riviera Disaster Hot Line: 884-4808</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-5632"> Red Tide:1-800-562-5632</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-472-0208">Tanner Electric: 1-800-472-0208</a></td></tr>
+EMERGENCYEND
+// 3/7/16
