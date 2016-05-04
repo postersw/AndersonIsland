@@ -6,8 +6,10 @@
 	ver 1.2: add weather icons
 	ver 1.3.0414: add pushbots
     ver 1.3.0422: add pushbots.resetBadge
-    ver 1.4.XXXX: Add tide graph.  Color code events and add filter.  Add Alert Cancel. Needs to be tested.
+    ver 1.4.XXXX: Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
                   Remove App Store message from non-mobile devices.
+                  Support ferry schedule2 cutover (FERRYTIMESS2, FERRYTIMESA2, FERRYDATE2...)
+                    FERRYDATE2 is cutover date to FERRYTIMESx2 (exception: front page tomorrow times)
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -511,7 +513,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.4.0430.1200		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.4.0502.1200		</span>
 
 
         </p>
@@ -1158,7 +1160,7 @@
         //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
         function GetDailyCache() {
             // ajax async request
-            var myurl = FixURL("dailycachetest.txt");///////////////////////////////////////////
+            var myurl = FixURL("dailycache.txt");
             $.ajax({
                 url: myurl, // for phone use fully qualified url http://anderson-island.org/
                 success: function (data) {
