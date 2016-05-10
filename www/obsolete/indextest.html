@@ -2,14 +2,13 @@
 <!--
     Anderson Island Assistant.  Single page version.
     Robert Bedoll. 2/23/16. 
-	ver 1.1.319: fix weather forecast gmt time conversion
-	ver 1.2: add weather icons
-	ver 1.3.0414: add pushbots
-    ver 1.3.0422: add pushbots.resetBadge
-    ver 1.4.XXXX: Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
+	ver 1.1.319: Web. fix weather forecast gmt time conversion
+	ver 1.2: Web. add weather icons
+	ver 1.3.0414: Web add pushbots
+    ver 1.3.0422: Android & IOS release. add pushbots.resetBadge
+    ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. Needs to be tested.
                   Remove App Store message from non-mobile devices.
-                  Support ferry schedule2 cutover (FERRYTIMESS2, FERRYTIMESA2, FERRYDATE2...)
-                    FERRYDATE2 is cutover date to FERRYTIMESx2 (exception: front page tomorrow times)
+    ver 1.5.0509: add OpenHours object
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -209,7 +208,8 @@
             <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Open Hours
         </h1>
-        <p>Touch an entry for more information.</p>
+        <button onclick="ShowYRHours()">Show year-round hours</button>
+        <br /><br />
         <table id='openhourstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td>Location</td>
@@ -249,7 +249,7 @@
             Show  <span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
             <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
             <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
-            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Shows</span>  
+            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertainment</span>  
          </div>
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
@@ -513,7 +513,7 @@
 
          <p> Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.4.0502.1200		</span>
+        <span style="font-size:x-small">   AIA Ver: 1.5.0509.1700		</span>
 
 
         </p>
@@ -528,7 +528,7 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="indextest.js"></script>
     <!-- <script type="text/javascript" src="js/AIA.js"></script> Moved to index.js on 4/25/16 -->
 
     <script>
@@ -555,6 +555,20 @@
         var ferrytimeK2 = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
         var ferrydate2 = 0;  // cutover time to ferrytimex2
 
+        // OpenHours object. Arra of openhours for the store hours.  This array is loaded by a JSON.parse
+        //      of the OpenHoursJSON string in 'dailycache'
+        var ShowAllOpenHours = false; // true to show all open hours
+        var OpenHours = [];
+        OpenHours = [{  // single preload for testing. replaced at load time.
+            Name: 'Store', Phone: '884-4001', Desc: 'Groceries, Deli, Hardware, Gas',
+            Href: 'https://www.co.pierce.wa.us/index.aspx?NID=1541',
+            Addr: '10202 Eckenstam Johnson Rd',
+            Map: 'https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA',
+            Sc: [{ From: 101, To: 1231, H: [1000,1800,700,2000,700,2000,700,2000,700,2000,700,2100,800,2100] }
+            ],
+            Closed: [1225]
+        }]
+       
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
@@ -718,7 +732,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // return the next ferry time as a string. 
         //      entry ferrytimes is the array of times and days (see ferrytimeA)
-        //            ferrytimeK = true to add ketron using ferrytimeK. kludge.
+        //            ferrytimeK = is the array of times and days for ketron
         function FindNextFerryTime(ferrytimes, ferrytimeK) {
             var ShowTimeDiff = false;
 			InitializeDates(0);	
@@ -763,7 +777,7 @@
             if(ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
 
             // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-            if((ferrytimeK != "") && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
+            if((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
 			return ft;
         }
 
@@ -825,81 +839,175 @@
         }
 
 
+        // OBSOLETE ////////////////////////////////////////////////////////////////////////
+        ////// ShowOpenHours - shows whether something is open or closed. 
+        //////  Entry: openhours is a string in "openhours", loaded from 'dailycache.txt'
+        //////  exit: sets the openhours element to the open hours string
+        //////     
+        ////function ShowOpenHours() {
+        ////    // openHours format is array of strings, 1 string per business Defined in AIA.js.
+        ////    // each string is: name (phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
+        ////    //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
+        ////    var j;
+        ////    var openlist;
+        ////    var a;
+        ////    var store;
+        ////    var opentimetoday, opentime, closetime;
+        ////    var openHours;
+
+        ////    openHours = localStorage.getItem("openhours");
+        ////    if (openHours === null) return "";
+        ////    if (openHours == "") return "";
+        ////    openHours = openHours.split("\n");
+        ////    openlist = "";
+        ////    var len = openHours.length - 1;
+        ////    if (len > 3) len = 3;
+
+        ////    // loop through the openHours array (each string entry is one business)
+        ////    for (var i = 0; i < len; i++) {
+        ////        a = openHours[i].split(",");  // parse it into an array'
+        ////        if (a[0] == "OPENHOURSEND") break;
+        ////        store = a[0].split("("); // strip out phone number
+        ////        openlist += "<span style='font-weight:bold'>" + store[0] + "</span>:";
+        ////        openlist += GetOpenStatus(a) + "<br/>";
+        ////    } // end for
+        ////    openlist += "More ...";
+        ////    document.getElementById("openhours").innerHTML = openlist;
+        ////    return;
+        ////}
+
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // ShowOpenHours - shows whether something is open or closed. 
-        //  Entry: openhours is a string in "openhours", loaded from 'dailycache.txt'
+        //  Entry: OpenHours is an array of objects, loaded from OpenHoursJSON in 'dailycache.txt'
         //  exit: sets the openhours element to the open hours string
+        // openHours format is array of objects, 1 object per business.
+        // each object is: name, phone, desc, href, 
+        //      array of H: from (mmdd), to (mmdd), H [array of 7 hhmm-hhmm opentime-closetime], 
+        //                  optional D2 [array of 7 additional hhmm-hhmm opentime-closetime]
+        //   where xxxtime = hhmm-hhmm in 24 hour format. 
+        //   List more restrictive from/to dates first.
         //     
         function ShowOpenHours() {
-            // openHours format is array of strings, 1 string per business Defined in AIA.js.
-            // each string is: name (phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
-            //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
-            var j;
             var openlist;
-            var a;
-            var store;
-            var opentimetoday, opentime, closetime;
-            var openHours;
-
-            openHours = localStorage.getItem("openhours");
-            if (openHours === null) return "";
-            if (openHours == "") return "";
-            openHours = openHours.split("\n");
             openlist = "";
-            var len = openHours.length - 1;
-            if (len > 3) len = 3;
 
-            // loop through the openHours array (each string entry is one business)
-            for (var i = 0; i < len; i++) {
-                a = openHours[i].split(",");  // parse it into an array'
-                if (a[0] == "OPENHOURSEND") break;
-                store = a[0].split("("); // strip out phone number
-                openlist += "<span style='font-weight:bold'>" + store[0] + "</span>:";
-                openlist += GetOpenStatus(a) + "<br/>";
+            // loop through the openHours array (each array entry is one business)
+            for (var i = 0; i < OpenHours.length; i++) {
+                Oh = OpenHours[i];  // entry for 1 business
+                openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:";
+                openlist += GetOpenStatus(Oh, monthday, timehhmm) + "<br/>";
+                if (i == 2) break; // only do 1st 3 on main page
             } // end for
             openlist += "More ...";
             document.getElementById("openhours").innerHTML = openlist;
             return;
         }
 
-        ///////////////////////////////////////////////////////////////////////////////////////
-        // GetOpenStatus - determine if business is open & reeturn string
-        //  entry: a = array of openTime for 1 business
-        //  exit: returns string
-        function GetOpenStatus(a) {
-            var opentimetoday, opentime, closetime;
-            opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
-            opentime = Number(opentimetoday.substring(0, 4)); // open time hhmm
-            closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
-            var openlist; openlist = "";
-            // test for closed
-            if (opentimetoday == "" || (timehhmm > closetime) || (timehhmm < opentime)) {
-                openlist += " <span style='color:red'> Closed. </span>";
-                if (timehhmm < opentime) {
-                    openlist += " Opens today at " + VeryShortTime(opentime);
-                    return openlist;
-                }
-                // find next open time
-                j = dayofweek + 1; if (j == 7) j = 0;
-                // if it opens tomorrow
-                if (a[j + 1]) {
-                    openlist += " Opens tomorrow at " + VeryShortTime(a[j + 1].substring(0, 4));
-                    return openlist;
-                }
-                // not open tomorrow. find next open day.
-                while (true) {
-                    j++; if (j == 7) j = 0; // handle day rollover
-                    if (a[j + 1] != "") { // open day found
-                        openlist += " Opens " + dayofweekshort[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4));
-                        return openlist;
-                    }
-                } // while loop
+        ///OBSOLETE/////////////////////////////////////////////////////////////////////////
+        ////// GetOpenStatus - determine if business is open & reeturn string
+        //////  entry: a = array of openTime for 1 business
+        //////  exit: returns string
+        ////function GetOpenStatus(a) {
+        ////    var opentimetoday, opentime, closetime;
+        ////    opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+        ////    opentime = Number(opentimetoday.substring(0, 4)); // open time hhmm
+        ////    closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+        ////    var openlist; openlist = "";
+        ////    // test for closed
+        ////    if (opentimetoday == "" || (timehhmm > closetime) || (timehhmm < opentime)) {
+        ////        openlist += " <span style='color:red'> Closed. </span>";
+        ////        if (timehhmm < opentime) {
+        ////            openlist += " Opens today at " + VeryShortTime(opentime);
+        ////            return openlist;
+        ////        }
+        ////        // find next open time
+        ////        j = dayofweek + 1; if (j == 7) j = 0;
+        ////        // if it opens tomorrow
+        ////        if (a[j + 1]) {
+        ////            openlist += " Opens tomorrow at " + VeryShortTime(a[j + 1].substring(0, 4));
+        ////            return openlist;
+        ////        }
+        ////        // not open tomorrow. find next open day.
+        ////        while (true) {
+        ////            j++; if (j == 7) j = 0; // handle day rollover
+        ////            if (a[j + 1] != "") { // open day found
+        ////                openlist += " Opens " + dayofweekshort[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4));
+        ////                return openlist;
+        ////            }
+        ////        } // while loop
 
-            } else {
-                // its open
-                openlist += " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
-                return openlist;
+        ////    } else {
+        ////        // its open
+        ////        openlist += " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
+        ////        return openlist;
+        ////    }
+        ////}
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // GetOpenStatus - determine if business is open & return string.
+        //      honors opendates, openhours, and openhours2
+        //  entry: Oh = OpenHours object for 1 business
+        //          mmdd = month day
+        //          hhmm = hours minutes
+        //  exit: returns html display string
+        function GetOpenStatus(Oh, mmdd, hhmm) {
+            var i, j;
+            var  opentime, closetime, opentime2, closetime2;
+            if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red'> Closed today. </span>"
+            // loop through the oh.Sch entries. Each entry is for 1 date range.
+            for (i = 0; i < Oh.Sc.length; i++) {
+                if (((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
+                    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd >= Oh.Sc[i].From)))) {
+
+                    // ok we have the H entry for the date, now check it
+                    // array is [sunopen, sunclose, monopen, monclose, tueopen, tueclose,.....satopen, satclose]
+                    var H = Oh.Sc[i].H;  // array indexed by day of week
+                    if (H == null) return " <span style='color:red'> Closed. </span>";  // if no times, its closed
+                    opentime = H[dayofweek * 2]; // open time hhmm
+                    closetime = H[dayofweek * 2 + 1]; // close time hhmm
+                    opentime2 = 0; closetime2 = 0;
+                    if (Oh.Sc[i].H2 != null) {  // if there is H 2nd shift
+                        opentime2 = Oh.Sc[i].H2[dayofweek * 2];
+                        closetime2 = Oh.Sc[i].H2[dayofweek * 2 + 1];
+                    }
+                    var openlist; openlist = "";
+                    // test for open
+                    if ((hhmm >= opentime) && (hhmm < closetime))
+                        return " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
+                    else if ((hhmm >= opentime2) && (hhmm < closetime2))  // 2nd shift for Post Office
+                        return " <span style='color:green'> Open </span>till " + VeryShortTime(closetime2) + " today";
+                    else {
+                        // closed right now. Find next open time.
+                        openlist += " <span style='color:red'> Closed. </span>";
+                        if (hhmm < opentime) return " Opens today " + VeryShortTime(opentime);
+                        if (hhmm < opentime2) return " Reopens today " + VeryShortTime(opentime2);
+                        //  closed today find next open time
+                        j = dayofweek + 1; if (j == 7) j = 0;
+                        // if it opens tomorrow
+                        if (H[j * 2] > 0) return " Opens tomorrow " + VeryShortTime(H[j * 2]);
+                        // not open tomorrow. find next open day.
+                        for (var k = 0; k < 7; k++) {  // ensure we check each day only once
+                            j++; if (j == 7) j = 0; // handle day rollover
+                            if (H[j * 2] > 0) return " Opens " + dayofweekshort[j] + " " + VeryShortTime(H[j * 2]);
+                        } // find open day
+                    }
+                }
             }
+            return " <span style='color:red'> Closed. </span>";
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+        //  IsClosed - returns true if today is a closed date
+        //  entry   Array of closed dates, usually holidays
+        //          mmdd = date
+        //  exit    True if closed today, else false
+        function IsClosed(CA, mmdd) {
+            if (CA == null) return false; // not closed
+            for (var i = 0; i < CA.length; i++) { // loop through the closed array
+                if (mmdd == CA[i]) return true;
+            }
+            return false;
         }
 
         
@@ -1160,7 +1268,7 @@
         //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
         function GetDailyCache() {
             // ajax async request
-            var myurl = FixURL("dailycache.txt");
+            var myurl = FixURL("dailycachetest.txt"); //////////////////////////////////////////////////
             $.ajax({
                 url: myurl, // for phone use fully qualified url http://anderson-island.org/
                 success: function (data) {
@@ -1183,7 +1291,7 @@
         //  note: data must be in the order of FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
         function ReloadDailyCache(data) {
             var s;
-            var i1, i2, i3, i4;
+
             data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
             //var rows = data.split("\n"); //split into lines
             if (data.substring(0, 10) != "DAILYCACHE") {
@@ -1196,10 +1304,12 @@
             parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
             parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
             parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
-            parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");
+            //parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");  obsolete in ver 1.5 5/2016.
+            //parseCache(data, "morehours", "MOREHOURS", "MHEND");
             parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
-            parseCache(data, "morehours", "MOREHOURS", "MHEND");
             parseCache(data, "links", "LINKS", "LINKSEND");
+            s = parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
+            if (s > 0) OpenHours = JSON.parse(localStorage.getItem("openhoursjson"));  // parse it
             // new ferry schedule 
             parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
             parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
@@ -1211,12 +1321,15 @@
         // parseCache - returns the string from the daily cache
         //  name = name of local storage item
         //  startstr = starting string, endstr = ending string
+        //  exit    returns length of string
         function parseCache(data, name, startstr, endstr) {
             var s = data.indexOf(startstr);
-            if (s < 0) return;
+            if (s < 0) return 0;
             var e = data.indexOf(endstr, s + startstr.length + 1);
-            if (e < 0) return;
+            if (e < 0) return 0;
+            var len = e - s - startstr.length - 1;
             localStorage.setItem(name, data.substring(s + startstr.length + 1, e));
+            return len;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1399,6 +1512,8 @@
         }
 
     </script>
+
+    <!-- FERRY ------------------------>
     <script>
         //==== FERRY SCHEDULE =======================================================================================
 
@@ -1522,6 +1637,7 @@
         }
     </script>
 
+    <!-- OPEN HOURS -->
     <script>
         //======== OPEN HOURS ============================================================================
 
@@ -1532,48 +1648,152 @@
         //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
         function ShowOpenHoursPage() {
             var openlist;
+            ShowAllOpenHours = false;
             ShowPage("openhourspage");
             InitializeDates(0);
+            ShowOpenHoursTable(ShowAllOpenHours);
+            return;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // ShowOpenHours - Displays all businesses in the OpenHours Object
+        //  Entry showall = true to show all dates, false to only show hours for current dates
+
+        function ShowOpenHoursTable(showall) {
             table = document.getElementById("openhourstable");
             tabletoclear = "openhourstable";
             clearTable(table);
+            openlist = "";
 
-            // read open hours from master source
-            var openHours = localStorage.getItem("openhours") + localStorage.getItem("morehours");
-            openHours = openHours.split("\n");
-
-            // loop through the openHours array (each string entry is one business)
+            // loop through the openHours array for each business
             var i;
-            for (i = 0; i < openHours.length - 1; i++) {
-                var a; a = openHours[i].split(",");  // parse it into an array
-                openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>";  // name of business
-                var phonenumber = a[0].split("(");
-                phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
-                // loop through Sun - Sat
-                for (j = 0; j < 7; j++) {
-                    var opentimetoday, opentime, closetime;
-                    opentimetoday = a[j + 1]; // hhmm-hhmm open today
-                    if (opentimetoday != "") {
-                        opentime = opentimetoday.substring(0, 4); // open time hhmm
-                        closetime = opentimetoday.substring(5, 9); // close time hhmm
-                        openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "</nobr>";
-                        if (j < 6) openlist += ", ";
-                    }
-                } // for loop for each day
+            for (i = 0; i < OpenHours.length; i++) {
+                var Oh = OpenHours[i];  // entry for 1 business
+                openlist = FormatOneBusiness(Oh, monthday, showall);
                 var row = table.insertRow(-1);
-                var s = '' + a[8] + '';
-                //if (a[8] != "") row.onclick = function () { window.open(s); };
                 var cell = row.insertCell(0);
-                cell.innerHTML = openlist + "<br/><br/>&nbsp&nbsp" +
-                    "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + phonenumber[1] + "'>Call " + phonenumber[1] + "</a>&nbsp&nbsp&nbsp&nbsp" +
-                    "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + a[8] + "'>Web Site</a><br/>&nbsp";
+                cell.innerHTML = openlist;
                 cell.style.border = "thin solid black";
-            } // for loop for each business
+            }
+            return;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        // FormatOneBusiness - formats one OpenHours object
+        //  Entry   Oh = one OpenHours object,  showall = true for all dates
+        //  Exit    returns html for a table entry
+        function FormatOneBusiness(Oh, mmdd, showall) {
+            var openlist = "<span style='font-weight:bold;font-size:18px'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </span><br/>"
+                + Oh.Desc + "; " + Oh.Addr + "<br/>";  // name of business
+            var mmdd7 = newDate(mmdd + 7);  // 7 days after
+
+            // loop through the Oh.Sc entries. Each entry is for 1 date range.
+            // We could hit multiple date ranges
+            var nr = 0; // number of ranges
+            for (var i = 0; i < Oh.Sc.length; i++) {
+                var t1 = (mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To);// debug
+                var t2 = ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)));// debug
+
+                if (showall || ((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
+                    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {  // if we are in range
+                    // print date range if there is > 1  (Oh.Sc.length>1)
+                    if (showall || (nr > 0)) openlist += "<strong>Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</strong><br/>";
+                    var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
+                    var H2 = Oh.Sc[i].H2; // 2nd hours
+                    nr = nr + 1;
+                    // loop through Sun - Sat
+                    for (var j = 0; j < 7; j++) {
+                        var opentimetoday;
+                        opentimetoday = H[j * 2]; // hhmm-hhmm open today
+                        if (opentimetoday > 0) {
+                            openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
+                            if (H2 != null) {
+                                if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
+                            }
+                            if (j < 6) openlist += ", ";
+                        }
+                    } // for loop for each day
+                    openlist += "<br/>";
+
+                }
+            } // end for  for 1 date range
+
+            // find any closed dates in this week range and list them
+            var closedlist = "";
+            if (Oh.Closed != null) {
+                for (var i = 0; i < Oh.Closed.length; i++) {
+                    if (showall || ((Oh.Closed[i] >= mmdd) && Oh.Closed[i] <= mmdd7))
+                        closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                }
+                if (closedlist != "") openlist += "Closed " + closedlist + "<br/>";
+            }
+            // buttons for call and web site
+            return openlist + "<br/>&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Href + "'>Web Site</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>Map</a><br/>&nbsp";
+
+        } // end of function
+
+
+        function ShowYRHours() {
+            ShowAllOpenHours = !ShowAllOpenHours;
+            ShowOpenHoursTable(ShowAllOpenHours);
+        }
+
+        ////////////////////////////////////////////////////////////////////////////
+        // newDate - returns the date as mmdd based on mmdd where dd could be > 28
+        function newDate(oldmmdd) {
+            if ((oldmmdd % 100) < 28) return oldmmdd; // if we didn't change month, just return
+            var d = new Date(2016, Math.floor(oldmmdd / 100) - 1, oldmmdd % 100); // calculate new month
+            return (d.getMonth() + 1) * 100 + d.getDate();
+        }
+        //////////////////////////////////////////////////////////////////////////////////
+        // formatDate - transforms mmdd into string: mm/dd
+        //  entry   integer date in mmdd form
+        //  exit    string: mm/dd
+        function formatDate(nmmdd) {
+            return Math.floor(nmmdd / 100).toFixed(0) + "/" + (nmmdd % 100).toFixed(0);
         }
 
 
-    </script>
 
+        ////    // read open hours from master source
+        ////    var openHours = localStorage.getItem("openhours") + localStorage.getItem("morehours");
+        ////    openHours = openHours.split("\n");
+
+        ////    // loop through the openHours array (each string entry is one business)
+        ////    var i;
+        ////    for (i = 0; i < openHours.length - 1; i++) {
+        ////        var a; a = openHours[i].split(",");  // parse it into an array
+        ////        openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>";  // name of business
+        ////        var phonenumber = a[0].split("(");
+        ////        phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
+        ////        // loop through Sun - Sat
+        ////        for (j = 0; j < 7; j++) {
+        ////            var opentimetoday, opentime, closetime;
+        ////            opentimetoday = a[j + 1]; // hhmm-hhmm open today
+        ////            if (opentimetoday != "") {
+        ////                opentime = opentimetoday.substring(0, 4); // open time hhmm
+        ////                closetime = opentimetoday.substring(5, 9); // close time hhmm
+        ////                openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "</nobr>";
+        ////                if (j < 6) openlist += ", ";
+        ////            }
+        ////        } // for loop for each day
+        ////        var row = table.insertRow(-1);
+        ////        var s = '' + a[8] + '';
+        ////        //if (a[8] != "") row.onclick = function () { window.open(s); };
+        ////        var cell = row.insertCell(0);
+        ////        cell.innerHTML = openlist + "<br/><br/>&nbsp&nbsp" +
+        ////            "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + phonenumber[1] + "'>Call " + phonenumber[1] + "</a>&nbsp&nbsp&nbsp&nbsp" +
+        ////            "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + a[8] + "'>Web Site</a><br/>&nbsp";
+        ////        cell.style.border = "thin solid black";
+        ////    } // for loop for each business
+        ////}
+
+
+    </script>
+    <!-- COMING EVENTS ---------------->
     <script>
         //========= COMING EVENTS ===========================================================================
 
@@ -1949,6 +2169,7 @@
 
     </script>
 
+    <!-- TIDES ------------------------>
     <script>
         //===== TIDES =======================================================================================
         var usertideselection = false; // true when user sets tides
@@ -2280,6 +2501,8 @@
         }
 
      </script>
+
+    <!-- EMERGENCY -------------------->
     <script>
         //====EMERGENCY=====================================================================================
 
@@ -2291,6 +2514,7 @@
         }
     </script>
 
+    <!-- WEATHER ---------------------->
     <script>
         //====WEATHER=====================================================================================
         // Weather
@@ -2368,7 +2592,7 @@
                     row1col1.colSpan = "6";
                     //row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
                     var dow = fdate.getDay();;
-                    row1col1.innerHTML = dayofweekshort[dow] + " " + fdate.getMonth() + "/" + newdate;
+                    row1col1.innerHTML = dayofweekshort[dow] + " " + (fdate.getMonth()+1) + "/" + newdate;
                     olddate = newdate;
                 }
                 var row1 = table.insertRow(-1);
@@ -2414,6 +2638,7 @@
 
     </script>
 
+    <!-- ABOUT ------------------------>
     <script>
         //====ABOUT=========================================================================================
 
@@ -2441,7 +2666,7 @@
         }
     </script>
 
-    <!-- actual javascript execution begins here:-->
+    <!-- MAIN ---------------------------------->
     <script type="text/javascript">
         //======================================================================================================
         /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2480,6 +2705,14 @@
 
         //  Show the cached data immediately. 
         ParseFerryTimes();  // moved saved data into ferry time arrays
+        if (localStorage.getItem("openhoursjson") != null) {
+            try {
+                OpenHours = JSON.parse(localStorage.getItem("openhoursjson"));  // parse it  
+            } catch (e) {
+                alert(e);
+                forceCacheReload = true;
+            }
+        } else forceCacheReload = true; 
         ShowCachedData();
 
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
