@@ -26,6 +26,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		minor formatting improvements and the on pause/on resume events.
 		In production on 4/16/16.  Pushbots works from getferryalerts.php.
 4/22/16. Version 1.3.16 submitted to apple app store as ver 1.3. profile AIADistributionPush.
+5/9/16. Version 1.5 to Web only. Tides graph.  Open Hours json structure with multiple date ranges.
+		Color coding for Events.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
