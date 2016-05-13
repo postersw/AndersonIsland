@@ -74,6 +74,7 @@ h1 {
     font-weight:normal;
     overflow:visible;
     padding:8px;
+    margin: 0px;
     text-align:center;
     background-color: blue;
     color:white;
