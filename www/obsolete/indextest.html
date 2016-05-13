@@ -6,9 +6,9 @@
 	ver 1.2: Web. add weather icons
 	ver 1.3.0414: Web add pushbots
     ver 1.3.0422: Android & IOS release. add pushbots.resetBadge
-    ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. Needs to be tested.
+    ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
                   Remove App Store message from non-mobile devices.
-    ver 1.5.0509: add OpenHours object
+    ver 1.5.0509: add OpenHours object (multiple date ranges and time ranges).  Fix weather month.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -66,35 +66,45 @@
             padding-bottom: 6px;
             padding-left: 6px;
         }
+        h1 {
+    font-size:18px; /*24px;*/
+    font-weight:normal;
+    overflow:visible;
+    padding:8px;
+    margin: 0px;
+    text-align:center;
+    background-color: blue;
+    color:white;
+}
     </style>
 
 
 </head>
-<body>
+<body style="margin:0;padding-top:0">
     <div class="app">
-        <div id="mainpage" style="display:block">
-        <div data-role="content"></div>
-        <h1 id="appheader" style="font-size:18px;margin:0px;padding:-2px;background-color:blue;color:white;">Anderson Island Assistant </h1>
-        <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px">Tap an entry for more information.</span>
+        <div id="mainpage"  style="display:block">
+        <h1 id="appheader">Anderson Island Assistant </h1>
+
+        <span id="topline" style="font-size:small;margin-top:0;margin-bottom:0px;margin-left:6px">Tap an entry for more information.</span>
 
         <!--App message-->
-        <div id='androidapp' style="display:none;background-color:gray;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
+        <div id='androidapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
             <strong>Tap for free Install from Google Play Store</strong><br />
         </div>
-       <div id='iphoneapp' style="display:none;background-color:gray;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');" >
+       <div id='iphoneapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');" >
             <strong>Tap for free Install from Apple App Store</strong><br />
         </div>
 
         <!--Alerts-->
         <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none">
-            <span style="font-size:18px;font-weight:bold;color:red;margin-left:0%">ALERT</span>
+            <span style="font-size:18px;font-weight:bold;color:red;margin-left:6px">ALERT</span>
             <span id='alerttext' style="font-size:small;font-weight:bold;color:red;">alert information goes here</span>
             <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
         </div>
 
  <table style="border-collapse:collapse";>
         <tr style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
-            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%">FERRY </td>
+            <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
             <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
         </tr>
 
@@ -106,13 +116,13 @@
         </tr>
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
-            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;margin-left:0%">
+            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px">
             TIDES </td>
             <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</td>
          </tr>
 
         <tr style="background-color:honeydew"  onclick="ShowWeatherPage();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkgreen;margin-left:0%">
+            <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px">
             WEATHER </td>
             <td style="font-size:small;margin-top:4px;margin-bottom:0px">
                 <span id="weather" >Current weather:</span><br />
@@ -122,75 +132,77 @@
          </tr>
 
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('events');">
-            <td style="font-size:18px;font-weight:bold;color:darkmagenta;">
+            <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
             EVENTS </td>
             <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Event:</td>
         </tr>
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('activity');">
-            <td style="font-size:18px;font-weight:bold;color:darkmagenta;">
+            <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
             ACTIVITY </td>
             <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</td>
         </tr>
 
      <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
-            <td style="font-size:18px;font-weight:bold;color:black;">OPEN<br /> HOURS</td>
+            <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px">OPEN<br /> HOURS</td>
              <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
             </td>
          </tr>
      
         <tr style="background-color:lightyellow"  onclick="ShowBurnBan();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkorange;margin-left:0%">
+            <td style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
             BURNBAN </td>
             <td id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
          </tr>
                 
         <tr style="background-color:#fff4b3;" onclick="window.open('http://www.tannerelectric.coop/andersonisland', '_blank' )">  
-            <td style="font-size:18px;font-weight:bold;color:#802b00">TANNER</td>
+            <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
         </tr>
         <tr style="background-color:white;" onclick="ShowNews()")>  
-            <td style="font-size:18px;font-weight:bold;color:black" colspan="2">
+            <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
              NEWS</td>
          </tr>
          <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">  
-            <td style="font-size:18px;font-weight:bold;color:darkred" colspan="2">
+            <td style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
              EMERGENCY CONTACTS</td>
          </tr>
 
           <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkblue;margin-left:0%" colspan="2">
+            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">
             MAP </td>  
          </tr>
          <tr style="background-color:lightgray;" onclick="ShowLinksPage();">
-             <td style="font-size:18px;font-weight:bold;margin-left:0%" colspan="2">ISLAND INFORMATION LINKS
+             <td style="font-size:18px;font-weight:bold;padding-left:6px" colspan="2">ISLAND INFORMATION LINKS
              </td>            
          </tr>
-         <tr> <td style="font-size:18px;font-weight:bold;color:black" colspan="2" onclick="ShowPage('helppage')">Help</tr>
-             <tr><td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2"> Notifications:
+         <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
+             <tr><td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="UpdateApp()">Update App</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2"> Notifications:
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
                 </td></tr>
 
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2">
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray" colspan="2" onclick="ShowAboutPage();">About</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             </table>
 
-            </div>
+    </div>
         
- <!-- FERRY ------------------------------------------------------------------------------------------>
-    <div id="ferryschedulepage" style="display:none">
 
-    <h1>
-        <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+<!------------------------------------------------------------------------------------------------------------------------------------------>
+ <!-- FERRY ------------------------------------------------------------------------------------------>
+   <div id="ferryschedulepage" style="display:none">
+
+    <h1 > <button class="buttonback" onclick="ShowMainPage()">&larr;BACK</button>
         Ferry Schedule
     </h1>
+    <div style="margin:10px">
         <button style="width:40%" onclick="ScheduleByDate();">Other Dates</button>
         <button style="width:40%" onclick="ShowFerry();">Web Site</button>
         <p> </p>
-        <table id='ferrytable' style="border:thin solid black;border-collapse:collapse">
+        <table id='ferrytable' style="border:thin solid black;border-collapse:collapse;padding-left:10px">
             <tr style="background-color:black;color:white">
                 <td>Steilacoom</td>
                 <td>| Anderson Island&nbsp</td>
@@ -200,6 +212,7 @@
         <hr />
         <p id="schdate"></p>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+      </div>
     </div>
 
  <!-- OPEN HOURS ------------------------------------------------------------------------------------------>
@@ -208,6 +221,7 @@
             <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Open Hours
         </h1>
+        <div style="margin:10px">
         <button onclick="ShowYRHours()">Show year-round hours</button>
         <br /><br />
         <table id='openhourstable' style="border:thin solid black;border-collapse:collapse">
@@ -217,10 +231,11 @@
         </table>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
         </div>
+   </div>
 
 <!-- COMING EVENTS ------------------------------------------------------------------------------------------>
 
-    <div id="comingeventspage" style="display:none">
+   <div id="comingeventspage" style="display:none">
         <h1 id="comingeventsH1" style="display:none">
             <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             COMING EVENTS
@@ -231,7 +246,7 @@
             COMING ACTIVITIES
             <button style="background-color:blue;color:white;float:right" onclick="ShowOtherCalendars();">MORE</button>
         </h1>
-         
+        <div style="margin:10px">
         <div id="othercalendars" style="display:none">
             <p>CALENDARS:<br />
             <button onclick="window.open('http://www.andersonislandcc.org/calendar/', '_blank');">Comm Club</button>
@@ -257,18 +272,20 @@
             </tr>
         </table>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
-    </div>
+        </div>
+   </div>
 <!--TIDES ------------------------------------------------------------------------------------------>
 
-    <div id="tidespage" style="display:none">
+   <div id="tidespage" style="display:none">
         <h1>
             <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Tides at Yoman Point <br />(ferry dock)
         </h1>
+        <div style="margin:10px">
         <p id="tidepagecurrent">Please wait for tide data .... </p>
         <canvas id="tidecanvas" width="300" height="300"></canvas>
         <hr />
-        <table id='tidestable' style="border:thin solid gray;border-collapse:collapse">
+        <table id='tidestable' style="border:thin solid gray;border-collapse:collapse;padding-left:10px">
             <tr style="background-color:blue;color:white">
                 <td>Date</td>
                 <td>| Time&nbsp</td>
@@ -281,32 +298,33 @@
         <button id="tideButton" onclick="ShowCustom();" hidden="hidden">Get Tides for other days</button>
         </p>
 
-     <p>These tide predictions are provided for 
-         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">station id 9446705 </a>  through Aeris. <br />
-         Current height calculated using sine wave.</p>
+     <p>These tide predictions are provided for station id 9446705 by Aeris Inc. <br />
+         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
+         Current height calculated using sine wave fitteed between high and low tides.</p>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
- 
-
     </div>
+  </div>
 
 <!--EMERGENCY ------------------------------------------------------------------------------------------>
 
-    <div id="emergencypage" style="display:none">
+  <div id="emergencypage" style="display:none">
         <h1><button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Emergency Contacts</h1>
+     <div style="margin:10px">
         <p>Tap a phone number to dial it.</p>
         <table id="emergencytable">
         </table>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
         </div>
+  </div>
 <!--WEATHER -------------------------------------------------------------------------------------------->
  <div id="weatherpage" style="display:none">
     <h1>
         <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         Anderson Island Weather
     </h1>
-
-        <p id="currentweatherpage">Current weather: </p>
+        <div style="margin:10px">
+        <p id="currentweatherpage", style="font-size:12pt; font-weight:bold">Current weather: </p>
         <p id="forecastpage">Please wait for the forecast.</p>
        <table id='forecasttable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white;">
@@ -322,6 +340,7 @@
         </p>
              <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
      </div>
+  </div>
 
 <!-- FERRY WEBCAMS ------------------------------------------------------------------------------------->
   <div id="ferrywebcampage" style="display:none">
@@ -329,6 +348,7 @@
           <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
           FERRY WEBCAMS
       </h1>
+        <div style="margin:10px">
         <strong>Steilacoom Camera </strong>- refreshes every minute<br>
         <br />
         <img id="steilacoomcam"  alt="Steilacoom Camera " src="icon.png"> 
@@ -336,10 +356,10 @@
         <strong>Anderson Island Camera </strong>- refreshes every minute<br /><br>
         <img id="aicam" src="icon.png"><br />
            <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
-
+        </div>
 </div>
  <!-- ABOUT ------------------------------------------------------------------------------------->
-  <div id="aboutpage" style="display:none">
+  <div id="aboutpage" style="display:none;padding-left:10px">
     <h1> 
       <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
       About
@@ -393,6 +413,7 @@
       <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
       Help
     </h1>
+    <div style="margin:10px">
     <p>The Anderson Island Assistant is a handy little mobile app that provides instant access 
         to a wealth of up-to-the-minute Anderson Island information.  
        </p>
@@ -508,12 +529,13 @@
     </tr>
 </table>
 </div>
+</div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
 
-         <p> Updates every minute.&nbsp  
+         <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">   AIA Ver: 1.5.0509.1700		</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0509.1700		</span>
 
 
         </p>
@@ -528,7 +550,7 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="indextest.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <!-- <script type="text/javascript" src="js/AIA.js"></script> Moved to index.js on 4/25/16 -->
 
     <script>
@@ -541,6 +563,9 @@
         var AppStartedTime; // time app started in sec
         var DisplayPage; // name of page being displayed
         var tabletoclear; // name of table to clear
+
+        var datesunrise; // sunrise date object
+        var datesunset; // sunset date object
 
         // ferry run times and flags. Heirarchy is:
         //  1. * overrides everything and means always.
@@ -555,20 +580,24 @@
         var ferrytimeK2 = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
         var ferrydate2 = 0;  // cutover time to ferrytimex2
 
-        // OpenHours object. Arra of openhours for the store hours.  This array is loaded by a JSON.parse
+        // OpenHours Array object. Array of openhours for the store hours.  This array is loaded by a JSON.parse
         //      of the OpenHoursJSON string in 'dailycache'
+        //  Properties: Name, Phone, Desc, Href: http..., Addr, Map: http for google maps, 
+        //      SC[ {From: mmdd, To: mmdd, H[sun open hhmm, sun close hhmm, mo, mc, to, tc, wo, wc, to, tc, fo, fc, so, sc], H2[same as h1] }... ],
+        //      Closed [mmdd, ...]
+        //      H and H2 are arrays of open and close times as hhmm, indexed by day of week*2.  H2 is optional.
+        //      
         var ShowAllOpenHours = false; // true to show all open hours
         var OpenHours = [];
-        OpenHours = [{  // single preload for testing. replaced at load time.
+        OpenHours = [{  // single preload for testing and if there is no connectivity
             Name: 'Store', Phone: '884-4001', Desc: 'Groceries, Deli, Hardware, Gas',
             Href: 'https://www.co.pierce.wa.us/index.aspx?NID=1541',
             Addr: '10202 Eckenstam Johnson Rd',
             Map: 'https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA',
-            Sc: [{ From: 101, To: 1231, H: [1000,1800,700,2000,700,2000,700,2000,700,2000,700,2100,800,2100] }
-            ],
+            Sc: [{ From: 101, To: 1231, H: [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] }],
             Closed: [1225]
-        }]
-       
+        }];
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // load web pages
         function ShowFerry() {
@@ -1055,12 +1084,14 @@
                     localStorage.setItem("currentweather", current);
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
-                    dsr = new Date(Number(r.sys.sunrise) * 1000);
-                    dss = new Date(Number(r.sys.sunset) * 1000);
+                    datesunrise = new Date(Number(r.sys.sunrise) * 1000);
+                    datesunset = new Date(Number(r.sys.sunset) * 1000);
+                    localStorage.setItem("sunrise", datesunrise.getTime()); // save
+                    localStorage.setItem("sunset", datesunset.getTime()); // save
                     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
                         r.main.humidity + "% RH, wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
                          ", " + rain + " in. rain, " +
-                        "<br/>Sunrise at " + dsr.toLocaleTimeString() + ", Sunset at " + dss.toLocaleTimeString();
+                        "<br/>Sunrise: " + datesunrise.toLocaleTimeString() + ", Sunset: " + datesunset.toLocaleTimeString();
 
                     localStorage.setItem("currentweatherlong", currentlong);
                 }
@@ -1268,7 +1299,7 @@
         //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
         function GetDailyCache() {
             // ajax async request
-            var myurl = FixURL("dailycachetest.txt"); //////////////////////////////////////////////////
+            var myurl = FixURL("dailycache.txt"); 
             $.ajax({
                 url: myurl, // for phone use fully qualified url http://anderson-island.org/
                 success: function (data) {
@@ -1683,17 +1714,14 @@
         //  Entry   Oh = one OpenHours object,  showall = true for all dates
         //  Exit    returns html for a table entry
         function FormatOneBusiness(Oh, mmdd, showall) {
-            var openlist = "<span style='font-weight:bold;font-size:18px'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </span><br/>"
-                + Oh.Desc + "; " + Oh.Addr + "<br/>";  // name of business
+            var openlist = "<span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </span><br/>"
+                + Oh.Desc + "<br/>" + Oh.Addr + "<br/>";  // name of business
             var mmdd7 = newDate(mmdd + 7);  // 7 days after
 
             // loop through the Oh.Sc entries. Each entry is for 1 date range.
             // We could hit multiple date ranges
             var nr = 0; // number of ranges
             for (var i = 0; i < Oh.Sc.length; i++) {
-                var t1 = (mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To);// debug
-                var t2 = ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)));// debug
-
                 if (showall || ((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
                     ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {  // if we are in range
                     // print date range if there is > 1  (Oh.Sc.length>1)
@@ -1710,6 +1738,7 @@
                             if (H2 != null) {
                                 if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                             }
+                            openlist += "</nobr>";
                             if (j < 6) openlist += ", ";
                         }
                     } // for loop for each day
@@ -1722,10 +1751,10 @@
             var closedlist = "";
             if (Oh.Closed != null) {
                 for (var i = 0; i < Oh.Closed.length; i++) {
-                    if (showall || ((Oh.Closed[i] >= mmdd) && Oh.Closed[i] <= mmdd7))
-                        closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                    if ((Oh.Closed[i] >= mmdd) && (Oh.Closed[i] <= mmdd7)) closedlist += "this " + dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                    else if(showall) closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
                 }
-                if (closedlist != "") openlist += "Closed " + closedlist + "<br/>";
+                if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
             }
             // buttons for call and web site
             return openlist + "<br/>&nbsp&nbsp" +
@@ -1756,7 +1785,21 @@
             return Math.floor(nmmdd / 100).toFixed(0) + "/" + (nmmdd % 100).toFixed(0);
         }
 
-
+        //////////////////////////////////////////////////////////////////////////
+        // parseOpenHours - parse the json structure in 'openhoursjson' and populate OpenHours
+        //  entry   local storage "openhoursjson"
+        //  exit    OpenHours object array is set
+        function ParseOpenHours() {
+            var s = localStorage.getItem("openhoursjson");
+            if (s != null) {
+                try {
+                    OpenHours = JSON.parse(s);  // parse it  
+                } catch (e) {
+                    alert(e);
+                    forceCacheReload = true;
+                }
+            } else forceCacheReload = true;
+        }
 
         ////    // read open hours from master source
         ////    var openHours = localStorage.getItem("openhours") + localStorage.getItem("morehours");
@@ -2314,8 +2357,17 @@
             var x0 = 0; // x offset to 0
 
             // draw background
-            ctx.fillStyle = "#B0E2FF";
+            ctx.fillStyle = "#A0D2FF";
             ctx.fillRect(0, 0, w, h);
+            // do sunnrise lighter
+            var sunrisefp = datesunrise.getHours() + datesunrise.getMinutes() / 60; // convert to floating pt
+            var sunsetfp = datesunset.getHours() + datesunset.getMinutes() / 60;
+            // from 0 to 24
+            ctx.fillStyle = "#B0E2FF"; //"#B8EAFF"; //"#C0F2FF";  // snrise times
+            if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
+            else ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - tLB) * pixelshour, h);
+            // from 24 to 48
+            ctx.fillRect((sunrisefp - tLB+24) * pixelshour, 0, (sunsetfp - tLB+24) * pixelshour, h);
 
             // draw y axis (tide feet)
             ctx.beginPath();
@@ -2678,6 +2730,8 @@
 		//alert("started");
         DisplayPage = "mainpage";
         InitializeDates(0);
+        datesunrise = new Date(Number(localStorage.getItem("sunrise"))); // reload sunrise and sunset
+        datesunset = new Date(Number(localStorage.getItem("sunset"))); // reload sunrise and sunset
         AppStartedTime = timestampms;
         AppStartedDate = monthday * 10000 + timehhmm;
         LastUpdatems = timestampms;
@@ -2705,14 +2759,8 @@
 
         //  Show the cached data immediately. 
         ParseFerryTimes();  // moved saved data into ferry time arrays
-        if (localStorage.getItem("openhoursjson") != null) {
-            try {
-                OpenHours = JSON.parse(localStorage.getItem("openhoursjson"));  // parse it  
-            } catch (e) {
-                alert(e);
-                forceCacheReload = true;
-            }
-        } else forceCacheReload = true; 
+        ParseOpenHours();
+
         ShowCachedData();
 
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.

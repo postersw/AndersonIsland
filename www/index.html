@@ -66,6 +66,16 @@
             padding-bottom: 6px;
             padding-left: 6px;
         }
+        h1 {
+    font-size:18px; /*24px;*/
+    font-weight:normal;
+    overflow:visible;
+    padding:8px;
+    margin: 0px;
+    text-align:center;
+    background-color: blue;
+    color:white;
+}
     </style>
 
 
@@ -74,14 +84,14 @@
     <div class="app">
         <div id="mainpage"  style="display:block">
         <h1 id="appheader">Anderson Island Assistant </h1>
-  "
-        <span id="topline" style="font-size:small;padding-top:-4px;margin-bottom:0px;margin-left:6px">Tap an entry for more information.</span>
+
+        <span id="topline" style="font-size:small;margin-top:0;margin-bottom:0px;margin-left:6px">Tap an entry for more information.</span>
 
         <!--App message-->
-        <div id='androidapp' style="display:none;background-color:gray;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
+        <div id='androidapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
             <strong>Tap for free Install from Google Play Store</strong><br />
         </div>
-       <div id='iphoneapp' style="display:none;background-color:gray;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');" >
+       <div id='iphoneapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');" >
             <strong>Tap for free Install from Apple App Store</strong><br />
         </div>
 
@@ -314,7 +324,7 @@
         Anderson Island Weather
     </h1>
         <div style="margin:10px">
-        <p id="currentweatherpage">Current weather: </p>
+        <p id="currentweatherpage", style="font-size:12pt; font-weight:bold">Current weather: </p>
         <p id="forecastpage">Please wait for the forecast.</p>
        <table id='forecasttable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white;">
@@ -553,6 +563,9 @@
         var AppStartedTime; // time app started in sec
         var DisplayPage; // name of page being displayed
         var tabletoclear; // name of table to clear
+
+        var datesunrise; // sunrise date object
+        var datesunset; // sunset date object
 
         // ferry run times and flags. Heirarchy is:
         //  1. * overrides everything and means always.
@@ -1071,12 +1084,14 @@
                     localStorage.setItem("currentweather", current);
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
-                    dsr = new Date(Number(r.sys.sunrise) * 1000);
-                    dss = new Date(Number(r.sys.sunset) * 1000);
+                    datesunrise = new Date(Number(r.sys.sunrise) * 1000);
+                    datesunset = new Date(Number(r.sys.sunset) * 1000);
+                    localStorage.setItem("sunrise", datesunrise.getTime()); // save
+                    localStorage.setItem("sunset", datesunset.getTime()); // save
                     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
                         r.main.humidity + "% RH, wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
                          ", " + rain + " in. rain, " +
-                        "<br/>Sunrise at " + dsr.toLocaleTimeString() + ", Sunset at " + dss.toLocaleTimeString();
+                        "<br/>Sunrise: " + datesunrise.toLocaleTimeString() + ", Sunset: " + datesunset.toLocaleTimeString();
 
                     localStorage.setItem("currentweatherlong", currentlong);
                 }
@@ -1700,7 +1715,7 @@
         //  Exit    returns html for a table entry
         function FormatOneBusiness(Oh, mmdd, showall) {
             var openlist = "<span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </span><br/>"
-                + Oh.Desc + "; " + Oh.Addr + "<br/>";  // name of business
+                + Oh.Desc + "<br/>" + Oh.Addr + "<br/>";  // name of business
             var mmdd7 = newDate(mmdd + 7);  // 7 days after
 
             // loop through the Oh.Sc entries. Each entry is for 1 date range.
@@ -1723,6 +1738,7 @@
                             if (H2 != null) {
                                 if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                             }
+                            openlist += "</nobr>";
                             if (j < 6) openlist += ", ";
                         }
                     } // for loop for each day
@@ -1735,10 +1751,10 @@
             var closedlist = "";
             if (Oh.Closed != null) {
                 for (var i = 0; i < Oh.Closed.length; i++) {
-                    if (showall || ((Oh.Closed[i] >= mmdd) && Oh.Closed[i] <= mmdd7))
-                        closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                    if ((Oh.Closed[i] >= mmdd) && (Oh.Closed[i] <= mmdd7)) closedlist += "this " + dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                    else if(showall) closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
                 }
-                if (closedlist != "") openlist += "Closed " + closedlist + "<br/>";
+                if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
             }
             // buttons for call and web site
             return openlist + "<br/>&nbsp&nbsp" +
@@ -2341,8 +2357,17 @@
             var x0 = 0; // x offset to 0
 
             // draw background
-            ctx.fillStyle = "#B0E2FF";
+            ctx.fillStyle = "#A0D2FF";
             ctx.fillRect(0, 0, w, h);
+            // do sunnrise lighter
+            var sunrisefp = datesunrise.getHours() + datesunrise.getMinutes() / 60; // convert to floating pt
+            var sunsetfp = datesunset.getHours() + datesunset.getMinutes() / 60;
+            // from 0 to 24
+            ctx.fillStyle = "#B0E2FF"; //"#B8EAFF"; //"#C0F2FF";  // snrise times
+            if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
+            else ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - tLB) * pixelshour, h);
+            // from 24 to 48
+            ctx.fillRect((sunrisefp - tLB+24) * pixelshour, 0, (sunsetfp - tLB+24) * pixelshour, h);
 
             // draw y axis (tide feet)
             ctx.beginPath();
@@ -2705,6 +2730,8 @@
 		//alert("started");
         DisplayPage = "mainpage";
         InitializeDates(0);
+        datesunrise = new Date(Number(localStorage.getItem("sunrise"))); // reload sunrise and sunset
+        datesunset = new Date(Number(localStorage.getItem("sunset"))); // reload sunrise and sunset
         AppStartedTime = timestampms;
         AppStartedDate = monthday * 10000 + timehhmm;
         LastUpdatems = timestampms;
