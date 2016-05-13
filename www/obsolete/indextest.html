@@ -259,9 +259,9 @@
        <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
        <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
         <p></p>
+        Tap an item for more information.<br />
         <div id="showevents" style="display:none">
             Items on this page occur once/month or less. <br />
-            Tap an item for more information.<br />
             <strong>SHOW: </strong><span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
             <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
             <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
@@ -536,7 +536,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0513.0923		</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0513.1803		</span>
 
 
         </p>
@@ -1945,16 +1945,9 @@
             row.style.backgroundColor = "lightblue";
             row.style.fontWeight = "bold";
             col = row.insertCell(0); col.innerHTML = "Day";
-            //col = row.insertCell(1); col.innerHTML = "";
             col = row.insertCell(1); col.innerHTML = "Time";
-            //col = row.insertCell(3); col.innerHTML = "";
-            //col = row.insertCell(4); col.innerHTML = "";
             col = row.insertCell(2); col.innerHTML = "Event";
             col = row.insertCell(3); col.innerHTML = "Location";
-            //col = row.insertCell(4);
-            //col.style = "display:none";
-            //col = row.insertCell(7); col.innerHTML = "Sponsor";
-            //col = row.insertCell(8); col.innerHTML = "More...";
             // calculate end month day. 6 for events, 1 for activities.
             var endmmdd;
             if (localStorage.getItem("eventtype") == "events") endmmdd = (month + 6) * 100 + dayofmonth;
@@ -2005,27 +1998,20 @@
                 color = eventcolor(aCE[3]);
                 col2.style.color = color;
                 col.style.color = color;
-                // hidden cell with sponsor & more
-                //col = row.insertCell(4);
-                //col.style.display = "none";
-                //col.style = "visibility:hidden";
-                //var t = "alert('";
-                //if (aCE.length >= 7) t = aCE[6]; // sponsor
-                //if (aCE.length >= 8) t = t + " " + aCE[7];
-                //col.innerHTML = t;
                 row.id = aCE[0] + aCE[1];
                 row.onclick = function () { tabletext (this.id)}
-                //else col.innerHTML = ""; // more
                 lastweek = iweek;
                 previouseventdate = aCE[0];
             } // end loop through CE
         }
 
+
         ///////////////////////////////////////////
-        //  tabletext - display all details for the row or item that was clicked.
-        //  tc = date (mmdd) time (hhmm) as a string. mmdd9999 to match all times on mmdd. mmddhh99 to match all minutes
+        //  tabletext - display all details for the row or item that was clicked. Works for list, week, and month views.
+        //  tc = cell id: date (mmdd) time (hhmm) as a string. mmdd9999 to match all times on mmdd. mmddhh99 to match all minutes
+        //  The date and time are used to look up the entry in the CE array.
         function tabletext(tc) {
-            alert(tc);
+            //alert(tc);
             var d = tc.substr(0, 4);  // mmdd part of id
             var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
             var as = "";
