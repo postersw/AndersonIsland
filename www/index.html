@@ -178,7 +178,7 @@
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
              <tr><td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px;display:none" colspan="2"> Notifications:
+            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px;" colspan="2"> Notifications:
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
                 </td></tr>
@@ -280,7 +280,7 @@
    <div id="tidespage" style="display:none">
         <h1>
             <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
-            Tides at Yoman Point <br />(ferry dock)
+            Tides at Yoman Point (ferry)
         </h1>
         <div style="margin:10px">
         <p id="tidepagecurrent">Please wait for tide data .... </p>
@@ -2194,7 +2194,7 @@
             var periods = JSON.parse(localStorage.getItem("jsontides"));
             var i = ShowTideDataPage(periods, true);
             GraphTideData(periods[i - 1].heightFT, periods[i].heightFT, periods[i+1].heightFT, 
-                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO);
+                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO, true);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2291,6 +2291,7 @@
                 row1col1.style.border = "thin solid gray";
             }
             // now save the current tide
+            if (!showcurrent) currentTide = "<span>";
             document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
             $("#tideButton").show();
 
@@ -2300,9 +2301,9 @@
         /////////////////////////////////////////////////////////////////////////
         //  GraphTideData
         //  Entry: tide1t, tide2t, tide3t = 3 tide points in feet, text (HLH or LHL)
-        //         t1, t2, t3 = corresponding times in dateTimeISO text format
+        //         t1, t2, t3 = corresponding times in dateTimeISO text format: 2016-05-15T19:55:00-07:00
         //         NOTE: current tide must be between t1 and t2
-        function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t) {
+        function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
             var canvas = document.getElementById("tidecanvas");
             var axes = {}, ctx = canvas.getContext("2d");
             var w = canvas.width; var h = canvas.height;
@@ -2396,26 +2397,27 @@
             ctx.stroke();
 
             // draw vertical now for current time
-            ctx.strokeStyle = "#ff0000";
-            var now = (timehh + timemm/60);
-            if (now < tLB) now += 24;
-            now = (now-tLB) * pixelshour;
-            ctx.beginPath();
-            ctx.moveTo(now, 14); ctx.lineTo(now, h);
-            ctx.stroke();
-            // calculate and display current value
-            var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
-            tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
-            ctx.fillStyle = "#ff0000";
-            ctx.font = "16px Arial";
-            ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now - pixelshour, 14);
+            if (showtoday) {
+                ctx.strokeStyle = "#ff0000";
+                var now = (timehh + timemm / 60);
+                if (now < tLB) now += 24;
+                now = (now - tLB) * pixelshour;
+                ctx.beginPath();
+                ctx.moveTo(now, 14); ctx.lineTo(now, h);
+                ctx.stroke();
+                // calculate and display current value
+                var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
+                tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
+                ctx.fillStyle = "#ff0000";
+                ctx.font = "16px Arial";
+                ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now - pixelshour, 14);
+            }
 
-            // label the date tLB  = time for today. tUB = time for end.
-            var mmdd = monthday;
-            if (tUB > 25) mmdd = Bumpmmdd(mmdd, 1);  // if we roll to the next day
+            // label the date using the date for tide2 
+            //var mmdd = monthday;
+            //if (tUB > 25) mmdd = Bumpmmdd(mmdd, 1);  // if we roll to the next day
             ctx.fillStyle = "#0000ff";
-            ctx.textAlign = "right";
-            ctx.fillText(formatDate(mmdd), w-4, 14);
+            ctx.fillText(t2t.substring(5,10), w*0.7, 14);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2513,6 +2515,8 @@
 
                     if (json.success == true) {
                         ShowTideDataPage(json.response.periods, false);
+                        GraphTideData(json.response.periods[0].heightFT, json.response.periods[1].heightFT, json.response.periods[2].heightFT,
+    json.response.periods[0].dateTimeISO, json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO, false);
                     }
                     else {
                         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
@@ -2728,12 +2732,11 @@
 			}
         }
 
-		//  pushbots - show the notify switch
+		//  pushbots - set the notify switch. hide it for web.
         if (isPhoneGap()) {
-            document.getElementById("notifyswitch").setAttribute('style', 'display:block;');
 		    if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
 		    else NotifyColor(0);
-        } 
+        } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
         //  Show the cached data immediately. 
         ParseFerryTimes();  // moved saved data into ferry time arrays

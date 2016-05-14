@@ -178,7 +178,7 @@
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
              <tr><td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2"> Notifications:
+            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px;display:none" colspan="2"> Notifications:
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
                 </td></tr>
@@ -536,7 +536,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0513.1803		</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0514.0000		</span>
 
 
         </p>
@@ -2291,6 +2291,7 @@
                 row1col1.style.border = "thin solid gray";
             }
             // now save the current tide
+            if (!showcurrent) currentTide = "<span>";
             document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
             $("#tideButton").show();
 
@@ -2513,6 +2514,8 @@
 
                     if (json.success == true) {
                         ShowTideDataPage(json.response.periods, false);
+                        GraphTideData(json.response.periods[0].heightFT, json.response.periods[1].heightFT, json.response.periods[2].heightFT,
+    json.response.periods[0].dateTimeISO, json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO);
                     }
                     else {
                         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
@@ -2728,11 +2731,12 @@
 			}
         }
 
-		//  pushbots
-        if(isPhoneGap() ) { 
+		//  pushbots - show the notify switch
+        if (isPhoneGap()) {
+            document.getElementById("notifyswitch").setAttribute('style', 'display:block;');
 		    if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
 		    else NotifyColor(0);
-        }
+        } 
 
         //  Show the cached data immediately. 
         ParseFerryTimes();  // moved saved data into ferry time arrays
