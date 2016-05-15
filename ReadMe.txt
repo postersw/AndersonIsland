@@ -28,6 +28,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 4/22/16. Version 1.3.16 submitted to apple app store as ver 1.3. profile AIADistributionPush.
 5/9/16. Version 1.5 to Web only. Tides graph.  Open Hours json structure with multiple date ranges.
 		Color coding for Events.
+5/15/16. Version 1.5.0515 for web. local jquery library. Color coding for activities. Tide graph supports other dates.
+		formatting improvements. 
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
