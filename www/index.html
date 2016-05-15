@@ -292,6 +292,7 @@
                 <td>| Time&nbsp</td>
                 <td>| Type&nbsp</td>
                 <td>| Feet&nbsp</td>
+                <td>| Range&nbsp</td>
             </tr>
         </table>
         <hr />
@@ -300,6 +301,7 @@
         </p>
 
      <p>These tide predictions are provided for station id 9446705 by Aeris Inc. <br />
+         'Range' is the total difference between a high or low tide and the NEXT low or high tide.<br />
          <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
          Current height calculated using sine wave fitteed between high and low tides.</p>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
@@ -2255,9 +2257,9 @@
                 if (showcurrent) {
                     if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                         row1.style.color = "gray";
-                        currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
-                        if (periods[i].type == 'h') currentTide += "Outgoing since ";  // incoming outgoing flag
-                        else currentTide += "Incoming since ";
+                        //currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
+                        if (periods[i].type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
+                        else currentTide = "Incoming since: ";
                         currentTide += ShortTime(tidehhmm) + " (for " + timeDiff(tidehhmm, timehhmm) + ")";
                         oldtideheight = Number(periods[i].heightFT);
                         oldtidetime = tidehhmm;
@@ -2269,15 +2271,21 @@
                         oldtide = 1;
                         nexttidei = i;
                         // calculate current tide height
-                        var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                        currentTide += "<br/>Now: " + tideheight.toFixed(1) + " ft.";
-                        // calculate time till next tide                                 
-                        currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
-                        nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                        if (showcurrent) {
+                            var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
+                            currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
+                                "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(monthday) +
+                                "<span onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date... ]</span><br/>" + currentTide;
+                            // calculate time till next tide                                 
+                            currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                            nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                        }
                     } else if (oldtide == 1) {  // save next tide
                         oldtide = 2;
-                        nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
-                        localStorage.setItem("nextTides", nextTides); // save tide
+                        if (showcurrent) {
+                            nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                            localStorage.setItem("nextTides", nextTides); // save tide
+                        }
                     }
                 }
 
@@ -2289,9 +2297,17 @@
                 row1col1 = row1.insertCell(3);
                 row1col1.innerHTML = periods[i].heightFT;
                 row1col1.style.border = "thin solid gray";
+                //// range ()
+                if (i < periods.length-1) {
+                    row1col1 = row1.insertCell(-1);
+                    row1col1.innerHTML = "<span style='color:#bfbfbf'>" + Math.abs(periods[i].heightFT - periods[i + 1].heightFT).toFixed(1) + "</span>";
+                    row1col1.style.border = "thin solid gray";
+                }
             }
             // now save the current tide
-            if (!showcurrent) currentTide = "<span>";
+            if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
+                periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
+                "<span onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date ]";
             document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
             $("#tideButton").show();
 
@@ -2417,7 +2433,7 @@
             //var mmdd = monthday;
             //if (tUB > 25) mmdd = Bumpmmdd(mmdd, 1);  // if we roll to the next day
             ctx.fillStyle = "#0000ff";
-            ctx.fillText(t2t.substring(5,10), w*0.7, 14);
+            ctx.fillText(t2t.substring(5,7) + "/" + t2t.substring(8,10), w*0.7, 14);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2515,8 +2531,8 @@
 
                     if (json.success == true) {
                         ShowTideDataPage(json.response.periods, false);
-                        GraphTideData(json.response.periods[0].heightFT, json.response.periods[1].heightFT, json.response.periods[2].heightFT,
-    json.response.periods[0].dateTimeISO, json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO, false);
+                        GraphTideData(json.response.periods[1].heightFT, json.response.periods[2].heightFT, json.response.periods[3].heightFT,
+    json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO, json.response.periods[3].dateTimeISO, false);
                     }
                     else {
                         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
