@@ -61,7 +61,7 @@ var app = {
 /////////////////////////  DATE ///////////////////////////////////////////////////////////////////////
 // global date variables
 var table; // the schedule table as a DOM object
-var d; // date object
+var Gd; // date object
 var timestampms; // unix ms since 1970
 var dayofweek;  // day of week in 0-6
 var letterofweek; // letter for day of week
@@ -104,23 +104,23 @@ function IsHoliday(md) {
 //          mm/dd/yyyy for an arbitrary date
 // sets the date globals above
 function InitializeDates(dateincr) {
-    if (dateincr == 0) d = new Date();
+    if (dateincr == 0) Gd = new Date();
     else if (dateincr == 1) {
-        d.setDate(d.getDate() + 1); // bump by 1
-        d.setHours(0); d.setMinutes(0); d.setSeconds(0);
+        Gd.setDate(Gd.getDate() + 1); // bump by 1
+        Gd.setHours(0); Gd.setMinutes(0); Gd.setSeconds(0);
     } else {
-        d = new Date(dateincr);
+        Gd = new Date(dateincr);
     }
-    timestampms = d.getTime(); // milisec since 1970
-    dayofweek = d.getDay();  // day of week in 0-6
+    timestampms = Gd.getTime(); // milisec since 1970
+    dayofweek = Gd.getDay();  // day of week in 0-6
     letterofweek = "0123456".charAt(dayofweek); // letter for day of week
-    timehh = d.getHours();
-    timemm = d.getMinutes();
+    timehh = Gd.getHours();
+    timemm = Gd.getMinutes();
     timehhmm = timehh * 100 + timemm;  // hhmm in 24 hour format
-    month = d.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
-    dayofmonth = d.getDate(); // day of month 1-31
+    month = Gd.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
+    dayofmonth = Gd.getDate(); // day of month 1-31
     monthday = month * 100 + dayofmonth;
-    year = d.getFullYear();
+    year = Gd.getFullYear();
     // build holidays once only
     if (dateincr == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
@@ -318,23 +318,5 @@ function CalculateCurrentTideHeight(t2, t1, tide2, tide1) {
     tide = ((tide2 + tide1) / 2) + ((tide2 - tide1) / 2) * c;
     return tide;
 }
-// Calculate current tide height using the rule of 12s (tide rise in hour: 1/12, 2/12, 3/12, 3/12, 2/12, 1/12
-//function CalculateCurrentTideHeightxx(newtidetime, oldtidetime, newtideheight, oldtideheight) {
-//    var tideheight;
-//    var timedelta; timedelta = RawTimeDiff(oldtidetime, newtidetime);
-//    var tidedelta, tideheight;
-//    var tidedelta = newtideheight - oldtideheight; // new tide - old tide; + for rising; - for falling
-//    var currenttimedelta; currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
-//    var timedelta6; timedelta6 = timedelta / 6; //minutes in current tide pseudo hour a little over 60. newtidetime - oldtidetime / 60.
-//    var tidedelta12; tidedelta12 = tidedelta / 12;
-//    var currenttimeremainder; currenttimeremainder = (currenttimedelta % timedelta6) / timedelta6; // faction of current pseudo hour
-//    // this code adds the tidedelta to the old tide in the ratio of :1/12, 2/12, 3/12, 3/12, 2/12, 1/12 . 
-//    if (currenttimedelta <= timedelta6) tideheight = oldtideheight + (tidedelta12 * currenttimeremainder);
-//    else if (currenttimedelta <= timedelta6 * 2) tideheight = oldtideheight + tidedelta12 + (tidedelta12 * 2 * currenttimeremainder);
-//    else if (currenttimedelta <= timedelta6 * 3) tideheight = oldtideheight + tidedelta12 * 3 + (tidedelta12 * 3 * currenttimeremainder);
-//    else if (currenttimedelta <= timedelta6 * 4) tideheight = oldtideheight + tidedelta12 * 6 + (tidedelta12 * 3 * currenttimeremainder);
-//    else if (currenttimedelta <= timedelta6 * 5) tideheight = oldtideheight + tidedelta12 * 9 + (tidedelta12 * 2 * currenttimeremainder);
-//    else tideheight = oldtideheight + tidedelta12 * 11 + (tidedelta12 * currenttimeremainder);
-//    return tideheight;
-//}
+
 
