@@ -96,13 +96,13 @@
         </div>
 
         <!--Alerts-->
-        <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none">
-            <span style="font-size:18px;font-weight:bold;color:red;margin-left:6px">ALERT</span>
+        <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none;padding-left: 6px">
+            <span style="font-size:18px;font-weight:bold;color:red;padding-left: 6px;">ALERT</span>
             <span id='alerttext' style="font-size:small;font-weight:bold;color:red;">alert information goes here</span>
             <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
         </div>
 
- <table style="margin:0;padding:0;border-collapse:collapse";>
+ <table align="center" style="width:100%;padding:0;border-collapse:collapse";>
         <tr style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
             <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
             <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
@@ -178,7 +178,7 @@
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
              <tr><td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px;display:none" colspan="2"> Notifications:
+            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px;" colspan="2"> Notifications:
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
                 </td></tr>
@@ -280,7 +280,7 @@
    <div id="tidespage" style="display:none">
         <h1>
             <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
-            Tides at Yoman Point <br />(ferry dock)
+            Tides at Yoman Point (ferry)
         </h1>
         <div style="margin:10px">
         <p id="tidepagecurrent">Please wait for tide data .... </p>
@@ -292,6 +292,7 @@
                 <td>| Time&nbsp</td>
                 <td>| Type&nbsp</td>
                 <td>| Feet&nbsp</td>
+                <td>| Range&nbsp</td>
             </tr>
         </table>
         <hr />
@@ -300,8 +301,9 @@
         </p>
 
      <p>These tide predictions are provided for station id 9446705 by Aeris Inc. <br />
-         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
-         Current height calculated using sine wave fitteed between high and low tides.</p>
+         'Range' is the total difference between a high or low tide and the NEXT low or high tide.<br />
+         Current height calculated using sine wave fitted between high and low tides.</p>
+        <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
     </div>
   </div>
@@ -536,7 +538,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0514.0000		</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0515.0900		</span>
 
 
         </p>
@@ -1489,7 +1491,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loads the next ferry times into the global 'table' as a row for each run. 
         // ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
-        function BuildFerrySchedule(ferrytimesS, ferrytimesA, ferrytimesK) {
+        function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             var i;
             var ft;
             // roll through the ferry times, skipping runs that are not valid for today
@@ -1543,6 +1545,7 @@
         // DisplayFerrySchedule displays the grid
         //  entry date = "" for today, else mm/dd
         function DisplayFerrySchedule(userdate) {
+            var row1, row1col1;
             if (userdate == "") InitializeDates(0);
             else InitializeDates(userdate);
 
@@ -1564,8 +1567,8 @@
             row1col1 = row1.insertCell(2);
             row1col1.style.backgroundColor = "blue";
 
-            if (UseFerryTime1()) BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-            else BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
+            if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
+            else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
             // build next 6 days
             timehhmm = 0;  // ignore current time
             var i;
@@ -1583,8 +1586,8 @@
                 row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
                 row1col1 = row1.insertCell(2);
                 row1col1.style.backgroundColor = "blue";
-                if (UseFerryTime1()) BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-                else BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
+                if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
+                else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
             }
             InitializeDates(0);  // reset dates back
             //alert("build ferry sch done");
@@ -1618,6 +1621,7 @@
         //  Entry showall = true to show all dates, false to only show hours for current dates
 
         function ShowOpenHoursTable(showall) {
+            var table;
             table = document.getElementById("openhourstable");
             tabletoclear = "openhourstable";
             clearTable(table);
@@ -1627,7 +1631,7 @@
             var i;
             for (i = 0; i < OpenHours.length; i++) {
                 var Oh = OpenHours[i];  // entry for 1 business
-                openlist = FormatOneBusiness(Oh, monthday, showall);
+                var openlist = FormatOneBusiness(Oh, monthday, showall);
                 var row = table.insertRow(-1);
                 var cell = row.insertCell(0);
                 cell.innerHTML = openlist;
@@ -1650,7 +1654,7 @@
         function FormatOneBusiness(Oh, mmdd, showall) {
             var openlist = "<span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </span><br/>";
             if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
-            var mmdd7 = newDate(mmdd + 7);  // 7 days after
+            var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
             // loop through the Oh.Sc entries. Each entry is for 1 date range.
             // We could hit multiple date ranges
@@ -1705,13 +1709,6 @@
             ShowOpenHoursTable(ShowAllOpenHours);
         }
 
-        ////////////////////////////////////////////////////////////////////////////
-        // newDate - returns the date as mmdd based on mmdd where dd could be > 28
-        function newDate(oldmmdd) {
-            if ((oldmmdd % 100) < 28) return oldmmdd; // if we didn't change month, just return
-            var d = new Date(2016, Math.floor(oldmmdd / 100) - 1, oldmmdd % 100); // calculate new month
-            return (d.getMonth() + 1) * 100 + d.getDate();
-        }
         //////////////////////////////////////////////////////////////////////////////////
         // formatDate - transforms mmdd into string: mm/dd
         //  entry   integer date in mmdd form
@@ -1736,38 +1733,6 @@
             } else forceCacheReload = true;
         }
 
-        ////    // read open hours from master source
-        ////    var openHours = localStorage.getItem("openhours") + localStorage.getItem("morehours");
-        ////    openHours = openHours.split("\n");
-
-        ////    // loop through the openHours array (each string entry is one business)
-        ////    var i;
-        ////    for (i = 0; i < openHours.length - 1; i++) {
-        ////        var a; a = openHours[i].split(",");  // parse it into an array
-        ////        openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>";  // name of business
-        ////        var phonenumber = a[0].split("(");
-        ////        phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
-        ////        // loop through Sun - Sat
-        ////        for (j = 0; j < 7; j++) {
-        ////            var opentimetoday, opentime, closetime;
-        ////            opentimetoday = a[j + 1]; // hhmm-hhmm open today
-        ////            if (opentimetoday != "") {
-        ////                opentime = opentimetoday.substring(0, 4); // open time hhmm
-        ////                closetime = opentimetoday.substring(5, 9); // close time hhmm
-        ////                openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "</nobr>";
-        ////                if (j < 6) openlist += ", ";
-        ////            }
-        ////        } // for loop for each day
-        ////        var row = table.insertRow(-1);
-        ////        var s = '' + a[8] + '';
-        ////        //if (a[8] != "") row.onclick = function () { window.open(s); };
-        ////        var cell = row.insertCell(0);
-        ////        cell.innerHTML = openlist + "<br/><br/>&nbsp&nbsp" +
-        ////            "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + phonenumber[1] + "'>Call " + phonenumber[1] + "</a>&nbsp&nbsp&nbsp&nbsp" +
-        ////            "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + a[8] + "'>Web Site</a><br/>&nbsp";
-        ////        cell.style.border = "thin solid black";
-        ////    } // for loop for each business
-        ////}
 
 
     </script>
@@ -1994,13 +1959,12 @@
                 row.style.backgroundColor = "lightblue";
                 row.style.fontWeight = "bold";
 
-                var dd = mmdd % 100;
                 col = row.insertCell(0); col.innerHTML = ""; col.style.width = "5%"; //
                 for (i = 0; i < 7; i++) {
                     col = row.insertCell(-1);
-                    col.innerHTML = dayofweekshort[i] + "<br/>" + dd.toFixed(0);
+                    col.innerHTML = dayofweekshort[i] + "<br/>" + (mmdd % 100).toFixed(0);
                     col.style.width = "13%"// 
-                    mmdd = Bumpmmdd(mmdd, 1); var dd = mmdd % 100;
+                    mmdd = Bumpmmdd(mmdd, 1); 
                 }
 
 
@@ -2026,7 +1990,7 @@
                         col.innerHTML = "";
                         if (mmdd == monthday) col.style.backgroundColor = "yellow";  // make today yellow
                         col.style.border = "thin solid lightblue";
-                        mmdd = Bumpmmdd(mmdd, 1); var dd = mmdd % 100;
+                        mmdd = Bumpmmdd(mmdd, 1); 
                     }
                 }
 
@@ -2051,6 +2015,7 @@
             return;
         } // end function
 
+        // Leading4 - returns number n (999 - 9999) as a 4 digit string
         function Leading4(n) {
             var s = n.toFixed();
             if (s.len == 4) return s;
@@ -2194,7 +2159,7 @@
             var periods = JSON.parse(localStorage.getItem("jsontides"));
             var i = ShowTideDataPage(periods, true);
             GraphTideData(periods[i - 1].heightFT, periods[i].heightFT, periods[i+1].heightFT, 
-                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO);
+                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO, true);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2209,11 +2174,12 @@
             var table = document.getElementById("tidestable");
             tabletoclear = "tidestable";
             clearTable(table);
-            olddate = periods[0].dateTimeISO.substring(5, 10);
+            var olddate = periods[0].dateTimeISO.substring(5, 10);
             var oldtide = -1;
             var i;
             var nexttidei;
             var currentTide;
+            var newdate;
 
             // roll through the reply in jason.response.periods[i]
             for (i = 0; i < periods.length; i++) {
@@ -2255,9 +2221,9 @@
                 if (showcurrent) {
                     if ((month > m) || (month == m && dayofmonth > d) || (month == m && dayofmonth == d && (timehhmm > tidehhmm))) {
                         row1.style.color = "gray";
-                        currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
-                        if (periods[i].type == 'h') currentTide += "Outgoing since ";  // incoming outgoing flag
-                        else currentTide += "Incoming since ";
+                        //currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
+                        if (periods[i].type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
+                        else currentTide = "Incoming since: ";
                         currentTide += ShortTime(tidehhmm) + " (for " + timeDiff(tidehhmm, timehhmm) + ")";
                         oldtideheight = Number(periods[i].heightFT);
                         oldtidetime = tidehhmm;
@@ -2269,15 +2235,21 @@
                         oldtide = 1;
                         nexttidei = i;
                         // calculate current tide height
-                        var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                        currentTide += "<br/>Now: " + tideheight.toFixed(1) + " ft.";
-                        // calculate time till next tide                                 
-                        currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
-                        nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                        if (showcurrent) {
+                            var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
+                            currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
+                                "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(monthday) +
+                                "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date... ]</span><br/>" + currentTide;
+                            // calculate time till next tide                                 
+                            currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
+                            nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                        }
                     } else if (oldtide == 1) {  // save next tide
                         oldtide = 2;
-                        nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
-                        localStorage.setItem("nextTides", nextTides); // save tide
+                        if (showcurrent) {
+                            nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                            localStorage.setItem("nextTides", nextTides); // save tide
+                        }
                     }
                 }
 
@@ -2289,9 +2261,17 @@
                 row1col1 = row1.insertCell(3);
                 row1col1.innerHTML = periods[i].heightFT;
                 row1col1.style.border = "thin solid gray";
+                //// range ()
+                if (i < periods.length-1) {
+                    row1col1 = row1.insertCell(-1);
+                    row1col1.innerHTML = "<span style='color:#bfbfbf'>" + Math.abs(periods[i].heightFT - periods[i + 1].heightFT).toFixed(1) + "</span>";
+                    row1col1.style.border = "thin solid gray";
+                }
             }
             // now save the current tide
-            if (!showcurrent) currentTide = "<span>";
+            if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
+                periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
+                "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date ]";
             document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
             $("#tideButton").show();
 
@@ -2301,15 +2281,17 @@
         /////////////////////////////////////////////////////////////////////////
         //  GraphTideData
         //  Entry: tide1t, tide2t, tide3t = 3 tide points in feet, text (HLH or LHL)
-        //         t1, t2, t3 = corresponding times in dateTimeISO text format
+        //         t1, t2, t3 = corresponding times in dateTimeISO text format: 2016-05-15T19:55:00-07:00
         //         NOTE: current tide must be between t1 and t2
-        function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t) {
+        function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
+            var i;
             var canvas = document.getElementById("tidecanvas");
             var axes = {}, ctx = canvas.getContext("2d");
             var w = canvas.width; var h = canvas.height;
             ctx.textAlign = "start";
 
             // convert tides to numbers
+            var tide1, tide2, tide3;
             tide1 = Number(tide1t); tide2 = Number(tide2t); tide3 = Number(tide3t);
             var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3; LB = Math.floor(LB - .9); // lower bound
             var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3; UB = Math.floor(UB + 1.99); // upper bound
@@ -2366,7 +2348,8 @@
             ctx.beginPath();
             ctx.moveTo(x0, y0); ctx.lineTo(w, y0);  // Y axis
             ctx.stroke();
-            var x = pixelshour; var hr;
+            var x = pixelshour;
+            var hr;
             ctx.strokeStyle = "#ffffff";
             // label the time
             for (i = tLB + 1; i < tUB; i++) {
@@ -2397,26 +2380,25 @@
             ctx.stroke();
 
             // draw vertical now for current time
-            ctx.strokeStyle = "#ff0000";
-            var now = (timehh + timemm/60);
-            if (now < tLB) now += 24;
-            now = (now-tLB) * pixelshour;
-            ctx.beginPath();
-            ctx.moveTo(now, 14); ctx.lineTo(now, h);
-            ctx.stroke();
-            // calculate and display current value
-            var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
-            tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
-            ctx.fillStyle = "#ff0000";
-            ctx.font = "16px Arial";
-            ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now - pixelshour, 14);
+            if (showtoday) {
+                ctx.strokeStyle = "#ff0000";
+                var now = (timehh + timemm / 60);
+                if (now < tLB) now += 24;
+                now = (now - tLB) * pixelshour;
+                ctx.beginPath();
+                ctx.moveTo(now, 14); ctx.lineTo(now, h);
+                ctx.stroke();
+                // calculate and display current value
+                var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
+                tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
+                ctx.fillStyle = "#ff0000";
+                ctx.font = "16px Arial";
+                ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now - pixelshour, 14);
+            }
 
-            // label the date tLB  = time for today. tUB = time for end.
-            var mmdd = monthday;
-            if (tUB > 25) mmdd = Bumpmmdd(mmdd, 1);  // if we roll to the next day
+            // label the date using the date for tide2 
             ctx.fillStyle = "#0000ff";
-            ctx.textAlign = "right";
-            ctx.fillText(formatDate(mmdd), w-4, 14);
+            ctx.fillText(t2t.substring(5,7) + "/" + t2t.substring(8,10), w*0.7, 14);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
@@ -2439,10 +2421,11 @@
             ctx.strokeStyle = "rgb(0, 0, 255)";
             ctx.lineWidth = 2;
             ctx.moveTo(xscale * (t - tLB), h - yscale * (tide - tideLB));
+            var c;
             // loop througth time from t1 to t2 by .25 hour (15 min)
             for (t = t1; t < (t2 + .25) ; t = t + .25) {
                 if (t > t2) t = t2;
-                var c = (t - t1) / dt * Math.PI;
+                c = (t - t1) / dt * Math.PI;
                 /////if (tide2 > tide1) c = Math.cos(Math.PI - c);
                 /////else c = Math.cos(c);
                 c = Math.cos(Math.PI - c);
@@ -2464,7 +2447,7 @@
         //
         function ShowCustom() {
             InitializeDates(0);
-            tidedate = GetDateFromUser();
+            var tidedate = GetDateFromUser();
             if (tidedate == "") return;
             usertideselection = true;
             getCustomTideData(tidedate);
@@ -2500,12 +2483,6 @@
         //  fromdate = optional starting date for the tides
         //  data is used to display tide data. It is not stored.
         function getCustomTideData(fromdate) {
-            var olddate, newdate; // dates
-            var ampm; // am or pm
-            var oldtide = -1; // true for tides older than current time
-            var oldtideheight, oldtidetime; // saved tide hight for last tide
-            var hilow;
-            var nextTides;
             $("#tideButton").hide();  // hide the user button
             $.ajax({
                 url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
@@ -2514,8 +2491,8 @@
 
                     if (json.success == true) {
                         ShowTideDataPage(json.response.periods, false);
-                        GraphTideData(json.response.periods[0].heightFT, json.response.periods[1].heightFT, json.response.periods[2].heightFT,
-    json.response.periods[0].dateTimeISO, json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO);
+                        GraphTideData(json.response.periods[1].heightFT, json.response.periods[2].heightFT, json.response.periods[3].heightFT,
+    json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO, json.response.periods[3].dateTimeISO, false);
                     }
                     else {
                         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
@@ -2731,12 +2708,11 @@
 			}
         }
 
-		//  pushbots - show the notify switch
+		//  pushbots - set the notify switch. hide it for web.
         if (isPhoneGap()) {
-            document.getElementById("notifyswitch").setAttribute('style', 'display:block;');
 		    if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
 		    else NotifyColor(0);
-        } 
+        } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
         //  Show the cached data immediately. 
         ParseFerryTimes();  // moved saved data into ferry time arrays

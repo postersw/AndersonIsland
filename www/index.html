@@ -1491,7 +1491,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loads the next ferry times into the global 'table' as a row for each run. 
         // ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
-        function BuildFerrySchedule(ferrytimesS, ferrytimesA, ferrytimesK) {
+        function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             var i;
             var ft;
             // roll through the ferry times, skipping runs that are not valid for today
@@ -1545,7 +1545,7 @@
         // DisplayFerrySchedule displays the grid
         //  entry date = "" for today, else mm/dd
         function DisplayFerrySchedule(userdate) {
-            var table, row1, row1col1;
+            var row1, row1col1;
             if (userdate == "") InitializeDates(0);
             else InitializeDates(userdate);
 
@@ -1567,8 +1567,8 @@
             row1col1 = row1.insertCell(2);
             row1col1.style.backgroundColor = "blue";
 
-            if (UseFerryTime1()) BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-            else BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
+            if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
+            else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
             // build next 6 days
             timehhmm = 0;  // ignore current time
             var i;
@@ -1586,8 +1586,8 @@
                 row1col1.innerHTML = month + "/" + dayofmonth + (holiday ? " Holiday" : "");
                 row1col1 = row1.insertCell(2);
                 row1col1.style.backgroundColor = "blue";
-                if (UseFerryTime1()) BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
-                else BuildFerrySchedule(ferrytimeS2, ferrytimeA2, ferrytimeK2);
+                if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
+                else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
             }
             InitializeDates(0);  // reset dates back
             //alert("build ferry sch done");
