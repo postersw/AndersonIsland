@@ -267,6 +267,14 @@
             <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
             <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertainment</span>  
          </div>
+         <div id="showactivities" style="display:none">
+            Items on this page occur multiple times/month. <br />
+            <strong>SHOW: </strong><span id='eventAAll' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
+            <span  id='eventAA' style="color:blue" onclick="SetEventFilter('A')">Active</span> | 
+            <span  id='eventAC' style="color:darkred" onclick="SetEventFilter('C')">Crafts</span> | 
+            <span  id='eventAG' style="color:darkgreen" onclick="SetEventFilter('G')">Games</span> |
+            <span  id='eventAO' style="color:black" onclick="SetEventFilter('O')">Other</span>  
+         </div>
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td></td>
@@ -1756,10 +1764,12 @@
             if (type == "events") {
                 document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
                 document.getElementById("showevents").setAttribute('style', 'display:normal;');
+                document.getElementById("showactivities").setAttribute('style', 'display:none;');
                 document.getElementById("comingactivitiesH1").setAttribute('style', 'display:none;');
             } else {
                 document.getElementById("comingeventsH1").setAttribute('style', 'display:none;');
                 document.getElementById("showevents").setAttribute('style', 'display:none;');
+                document.getElementById("showactivities").setAttribute('style', 'display:normal;');
                 document.getElementById("comingactivitiesH1").setAttribute('style', 'display:normal;');
             }
             DisplayComingEventsList(GetEvents())
@@ -1781,19 +1791,27 @@
 
         ////////////////////////////////////////////////////////////////////////////////
         // SetEventFilter - sets the filter letter and regenerates the display
-        //  Entry   f = A, M, S, E
+        //  Entry   f = A, M, S, E, A, C, G, O
         function SetEventFilter(f) {
-            // bold the selection
-            document.getElementById("eventA").style.fontWeight = "normal";
-            document.getElementById("eventM").style.fontWeight = "normal";
-            document.getElementById("eventS").style.fontWeight = "normal";
-            document.getElementById("eventE").style.fontWeight = "normal";
-            switch (f) {
-                case "": document.getElementById("eventA").style.fontWeight = "bold"; break;
-                case "M": document.getElementById("eventM").style.fontWeight = "bold"; break;
-                case "S": document.getElementById("eventS").style.fontWeight = "bold"; break;
-                case "E": document.getElementById("eventE").style.fontWeight = "bold"; break;
+            flist = ["", "eventA", "M", "eventM", "S", "eventS", "E", "eventE", "A", "eventAA", "C", "eventAC", "G", "eventAC", "O", "eventAO"];
+            var fw;
+            for (var i = 0; i<flist.length; i+=2) {
+                if(flist[i]==f) fw = "bold";
+                else fw = "normal";
+                document.getElementById(flist[i+1]).style.fontWeight = fw;
             }
+            //// bold the selection
+            //document.getElementById("eventA").style.fontWeight = "normal";
+            //document.getElementById("eventM").style.fontWeight = "normal";
+            //document.getElementById("eventS").style.fontWeight = "normal";
+            //document.getElementById("eventE").style.fontWeight = "normal";
+            //switch (f) {
+            //    case "": document.getElementById("eventA").style.fontWeight = "bold"; break;
+            //    case "M": document.getElementById("eventM").style.fontWeight = "bold"; break;
+            //    case "S": document.getElementById("eventS").style.fontWeight = "bold"; break;
+            //    case "E": document.getElementById("eventE").style.fontWeight = "bold"; break;
+            //        A C G O
+            //}
             EventFilter = f;
 
             switch (EventDisp) {
@@ -2115,11 +2133,16 @@
             } // end for
         } // end function
 
-        // eventcolor - return the color for an event, based on the key (M, S, E)
+        // eventcolor - return the color for an event, based on the key (M, S, E, A, C, G)
+        //  exit: color value
         function eventcolor(key) {
             switch (key) {
                 case "E": return "#0000ff"; break; // special events
                 case "S": return "darkred"; break; // entertainment
+                case "A": return "blue"; break; // entertainment
+                case "C": return "darkred"; break; // entertainment
+                case "G": return "darkgreen"; break; // entertainment
+
                 default: return "#000000";
             }
         }
