@@ -96,13 +96,13 @@
         </div>
 
         <!--Alerts-->
-        <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none">
-            <span style="font-size:18px;font-weight:bold;color:red;margin-left:6px">ALERT</span>
+        <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none;padding-left: 6px">
+            <span style="font-size:18px;font-weight:bold;color:red;padding-left: 6px;">ALERT</span>
             <span id='alerttext' style="font-size:small;font-weight:bold;color:red;">alert information goes here</span>
             <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
         </div>
 
- <table style="margin:0;padding:0;border-collapse:collapse";>
+ <table align="center" style="width:100%;padding:0;border-collapse:collapse";>
         <tr style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
             <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
             <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
@@ -302,8 +302,8 @@
 
      <p>These tide predictions are provided for station id 9446705 by Aeris Inc. <br />
          'Range' is the total difference between a high or low tide and the NEXT low or high tide.<br />
-         <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
-         Current height calculated using sine wave fitteed between high and low tides.</p>
+         Current height calculated using sine wave fitted between high and low tides.</p>
+        <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
     </div>
   </div>
@@ -538,7 +538,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0514.0000		</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0514.2300		</span>
 
 
         </p>
@@ -2275,7 +2275,7 @@
                             var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
                             currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                                 "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(monthday) +
-                                "<span onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date... ]</span><br/>" + currentTide;
+                                "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date... ]</span><br/>" + currentTide;
                             // calculate time till next tide                                 
                             currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(timehhmm, tidehhmm) + ")";
                             nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
@@ -2307,7 +2307,7 @@
             // now save the current tide
             if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
                 periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
-                "<span onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date ]";
+                "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date ]";
             document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
             $("#tideButton").show();
 
