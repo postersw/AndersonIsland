@@ -1498,7 +1498,7 @@
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         // Dialog - open a dialog
-        //  text = message with embedded html
+        //  text = message with embedded html.  Heading is ignored for now.
         function Dialog(text, heading) {
             var md = document.getElementById("modaldialog");
             md.style.display = "block";
@@ -1512,8 +1512,9 @@
         }
 
         /////////////////////////////////////////////////////////////////////////////////
-        //  close the modal
+        //  close the modal dialog and clear out its text.
         function ModalClose() {
+            document.getElementById("modaltext").innerHTML = ""; // clear the display
             document.getElementById("modaldialog").style.display = "none";
         }
 
@@ -1941,14 +1942,15 @@
         //  tabletext - display all details for the row or item that was clicked. Works for list, week, and month views.
         //  tc = cell id: date (mmdd) time (hhmm) as a string. mmdd9999 to match all times on mmdd. mmddhh99 to match all minutes
         //  The date and time are used to look up the entry in the CE array.
+        //  Each table entry has an id which is the index into the CE array, and onclick=AddToCal.
         function tabletext(tc) {
             //alert(tc);
             var nc = 0;
             var d = tc.substr(0, 4);  // mmdd part of id
             var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
-            var as = "";
-            as += "Tap to add to your Google calendar.<br/>"; // if phonegap()
-            as += "<table style='border:thin solid black;border-collapse:collapsed'>";
+            var as = "Tap to add to your ";
+            if(!IsPhoneGap()) as+= "Google "
+            as += " calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
             var CE = GetEvents().split("\n");
             for (iCE = 0; iCE < CE.length; iCE++) {
                 var aCE = CE[iCE].split(';');  // split the string
@@ -1958,7 +1960,8 @@
                 if ((t == aCE[1]) || (t == '9999') || (t == t99)) {
                     nc++;
                     // create table entry. id = the numeric index into the CE array
-                    as += "<tr id='" + iCE.toFixed() + "' onclick='AddToCal(this.id)'><td style='border:thin solid black'><strong>" + formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ":</strong> " +
+                    as += "<tr id='" + iCE.toFixed() + "' onclick='AddToCal(this.id)'><td style='border:thin solid black'><strong>" +
+                        formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ":</strong> " +
                          aCE[4] + " at " + aCE[5] + "<br/>Sponsor: " + aCE[6] + "<br/>";
                     if (aCE.length >= 8) as += aCE[7] + "<br>";
                     as += "</td></tr>";
@@ -1972,7 +1975,10 @@
         }
 
         ////////////////////////////////////////////////////////
-        //  Add to Cal - id = the index into the CE array of the selected event
+        //  Add to Cal -  Add to a calendar
+        //  Non-phonegap: use link to google calendar.
+        //  Phonegap:  call plugin.
+        //  Entry: id = the index into the CE array of the selected event
         function AddToCal(id) {
             var CE = GetEvents().split("\n");
             var aCE = CE[Number(id)].split(';');
@@ -1982,28 +1988,30 @@
             var title = aCE[4];
             var eventLocation = aCE[5];
             var notes = "";
-            //var success = function (message) { alert("Success: " + JSON.stringify(message)); };
-            //var error = function (message) { alert("Error: " + message); };
-            //alert("Add to Calendar" + startDate.toLocaleString() + "-" + endDate.toLocaleString() + "," + title + " at " + eventLocation);
-            var ds = startDate.toISOString().replace(/-|:|\.\d\d\d/g,"");
-            var de = endDate.toISOString().replace(/-|:|\.\d\d\d/g, "");
-            //http://www.google.com/calendar/event?
-            //    action=TEMPLATE&text=Fun%20Party&dates=20161226ThhmmssZ/20161230ThhmmssZ&details=bring%20your%20parka&location=North%20Pole
-            // NOTE: for google link: convert to UTC, change spaces to %20.
-            title = title.replace(/ /g, '%20');
-            eventLocation = eventLocation.replace(/ /g, '%20');
-            //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
-            //           var link = "http://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
-            var link = "http://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
-                "&dates=" + year + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
-                'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
-                 year + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
-                'T' + Leading0(endDate.getUTCHours()) + Leading0(endDate.getUTCMinutes()) + "00Z" +
-                "&location=" + eventLocation;
-            //alert(link);
-            window.open(link, "_blank");
-            // create an event interactively
-            //window.plugins.calendar.createEventInteractively(title, eventLocation, notes, startDate, endDate, success, error);
+
+            // NOT PHONEGAP - use google calendar  http://www.google.com/calendar/event?
+            //    action=TEMPLATE&text=title&dates=yyyymmddThhmmssZ/yyyymmddThhmmssZ&details=xxx&location=xxx
+            //      NOTE: for google link: convert to UTC, change spaces to %20.
+            if (!isPhoneGap()) {
+                title = title.replace(/ /g, '%20');  
+                eventLocation = eventLocation.replace(/ /g, '%20');
+                //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
+                //           var link = "http://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
+                var link = "http://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
+                    "&dates=" + year + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
+                    'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
+                     year + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
+                    'T' + Leading0(endDate.getUTCHours()) + Leading0(endDate.getUTCMinutes()) + "00Z" +
+                    "&location=" + eventLocation;
+                //alert(link);
+                window.open(link, "_blank");
+                return;
+            }
+
+            // PHONEGAP: create an event interactively using the phonegap plugin
+            var success = function (message) { alert("Success: " + JSON.stringify(message)); };
+            var error = function (message) { alert("Error: " + message); };
+            window.plugins.calendar.createEventInteractively(title, eventLocation, notes, startDate, endDate, success, error);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
