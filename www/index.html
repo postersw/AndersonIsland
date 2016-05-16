@@ -9,6 +9,8 @@
     ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
                   Remove App Store message from non-mobile devices.
     ver 1.5.0509: add OpenHours object (multiple date ranges and time ranges).  Fix weather month.
+            0515: Sunrise/Sunset in tide graph, add other days. Color code activities. Local version of jquery. 
+                  Onclick support for events. My own dialog box div. Formatting improvements.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -111,6 +113,7 @@
         <tr style="background-color:azure" >
             <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0" colspan="2"> 
                 <span onclick="ShowFerryWebCam()">&nbsp&nbsp  WEBCAM&nbsp&nbsp</span>
+                <span style="font-weight:normal;color:gray"">|</span>
                 <span onclick="ShowFerryLocation()">&nbsp&nbsp LOCATION&nbsp</span>
               </td>
         </tr>
@@ -275,11 +278,13 @@
             <span  id='eventAG' style="color:darkgreen" onclick="SetEventFilter('G')">Games</span> |
             <span  id='eventAO' style="color:black" onclick="SetEventFilter('O')">Other</span>  
          </div>
+        <div style="overflow-x:auto;">
         <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td></td>
             </tr>
         </table>
+        </div>
         <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
         </div>
    </div>
@@ -546,11 +551,19 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0515.1141		</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0515.2114	</span>
 
 
         </p>
+<!-- Modal dialog ----------------------------------------------------------------------------------------------------->
 
+<div id="modaldialog" style="display:none;position:fixed;z-index:1;padding-top:20px;left:0;top:0;
+    width:100%;height: 100%;overflow:auto;background-color:#000000;background-color: rgba(0,0,0,0.5); ">
+  <div id="modalcontent" style="background-color: #fefefe;margin:auto;padding:20px;border:1px solid #888;width:80%;">
+    <p id="modaltext">×</p>
+      <button style="align-self:center" onclick="ModalClose()">OK</button>
+  </div>
+</div>
 
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
         <p class="event listening">Connecting to Device</p>
@@ -1480,6 +1493,27 @@
             timerUp();
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Dialog - open a dialog
+        //  text = message with embedded html
+        function Dialog(text, heading) {
+            var md = document.getElementById("modaldialog");
+            md.style.display = "block";
+            document.getElementById("modaltext").innerHTML = text;
+            // When the user clicks anywhere outside of the dialog, close it
+            window.onclick = function (event) {
+                if (event.target == md) {
+                    md.style.display = "none";
+                }
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        //  close the modal
+        function ModalClose() {
+            document.getElementById("modaldialog").style.display = "none";
+        }
+
     </script>
 
     <!-- FERRY ------------------------>
@@ -1600,11 +1634,6 @@
                 else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
             }
             InitializeDates(0);  // reset dates back
-            //alert("build ferry sch done");
-            //Append Table into div.
-            //document.getElementById('divTable').appendChild(table);
-            //document.getElementById('schdate').innerHTML = "Based on schedule as of " + scheduledate[0];             // mark schedule date
-            //alert("appended table to divTable");
         }
     </script>
 
@@ -1660,7 +1689,7 @@
         //////////////////////////////////////////////////////////////////////////////////////
         // FormatOneBusiness - formats one OpenHours object
         //  Entry   Oh = one OpenHours object,  showall = true for all dates
-        //  Exit    returns html for a table entry                                onclick="alert('abc')" 
+        //  Exit    returns html for a table entry                             
         function FormatOneBusiness(Oh, mmdd, showall) {
             var openlist = "<span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </span><br/>";
             if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
@@ -1795,7 +1824,7 @@
         // SetEventFilter - sets the filter letter and regenerates the display
         //  Entry   f = A, M, S, E, A, C, G, O
         function SetEventFilter(f) {
-            flist = ["", "eventA", "M", "eventM", "S", "eventS", "E", "eventE", "A", "eventAA", "C", "eventAC", "G", "eventAC", "O", "eventAO"];
+            flist = ["", "eventA", "M", "eventM", "S", "eventS", "E", "eventE", "A", "eventAA", "C", "eventAC", "G", "eventAG", "O", "eventAO"];
             var fw;
             for (var i = 0; i<flist.length; i+=2) {
                 if(flist[i]==f) fw = "bold";
@@ -1932,15 +1961,16 @@
                 if (d != aCE[0]) continue;
                 var t99 = aCE[1].substr(0, 2) + '99'; // hh99
                 if((t == aCE[1]) || (t=='9999') || (t == t99) ) {
-                    as += formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " +
-                         aCE[4] + "\nLocation: " + aCE[5] + ", Sponsor: " + aCE[6] + "\n";
-                    if (aCE.length >= 8) as += aCE[7] + "\n";
-                    as += "\n";
+                    as += "<strong>" + formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ":</strong> " +
+                         aCE[4] + " at " + aCE[5] + "<br/>Sponsor: " + aCE[6] + "<br/>";
+                    if (aCE.length >= 8) as += aCE[7] + "<br>";
+                    as += "<br/>";
                 }
 
             }
             if (as == "") return;
-            alert(as);
+            Dialog(as, "Schedule Detail");
+            //alert(as);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
