@@ -75,8 +75,8 @@
     <!--<gap:plugin name="org.apache.cordova.network-information" />-->
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-	<gap:plugin name="pushbots-cordova-plugin" source="npm" />
-  <!--<gap:plugin name="cordova-plugin-calendar" source="npm"/>  --><!-- calendar plugin-->
+	  <gap:plugin name="pushbots-cordova-plugin" source="npm"/>
+    <gap:plugin name="cordova-plugin-calendar" /> <!-- calendar plugin-->
 
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
