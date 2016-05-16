@@ -304,8 +304,8 @@
                 <td>Date</td>
                 <td>| Time&nbsp</td>
                 <td>| Type&nbsp</td>
-                <td>| Feet&nbsp</td>
-                <td>| Range&nbsp</td>
+                <td>| Feet&nbsp|</td>
+                <td style="background-color:lightgray""> Range*&nbsp</td>
             </tr>
         </table>
         <hr />
@@ -313,11 +313,14 @@
         <button id="tideButton" onclick="ShowCustom();" hidden="hidden">Get Tides for other days</button>
         </p>
 
-     <p>These tide predictions are provided for station id 9446705 by Aeris Inc. <br />
-         'Range' is the total difference between a high or low tide and the NEXT low or high tide.<br />
-         Current height calculated using sine wave fitted between high and low tides.</p>
-        <a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+     <p style="font-size:smaller"> *'Range' is the total difference (in feet) between a high or low tide and the NEXT low or high tide.
+         Higher ranges may imply faster tidal currents. Balch Passage max. tidal currents are typically 1 - 3 knots.
+         <a href="http://tides.mobilegeographics.com/locations/345.html">Tap for Tidal Current predictions.</a>
+  <br />
+         These tide predictions are provided for station id 9446705 by Aeris Inc.
+     </p>
+        <p><a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
+        </p><button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
     </div>
   </div>
 
@@ -1826,25 +1829,14 @@
         function SetEventFilter(f) {
             flist = ["", "eventA", "M", "eventM", "S", "eventS", "E", "eventE", "A", "eventAA", "C", "eventAC", "G", "eventAG", "O", "eventAO"];
             var fw;
+            // bold the selection
             for (var i = 0; i<flist.length; i+=2) {
                 if(flist[i]==f) fw = "bold";
                 else fw = "normal";
                 document.getElementById(flist[i+1]).style.fontWeight = fw;
             }
-            //// bold the selection
-            //document.getElementById("eventA").style.fontWeight = "normal";
-            //document.getElementById("eventM").style.fontWeight = "normal";
-            //document.getElementById("eventS").style.fontWeight = "normal";
-            //document.getElementById("eventE").style.fontWeight = "normal";
-            //switch (f) {
-            //    case "": document.getElementById("eventA").style.fontWeight = "bold"; break;
-            //    case "M": document.getElementById("eventM").style.fontWeight = "bold"; break;
-            //    case "S": document.getElementById("eventS").style.fontWeight = "bold"; break;
-            //    case "E": document.getElementById("eventE").style.fontWeight = "bold"; break;
-            //        A C G O
-            //}
-            EventFilter = f;
 
+            EventFilter = f;
             switch (EventDisp) {
                 case "L": DisplayComingEventsList(GetEvents()); break;
                 case "W": DisplayComingWeek(GetEvents()); break;
@@ -2361,7 +2353,7 @@
                 if (i < periods.length-1) {
                     row1col1 = row1.insertCell(-1);
                     row1col1.innerHTML = "<span style='color:#bfbfbf'>" + Math.abs(periods[i].heightFT - periods[i + 1].heightFT).toFixed(1) + "</span>";
-                    row1col1.style.border = "thin solid gray";
+                    row1col1.style.border = "thin solid lightgray";
                 }
             }
             // now save the current tide
