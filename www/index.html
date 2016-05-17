@@ -85,7 +85,10 @@
 <body style="margin:0;padding:0">
     <div class="app">
         <div id="mainpage"  style="display:block">
-        <h1 id="appheader">Anderson Island Assistant </h1>
+        <div style="position:fixed;margin-top:-40px;">
+            <h1 id="appheader" style="width:400px">Anderson Island Assistant </h1> <!-- why do i need to set width fixed? -->
+        </div>
+        <div style="margin-top:40px"> <!-- scrollable area -->
 
         <span id="topline" style="font-size:small;margin-top:0;margin-bottom:0px;margin-left:6px">Tap an entry for more information.</span>
 
@@ -190,7 +193,7 @@
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             </table>
-
+             </div>
     </div>
         
 
@@ -308,6 +311,7 @@
                 <td style="background-color:lightgray""> Range*&nbsp</td>
             </tr>
         </table>
+            <strong>Tap a row to graph it.</strong>
         <hr />
         <p id="demo">
         <button id="tideButton" onclick="ShowCustom();" hidden="hidden">Get Tides for other days</button>
@@ -384,47 +388,51 @@
       About
     </h1>
     <p>The <span style="font-weight:bold">Anderson Island Assistant</span> gives you
-        instant access to a wealth of time-sensitive Anderson Island information.  
+        instant access to a wealth of time-sensitive Anderson Island information.</p>  
+
+        <div style="width:100%;background-color:darkgray;padding:10px">INSTALLATION</div>
         <p><strong>iPhone/iPad users:</strong>  Install the free iPhone/iPad app from the
             <a href="https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8"> Apple App Store.</a>
         <p><strong>Android phone users:</strong> Install the free Android phone app from 
             <a href="https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant">Google Play.</a><br />
         </p>
-        <hr />
+
+         <div style="width:100%;background-color:darkgray;padding:10px">SUPPORT AND FEEDBACK</div>
         <p>The Anderson Island Assistant is created and produced by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
         <p> <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="mailto:support@anderson-island.org">Send Email</a>
             <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="tel:253-267-4936">Call Us</a></p>
         <p>Email: support@anderson-island.org<br />  Phone: 253-267-4936</p>
-        <hr />
+
+         <div style="width:100%;background-color:darkgray;padding:10px">LEGAL AND LICENSING</div>
+        <p>This app is provided with no warranties, and the accuracy of its data is not guaranteed.</p>
           <p style="font-size:small">Anderson Island Assistant" Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
-          <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.</p>
-      <hr />
+          <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.<br />
+       Weather provided by OpenWeatherMap. <br />
+       Tides provided by Aeris, Inc. <br />
+       Notifications from Pushbots. <br />
+       Ferry Schedules provided by Pierce County Ferry System. <br />
+              </p>
+
+       <div style="width:100%;background-color:darkgray;padding:10px">TECHNICAL</div>
         <div style="font-size:x-small">
             <span id="phoneweb" >Web version.</span>
             <span id="reloadtime">Data reload time.</span>
             <span id="reloadreason" ></span>
             <span id="currentweathertime" ></span>
-            <br />Weather from OpenWeatherMap
+           
       </div>
 
 </div>
-<!-- ISLAND INFORMATION LINKS ---------------------------------------------------------------------->
+<!-- ISLAND INFORMATION LINKS  (loaded from dailycache.txt LINKS - LINKSEND --------------------------------------------------------->
 <div id="linkspage" style="display:none">
     <h1> 
         <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
         ISLAND INFORMATION LINKS
     </h1>
+    <div id="islandlinks">
             <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org', '_system');">Citizens Advisory Board</button><br />
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org', '_system');">Community Club</button><br />   
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.pcfd27.com', '_system');">Fire and Rescue</button><br />   
-            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org', '_system');">Historical Society</button><br />                 
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org', '_system');">Island Patrol</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org', '_system');">Parks</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.doh.wa.gov/ehp/sf/biotoxin.htm', '_system');">Redtide Status (WA DOH)</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com', '_system');">Riviera</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/', '_system');">Shellfish (WDFW)</button>
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com', '_system');">Store</button><br />
-            <button style="width:100%;padding:6px" onclick="window.open('http://www.tannerelectric.coop', '_system');">Tanner Electric</button><br />
+    </div>
 </div>
  <!-- HELP ------------------------------------------------------------------------------------->
   <div id="helppage" style="display:none">
@@ -554,7 +562,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0515.2114	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0516.2300	</span>
 
 
         </p>
@@ -1948,8 +1956,8 @@
             var nc = 0;
             var d = tc.substr(0, 4);  // mmdd part of id
             var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
-            var as = "Tap to add to your ";
-            if (!isPhoneGap()) as += "Google ";
+            var as = "Tap entry to add to your Google";
+            ////if (!isPhoneGap()) as += "Google ";
             as += " calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
             var CE = GetEvents().split("\n");
             for (iCE = 0; iCE < CE.length; iCE++) {
@@ -1992,7 +2000,7 @@
             // NOT PHONEGAP - use google calendar  http://www.google.com/calendar/event?
             //    action=TEMPLATE&text=title&dates=yyyymmddThhmmssZ/yyyymmddThhmmssZ&details=xxx&location=xxx
             //      NOTE: for google link: convert to UTC, change spaces to %20.
-            if (!isPhoneGap()) {
+            ////if (!isPhoneGap()) { TEMPORARY - do everything through the link.
                 title = title.replace(/ /g, '%20');  
                 eventLocation = eventLocation.replace(/ /g, '%20');
                 //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
@@ -2006,7 +2014,7 @@
                 //alert(link);
                 window.open(link, "_blank");
                 return;
-            }
+            //}
 
             // PHONEGAP: create an event interactively using the phonegap plugin
             var success = function (message) { alert("Success: " + JSON.stringify(message)); };
@@ -2245,6 +2253,7 @@
     <script>
         //===== TIDES =======================================================================================
         var usertideselection = false; // true when user sets tides
+        var periods;  // parsed data
         //////////////////////////////////////////////////////////////////////////////////////////////////
         // TidesDataPage
         function TidesDataPage() {
@@ -2252,7 +2261,7 @@
             ShowPage("tidespage");
             // show the tide data in the jsontides global
             usertideselection = false;
-            var periods = JSON.parse(localStorage.getItem("jsontides"));
+            periods = JSON.parse(localStorage.getItem("jsontides"));
             var i = ShowTideDataPage(periods, true);
             GraphTideData(periods[i - 1].heightFT, periods[i].heightFT, periods[i+1].heightFT, 
                 periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO, true);
@@ -2292,6 +2301,8 @@
                 // Insert New Row for table at end of table.
 
                 var row1 = table.insertRow(-1);
+                row1.id = i.toFixed();
+                row1.onclick = function () { TideClick(this.id) }
 
                 // Insert New Column for date
                 var row1col1 = row1.insertCell(0);
@@ -2372,6 +2383,18 @@
             $("#tideButton").show();
 
             return nexttidei; // return index
+        }
+
+        /////////////////////////////////////////////////////////////////////////////
+        //  TideClick   draw a graph for the clicked row
+        //
+        function TideClick(id) {
+            var i = Number(id);
+            if (i == 0) i = 1;
+            if (i > (periods.length - 2)) return;
+            GraphTideData(periods[i-1].heightFT, periods[i].heightFT, periods[i+1].heightFT,
+                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO, false);
+
         }
 
         /////////////////////////////////////////////////////////////////////////
@@ -2586,9 +2609,10 @@
                 success: function (json) {
 
                     if (json.success == true) {
-                        ShowTideDataPage(json.response.periods, false);
-                        GraphTideData(json.response.periods[1].heightFT, json.response.periods[2].heightFT, json.response.periods[3].heightFT,
-    json.response.periods[1].dateTimeISO, json.response.periods[2].dateTimeISO, json.response.periods[3].dateTimeISO, false);
+                        periods = json.response.periods;
+                        ShowTideDataPage(periods, false);
+                        GraphTideData(periods[1].heightFT, periods[2].heightFT, periods[3].heightFT,
+                            periods[1].dateTimeISO, periods[2].dateTimeISO, periods[3].dateTimeISO, false);
                     }
                     else {
                         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
@@ -2767,6 +2791,7 @@
         // About
         function ShowLinksPage() {
             ShowPage("linkspage");
+            document.getElementById("islandlinks").innerHTML = localStorage.getItem("links");
         }
     </script>
 
