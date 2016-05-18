@@ -85,8 +85,9 @@
 <body style="margin:0;padding:0">
     <div class="app">
         <div id="mainpage"  style="display:block">
-        <div style="position:fixed;margin-top:-40px;">
-            <h1 id="appheader" style="width:400px">Anderson Island Assistant </h1> <!-- why do i need to set width fixed? -->
+        <div style="position:fixed;margin-top:-40px;width:100%;">
+            <h1 id="appheader" style="overflow:auto;width:100%;height:25px">
+                <span  style='float:left' onclick="OpenMenu()">&#9776</span>&nbsp&nbsp&nbsp&nbspAnderson Island Assistant </h1> <!-- why do i need to set width fixed? -->
         </div>
         <div style="margin-top:40px"> <!-- scrollable area -->
 
@@ -182,12 +183,7 @@
              </td>            
          </tr>
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
-             <tr><td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px;" colspan="2"> Notifications:
-                <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
-                <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF&nbsp&nbsp</span>
-                </td></tr>
+
 
             <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
@@ -576,6 +572,21 @@
   </div>
 </div>
 
+<!-- Side Menu ----------------------------------------------------------------------------------------------------->
+  <div id="sidemenu" class="sidenav"   style="height: 100%; width: 0;  position: fixed; z-index: 1; top: 0;left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.5s">
+    <table>
+            <tr><td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
+            <tr> <td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="UpdateApp()">Update App</td></tr>
+            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:white;padding-left:6px;" > Notifications:
+                <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
+                <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFFp</span>
+                </td></tr>
+    </table>
+      <p></p>
+      <button onclick="CloseMenu()">Close</button>
+</div>
+
+<!-- Device Ready ----------------------------------------------------------------------------------------------------->
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
         <p class="event listening">Connecting to Device</p>
         <p class="event received">Device is Ready</p>
@@ -793,6 +804,18 @@
                     DisplayAlertInfo();
                 }
             });
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        //  side menu
+        /* Set the width of the side navigation to 250px */
+        function OpenMenu() {
+            document.getElementById("sidemenu").style.width = "150px";
+        }
+
+        /* Set the width of the side navigation to 0 */
+        function CloseMenu() {
+            document.getElementById("sidemenu").style.width = "0";
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
