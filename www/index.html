@@ -165,6 +165,10 @@
             <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
         </tr>
+             <tr style="background-color:#ccffcc"  onclick="window.open('http://www.anderson-island.org/parks.html', '_blank' )"> 
+            <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
+            PARKS </td>
+         </tr>
         <tr style="background-color:white;" onclick="ShowNews()")>  
             <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
              NEWS</td>
@@ -183,9 +187,7 @@
              </td>            
          </tr>
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
-
-
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
+        <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
             <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr>
             </table>
@@ -573,17 +575,24 @@
 </div>
 
 <!-- Side Menu ----------------------------------------------------------------------------------------------------->
-  <div id="sidemenu" class="sidenav"   style="height: 100%; width: 0;  position: fixed; z-index: 1; top: 0;left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.5s">
-    <table>
-            <tr><td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="UpdateApp()">Update App</td></tr>
-            <tr> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:white;padding-left:6px;" > Notifications:
+  <div id="sidemenu" class="sidenav"   style="height: 100%; width: 0; position: fixed; z-index: 1; top: 40px;left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s">
+    <table style="width:100%;border-collapse:collapse;border-style:none">
+            <tr style="border:none;border-bottom:thin solid white"><td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
+            <tr style="border:none;border-bottom:thin solid white"> <td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="UpdateApp()">Update App</td></tr>
+            <tr style="border:none;border-bottom:thin solid white"> <td id="notifyswitch" style="font-size:18px;font-weight:bold;color:white;padding-left:6px;" > Notifications:<br />
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
-                <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFFp</span>
+                <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF</span>
                 </td></tr>
+            <tr style="border:none;border-bottom:thin solid white"> 
+                <td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" >
+                    <a style="text-decoration:none;color:white" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a>
+                </td></tr>
+            <tr style="border:none;border-bottom:thin solid white"> <td style="font-size:18px;font-weight:bold;color:white;padding-left:6px" onclick="ShowAboutPage()">About</td></tr>
+
     </table>
-      <p></p>
+      <p style="text-align:center">
       <button onclick="CloseMenu()">Close</button>
+          </p>
 </div>
 
 <!-- Device Ready ----------------------------------------------------------------------------------------------------->
@@ -601,19 +610,21 @@
     <!-- <script type="text/javascript" src="js/AIA.js"></script> Moved to index.js on 4/25/16 -->
 
     <script>
-        // global date variables in AIA.js. note: scope is for one page only.
-        var updateCounter = 0; // counter of timer updates
-        var LastUpdatems = 0; // last update time in MS
-        var forceCacheReload; // true to force a cache reload
+        // global variables (gXxxxxx). Since this entire app is one page and one program, these variables hold for the entire execution.
+        var gUpdateCounter = 0; // counter of timer updates
+        var gLastUpdatems = 0; // last update time in MS
+        var gForceCacheReload; // true to force a cache reload
         var forceTideReload;  // true to force tide reload
-        var mytimer; // timer number
-        var AppStartedTime; // time app started in sec
-        var DisplayPage; // name of page being displayed
-        var tabletoclear; // name of table to clear
+        var gMyTimer; // timer number
+        var gAppStartedTime; // time app started in sec
+        var gAppStartedDate;
+        var gDisplayPage; // name of page being displayed
+        var gTableToClear; // name of table to clear
+        var gMenuOpen = false; // true if menu is open
 
-        var datesunrise; // sunrise date object
-        var datesunset; // sunset date object
-        var daysinmonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var gDateSunrise; // sunrise date object
+        var gDateSunset; // sunset date object
+        var gDaysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
         // ferry run times and flags. Heirarchy is:
         //  1. * overrides everything and means always.
@@ -811,11 +822,13 @@
         /* Set the width of the side navigation to 250px */
         function OpenMenu() {
             document.getElementById("sidemenu").style.width = "150px";
+            gMenuOpen = true;
         }
 
         /* Set the width of the side navigation to 0 */
         function CloseMenu() {
             document.getElementById("sidemenu").style.width = "0";
+            gMenuOpen = false;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1069,14 +1082,14 @@
                     localStorage.setItem("currentweather", current);
                     $("#weather").html(current); // jquery equivalent. Is this really easier?
                     // detailed
-                    datesunrise = new Date(Number(r.sys.sunrise) * 1000);
-                    datesunset = new Date(Number(r.sys.sunset) * 1000);
-                    localStorage.setItem("sunrise", datesunrise.getTime()); // save
-                    localStorage.setItem("sunset", datesunset.getTime()); // save
+                    gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
+                    gDateSunset = new Date(Number(r.sys.sunset) * 1000);
+                    localStorage.setItem("sunrise", gDateSunrise.getTime()); // save
+                    localStorage.setItem("sunset", gDateSunset.getTime()); // save
                     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
                         r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
                          ", " + rain + " in. rain" +
-                        "<br/>Sunrise: " + datesunrise.toLocaleTimeString() + ", Sunset: " + datesunset.toLocaleTimeString();
+                        "<br/>Sunrise: " + gDateSunrise.toLocaleTimeString() + ", Sunset: " + gDateSunset.toLocaleTimeString();
 
                     localStorage.setItem("currentweatherlong", currentlong);
                 }
@@ -1127,7 +1140,7 @@
         // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
         // License as of 2/8/16 is for 750 hits/day for free.
         //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
-        //  exit: forceCacheReload = true to reload tide data.  
+        //  exit: gForceCacheReload = true to reload tide data.  
         //          html populated.
         function ShowNextTides() {
             var hilow;
@@ -1357,12 +1370,12 @@
 
             // everything you want to do every minute. These all go against localStorage strings, so no query
             InitializeDates(0);
-            LastUpdatems = timestampms;
-            updateCounter++;
+            gLastUpdatems = timestampms;
+            gUpdateCounter++;
             document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
 
             // special handling for other than the main page
-            switch (DisplayPage) {
+            switch (gDisplayPage) {
                 case "comingeventspage":
                     return;
                 case "emergencypage":
@@ -1416,18 +1429,18 @@
         /////////////////////////////////////////////////////////////////////////////
         // focus and blur events
         function focusEvent() {
-            if (mytimer == null) {  // if timer is off
-                mytimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
+            if (gMyTimer == null) {  // if timer is off
+                gMyTimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
                 timerUp(); // restart the timer if needed
             } else {  
 				var d = new Date();
-				if((d.getTime() - LastUpdatems) > 60000) timerUp(); // if > 60 secs
+				if((d.getTime() - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
 			}
         }
 
         function blurEvent() {
-            clearInterval(mytimer); // TURN OFF TIMER WHEN FOCUS IS LOST
-            mytimer = null;
+            clearInterval(gMyTimer); // TURN OFF TIMER WHEN FOCUS IS LOST
+            gMyTimer = null;
         }
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -1441,7 +1454,7 @@
 
         function backKeyDown() {
             // Call my back key code here.
-            if (DisplayPage == 'mainpage') navigator.app.exitApp();
+            if (gDisplayPage == 'mainpage') navigator.app.exitApp();
             ShowMainPage();
         }
 
@@ -1492,8 +1505,8 @@
         //////////////////////////////////////////////////////////////////////////////////////
         // DisplayLoadTimes() displays time data loaded
         function DisplayLoadTimes() {
-            document.getElementById("reloadtime").innerHTML = "App started " + AppStartedDate +
-                ", update counter: " + updateCounter +
+            document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
+                ", update counter: " + gUpdateCounter +
                 ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
                 ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
                 "<br/>Forecast:" + Math.ceil(((timestampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
@@ -1502,22 +1515,23 @@
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////
-        // show page (new page name). Turns off the page currently being displayed (displaypage) and turns on newpage.
-        //  newpage = id of div for page, 'displaypage' = name of currently displaying page, 
-        //  'tabletoclear' = name of table to clear in former page
-        //  exit    displaypage = the new page
+        // show page (new page name). Turns off the page currently being displayed (gDisplayPage) and turns on newpage.
+        //  newpage = id of div for page, 'gDisplayPage' = name of currently displaying page, 
+        //  'gTableToClear' = name of table to clear in former page
+        //  exit    gDisplayPage = the new page
         function ShowPage(newpage) {
-            if (DisplayPage == newpage) return;
+            if (gMenuOpen) CloseMenu();  // close the menu
+            if (gDisplayPage == newpage) return;
             // clear out rows of table for former page
-            if (tabletoclear != null) {
-                var table = document.getElementById(tabletoclear);
+            if (gTableToClear != null) {
+                var table = document.getElementById(gTableToClear);
                 if (table != null) clearTable(table);
-                tabletoclear = null;
+                gTableToClear = null;
             }
             // now switch to new page
-            document.getElementById(DisplayPage).setAttribute('style', 'display:none;');
+            document.getElementById(gDisplayPage).setAttribute('style', 'display:none;');
             document.getElementById(newpage).setAttribute('style', 'display:block;');
-            DisplayPage = newpage; // remember it
+            gDisplayPage = newpage; // remember it
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1630,7 +1644,7 @@
 
 
             table = document.getElementById("ferrytable");
-            tabletoclear = "ferrytable";
+            gTableToClear = "ferrytable";
             clearTable(table);
 
             row1 = table.insertRow(-1);
@@ -1697,7 +1711,7 @@
         function ShowOpenHoursTable(showall) {
             var table;
             table = document.getElementById("openhourstable");
-            tabletoclear = "openhourstable";
+            gTableToClear = "openhourstable";
             clearTable(table);
             openlist = "";
 
@@ -1802,9 +1816,9 @@
                     OpenHours = JSON.parse(s);  // parse it  
                 } catch (e) {
                     alert(e);
-                    forceCacheReload = true;
+                    gForceCacheReload = true;
                 }
-            } else forceCacheReload = true;
+            } else gForceCacheReload = true;
         }
 
 
@@ -1893,7 +1907,7 @@
             var table // ref to table
             EventDisp = "L";
             table = document.getElementById("comingeventstable");
-            tabletoclear = "comingeventstable";
+            gTableToClear = "comingeventstable";
             var iCE; // iterator through CE
             iCE = 0;
             var aCE; // CE split array 
@@ -2164,11 +2178,11 @@
             CE = CE.split("\n");  // break it up into rows
 
             var startmmdd = Bumpmmdd(monthday, -dayofweek); // back up to beginning of month
-            //if (year % 4 == 0) daysinmonth[2] = 29; // leap year
+            //if (year % 4 == 0) gDaysInMonth[2] = 29; // leap year
             // compute starting date
             //var dd = dayofmonth - dayofweek; // starting dayy of the month
             //var mm = month;
-            //if (dd <= 0) { mm--; dd = daysinmonth[mm] + dd; } // if we had to back of
+            //if (dd <= 0) { mm--; dd = gDaysInMonth[mm] + dd; } // if we had to back of
             //var startmmdd = mm * 100 + dd;
             var mmdd = startmmdd;
 
@@ -2262,12 +2276,12 @@
             var dd = mmdd % 100;
             dd = dd + n;
             if (dd > 0) {  // increasing to next month
-                if (dd <= daysinmonth[mm]) return mmdd + n;
-                else return (mm + 1) * 100 + dd - daysinmonth[mm];
+                if (dd <= gDaysInMonth[mm]) return mmdd + n;
+                else return (mm + 1) * 100 + dd - gDaysInMonth[mm];
             }
             // handle subtract which rolls the month backward
             mm = mm - 1; if (mm == 0) mm = 12;
-            return (mm * 100) + daysinmonth[mm] - dd;
+            return (mm * 100) + gDaysInMonth[mm] - dd;
         }
 
     </script>
@@ -2300,7 +2314,7 @@
         function ShowTideDataPage(periods, showcurrent) {
 
             var table = document.getElementById("tidestable");
-            tabletoclear = "tidestable";
+            gTableToClear = "tidestable";
             clearTable(table);
             var olddate = periods[0].dateTimeISO.substring(5, 10);
             var oldtide = -1;
@@ -2429,6 +2443,7 @@
             var i;
             var canvas = document.getElementById("tidecanvas");
             var axes = {}, ctx = canvas.getContext("2d");
+            //canvas.width = window.innerWidth; canvas.height = window.innerWidth;
             var w = canvas.width; var h = canvas.height;
             ctx.textAlign = "start";
 
@@ -2454,8 +2469,8 @@
             ctx.fillStyle = "#A0D2FF";
             ctx.fillRect(0, 0, w, h);
             // do sunnrise lighter
-            var sunrisefp = datesunrise.getHours() + datesunrise.getMinutes() / 60; // convert to floating pt
-            var sunsetfp = datesunset.getHours() + datesunset.getMinutes() / 60;
+            var sunrisefp = gDateSunrise.getHours() + gDateSunrise.getMinutes() / 60; // convert to floating pt
+            var sunsetfp = gDateSunset.getHours() + gDateSunset.getMinutes() / 60;
             // from 0 to 24
             ctx.fillStyle = "#B0E2FF"; //"#B8EAFF"; //"#C0F2FF";  // snrise times
             if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
@@ -2828,16 +2843,16 @@
 
         app.initialize();
 		//alert("started");
-        DisplayPage = "mainpage";
+        gDisplayPage = "mainpage";
         InitializeDates(0);
-        if (year % 4 == 0) daysinmonth[2] = 29; // leap year
-        datesunrise = new Date(Number(localStorage.getItem("sunrise"))); // reload sunrise and sunset
-        datesunset = new Date(Number(localStorage.getItem("sunset"))); // reload sunrise and sunset
-        AppStartedTime = timestampms;
-        AppStartedDate = monthday * 10000 + timehhmm;
-        LastUpdatems = timestampms;
+        if (year % 4 == 0) gDaysInMonth[2] = 29; // leap year
+        gDateSunrise = new Date(Number(localStorage.getItem("sunrise"))); // reload sunrise and sunset
+        gDateSunset = new Date(Number(localStorage.getItem("sunset"))); // reload sunrise and sunset
+        gAppStartedTime = timestampms;
+        gAppStartedDate = monthday * 10000 + timehhmm;
+        gLastUpdatems = timestampms;
         document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(timehhmm);
-        forceCacheReload = false; // cache reload not needed
+        gForceCacheReload = false; // cache reload not needed
         forceTideReload = false;
 
 
@@ -2872,13 +2887,13 @@
         var reloadreason = "";
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
         if (dailycacheloaded == null) {
-            forceCacheReload = true;
+            gForceCacheReload = true;
             reloadreason = "initial cache load";
         } else if (Number(dailycacheloaded) != monthday) {
             reloadreason = "dailycacheloaded != monthday";
-            forceCacheReload = true;
+            gForceCacheReload = true;
         }
-        if (forceCacheReload) {
+        if (gForceCacheReload) {
             document.getElementById("reloadreason").innerHTML = reloadreason;
             ReloadCachedData();
         }
@@ -2888,7 +2903,7 @@
 
 
         // set refresh timners
-        mytimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
+        gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
         window.addEventListener("focus", focusEvent);
         window.addEventListener("blur", blurEvent);
         document.addEventListener("backbutton", backKeyDown, true);
