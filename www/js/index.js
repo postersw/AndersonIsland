@@ -195,14 +195,16 @@ function ValidFerryRun(flag) {
 
     // holiday - use holiday schedule only
     if (holiday) {
-        if (flag.indexOf("H") > -1) { // yes a valid run
-            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
-                if (!((monthday == 1231) || (monthday == 1224) || (monthday == 703))) return true; // if not 7/3,...
-                if (dayofweek >= 1 && dayofweek <= 5) return true;
-                return false;
-            } else return true;  // holiday
-        } else return false;
+        if (flag.indexOf("H") > -1) return true; // yes a valid run
+        else return false;
     }
+
+    // special case for 1231 1224, 703
+    if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
+        if ((monthday == 1231) || (monthday == 1224) || (monthday == 703)) {
+            if (dayofweek >= 1 && dayofweek <= 5) return true;
+            else return false;
+    } 
 
     if (flag.indexOf(letterofweek) > -1) return true;  // if day of week is encoded
     // special cases F, skip 1st and 3rd wednesday of every month
