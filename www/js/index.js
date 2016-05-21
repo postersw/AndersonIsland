@@ -193,18 +193,18 @@ function DateDiff(mmdd1, mmdd2) {
 function ValidFerryRun(flag) {
     if (flag.indexOf("*") > -1) return true; // good every day
 
-    // holiday - use holiday schedule only
+    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
     if (holiday) {
-        if (flag.indexOf("H") > -1) return true; // yes a valid run
-        else return false;
+        if (flag.indexOf("H") > -1) { // yes a valid run		 
+            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
+            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
+               if (!((monthday == 1231) || (monthday == 1224) || (monthday == 703))) return false; // if not 1231,1224,or 703, its not valid		
+               if (dayofweek >= 1 && dayofweek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
+               return false;		
+            } else return true;  // holiday		
+       } else return false;
     }
 
-    // special case for 1231 1224, 703
-    if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
-        if ((monthday == 1231) || (monthday == 1224) || (monthday == 703)) {
-            if (dayofweek >= 1 && dayofweek <= 5) return true;
-            else return false;
-    } 
 
     if (flag.indexOf(letterofweek) > -1) return true;  // if day of week is encoded
     // special cases F, skip 1st and 3rd wednesday of every month
