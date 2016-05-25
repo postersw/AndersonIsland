@@ -214,8 +214,8 @@
             Open Hours
         </h1>
         <div style="margin:10px">
-        <button onclick="ShowYRHours()">Show year-round hours and info</button>
-        <br /><br />
+       
+        <br />Tap a business for details.&nbsp&nbsp<button onclick="ShowYRHours()">Show more...</button><br /> 
         <table id='openhourstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td>Location</td>
@@ -304,7 +304,7 @@
         </p>
 
      <p style="font-size:smaller"> *'Range' is the total difference (in feet) between a high or low tide and the NEXT low or high tide.
-         Higher ranges may imply faster tidal currents. Balch Passage max. tidal currents are typically 1 - 3 knots.
+         Higher ranges can imply faster tidal currents. Balch Passage max. tidal currents are typically 1 - 3 knots.
          <a href="http://tides.mobilegeographics.com/locations/345.html">Tap for Tidal Current predictions.</a>
   <br />
          These tide predictions are provided for station id 9446705 by Aeris Inc.
@@ -423,7 +423,7 @@
          
 <!--------------------- OPEN HOURS FULL PAGE FOR 1 BUSINESS ------------------------------------->
 <div id="businesspage" style="display:none">
-    <h1 id="businesspageh1" style="padding:12px"> 
+    <h1 id="businesspageh1" style="padding:12px;font-weight:bold"> 
       <button class="buttonback" onclick="ShowOpenHoursPage();">&larr;BACK</button>
       x
     </h1>
@@ -1883,18 +1883,18 @@
                 if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
             }
             // buttons for call and web site
-            return openlist + "<br/>&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Href + "'>Web Site</a>&nbsp&nbsp&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>Map</a><br/>&nbsp";
+            return openlist  +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:4px;width:300px;margin-top:14px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:4px;width:300px;margin-top:14px' href='" + Oh.Href + "'>Web Site</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:4px;width:300px;margin-top:14px' href='" + Oh.Map + "'>Map</a><br/>&nbsp";
                 
 
         } // end of function
 
         //////////////////////////////////////////////////////////////////////////////////////
-        // ShowOneBusiness - formats one OpenHours object
-        //  Entry   Oh = one OpenHours object,  showall = true for all dates
-        //  Exit    returns html for a table entry                             
+        // ShowOneBusinessFullPage - formats one OpenHours object for a full page display
+        //  Entry   id = index into the OpenHours object
+        //  Exit    fills out and shows businesspage.                          
         function ShowOneBusinessFullPage(id) {
             ShowPage("businesspage");
             InitializeDates(0);
@@ -1907,43 +1907,45 @@
             var openlist = "<p style='font-weight:bold;font-size:medium'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </p>";
             var showall = true;
 
-            if (showall) openlist += "<div style='width:100%;background-color:lightblue;padding:10px'>DESCRIPTION</div><p>"
-                + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>" +
+            if (showall) openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p>"
+                + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp " +
                 Oh.Desc +
-                "</p><div style='width:100%;background-color:lightblue;padding:10px'>ADDRESS</div><p>" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>" + 
+                "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p>" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>&nbsp&nbsp " +
                 Oh.Addr + "</p>" +
-                "<div style='width:100%;background-color:lightblue;padding:10px'>OPEN HOURS</div><p>";
+                "<div style='width:100%;background-color:lightblue;padding:6px'>OPEN HOURS</div><p>";
 
             var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
             // loop through the Oh.Sc entries. Each entry is for 1 date range.
             // We could hit multiple date ranges
-            var nr = 0; // number of ranges
-            for (var i = 0; i < Oh.Sc.length; i++) {
-                if (showall || ((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
-                    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {  // if we are in range
-                    // print date range if there is > 1  (Oh.Sc.length>1)
-                    if (showall || (nr > 0)) openlist += "<strong>Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</strong><br/>";
-                    var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
-                    var H2 = Oh.Sc[i].H2; // 2nd hours
-                    nr = nr + 1;
-                    // loop through Sun - Sat
-                    for (var j = 0; j < 7; j++) {
-                        var opentimetoday;
-                        opentimetoday = H[j * 2]; // hhmm-hhmm open today
-                        if (opentimetoday > 0) {
-                            openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
-                            if (H2 != null) {
-                                if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
-                            }
-                            openlist += "</nobr>";
-                            if (j < 6) openlist += ", ";
-                        }
-                    } // for loop for each day
-                    openlist += "<br/>";
+            var nr = 0; // number of ranges;
 
-                }
+            for (var i = 0; i < Oh.Sc.length; i++) {
+                var active = false;
+                if (((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
+                    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) 
+                    openlist += "<span style='color:green;font-weight:bold'>";
+                else openlist += "<span style='color:gray;font-weight:bold'>";
+                // print date range if there is > 1  (Oh.Sc.length>1)
+                openlist += "Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</span><br/>";
+                var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
+                var H2 = Oh.Sc[i].H2; // 2nd hours
+                nr = nr + 1;
+                // loop through Sun - Sat
+                for (var j = 0; j < 7; j++) {
+                    var opentimetoday;
+                    opentimetoday = H[j * 2]; // hhmm-hhmm open today
+                    if (opentimetoday > 0) {
+                        openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
+                        if (H2 != null) {
+                            if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
+                        }
+                        openlist += "</nobr>";
+                        if (j < 6) openlist += ", ";
+                    }
+                } // for loop for each day
+                openlist += "<br/>";              
             } // end for  for 1 date range
 
             // find any closed dates in this week range and list them
@@ -1956,7 +1958,7 @@
                 if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
             }
             // buttons for call and web site
-            openlist += "<div style='width:100%;background-color:lightblue;padding:10px'>MORE</div>" +
+            openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>MORE</div>" +
                 "<p><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Href + "'>Web Site</a></p>";
                 
             document.getElementById("businesspagediv").innerHTML = openlist;
