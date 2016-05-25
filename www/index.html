@@ -149,11 +149,11 @@
             <td id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
          </tr>
                 
-        <tr style="background-color:#fff4b3;" onclick="window.open('http://www.tannerelectric.coop/andersonisland', '_blank' )">  
+        <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">  
             <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">TANNER</td>
             <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
         </tr>
-             <tr style="background-color:#ccffcc"  onclick="window.open('http://www.anderson-island.org/parks.html', '_blank' )"> 
+             <tr style="background-color:#ccffcc"  onclick="window.open('http://www.anderson-island.org/parks/parks.html', '_blank' )"> 
             <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
             PARKS </td>
          </tr>
@@ -373,9 +373,8 @@
       <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
       About
     </h1>
-    <p>The <span style="font-weight:bold">Anderson Island Assistant</span> gives you
-        instant access to a wealth of time-sensitive Anderson Island information.</p>  
-
+      <p>Hi, I'm Bob Bedoll, Anderson Island resident and software developer.  
+           I've put the <strong>Anderson Island Assistant</strong> together to give all of us           instant access to a wealth of time-sensitive, up-to-the-minute island info.            I hope you give it a try and find it as useful as I have.  Thanks.<br />          <em>Bob</em>    </p>
         <div style="width:100%;background-color:darkgray;padding:10px">INSTALLATION</div>
         <p><strong>iPhone/iPad users:</strong>  Install the free iPhone/iPad app from the
             <a href="https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8"> Apple App Store.</a>
@@ -549,7 +548,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0519.2300	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0524.1600	</span>
 
 
         </p>
@@ -583,7 +582,16 @@
       <button style="font-size: 24px" onclick="CloseMenu()">Close</button>
           </p>
 </div>
-
+ 
+<!--------------------- OPEN HOURS FULL PAGE FOR 1 BUSINESS ------------------------------------->
+<div id="businesspage" style="display:none">
+    <h1 id="businesspageh1"> 
+      <button class="buttonback" onclick="ShowOpenHours();">&larr;BACK</button>
+      x
+    </h1>
+    <div id="businesspagediv" style="margin:10px">
+    </div>
+</div>
 <!-- Device Ready ----------------------------------------------------------------------------------------------------->
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
         <p class="event listening">Connecting to Device</p>
@@ -658,11 +666,15 @@
         }
 
         function ShowBurnBan() {
-            window.open("http://wc.pscleanair.org/burnban411/", "_blank");
+            var link = localStorage.getItem("burnban");
+            if (IsEmpty(link)) link = "http://wc.pscleanair.org/burnban411/";  // default
+            window.open(link, "_blank");
         }
 
-        function LocalMenu() {
-
+        function ShowTannerOutage() {
+            var link = localStorage.getItem("tanneroutage");
+            if (IsEmpty(link)) link = "http://www.tannerelectric.coop/andersonisland";  // default
+            window.open(link, "_blank");
         }
 
         function ShowNews() {
@@ -741,6 +753,17 @@
             }
             return 'http://anderson-island.org/' + url;
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        //  IsEmpty - returns true if the string is empty or null or undefined
+        //  Entry   string
+        //  Exit    returns true if empty or null, else false
+        function IsEmpty(string) {
+            if (string == null) return true;
+            if (string == "") return true;
+            return false;
+        }
+
         //////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayAlertDetail() - show the alert detail
         //  if user clicks CANCEL, the alert will be hidden until it changes
@@ -759,8 +782,7 @@
         // DisplayAlertInfo()  - sets the alerttext and sets the alertdiv = display:block if there is an alert
         //  NOTE: if 'alerthide' exists, the alert will NOT be displayed.
         function DisplayAlertInfo() {
-            if (localStorage.getItem("alerttext") == null || localStorage.getItem("alerttext") == "" ||
-                localStorage.getItem("alerthide") != null) {
+            if (IsEmpty(localStorage.getItem("alerttext")) || localStorage.getItem("alerthide") != null) {
                 document.getElementById("alertdiv").setAttribute('style', 'display:none;');
             } else {
                 document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
@@ -825,53 +847,101 @@
         // return the next ferry time as a string. 
         //      entry ferrytimes is the array of times and days (see ferrytimeA)
         //            ferrytimeK = is the array of times and days for ketron
+        //      exit  returns html string of ferry times
         function FindNextFerryTime(ferrytimes, ferrytimeK) {
             var ShowTimeDiff = false;
-			InitializeDates(0);	
+            InitializeDates(0);
             var i = 0;
-			var ketron = false; //ketron run ;
-			var nruns = 0; 
-			var ft = ""; var ketront = "";
+            var ketron = false; //ketron run ;
+            var nruns = 0;
+            var ft = ""; var ketront = "";
             // roll through the ferry times, skipping runs that are not valid for today
             for (i = 0; i < ferrytimes.length; i = i + 2) {
                 if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
                 // now determine if the next run will run today.  If it is a valid run, break out of loop.
-                if (ValidFerryRun(ferrytimes[i + 1])){
-					if(RawTimeDiff(timehhmm, ferrytimes[i])<13) {
-						ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>";
-					} else {
-						ft = ft + VeryShortTime(ferrytimes[i]);
-					}
-
-					if (ferrytimeK!="") { // add ketron time for this run
-
-						if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
-							ketron = true;
-							ketront = ketront + VeryShortTime(ferrytimeK[i]);
-						} else ketront = ketront + " --- ";
-					}
-					if(nruns > 0) break;  // show 2 runs
-					ft = ft + ", "; 
-					ketront = ketront + ", "; 
-					nruns++;
-				};
+                if (ValidFerryRun(ferrytimes[i + 1])) {
+                    if (RawTimeDiff(timehhmm, ferrytimes[i]) < 13) {
+                        ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>";
+                    } else {
+                        ft = ft + VeryShortTime(ferrytimes[i]);
+                    }
+                    if (ferrytimeK != "") { // add ketron time for this run
+                        if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
+                            ketron = true;
+                            ketront = ketront + VeryShortTime(ferrytimeK[i]);
+                        } else ketront = ketront + " ---- ";
+                    }
+                    if (nruns > 0) break;  // show 2 runs
+                    ft = ft + ",&nbsp&nbsp ";
+                    ketront = ketront + ",&nbsp&nbsp ";
+                    nruns++;
+                };
             }
-
             // we ran out of the schedule today so give the 1st run for tomorrow
             if (i >= ferrytimes.length) {
                 i = 0;
                 // need to compute if tomorrow is a holiday
                 if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
                 //handle ferry schedule cutover
-				ft = ft + VeryShortTime(ferrytimes[i]) + " tomorrow";
+                ft = ft + "<span style='font-weight:normal'>" + VeryShortTime(ferrytimes[i]) + " tomorrow</span>";
             }
-			
-            if(ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
 
+            if (ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
             // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-            if((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
-			return ft;
+            if ((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
+            return ft;
         }
+
+        //  TABLE VERSION. Does now work when tomorrow is in col 1 and col 2.
+        //function FindNextFerryTime(ferrytimes, ferrytimeK) {
+        //    var ShowTimeDiff = false;
+		//	InitializeDates(0);	
+        //    var i = 0;
+		//	var ketron = false; //ketron run ;
+		//	var nruns = 0; 
+		//	var ft = ""; var ketront = "";
+        //    // roll through the ferry times, skipping runs that are not valid for today
+        //    for (i = 0; i < ferrytimes.length; i = i + 2) {
+        //        if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        //        // now determine if the next run will run today.  If it is a valid run, break out of loop.
+        //        if (ValidFerryRun(ferrytimes[i + 1])) {
+        //            ft = ft + "<td style='padding:0px'>"
+		//			if(RawTimeDiff(timehhmm, ferrytimes[i])<13) {
+		//			    ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>&nbsp </td>";
+		//			} else {
+		//			    ft = ft + VeryShortTime(ferrytimes[i]) + "&nbsp </td>";
+		//			}
+
+		//			if (ferrytimeK!="") { // add ketron time for this run
+
+		//				if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
+		//					ketron = true;
+		//					ketront = ketront + "<td style='padding:0px'>" + VeryShortTime(ferrytimeK[i]) + "</td>";
+		//				} else ketront = ketront + "<td style='padding:0px'> ---</td> ";
+		//			}
+		//			if(nruns > 0) break;  // show 2 runs
+		//			//ft = ft + ", "; 
+		//			//ketront = ketront + ", "; 
+		//			nruns++;
+		//		};
+        //    }
+
+        //    // we ran out of the schedule today so give the 1st run for tomorrow
+        //    if (i >= ferrytimes.length) {
+        //        i = 0;
+        //        // need to compute if tomorrow is a holiday
+        //        if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
+        //        //handle ferry schedule cutover
+        //        ft = ft + "<td style='padding:0px'>" + VeryShortTime(ferrytimes[i]) + " tomorrow</td>";
+        //    }
+        //    ft = ft + "</tr>";
+			
+        //    //if(ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
+
+        //    // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
+        //    if ((ferrytimeK != null) && ketron) ft = ft + "<tr><td style='padding:0px'><span style='font-weight:bold;color:gray'>Ketron:</span></td>" + ketront + "</tr>";
+		//	return ft;
+        //}
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Finds the next ferry times and puts them into the Dom for the FRONT PAGE
@@ -881,21 +951,44 @@
             //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
             //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
             // at this point, i = the next valid ferry run
-            var v;
+
             var str;
-            v = "Steilacoom: ";
-            if (holiday) v = "Hoilday Steilacoom: "
-            if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "");
-            else v = v + FindNextFerryTime(ferrytimeS2, "");
+            var v = "";
+            if (holiday) v = "Hoilday<br/>"
+            v = v + "<span style='font-weight:bold'>Steilacoom: ";
+            if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "") + "</span>";
+            else v = v + FindNextFerryTime(ferrytimeS2, "") + "</span>";
             // make it bold if not tomorrow
-            if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-            var a = "</br>Anderson:&nbsp&nbsp&nbsp " 
-            if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
-            else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
-            if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
+            //if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
+            var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp "
+            if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK) + "</span>";
+            else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2) + "</span>";
+            //if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;'>" + a + "</span>";
             //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
             document.getElementById("ferrytimes").innerHTML = v + a;
         }
+        //////////////////// TABLE VERSION. Does now work when tomorrow is in col 1 and col 2.
+        //function WriteNextFerryTimes() {
+        //    // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
+        //    // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
+        //    //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+        //    //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+        //    // at this point, i = the next valid ferry run
+        //    var v = "";
+        //    var str;
+        //    if (holiday) v = "<strong>Holiday<strong>";
+        //    v = v + "<table style='border:none'><tr style='font-weight:bold'><td style='padding:0px'>Steilacoom:&nbsp </td>";
+        //    if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "") ;
+        //    else v = v + FindNextFerryTime(ferrytimeS2, "");
+        //    // make it bold if not tomorrow
+        //    //if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
+        //    var a = "<tr style='font-weight:bold;color:blue'><td style='padding:0px'>Anderson:</td>"
+        //    if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
+        //    else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
+        //    //if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
+        //    //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
+        //    document.getElementById("ferrytimes").innerHTML = v + a + "</table>";
+        //}
 
         ////////////////////////////////////////////////////////////////////////
         //  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimex
@@ -915,7 +1008,7 @@
             str = localStorage.getItem("ferrytimesk2");
             if (str != null) ferrytimeK2 = str.split(",");
             str = localStorage.getItem("ferrydate2");
-            if (str == null) return;
+            if (IsEmpty(str)) return;
             var d = new Date(str);  // convert ferry date 2 to ms
             gFerryDate2 = d.getTime(d); // ms till cutover
         }
@@ -1218,7 +1311,7 @@
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
-        // DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' local storage object
+        // DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' local storage object on the main page
         //  object consists of rows (separated by /n) 1 for each event or activity
         function DisplayNextEvents(CE) {
             var datefmt = ""; // formatted date
@@ -1239,8 +1332,9 @@
                 if (aCEmonthday == monthday && Number(aCE[2]) < timehhmm) continue; // if today and it is done, skip it
                 // found it
                 if (aCEmonthday != monthday && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
-                if (aCEmonthday == monthday) datefmt += "<span style='font-weight:bold'>Today</span>";
-                else if (aCEmonthday == (monthday + 1)) datefmt += "Tomorrow";
+                if (aCEmonthday == monthday) {
+                    if (datefmt == "") datefmt += "<span style='font-weight:bold'>Today</span>";  // mark the 1st entry only as TODAY
+                } else if (aCEmonthday == (monthday + 1)) datefmt += "Tomorrow";
                 else if (aCEmonthday <= (monthday + 6)) datefmt += dayofweekshort[GetDayofWeek(aCE[0])];  // fails on month chagne
                 else datefmt += dayofweekshort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
                 datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
@@ -1307,7 +1401,10 @@
 
         ////////////////////////////////////////////////////////////////////////////////////////
         // ReloadDailyCache - parses the daily cache into its parts in local storage
-        //  note: data must be in the order of FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
+        // data is demarkated by 
+        //  KEYWORD\n data   \n      OR
+        //  KEYWORD\n  data with embedded newlines \n KEYWORDEND
+
         function ReloadDailyCache(data) {
             var s;
 
@@ -1334,6 +1431,11 @@
             parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
             parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
             parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
+            // links for things that could change, like the ferry pictures, burnban, tanner
+            parseCache(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera steilacoom
+            parseCache(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera anderson
+            s = parseCache(data, "burnban", "BURNBAN", "\n");   // burn ban
+            parseCache(data, "tanneroutage", "TANNEROUTAGE", "\n");   // tanner outage
             ParseFerryTimes();
         }
         /////////////////////////////
@@ -1589,11 +1691,13 @@
                     row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
                     if (timehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
                     row1col1.style.border = "thin solid black";
+                    
                     // Anderson Island;
                     row1col2 = row1.insertCell(1);
                     row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
                     row1col2.style.color = "darkblue";
                     row1col2.style.border = "thin solid black";
+
                     // Ketron
                     var row1col3 = row1.insertCell(2);
                     if (ferrytimesK[i] != 0) {
@@ -1602,6 +1706,11 @@
                             row1col3.style.color = "brown";
                             row1col3.style.border = "thin solid black";
                         }
+                    }
+                    if (row1.rowIndex == 2) { // row 3 (index=2) is the next run
+                        row1col1.style.fontWeight = "bold";  // bold  row
+                        row1col2.style.fontWeight = "bold";  // bold  row
+                        row1col3.style.fontWeight = "bold";  // bold  row
                     }
 
                 }
@@ -1626,7 +1735,7 @@
 
         ////////////////////////////////////////////////////////////////
         // DisplayFerrySchedule displays the grid
-        //  entry date = "" for today, else mm/dd
+        //  entry userdate = "" for today, else mm/dd
         function DisplayFerrySchedule(userdate) {
             var row1, row1col1;
             if (userdate == "") InitializeDates(0);
@@ -2801,8 +2910,17 @@
         // FERRY WEB CAM
         function ShowFerryWebCam() {
             ShowPage("ferrywebcampage");
-            document.getElementById("steilacoomcam").setAttribute("src", "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg?random" + timehhmm.toFixed(0));
-            document.getElementById("aicam").setAttribute("src", "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg?random" + timehhmm.toFixed(0));
+            // steilacoom link from local storage
+            var link = localStorage.getItem("ferrycams");
+            if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg";
+            link = link + "?random" + timehhmm.toFixed(0); // defeat the cache
+            document.getElementById("steilacoomcam").setAttribute("src", link);
+
+            // anderson link from local storage
+            var link = localStorage.getItem("ferrycama");
+            if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg";
+            link = link + "?random" + timehhmm.toFixed(0); // defeat the cache
+            document.getElementById("aicam").setAttribute("src", link);
         }
 
         //====ABOUT=========================================================================================
