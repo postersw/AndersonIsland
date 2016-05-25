@@ -420,6 +420,16 @@
             <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org', '_system');">Community Club</button><br />   
     </div>
 </div>
+         
+<!--------------------- OPEN HOURS FULL PAGE FOR 1 BUSINESS ------------------------------------->
+<div id="businesspage" style="display:none">
+    <h1 id="businesspageh1" style="padding:12px"> 
+      <button class="buttonback" onclick="ShowOpenHoursPage();">&larr;BACK</button>
+      x
+    </h1>
+    <div id="businesspagediv" style="margin:10px">
+    </div>
+</div>
  <!-- HELP ------------------------------------------------------------------------------------->
   <div id="helppage" style="display:none">
     <h1> 
@@ -582,16 +592,7 @@
       <button style="font-size: 24px" onclick="CloseMenu()">Close</button>
           </p>
 </div>
- 
-<!--------------------- OPEN HOURS FULL PAGE FOR 1 BUSINESS ------------------------------------->
-<div id="businesspage" style="display:none">
-    <h1 id="businesspageh1"> 
-      <button class="buttonback" onclick="ShowOpenHours();">&larr;BACK</button>
-      x
-    </h1>
-    <div id="businesspagediv" style="margin:10px">
-    </div>
-</div>
+
 <!-- Device Ready ----------------------------------------------------------------------------------------------------->
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
         <p class="event listening">Connecting to Device</p>
@@ -1822,9 +1823,9 @@
                 var row = table.insertRow(-1);
                 var cell = row.insertCell(0);
                 cell.innerHTML = openlist;
-                cell.style.border = "thin solid black";
-                //cell.id = i;
-                //cell.onclick = function () { showdiv (this.id)}
+                cell.style.border = "thin solid gray";
+                cell.id = i;
+                cell.onclick = function () { ShowOneBusinessFullPage(this.id) }
             }
             return;
         }
@@ -1890,6 +1891,76 @@
 
         } // end of function
 
+        //////////////////////////////////////////////////////////////////////////////////////
+        // ShowOneBusiness - formats one OpenHours object
+        //  Entry   Oh = one OpenHours object,  showall = true for all dates
+        //  Exit    returns html for a table entry                             
+        function ShowOneBusinessFullPage(id) {
+            ShowPage("businesspage");
+            InitializeDates(0);
+            var Oh = OpenHours[Number(id)]; // one business
+            var t = Oh.Name;
+            var mmdd = monthday;
+            if (t == "Store") t = "General Store";
+            document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
+
+            var openlist = "<p style='font-weight:bold;font-size:medium'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </p>";
+            var showall = true;
+
+            if (showall) openlist += "<div style='width:100%;background-color:lightblue;padding:10px'>DESCRIPTION</div><p>"
+                + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>" +
+                Oh.Desc +
+                "</p><div style='width:100%;background-color:lightblue;padding:10px'>ADDRESS</div><p>" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>" + 
+                Oh.Addr + "</p>" +
+                "<div style='width:100%;background-color:lightblue;padding:10px'>OPEN HOURS</div><p>";
+
+            var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
+
+            // loop through the Oh.Sc entries. Each entry is for 1 date range.
+            // We could hit multiple date ranges
+            var nr = 0; // number of ranges
+            for (var i = 0; i < Oh.Sc.length; i++) {
+                if (showall || ((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
+                    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {  // if we are in range
+                    // print date range if there is > 1  (Oh.Sc.length>1)
+                    if (showall || (nr > 0)) openlist += "<strong>Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</strong><br/>";
+                    var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
+                    var H2 = Oh.Sc[i].H2; // 2nd hours
+                    nr = nr + 1;
+                    // loop through Sun - Sat
+                    for (var j = 0; j < 7; j++) {
+                        var opentimetoday;
+                        opentimetoday = H[j * 2]; // hhmm-hhmm open today
+                        if (opentimetoday > 0) {
+                            openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
+                            if (H2 != null) {
+                                if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
+                            }
+                            openlist += "</nobr>";
+                            if (j < 6) openlist += ", ";
+                        }
+                    } // for loop for each day
+                    openlist += "<br/>";
+
+                }
+            } // end for  for 1 date range
+
+            // find any closed dates in this week range and list them
+            var closedlist = "";
+            if (Oh.Closed != null) {
+                for (var i = 0; i < Oh.Closed.length; i++) {
+                    if ((Oh.Closed[i] >= mmdd) && (Oh.Closed[i] <= mmdd7)) closedlist += "this " + dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                    else if(showall) closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                }
+                if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
+            }
+            // buttons for call and web site
+            openlist += "<div style='width:100%;background-color:lightblue;padding:10px'>MORE</div>" +
+                "<p><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Href + "'>Web Site</a></p>";
+                
+            document.getElementById("businesspagediv").innerHTML = openlist;
+        } // end of function
 
         function ShowYRHours() {
             gShowAllOpenHours = !gShowAllOpenHours;
