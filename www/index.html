@@ -215,7 +215,7 @@
         </h1>
         <div style="margin:10px">
        
-        <br />Tap a business for details.&nbsp&nbsp<button onclick="ShowYRHours()">Show more...</button><br /> 
+    Tap a business for details.&nbsp&nbsp<button onclick="ShowYRHours()">Show more...</button><br /> 
         <table id='openhourstable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white">
                 <td>Location</td>
@@ -374,7 +374,11 @@
       About
     </h1>
       <p>Hi, I'm Bob Bedoll, Anderson Island resident and software developer.  
-           I've put the <strong>Anderson Island Assistant</strong> together to give all of us           instant access to a wealth of time-sensitive, up-to-the-minute island info.            I hope you give it a try and find it as useful as I have.  Thanks.<br />          <em>Bob</em>    </p>
+           I've put the <strong>Anderson Island Assistant</strong> together to give all of us
+           instant access to a wealth of time-sensitive, up-to-the-minute island info.
+            I hope you give it a try and find it as useful as I have.  Thanks.<br />
+          <em>Bob</em>
+    </p>
         <div style="width:100%;background-color:darkgray;padding:10px">INSTALLATION</div>
         <p><strong>iPhone/iPad users:</strong>  Install the free iPhone/iPad app from the
             <a href="https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8"> Apple App Store.</a>
@@ -558,7 +562,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0524.1600	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0525.1600	</span>
 
 
         </p>
@@ -1591,6 +1595,7 @@
         }
 
         function ReloadCachedDataButton() {
+            if (gMenuOpen) CloseMenu();  // close the menu            if (gMenuOpen) CloseMenu();  // close the men
             ReloadCachedData();
             alert("Data has been reloaded.");
         }
@@ -1883,10 +1888,10 @@
                 if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
             }
             // buttons for call and web site
-            return openlist  +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:4px;width:300px;margin-top:14px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:4px;width:300px;margin-top:14px' href='" + Oh.Href + "'>Web Site</a>&nbsp&nbsp&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:4px;width:300px;margin-top:14px' href='" + Oh.Map + "'>Map</a><br/>&nbsp";
+            return openlist  + "" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='" + Oh.Href + "'>Web Site</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='" + Oh.Map + "'>Map</a>";
                 
 
         } // end of function
@@ -1904,7 +1909,7 @@
             if (t == "Store") t = "General Store";
             document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
 
-            var openlist = "<p style='font-weight:bold;font-size:medium'>" + GetOpenStatus(Oh, mmdd, timehhmm) + " </p>";
+            var openlist = "<p style='font-weight:bold;font-size:medium'>" + t + ": " + GetOpenStatus(Oh, mmdd, timehhmm) + " </p>";
             var showall = true;
 
             if (showall) openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p>"
