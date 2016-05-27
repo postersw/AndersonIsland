@@ -10,7 +10,10 @@
                   Remove App Store message from non-mobile devices.
     ver 1.5.0509: add OpenHours object (multiple date ranges and time ranges).  Fix weather month.
             0515: Sunrise/Sunset in tide graph, add other days. Color code activities. Local version of jquery. 
-                  Onclick support for events. My own dialog box div. Formatting improvements.
+                  Onclick support for events and add-to-google-calendar.
+                  My own dialog box div. Formatting improvements.
+                  Menu. (moved about, update, to menu)
+            0524: Full page for each business on click.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -177,9 +180,10 @@
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
-            <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr>
-            </table>
-             </div>
+         <!-- <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr> -->
+            
+    </table>
+    </div>
     </div>
         
 
@@ -497,6 +501,8 @@
             <br />"MONTH" will show the coming events for the next 6 weeks in a monthly-calendar format.
             <br />'Events' generally occur once/month or less frequently, and are usually meetings, entertainment, 
             or special events.
+            <br />Events are color coded. Click on a color on the 'SHOW' row to show only those type of events.
+            <br /> Tap on an event to show more detail, and to add it to your Google calendar. (Sorry - no iPhone support yet).
             <br /><a href="email:support@anderson-island.org">To add your events to this calendar, email us.</a>
         </td>
     </tr>
@@ -509,7 +515,8 @@
         <tr>
         <td style="color:black;vertical-align:text-top">OPEN HOURS</td>
         <td>Displays the 'open' status for the major island businesses.
-            <br />TAP to display the full weekly hours for each business, including easy contact information.
+            <br />TAP to display the full weekly hours for each business.
+            <br />TAB on a business to display a full page with contact and map information.
             <br /><a href="email:support@anderson-island.org">To update your business hours, email us.</a>
         </td>
     </tr>
@@ -520,9 +527,14 @@
         </td>
     </tr>
      <tr>
-        <td style="color:black;vertical-align:text-top">News</td>
+        <td style="color:black;vertical-align:text-top">NEWS</td>
         <td>Displays news articles for Anderson Island.  To submit a news article, send it to 
             support@anderson-island.org.
+        </td>
+    </tr>
+         <tr>
+        <td style="color:green;vertical-align:text-top">PARKS</td>
+        <td>Displays a map of Anderson Island Parks, and information about each park.
         </td>
     </tr>
 
@@ -544,12 +556,12 @@
         </td>
     </tr>
     <tr>
-        <td style="color:gray;vertical-align:text-top">Reload Data</td>
+        <td style="color:gray;vertical-align:text-top">MENU: Reload Data</td>
         <td>TAP to reload the following data from the servers: Tides, Events, Activities, Open Hours, and the Weather.
         </td>
     </tr>
     <tr>
-        <td style="color:black;vertical-align:text-top">Notify</td>
+        <td style="color:black;vertical-align:text-top">MENU: Notify</td>
         <td>Controls the PC Ferry Alert messages that show up on your phone's main screen. Tap 'OFF' to
             turn these messages off. The ferry alerts will still show at the top of the screen for the AI App.
         </td>
@@ -562,7 +574,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0525.1600	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0526.1600	</span>
 
 
         </p>
@@ -577,7 +589,10 @@
 </div>
 
 <!-- Side Menu ----------------------------------------------------------------------------------------------------->
-  <div id="sidemenu" class="sidenav"   style="height: 100%; width: 0; position: fixed; z-index: 1; top: 40px;left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s">
+<!-- <div id="sidemenubackground" style="display:none;position:fixed;padding-top:20px;left:0;top:0;
+    width:100%;height: 100%;overflow-x: hidden; background-color:#000000;background-color: rgba(0,0,0,0.5);transition: 0.3s; "> -->
+  <div id="sidemenu" class="sidenav"   style="height: 100%; width: 0; position: fixed; top: 40px;
+    left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" onclick="CloseMenu()">
     <table style="width:100%;border-collapse:collapse;border-style:none">
             <tr class="menu"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr class="menu"> <td class="menu" onclick="UpdateApp()">Update App</td></tr>
@@ -595,7 +610,8 @@
       <p style="text-align:center">
       <button style="font-size: 24px" onclick="CloseMenu()">Close</button>
           </p>
-</div>
+    </div>
+<!-- </div> -->
 
 <!-- Device Ready ----------------------------------------------------------------------------------------------------->
     <div id="deviceready"  style="display:none"> <!-- removed class="blink"-->
@@ -839,12 +855,14 @@
         /* Set the width of the side navigation to 250px */
         function OpenMenu() {
             document.getElementById("sidemenu").style.width = "150px";
+            //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
             gMenuOpen = true;
         }
 
         /* Set the width of the side navigation to 0 */
         function CloseMenu() {
             document.getElementById("sidemenu").style.width = "0";
+            //document.getElementByID("mainpage").onclick = null;
             gMenuOpen = false;
         }
 
@@ -866,15 +884,15 @@
                 // now determine if the next run will run today.  If it is a valid run, break out of loop.
                 if (ValidFerryRun(ferrytimes[i + 1])) {
                     if (RawTimeDiff(timehhmm, ferrytimes[i]) < 13) {
-                        ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>";
+                        ft = ft + "<span style='color:red'>" + ShortTime(ferrytimes[i]) + "</span>";
                     } else {
-                        ft = ft + VeryShortTime(ferrytimes[i]);
+                        ft = ft + ShortTime(ferrytimes[i]);
                     }
                     if (ferrytimeK != "") { // add ketron time for this run
                         if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
                             ketron = true;
-                            ketront = ketront + VeryShortTime(ferrytimeK[i]);
-                        } else ketront = ketront + " ---- ";
+                            ketront = ketront + ShortTime(ferrytimeK[i]);
+                        } else ketront = ketront + " ------- ";
                     }
                     if (nruns > 0) break;  // show 2 runs
                     ft = ft + ",&nbsp&nbsp ";
@@ -888,7 +906,7 @@
                 // need to compute if tomorrow is a holiday
                 if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
                 //handle ferry schedule cutover
-                ft = ft + "<span style='font-weight:normal'>" + VeryShortTime(ferrytimes[i]) + " tomorrow</span>";
+                ft = ft + "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
             }
 
             if (ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
@@ -1649,7 +1667,8 @@
             // When the user clicks anywhere outside of the dialog, close it
             window.onclick = function (event) {
                 if (event.target == md) {
-                    md.style.display = "none";
+                    ModalClose();
+                    //md.style.display = "none";
                 }
             }
         }
@@ -1865,11 +1884,13 @@
                         var opentimetoday;
                         opentimetoday = H[j * 2]; // hhmm-hhmm open today
                         if (opentimetoday > 0) {
+                            if (j == dayofweek) openlist += "<strong>"; // bold today
                             openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                             if (H2 != null) {
                                 if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                             }
                             openlist += "</nobr>";
+                            if (j == dayofweek) openlist += "</strong>";
                             if (j < 6) openlist += ", ";
                         }
                     } // for loop for each day
@@ -1942,11 +1963,13 @@
                     var opentimetoday;
                     opentimetoday = H[j * 2]; // hhmm-hhmm open today
                     if (opentimetoday > 0) {
+                        if (j == dayofweek) openlist += "<strong>";  // bold today
                         openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                         if (H2 != null) {
                             if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                         }
                         openlist += "</nobr>";
+                        if (j == dayofweek) openlist += "</strong>";
                         if (j < 6) openlist += ", ";
                     }
                 } // for loop for each day
@@ -2277,6 +2300,7 @@
                     col = row.insertCell(-1);
                     col.innerHTML = dayofweekshort[i] + "<br/>" + (mmdd % 100).toFixed(0);
                     col.style.width = "13%"// 
+                    if (mmdd == monthday) col.style.backgroundColor = "yellow"; // color today yellow
                     mmdd = Bumpmmdd(mmdd, 1); 
                 }
 
@@ -2301,7 +2325,10 @@
                         col.id = id;
                         col.onclick = function () { tabletext(this.id) }
                         col.innerHTML = "";
-                        if (mmdd == monthday) col.style.backgroundColor = "yellow";  // make today yellow
+                        if (mmdd == monthday) {  // highlight today and now
+                            if (timehh == h) col.style.backgroundColor = "pink"; 
+                            else col.style.backgroundColor = "lightyellow";  // make today yellow
+                        }
                         col.style.border = "thin solid lightblue";
                         mmdd = Bumpmmdd(mmdd, 1); 
                     }
@@ -2317,11 +2344,25 @@
                     if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
                     // add to entry. entries have an id of: mmddhh99
                     var e = "";
+                    if (dateCE == monthday) e = "<strong>";
                     if (aCE[1].substring(2, 4) != "00") e = ShortTime(aCE[1]) + " "; // add time if not one the hour
                     e += "<span style=color:" + eventcolor(aCE[3]) + ">" + aCE[4] + "</span>";
                     var id = aCE[0] + aCE[1].substring(0, 2) + "99";
                     var c = document.getElementById(id);
+                    if (dateCE == monthday) e = "<strong>" + e + "</strong>";
                     c.innerHTML += e + "<br/>";
+                    c.style.backgroundColor = "azure";
+                    // now the fancy part:  if end time is > 1 hour more than start time, color next blocks if they exist
+                    var sh = Number(aCE[1].substring(0, 2));  //start hour
+                    if (sh < 7) sh = 7; 
+                    var eh = Number(aCE[2].substring(0, 2));  //end hour
+                    if (eh < 7) eh = 7; if (eh > 22) eh = 22;
+                    // if > 1 hour, color next cell
+                    for (var i = sh+1; i < eh; i++) {
+                        var id = aCE[0] + Leading0(i) + "99";
+                        document.getElementById(id).style.backgroundColor = "azure";
+                    }
+
                 } // end for 1 week
 
             }  // end for 2 weeks
