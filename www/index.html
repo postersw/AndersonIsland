@@ -14,6 +14,7 @@
                   My own dialog box div. Formatting improvements.
                   Menu. (moved about, update, to menu)
             0524: Full page for each business on click.
+            0527: call getalerts.php for ferry, burnban, tanner alers.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -149,12 +150,12 @@
         <tr style="background-color:lightyellow"  onclick="ShowBurnBan();"> 
             <td style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
             BURNBAN </td>
-            <td id="burnban" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
+            <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
          </tr>
                 
         <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">  
             <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">TANNER</td>
-            <td id="tanneroutages" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
+            <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
         </tr>
              <tr style="background-color:#ccffcc"  onclick="window.open('http://www.anderson-island.org/parks/parks.html', '_blank' )"> 
             <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
@@ -574,7 +575,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0526.1600	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0527.2300	</span>
 
 
         </p>
@@ -687,13 +688,13 @@
         }
 
         function ShowBurnBan() {
-            var link = localStorage.getItem("burnban");
+            var link = localStorage.getItem("burnbanlink");
             if (IsEmpty(link)) link = "http://wc.pscleanair.org/burnban411/";  // default
             window.open(link, "_blank");
         }
 
         function ShowTannerOutage() {
-            var link = localStorage.getItem("tanneroutage");
+            var link = localStorage.getItem("tanneroutagelink");
             if (IsEmpty(link)) link = "http://www.tannerelectric.coop/andersonisland";  // default
             window.open(link, "_blank");
         }
@@ -802,6 +803,7 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////
         // DisplayAlertInfo()  - sets the alerttext and sets the alertdiv = display:block if there is an alert
         //  NOTE: if 'alerthide' exists, the alert will NOT be displayed.
+        //  Also processes the burnban and tanner alerts.
         function DisplayAlertInfo() {
             if (IsEmpty(localStorage.getItem("alerttext")) || localStorage.getItem("alerthide") != null) {
                 document.getElementById("alertdiv").setAttribute('style', 'display:none;');
@@ -809,17 +811,70 @@
                 document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
                 document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
             }
+
+            // burnban status or alert
+            var s = localStorage.getItem("burnbanalert");
+            if (IsEmpty(s)) s = "Tap for burn ban status.";
+            document.getElementById("burnbanalert").innerHTML = s;
+            // tanner status or alert
+            var s = localStorage.getItem("tanneroutagealert");
+            if (IsEmpty(s)) s = "Tap for outage status.";
+            document.getElementById("tanneroutagealert").innerHTML = s;
         }
+
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // getAlertInfo - gets the alert info from the server every 12 minutes and save it in alerttext and alertdetail
         //  Entry   'alerthide' = true to hide the alert in 'alerttext'
         //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
+        //function getAlertInfoOLDANDOBSOLETE() {
+        //    var alerttimeout = 720; // alert timeout in sec 12 minutes
+        //    var timestamp = Date.now() / 1000; // time in sec
+        //    var t = localStorage.getItem("alerttime");
+        //    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
+        //    var myurl = FixURL('alert.txt');
+
+        //    $.ajax({
+        //        url: myurl,
+        //        dataType: 'text',
+        //        success: function (r) {
+        //            var timestamp = Date.now() / 1000; // time in sec
+        //            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+        //            if (r == "") {  // if the alert is gone, clear it
+        //                if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
+        //                    var a = localStorage.getItem('alerttext');
+        //                    if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+        //                }
+        //                localStorage.setItem("alerttext", "");
+        //                localStorage.setItem("alertdetail", "");
+        //                localStorage.removeItem("alerthide");  // turn off hide
+        //            } else {  // if there is an alert, save it
+        //                r = r + "\n";
+        //                var i = r.indexOf("\n");
+        //                var atext = r.substr(0, i);
+        //                if(atext != localStorage.getItem("alerttext")) {  // if alert changed
+        //                    localStorage.setItem("alerttext", atext);
+        //                    localStorage.setItem("alertdetail", r.substr(i));
+        //                    localStorage.removeItem("alerthide");  // turn off hide because alert changed
+        //                }
+        //            }
+        //            DisplayAlertInfo();
+        //        }
+        //    });
+        //}
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        // getAlertInfo - gets the alert info from the server every 12 minutes via php and save it in 
+        //      alerttext and alertdetail and ...
+        //  Entry   'alerthide' = true to hide the alert in 'alerttext'
+        //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
+        //          'burnbanalert' = burn ban alert info
+        //          'tanneralert' = tanner alert info
         function getAlertInfo() {
             var alerttimeout = 720; // alert timeout in sec 12 minutes
             var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("alerttime");
             if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
-            var myurl = FixURL('alert.txt');
+            var myurl = FixURL('getalerts.php');
 
             $.ajax({
                 url: myurl,
@@ -827,27 +882,39 @@
                 success: function (r) {
                     var timestamp = Date.now() / 1000; // time in sec
                     localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
-                    if (r == "") {  // if the alert is gone, clear it
-                        if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
-                            var a = localStorage.getItem('alerttext');
-                            if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-                        }
-                        localStorage.setItem("alerttext", "");
-                        localStorage.setItem("alertdetail", "");
-                        localStorage.removeItem("alerthide");  // turn off hide
-                    } else {  // if there is an alert, save it
-                        r = r + "\n";
-                        var i = r.indexOf("\n");
-                        var atext = r.substr(0, i);
-                        if(atext != localStorage.getItem("alerttext")) {  // if alert changed
-                            localStorage.setItem("alerttext", atext);
-                            localStorage.setItem("alertdetail", r.substr(i));
-                            localStorage.removeItem("alerthide");  // turn off hide because alert changed
-                        }
-                    }
+                    var s = parseCache(r, "", "FERRY", "FERRYEND");
+                    SaveFerryAlert(s);
+                    s = parseCache(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
+                    if(s=="") localStorage.removeItem("burnbanalert");
+                    s = parseCache(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+                    if (s == "") localStorage.removeItem("tanneroutagealert");
                     DisplayAlertInfo();
                 }
             });
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////
+        //  SaveFerryAlert 
+        //  entry r = the alert text, "" if none
+        function SaveFerryAlert(r) {
+            if (r == "") {  // if the alert is gone, clear it
+                if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
+                    var a = localStorage.getItem('alerttext');
+                    if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+                }
+                localStorage.setItem("alerttext", "");
+                localStorage.setItem("alertdetail", "");
+                localStorage.removeItem("alerthide");  // turn off hide
+            } else {  // if there is an alert, save it
+                r = r + "\n";
+                var i = r.indexOf("\n");
+                var atext = r.substr(0, i);
+                if (atext != localStorage.getItem("alerttext")) {  // if alert changed
+                    localStorage.setItem("alerttext", atext);
+                    localStorage.setItem("alertdetail", r.substr(i));
+                    localStorage.removeItem("alerthide");  // turn off hide because alert changed
+                }
+            }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1448,7 +1515,7 @@
             parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
             parseCache(data, "links", "LINKS", "LINKSEND");
             s = parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
-            if (s > 0) OpenHours = JSON.parse(localStorage.getItem("openhoursjson"));  // parse it
+            if (s != "") OpenHours = JSON.parse(s);  // parse it
             // new ferry schedule 
             parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
             parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
@@ -1457,23 +1524,24 @@
             // links for things that could change, like the ferry pictures, burnban, tanner
             parseCache(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera steilacoom
             parseCache(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera anderson
-            s = parseCache(data, "burnban", "BURNBAN", "\n");   // burn ban
-            parseCache(data, "tanneroutage", "TANNEROUTAGE", "\n");   // tanner outage
+            parseCache(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban
+            parseCache(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage
             ParseFerryTimes();
         }
         /////////////////////////////
         // parseCache - returns the string from the daily cache
-        //  name = name of local storage item
-        //  startstr = starting string, endstr = ending string
-        //  exit    returns length of string
-        function parseCache(data, name, startstr, endstr) {
+        //  data is in the form:  <startstr>\n data <endstr>
+        //  localstoragename = name of local storage item, "" to not store it
+        //  startstr = starting string, endstr = ending string. can be "\n"
+        //  exit    returns the string. "" if no string.
+        function parseCache(data, localstoragename, startstr, endstr) {
             var s = data.indexOf(startstr);
-            if (s < 0) return 0;
+            if (s < 0) return "";
             var e = data.indexOf(endstr, s + startstr.length + 1);
-            if (e < 0) return 0;
-            var len = e - s - startstr.length - 1;
-            localStorage.setItem(name, data.substring(s + startstr.length + 1, e));
-            return len;
+            if (e < 0) return "";
+            var str = data.substring(s + startstr.length + 1, e);
+            if (localstoragename != "") localStorage.setItem(localstoragename, str);
+            return str;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
