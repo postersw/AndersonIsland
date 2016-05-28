@@ -575,7 +575,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0527.2300	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0528.1600	</span>
 
 
         </p>
@@ -884,10 +884,8 @@
                     localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
                     var s = parseCache(r, "", "FERRY", "FERRYEND");
                     SaveFerryAlert(s);
-                    s = parseCache(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
-                    if(s=="") localStorage.removeItem("burnbanalert");
-                    s = parseCache(r, 'tanneroutagealert', "TANNER", "TANNEREND");
-                    if (s == "") localStorage.removeItem("tanneroutagealert");
+                    parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
+                    parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
                     DisplayAlertInfo();
                 }
             });
@@ -1154,7 +1152,7 @@
         function GetOpenStatus(Oh, mmdd, hhmm) {
             var i, j;
             var  opentime, closetime, opentime2, closetime2;
-            if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red'> Closed today. </span>"
+            if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> Closed today. </span>"
             // loop through the oh.Sch entries. Each entry is for 1 date range.
             for (i = 0; i < Oh.Sc.length; i++) {
                 if (((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
@@ -1163,7 +1161,7 @@
                     // ok we have the H entry for the date, now check it
                     // array is [sunopen, sunclose, monopen, monclose, tueopen, tueclose,.....satopen, satclose]
                     var H = Oh.Sc[i].H;  // array indexed by day of week
-                    if (H == null) return " <span style='color:red'> Closed. </span>";  // if no times, its closed
+                    if (H == null) return " <span style='color:red;font-weight:bold'> Closed. </span>";  // if no times, its closed
                     opentime = H[dayofweek * 2]; // open time hhmm
                     closetime = H[dayofweek * 2 + 1]; // close time hhmm
                     opentime2 = 0; closetime2 = 0;
@@ -1174,12 +1172,12 @@
                     var openlist; openlist = "";
                     // test for open
                     if ((hhmm >= opentime) && (hhmm < closetime))
-                        return " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
+                        return " <strong><span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today</strong>";
                     else if ((hhmm >= opentime2) && (hhmm < closetime2))  // 2nd shift for Post Office
-                        return " <span style='color:green'> Open </span>till " + VeryShortTime(closetime2) + " today";
+                        return " <strong><span style='color:green'> Open </span>till " + VeryShortTime(closetime2) + " today</strong>";
                     else {
                         // closed right now. Find next open time.
-                        openlist += " <span style='color:red'> Closed. </span>";
+                        openlist += " <span style='color:red;font-weight:bold'> Closed. </span>";
                         if (hhmm < opentime) return " Opens today " + VeryShortTime(opentime);
                         if (hhmm < opentime2) return " Reopens today " + VeryShortTime(opentime2);
                         //  closed today find next open time
@@ -1522,10 +1520,10 @@
             parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
             parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
             // links for things that could change, like the ferry pictures, burnban, tanner
-            parseCache(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera steilacoom
-            parseCache(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera anderson
-            parseCache(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban
-            parseCache(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage
+            parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera steilacoom
+            parseCacheRemove(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera anderson
+            parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban
+            parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage
             ParseFerryTimes();
         }
         /////////////////////////////
@@ -1542,6 +1540,13 @@
             var str = data.substring(s + startstr.length + 1, e);
             if (localstoragename != "") localStorage.setItem(localstoragename, str);
             return str;
+        }
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //  parseCacheRemove - identical to parseCache but removes the local storage item if it is not present in the data
+        function parseCacheRemove(data, localstoragename, startstr, endstr) {
+            var s = parseCache(data, localstoragename, startstr, endstr);
+            if (s == "") localStorage.removeItem(localstoragename);
+            return s;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////
@@ -1915,7 +1920,7 @@
                 var row = table.insertRow(-1);
                 var cell = row.insertCell(0);
                 cell.innerHTML = openlist;
-                cell.style.border = "thin solid gray";
+                cell.style.border = "solid gray";
                 cell.id = i;
                 cell.onclick = function () { ShowOneBusinessFullPage(this.id) }
             }
@@ -1978,9 +1983,9 @@
             }
             // buttons for call and web site
             return openlist  + "" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='" + Oh.Href + "'>Web Site</a>&nbsp&nbsp&nbsp&nbsp" +
-                "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='" + Oh.Map + "'>Map</a>";
+                "<a style='display:normal;text-decoration:none;background-color:azure;width:300px;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:azure;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
+                "<a style='display:normal;text-decoration:none;background-color:azure;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
                 
 
         } // end of function
@@ -1999,10 +2004,10 @@
             document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
 
             var openlist = "<p style='font-weight:bold;font-size:medium'>" + t + ": " + GetOpenStatus(Oh, mmdd, timehhmm) + " </p>";
-            var showall = true;
 
-            if (showall) openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p>"
-                + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp " +
+            openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p>"
+                + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" +
+                Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp " +
                 Oh.Desc +
                 "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p>" +
                 "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>&nbsp&nbsp " +
@@ -2049,17 +2054,18 @@
             if (Oh.Closed != null) {
                 for (var i = 0; i < Oh.Closed.length; i++) {
                     if ((Oh.Closed[i] >= mmdd) && (Oh.Closed[i] <= mmdd7)) closedlist += "this " + dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
-                    else if(showall) closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
+                    else closedlist += dayofweekshort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
                 }
                 if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
             }
             // buttons for call and web site
             openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>MORE</div>" +
-                "<p><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Href + "'>Web Site</a></p>";
+                "<p><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" +
+                Oh.Href + "'>Web Site</a></p></div>";
                 
             document.getElementById("businesspagediv").innerHTML = openlist;
         } // end of function
-
+        //  ShowYRHours - show year - round hours. Toggles gShowAllOpenHours.
         function ShowYRHours() {
             gShowAllOpenHours = !gShowAllOpenHours;
             ShowOpenHoursTable(gShowAllOpenHours);
@@ -3170,13 +3176,13 @@
         //  Show the cached data immediately. 
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
-
         ShowCachedData();
 
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
+        getAlertInfo(); // always get alert info every 12 minutes (time check is in routine)
         getCurrentWeather(); // gets weather async every 20 min.
         getForecast(); // updates forecast every 2 hrs
-        getAlertInfo(); // always get alert info every 12 minutes (time check is in routine)
+
 
         var reloadreason = "";
         var dailycacheloaded = localStorage.getItem("dailycacheloaded");
