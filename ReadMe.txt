@@ -30,6 +30,12 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Color coding for Events.
 5/15/16. Version 1.5.0515 for web. local jquery library. Color coding for activities. Tide graph supports other dates.
 		formatting improvements. 
+5/29/16	Version 1.5.0528: Tides: Tides graph, range. OpenHours: additional OpenHours information with date ranges for hours, full page
+		business page with map link. Ferry: Support for 2 ferry schedules with automatic cutover. 
+		Events/Activities: Color coding for events and activities. Color in blocks on weekly calendar. Add to Google calendar.
+		Parks:  row and link. Weather: correct month. Tanner and Burnban: support status in getalerts. 
+		Internal: Links now in dailycache. Use getalerts.php.
+5/30/16. 1.5.0530. remove jquery use for ajax.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.

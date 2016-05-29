@@ -15,6 +15,7 @@
                   Menu. (moved about, update, to menu)
             0524: Full page for each business on click.
             0527: call getalerts.php for ferry, burnban, tanner alers.
+            0529: jquery removed.  remove it from git.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -305,7 +306,7 @@
             <strong>Tap a row to graph it.</strong>
         <hr />
         <p id="demo">
-        <button id="tideButton" onclick="ShowCustom();" hidden="hidden">Get Tides for other days</button>
+        <button id="tideButton" onclick="ShowCustom();" >Get Tides for other days</button>
         </p>
 
      <p style="font-size:smaller"> *'Range' is the total difference (in feet) between a high or low tide and the NEXT low or high tide.
@@ -621,9 +622,9 @@
     </div>
 </div>
 
-
+    <!-- JQUERY removed and replaced with native javascript to speed up loading -->
     <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>-->
-    <script type="text/javascript" src="js/jquery.min.js"></script> <!-- try including the library with phonegap 5/15 -->
+    <!--<script type="text/javascript" src="js/jquery.min.js"></script> --><!-- try including the library with phonegap 5/15 -->
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <!-- <script type="text/javascript" src="js/AIA.js"></script> Moved to index.js on 4/25/16 -->
@@ -869,26 +870,58 @@
         //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
         //          'burnbanalert' = burn ban alert info
         //          'tanneralert' = tanner alert info
+        //function getAlertInfo() {
+        //    var alerttimeout = 720; // alert timeout in sec 12 minutes
+        //    var timestamp = Date.now() / 1000; // time in sec
+        //    var t = localStorage.getItem("alerttime");
+        //    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
+        //    var myurl = FixURL('getalerts.php');
+
+        //    $.ajax({
+        //        url: myurl,
+        //        dataType: 'text',
+        //        success: function (r) {
+        //            var timestamp = Date.now() / 1000; // time in sec
+        //            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+        //            var s = parseCache(r, "", "FERRY", "FERRYEND");
+        //            SaveFerryAlert(s);
+        //            parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
+        //            parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+        //            DisplayAlertInfo();
+        //        }
+        //    });
+        //}
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////
+        // getAlertInfo - without jQuery- gets the alert info from the server every 12 minutes via php and save it in 
+        //      alerttext and alertdetail and ...
+        //  Entry   'alerthide' = true to hide the alert in 'alerttext'
+        //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
+        //          'burnbanalert' = burn ban alert info
+        //          'tanneralert' = tanner alert info
         function getAlertInfo() {
             var alerttimeout = 720; // alert timeout in sec 12 minutes
             var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("alerttime");
             if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
             var myurl = FixURL('getalerts.php');
+            // ajax request without jquery
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleAlertReply( xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
+        }
 
-            $.ajax({
-                url: myurl,
-                dataType: 'text',
-                success: function (r) {
-                    var timestamp = Date.now() / 1000; // time in sec
-                    localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
-                    var s = parseCache(r, "", "FERRY", "FERRYEND");
-                    SaveFerryAlert(s);
-                    parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
-                    parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
-                    DisplayAlertInfo();
-                }
-            });
+        function HandleAlertReply (r) {
+            var timestamp = Date.now() / 1000; // time in sec
+            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+            var s = parseCache(r, "", "FERRY", "FERRYEND");
+            SaveFerryAlert(s);
+            parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
+            parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+            DisplayAlertInfo();
         }
 
         ///////////////////////////////////////////////////////////////////////////////////
@@ -1229,7 +1262,7 @@
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
-        // getCurrentWeather  using WorldWeatherMap free service
+        // getCurrentWeather  using openweathermap.com free service
         //  entry: "currentweathertime" = hhmm of last weather.  null to force now. otherwise we ask every 20 min
         //  exit: saves "currentweathertime" and "currentweather"
         // actual json response {"coord":{"lon":-122.6,"lat":47.17},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"cmc stations","main":{"temp":54.18,"pressure":1023.6,"humidity":69,"temp_min":54.18,"temp_max":54.18,"sea_level":1034.45,"grnd_level":1023.6},"wind":{"speed":3.36,"deg":351.002},"clouds":{"all":0},"dt":1456447797,"sys":{"message":0.0082,"country":"US","sunrise":1456498595,"sunset":1456537846},"id":5812092,"name":"Steilacoom","cod":200}
@@ -1239,32 +1272,41 @@
             if (t != null && ((timestamp - t) < (15 * 60))) return; // gets weather async every 15 min.
             localStorage.setItem("currentweathertime", timestamp); // save the cache time so we don't keep asking forever
 
-            $.ajax({
-                url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
-                dataType: 'jsonp',
-                success: function (r) {
-                    // short form
-                    var rain;
-					var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
-                    if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
-                    else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
-                    var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
-                        StripDecimal(r.wind.speed) + " mph, " + rain + " rain";// + ", " + r.precipitation.value + r.precipitation.value
-                    localStorage.setItem("currentweather", current);
-                    $("#weather").html(current); // jquery equivalent. Is this really easier?
-                    // detailed
-                    gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
-                    gDateSunset = new Date(Number(r.sys.sunset) * 1000);
-                    localStorage.setItem("sunrise", gDateSunrise.getTime()); // save
-                    localStorage.setItem("sunset", gDateSunset.getTime()); // save
-                    var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
-                        r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
-                         ", " + rain + " in. rain" +
-                        "<br/>Sunrise: " + gDateSunrise.toLocaleTimeString() + ", Sunset: " + gDateSunset.toLocaleTimeString();
+            //$.ajax({
+            //    url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
+            //    dataType: 'jsonp',
+            var myurl = 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleCurrentWeatherReply( JSON.parse(xhttp.responseText));
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
+        }
+        //////////////////////////////////////////////////////////////////////////////////////
+        //  HandleCurrentWeatherReply - decode the json response from OpenWeatherMap
+        //  entry r = OBJECT of weather reply
+        function HandleCurrentWeatherReply(r) {
+            var rain;
+            // create short string for front page
+			var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
+            if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
+            else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
+            var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
+                StripDecimal(r.wind.speed) + " mph, " + rain + " rain";// + ", " + r.precipitation.value + r.precipitation.value
+            localStorage.setItem("currentweather", current);
+            document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
+            // detailed string for weather detail page
+            gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
+            gDateSunset = new Date(Number(r.sys.sunset) * 1000);
+            localStorage.setItem("sunrise", gDateSunrise.getTime()); // save
+            localStorage.setItem("sunset", gDateSunset.getTime()); // save
+            var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
+                r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
+                    ", " + rain + " in. rain" +
+                "<br/>Sunrise: " + gDateSunrise.toLocaleTimeString() + ", Sunset: " + gDateSunset.toLocaleTimeString();
 
-                    localStorage.setItem("currentweatherlong", currentlong);
-                }
-            });
+            localStorage.setItem("currentweatherlong", currentlong);
         } // end of function
 
  
@@ -1280,32 +1322,46 @@
             var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("forecasttime");
             if (t != null && ((timestamp - t) < (60 * 60))) return; // gets weather forecast async every 60 min.
+            //$.ajax({
+            //    url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
 
-            $.ajax({
-                url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
-                dataType: 'jsonp',
-                success: function (json) {
-                    localStorage.setItem("forecastjson", JSON.stringify(json));  // save it for full forecast
-                    localStorage.setItem("forecastjsontime", timehhmm);
-                    var timestamp = Date.now() / 1000; // time in sec
-                    localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
-                    // get hi and low
-                    var i, t;
-                    var mint = 9999; var maxt = 0;
-                    // scan 8 periods for min and max
-                    for (i = 0; i < 8; i++) {
-                        t = Math.ceil(Number(json.list[i].main.temp_max));
-                        if (t > maxt) maxt = t;
-                        if (t < mint) mint = t;
-                    }
-                    var r = json.list[0];
-                    var forecast = "Forecast: " + maxt + "&deg/" + mint + "&deg, " +
-                        r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
-                    localStorage.setItem("forecast", forecast);
-                    $("#forecast").html(forecast);
-                }
-            });  // end of ajax call
+            //    dataType: 'jsonp',
+            //    success: function (json) {
+            var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+            // ajax request without jquery
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastAReply( xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
+        }
+        //////////////////////////////////////////////////////////////////////////////
+        //  HandleForecastAReply - read the jason forecast from OpenWeatherMap
+        //  entry   jsondata = string json data reply  (note: string, NOT an object)
+        function HandleForecastAReply(jsondata) {
+            localStorage.setItem("forecastjson", jsondata);  // save it for full forecast
+            localStorage.setItem("forecastjsontime", timehhmm);
+            var timestamp = Date.now() / 1000; // time in sec
+            localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
+            // get hi and low
+            var i, t;
+            var mint = 9999; var maxt = 0;
+            // scan 8 periods for min and max
+            var json = JSON.parse(jsondata); // create the json object
+            for (i = 0; i < 8; i++) {
+                t = Math.ceil(Number(json.list[i].main.temp_max));
+                if (t > maxt) maxt = t;
+                if (t < mint) mint = t;
+            }
+            var r = json.list[0];
+            var forecast = "Forecast: " + maxt + "&deg/" + mint + "&deg, " +
+                r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
+            localStorage.setItem("forecast", forecast);
+            document.getElementById("forecast").innerHTML = forecast;
         }  // end of function
+
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////
         // get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
@@ -1373,24 +1429,29 @@
             var t = localStorage.getItem("tidesloadedmmdd");
             if (t != null && (Number(t) == monthday)) return; // gets tides async every day
             //url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
-            //                url: 'gettides.php',
-
-            $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours',
-                dataType: 'jsonp',
-                success: function (json) {
-
-                    if (json.success == true) {
-                        localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json structure
-                        localStorage.setItem("tidesloadedmmdd", monthday);
-                        ShowNextTides();
-                    } else {
-                        // error
-                        alert("cant get tides");
-                        //localStorage.setItem("tidesloadedmmdd", monthday);
-                    }
-                }
-            });
+            //$.ajax({
+            //    url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours',
+            //    dataType: 'jsonp',
+            //    success: function (json) {
+            myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleTidesReply( xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
+        }
+        function HandleTidesReply(reply) {
+            var json = JSON.parse(reply);
+            if (json.success == true) {
+                localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
+                localStorage.setItem("tidesloadedmmdd", monthday);
+                ShowNextTides();
+            } else {
+                // error
+                //alert("cant get tides");
+                //localStorage.setItem("tidesloadedmmdd", monthday);
+            }
         }
 
 
@@ -1438,55 +1499,98 @@
         //  GetComingEvents - retrieves the coming events into the comingevents local storage object
         //  Load from server using ajax async request.
         //  Store into local cache at 'comingevents' and 'comingactivities'  monthday of load stored into local cache at 'comingeventsloaded'
-        function GetComingEvents() {
+        //function GetComingEvents() {
             // ajax async request
             //$.get("comingevents.txt", ComingEventsReceived());
             //                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
             // changed 3/8/16 to use a php script;
             //var myurl = FixURL("comingevents.txt");
+        //    var myurl = FixURL("getcomingevents.php");
+        //    $.ajax({
+        //        url: myurl,
+        //        success: function (data) {
+        //            //alert("Data: " + data + "\nStatus: " + status);
+        //            var i = data.indexOf("ACTIVITIES");
+        //            if (i == 0) i = data.length;
+        //            localStorage.setItem("comingevents", data.substring(0, i));
+        //            if (i < data.length) localStorage.setItem("comingactivities", data.substring(i + 11, data.length));
+        //            localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
+        //            //alert("coming events loaded at " + monthday);
+        //            $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
+        //            $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
+        //        }
+        //    });
+        //    //alert("comingevents.txt requested");
+        //    return;
+        //}
+        function GetComingEvents() {
             var myurl = FixURL("getcomingevents.php");
-            $.ajax({
-                url: myurl,
-                success: function (data) {
-                    //alert("Data: " + data + "\nStatus: " + status);
-                    var i = data.indexOf("ACTIVITIES");
-                    if (i == 0) i = data.length;
-                    localStorage.setItem("comingevents", data.substring(0, i));
-                    if (i < data.length) localStorage.setItem("comingactivities", data.substring(i + 11, data.length));
-                    localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
-                    //alert("coming events loaded at " + monthday);
-                    $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
-                    $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
-                }
-            });
-            //alert("comingevents.txt requested");
-            return;
+            // ajax request without jquery
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleComingEventsReply( xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
+        }
+        function HandleComingEventsReply(data) {
+            var i = data.indexOf("ACTIVITIES");
+            if (i == 0) i = data.length;
+            localStorage.setItem("comingevents", data.substring(0, i));
+            if (i < data.length) localStorage.setItem("comingactivities", data.substring(i + 11, data.length));
+            localStorage.setItem("comingeventsloaded", monthday); // save event loaded date/time
+            //alert("coming events loaded at " + monthday);
+            document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
+            document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+            //$("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
+            //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
         //  GetDailyCache - retrieves the daily cache into the local storage objects 
         //  Load from server using ajax async request.
         //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
+        //function GetDailyCache() {
+        //     ajax async request
+        //    var myurl = FixURL("dailycache.txt"); 
+        //    $.ajax({
+        //        url: myurl, // for phone use fully qualified url http://anderson-island.org/
+        //        success: function (data) {
+        //            InitializeDates(0);
+        //            ReloadDailyCache(data);
+        //            localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
+        //            localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
+        //             now update stuff on mainpage that uses daily cache data
+        //            ShowOpenHours();
+        //            WriteNextFerryTimes();
+        //            DisplayLoadTimes();
+        //        }
+        //    });
+
+        //    return;
+        //}
         function GetDailyCache() {
             // ajax async request
-            var myurl = FixURL("dailycache.txt"); 
-            $.ajax({
-                url: myurl, // for phone use fully qualified url http://anderson-island.org/
-                success: function (data) {
-                    InitializeDates(0);
-                    ReloadDailyCache(data);
-                    localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
-                    localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
-                    // now update stuff on mainpage that uses daily cache data
-                    ShowOpenHours();
-                    WriteNextFerryTimes();
-                    DisplayLoadTimes();
-                }
-            });
-
-            return;
+            var myurl = FixURL("dailycache.txt");
+            // ajax request without jquery
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleDailyCacheReply( xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
         }
-
+        function HandleDailyCacheReply(data) {
+            InitializeDates(0);
+            ReloadDailyCache(data);
+            localStorage.setItem("dailycacheloaded", monthday); // save event loaded date/time
+            localStorage.setItem("dailycacheloadedtime", timehhmm); // save event loaded date/time
+            // now update stuff on mainpage that uses daily cache data
+            ShowOpenHours();
+            WriteNextFerryTimes();
+            DisplayLoadTimes();
+        }
+           
         ////////////////////////////////////////////////////////////////////////////////////////
         // ReloadDailyCache - parses the daily cache into its parts in local storage
         // data is demarkated by 
@@ -1573,7 +1677,7 @@
                 case "openhourspage":
                     return;
                 case "tidespage":
-                    if (usertideselection) return;
+                    if (gUserTideSelection) return;
                     TidesDataPage();
                     //var periods = JSON.parse(localStorage.getItem("jsontides"));
                     //ShowTideDataPage(periods, true);
@@ -1654,8 +1758,10 @@
             ShowNextTides(); // show cached tide data
             DisplayAlertInfo();
             ShowOpenHours(); //  open hours
-            $("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
-            $("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
+            document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
+            document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+            //$("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
+            //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
 
             var s = localStorage.getItem("forecast");
             if (s != null) document.getElementById("forecast").innerHTML = s;
@@ -2581,23 +2687,23 @@
     <!-- TIDES ------------------------>
     <script>
         //===== TIDES =======================================================================================
-        var usertideselection = false; // true when user sets tides
-        var periods;  // parsed data
+        var gUserTideSelection = false; // true when user sets tides
+        var gPeriods;  // parsed data
         //////////////////////////////////////////////////////////////////////////////////////////////////
         // TidesDataPage
         function TidesDataPage() {
             InitializeDates(0);
             ShowPage("tidespage");
             // show the tide data in the jsontides global
-            usertideselection = false;
-            periods = JSON.parse(localStorage.getItem("jsontides"));
-            var i = ShowTideDataPage(periods, true);
-            GraphTideData(periods[i - 1].heightFT, periods[i].heightFT, periods[i+1].heightFT, 
-                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO, true);
+            gUserTideSelection = false;
+            gPeriods = JSON.parse(localStorage.getItem("jsontides"));
+            var i = ShowTideDataPage(gPeriods, true);
+            GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i+1].heightFT, 
+                gPeriods[i-1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i+1].dateTimeISO, true);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // ShowTideData - show the data in the periods array
+        // ShowTideData - show the data in the gPeriods array
         //  entry periods = array of data returned by aeris. Each array entry is one tide period.
         //        showcurrent = true to show current tides, else false
         //  exit  returns periods index of NEXT tide
@@ -2709,7 +2815,7 @@
                 periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
                 "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date ]";
             document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
-            $("#tideButton").show();
+            //$("#tideButton").show();
 
             return nexttidei; // return index
         }
@@ -2720,9 +2826,9 @@
         function TideClick(id) {
             var i = Number(id);
             if (i == 0) i = 1;
-            if (i > (periods.length - 2)) return;
-            GraphTideData(periods[i-1].heightFT, periods[i].heightFT, periods[i+1].heightFT,
-                periods[i-1].dateTimeISO, periods[i].dateTimeISO, periods[i+1].dateTimeISO, false);
+            if (i > (gPeriods.length - 2)) return;
+            GraphTideData(gPeriods[i-1].heightFT, gPeriods[i].heightFT, gPeriods[i+1].heightFT,
+                gPeriods[i-1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i+1].dateTimeISO, false);
 
         }
 
@@ -2898,7 +3004,7 @@
             InitializeDates(0);
             var tidedate = GetDateFromUser();
             if (tidedate == "") return;
-            usertideselection = true;
+            gUserTideSelection = true;
             getCustomTideData(tidedate);
 
         }
@@ -2932,25 +3038,34 @@
         //  fromdate = optional starting date for the tides
         //  data is used to display tide data. It is not stored.
         function getCustomTideData(fromdate) {
-            $("#tideButton").hide();  // hide the user button
-            $.ajax({
-                url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
-                dataType: 'jsonp',
-                success: function (json) {
-
-                    if (json.success == true) {
-                        periods = json.response.periods;
-                        ShowTideDataPage(periods, false);
-                        GraphTideData(periods[1].heightFT, periods[2].heightFT, periods[3].heightFT,
-                            periods[1].dateTimeISO, periods[2].dateTimeISO, periods[3].dateTimeISO, false);
-                    }
-                    else {
-                        document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
-                        //alert('Could not retrieve tide information: ' + json.error.description);
-                    }
-                }
-            });
+            //$("#tideButton").hide();  // hide the user button
+            //$.ajax({
+            //url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
+            //dataType: 'jsonp',
+            //success: function (json) {
+            var myurl = 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleCustomTidesReply(xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
         }
+
+        function HandleCustomTidesReply(reply) {
+            var json = JSON.parse(reply);
+            if (json.success == true) {
+                gPeriods = json.response.periods;
+                ShowTideDataPage(gPeriods, false);
+                GraphTideData(gPeriods[1].heightFT, gPeriods[2].heightFT, gPeriods[3].heightFT,
+                    gPeriods[1].dateTimeISO, gPeriods[2].dateTimeISO, gPeriods[3].dateTimeISO, false);
+            }
+            else {
+                document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
+                //alert('Could not retrieve tide information: ' + json.error.description);
+            }
+        }
+
         /////////////////////////////////////////////////////////////////////////////////////
         // ShowNOAA - query NOAA for the tide page
         function ShowNOAA() {
@@ -2989,6 +3104,30 @@
         //  fromdate = optional starting date for the weather
         //  Note: json data is cached in 'forecastjson', and time stamped in 'forecastjsontime'.
         //      cached data is always used. A new request is allowed only after 12 minutes.
+        //function getWeatherForecastPage(fromdate) {
+        //    var olddate, newdate; // dates
+        //    var ampm; // am or pm
+        //    var currentTemp;
+        //    generateWeatherForecastPage(); // display page from cache
+        //    if (localStorage.getItem("forecastjsontime") != null) {
+        //        var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), timehhmm); // age of forecast in min
+        //        if (td < 12) return; // don't update more than every 12 minutes
+        //    }
+
+        //    //update the forecast from ajax. 
+
+        //    $.ajax({
+        //        url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
+        //        dataType: 'jsonp',
+        //        success: function (json) {
+        //            // save the data
+        //            localStorage.setItem("forecastjson", JSON.stringify(json));
+        //            localStorage.setItem("forecastjsontime", timehhmm);
+        //            generateWeatherForecastPage();
+        //        }
+        //    });  // end of ajax call
+        //}  // end of function
+
         function getWeatherForecastPage(fromdate) {
             var olddate, newdate; // dates
             var ampm; // am or pm
@@ -2996,23 +3135,26 @@
             generateWeatherForecastPage(); // display page from cache
             if (localStorage.getItem("forecastjsontime") != null) {
                 var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), timehhmm); // age of forecast in min
-                if (td < 12) return; // don't update more than every 12 minutes
+                if (td < 30) return; // don't update more than every 30 minutes
             }
+            // ajax request without jquery
+            var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
+            }
+            xhttp.open("GET", myurl, true);
+            xhttp.send();
+        }
 
-            //update the forecast from ajax. 
-
-            $.ajax({
-                url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
-                dataType: 'jsonp',
-                success: function (json) {
-                    // save the data
-                    localStorage.setItem("forecastjson", JSON.stringify(json));
-                    localStorage.setItem("forecastjsontime", timehhmm);
-                    generateWeatherForecastPage();
-                }
-            });  // end of ajax call
+        function HandleForecastReply(json) {
+            localStorage.setItem("forecastjson", json);
+            localStorage.setItem("forecastjsontime", timehhmm);
+            generateWeatherForecastPage();
         }  // end of function
 
+        //////////////////////////////////////////////////////////////////////////////////
+        //  generateWeatherForecastPage - generates the forecast using the json reply from openweathermap
         function generateWeatherForecastPage() {
             if (localStorage.getItem("forecastjson") == null) return;
             var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
