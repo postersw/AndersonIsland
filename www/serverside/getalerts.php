@@ -18,7 +18,7 @@
 
 copyfile("alert.txt", "FERRY");
 copyfile("burnban.txt", "BURNBAN");
-copyfile("tanner.txt", "TANNER");
+copyfile("tanneroutage.txt", "TANNER");
 return;
 
 // copyfile from file to stdout

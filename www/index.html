@@ -102,7 +102,7 @@
         </div>
 
  <table align="center" style="width:100%;padding:0;border-collapse:collapse";>
-        <tr style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
+        <tr id='ferryrow' style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
             <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
             <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
         </tr>
@@ -576,7 +576,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0529.1600	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0530.1200	</span>
 
 
         </p>
@@ -1263,13 +1263,13 @@
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////
         // getCurrentWeather  using openweathermap.com free service
-        //  entry: "currentweathertime" = hhmm of last weather.  null to force now. otherwise we ask every 20 min
+        //  entry: "currentweathertime" = hhmm of last weather.  null to force now. otherwise we ask every 30 min
         //  exit: saves "currentweathertime" and "currentweather"
         // actual json response {"coord":{"lon":-122.6,"lat":47.17},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"cmc stations","main":{"temp":54.18,"pressure":1023.6,"humidity":69,"temp_min":54.18,"temp_max":54.18,"sea_level":1034.45,"grnd_level":1023.6},"wind":{"speed":3.36,"deg":351.002},"clouds":{"all":0},"dt":1456447797,"sys":{"message":0.0082,"country":"US","sunrise":1456498595,"sunset":1456537846},"id":5812092,"name":"Steilacoom","cod":200}
         function getCurrentWeather() {
             var timestamp = Date.now() / 1000; // time in sec
             var t = localStorage.getItem("currentweathertime");
-            if (t != null && ((timestamp - t) < (15 * 60))) return; // gets weather async every 15 min.
+            if (t != null && ((timestamp - t) < (30 * 60))) return; // gets weather async every 30 min.
             localStorage.setItem("currentweathertime", timestamp); // save the cache time so we don't keep asking forever
 
             //$.ajax({
@@ -1295,7 +1295,7 @@
             var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
                 StripDecimal(r.wind.speed) + " mph, " + rain + " rain";// + ", " + r.precipitation.value + r.precipitation.value
             localStorage.setItem("currentweather", current);
-            document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
+            document.getElementById("weather").innerHTML = current; 
             // detailed string for weather detail page
             gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
             gDateSunset = new Date(Number(r.sys.sunset) * 1000);
@@ -1303,7 +1303,7 @@
             localStorage.setItem("sunset", gDateSunset.getTime()); // save
             var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
                 r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
-                    ", " + rain + " in. rain" +
+                    ", Rain " + rain + " in. " +
                 "<br/>Sunrise: " + gDateSunrise.toLocaleTimeString() + ", Sunset: " + gDateSunset.toLocaleTimeString();
 
             localStorage.setItem("currentweatherlong", currentlong);
@@ -1433,7 +1433,7 @@
             //    url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours',
             //    dataType: 'jsonp',
             //    success: function (json) {
-            myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
+            var myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (xhttp.readyState == 4 && xhttp.status == 200) HandleTidesReply( xhttp.responseText);
@@ -3321,7 +3321,8 @@
         ShowCachedData();
 
         //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
-        getAlertInfo(); // always get alert info every 12 minutes (time check is in routine)
+        localStorage.removeItem("alerttime")
+        getAlertInfo(); // always get alert info when we start the app
         getCurrentWeather(); // gets weather async every 20 min.
         getForecast(); // updates forecast every 2 hrs
 
@@ -3351,6 +3352,7 @@
         document.addEventListener("backbutton", backKeyDown, true);
 		document.addEventListener("pause", onPause, false);
 		document.addEventListener("resume", onResume, false);
+		document.getElementById("ferryrow").addEventListener("touchstart", DisplayFerrySchedulePage, false);
 		DisplayLoadTimes();
 
 

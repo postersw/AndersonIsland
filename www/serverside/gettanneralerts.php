@@ -42,6 +42,6 @@
     $old = file_get_contents($tanneroutagefile, $r);
     if($r == $old) return 0;
     echo $r;
-    //file_put_contents($tanneroutagefile, $r);
+    file_put_contents($tanneroutagefile, $r);
     return 0;
 ?>
