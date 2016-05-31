@@ -11,6 +11,7 @@
 //
     $tanneroutagelink = "http://www.tannerelectric.coop/andersonisland";
     $tanneroutagefile = "tanneroutage.txt";
+    chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($tanneroutagelink);
     $i = strpos($str, "<h1>Outages for Anderson Island");
     if($i == -1) {  // if string not found
