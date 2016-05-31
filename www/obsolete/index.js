@@ -1,12 +1,67 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+var app = {
+    // Application Constructor
+    initialize: function() {
+        this.bindEvents();
+    },
+    // Bind Event Listeners
+    //
+    // Bind any events that are required on startup. Common events are:
+    // 'load', 'deviceready', 'offline', and 'online'.
+    bindEvents: function() {
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+    },
+    // deviceready Event Handler
+    //
+    // The scope of 'this' is the event. In order to call the 'receivedEvent'
+    // function, we must explicitly call 'app.receivedEvent(...);'
+    onDeviceReady: function () {
+        if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
+            window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+            window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+        }
+        navigator.splashscreen.hide();
+        app.receivedEvent('deviceready');
+    },
+    // Update DOM on a Received Event. commented out on 2/16/16 because we don't need it.
+    receivedEvent: function(id) {
+        //var parentElement = document.getElementById(id);
+        //var listeningElement = parentElement.querySelector('.listening');
+        //var receivedElement = parentElement.querySelector('.received');
+
+        //listeningElement.setAttribute('style', 'display:none;');
+        //receivedElement.setAttribute('style', 'display:block;');
+
+        //console.log('Received Event: ' + id);
+    }
+	
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // JavaScript source code specifically for Anderson Island Assistant
 //  RFB 2/2/2016
-//  MOVED TO INDEX.JS on 4/25/16
-
+"use strict";
 /////////////////////////  DATE ///////////////////////////////////////////////////////////////////////
 // global date variables
 var table; // the schedule table as a DOM object
-var d; // date object
+var Gd; // date object
 var timestampms; // unix ms since 1970
 var dayofweek;  // day of week in 0-6
 var letterofweek; // letter for day of week
@@ -21,28 +76,16 @@ var laborday; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
 var holiday;  // true if  holiday
-var ferrytimeS, ferrytimeA, ferrytimeK;
-// ferry run times and flags. Heirarchy is:
-//  1. * overrides everything and means always.
-//  2. If a holidays, the run MUST have an H (or *).
-//  3. not a holiday. it goes if it has the day of the week (0-6).
-//  4. otherwise the special case rules are checked (AFHGXY)
-ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-ferrytimeK = [000, "        ", 655, "*", 000, " ", 000, " ", 1010, "G", 1255, "*", 000, " ", 0000, " ", 0000, " ", 1800, "*", 0000, " ", 0000, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
+
 var dayofweekname, dayofweekshort, scheduledate;
 dayofweekname = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 dayofweekshort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 scheduledate = ["5/1/2014"];
 
-// openHours format is array of strings, 1 string per business 
-// each string is: name(phone),Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
-//   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
-var openHours;
-openHours = ["Store (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,<a href='http://www.andersonislandgeneralstore'>\n" +
-            "Restaurant</a> (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,<a href='http://rivieracommunityclub.com/amenities/restaurant'>\n" +
-            "Dump</a> (884-4072),1000-1400,1300-1700,,,,,<a href='https://www.co.pierce.wa.us/index.aspx?NID=1541'>"];
+
 var openHoursLastUpdate; // time of last update
+
+
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -61,23 +104,23 @@ function IsHoliday(md) {
 //          mm/dd/yyyy for an arbitrary date
 // sets the date globals above
 function InitializeDates(dateincr) {
-    if (dateincr == 0) d = new Date();
+    if (dateincr == 0) Gd = new Date();
     else if (dateincr == 1) {
-        d.setDate(d.getDate() + 1); // bump by 1
-        d.setHours(0);d.setMinutes(0);d.setSeconds(0);
+        Gd.setDate(Gd.getDate() + 1); // bump by 1
+        Gd.setHours(0); Gd.setMinutes(0); Gd.setSeconds(0);
     } else {
-        d = new Date(dateincr);
+        Gd = new Date(dateincr);
     }
-    timestampms = d.getTime(); // milisec since 1970
-    dayofweek = d.getDay();  // day of week in 0-6
+    timestampms = Gd.getTime(); // milisec since 1970
+    dayofweek = Gd.getDay();  // day of week in 0-6
     letterofweek = "0123456".charAt(dayofweek); // letter for day of week
-    timehh = d.getHours();
-    timemm = d.getMinutes();
+    timehh = Gd.getHours();
+    timemm = Gd.getMinutes();
     timehhmm = timehh * 100 + timemm;  // hhmm in 24 hour format
-    month = d.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
-    dayofmonth = d.getDate(); // day of month 1-31
+    month = Gd.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
+    dayofmonth = Gd.getDate(); // day of month 1-31
     monthday = month * 100 + dayofmonth;
-    year = d.getFullYear();
+    year = Gd.getFullYear();
     // build holidays once only
     if (dateincr == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
@@ -134,7 +177,7 @@ function DateDiff(mmdd1, mmdd2) {
     var d2 = mmdd2 % 100;
     var r = dayspermonth[m1] + d1 - dayspermonth[m2] - d2;
     if (r < 0) r += 365;
-    return r;   
+    return r;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -150,16 +193,18 @@ function DateDiff(mmdd1, mmdd2) {
 function ValidFerryRun(flag) {
     if (flag.indexOf("*") > -1) return true; // good every day
 
-    // holiday - use holiday schedule only
+    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
     if (holiday) {
-        if (flag.indexOf("H") > -1) { // yes a valid run
-            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
-                if (!((monthday == 1231) || (monthday == 1224) || (monthday == 703))) return true; // if not 7/3,...
-                if (dayofweek >= 1 && dayofweek <= 5) return true;
-                return false;
-            } else return true;  // holiday
-        } else return false;
+        if (flag.indexOf("H") > -1) { // yes a valid run		 
+            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
+            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
+               if (!((monthday == 1231) || (monthday == 1224) || (monthday == 703))) return false; // if not 1231,1224,or 703, its not valid		
+               if (dayofweek >= 1 && dayofweek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
+               return false;		
+            } else return true;  // holiday		
+       } else return false;
     }
+
 
     if (flag.indexOf(letterofweek) > -1) return true;  // if day of week is encoded
     // special cases F, skip 1st and 3rd wednesday of every month
@@ -191,17 +236,17 @@ function FormatTime(ft) {
     else ampm = " pm";
     if (ft < 100) return "12:" + +Leading0(ft % 100) + ampm;
     else if (ft < 1299) return Leading0(Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
-    else return Leading0(Math.floor(ft / 100)-12) + ":" + Leading0(ft % 100) + ampm;
+    else return Leading0(Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  shorttime - shortest possible time
 function ShortTime(ft) {
-        var ampm;
-        if (ft < 1199) ampm = "a";
-        else ampm = "p";
-        if (ft < 100) return "12:" + Leading0(ft % 100) + ampm;
-        else if (ft < 1299) return (Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
-        else return (Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
+    var ampm;
+    if (ft < 1199) ampm = "a";
+    else ampm = "p";
+    if (ft < 100) return "12:" + Leading0(ft % 100) + ampm;
+    else if (ft < 1299) return (Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
+    else return (Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  veryshorttime - shortest possible time
@@ -214,7 +259,7 @@ function VeryShortTime(ft) {
         var h = (Math.floor(ft / 100));
         if (ft < 1199) return h + "a";
         else if (ft < 1299) return h + "p";
-        else return (h-12) + "p";
+        else return (h - 12) + "p";
     }
     else return ShortTime(ft);
 }
@@ -262,34 +307,18 @@ function Leading0(num) {
 //////////////////////////////////// TIDE STUFF /////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Calculate current tide height using the rule of 12s (tide rise in hour: 1/12, 2/12, 3/12, 3/12, 2/12, 1/12
-// entry: newtidetime = next hi/low tide time
-//        oldtidetime = previous hi/low tide time
+// Calculate current tide height using cosine - assumes a 1/2 sine wave between high and low tide
+// entry: t2 = next hi/low tide time as hhmm
+//        t1 = previous hi/low tide time as hhmm
 //        newtideheight, oldtideheight = next and previous tide heights;
 //  returns current tide height
-function CalculateCurrentTideHeight(newtidetime, oldtidetime, newtideheight, oldtideheight) {
-    // calculate current tide height
-    var tideheight;
-    var timedelta; timedelta = RawTimeDiff(oldtidetime, newtidetime);
-    var tidedelta, tideheight;
-    var tidedelta = newtideheight - oldtideheight; // new tide - old tide; + for rising; - for falling
-    var currenttimedelta; currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
-    var timedelta6; timedelta6 = timedelta / 6; //minutes in current tide pseudo hour a little over 60. newtidetime - oldtidetime / 60.
-    var tidedelta12; tidedelta12 = tidedelta / 12;
-    var currenttimeremainder; currenttimeremainder = (currenttimedelta % timedelta6) / timedelta6; // faction of current pseudo hour
-    // this code adds the tidedelta to the old tide in the ratio of :1/12, 2/12, 3/12, 3/12, 2/12, 1/12 . 
-    if (currenttimedelta <= timedelta6) tideheight = oldtideheight + (tidedelta12 * currenttimeremainder);
-    else if (currenttimedelta <= timedelta6 * 2) tideheight = oldtideheight + tidedelta12 + (tidedelta12 * 2 * currenttimeremainder);
-    else if (currenttimedelta <= timedelta6 * 3) tideheight = oldtideheight + tidedelta12 * 3 + (tidedelta12 * 3 * currenttimeremainder);
-    else if (currenttimedelta <= timedelta6 * 4) tideheight = oldtideheight + tidedelta12 * 6 + (tidedelta12 * 3 * currenttimeremainder);
-    else if (currenttimedelta <= timedelta6 * 5) tideheight = oldtideheight + tidedelta12 * 9 + (tidedelta12 * 2 * currenttimeremainder);
-    else tideheight = oldtideheight + tidedelta12 * 11 + (tidedelta12 * currenttimeremainder);
-    return tideheight;
-    // alternate using cos
-    //var timedelta; timedelta = RawTimeDiff(oldtidetime, newtidetime);
-    //var currenttimedelta; currenttimedelta = RawTimeDiff(oldtidetime, timehhmm); // elapsed time since last low or high tide
-    //var rad = currenttimedelta / timedelta * (Math.PI / 2);
-    //var tidedelta = newtideheight - oldtideheight; // new tide - old tide; + for rising; - for falling
-    //var tidedelta = Math.sin(rad) * tidedelta;
-    //return oldtideheight + tidedelta;
+function CalculateCurrentTideHeight(t2, t1, tide2, tide1) {
+    var td = RawTimeDiff(t1, t2);
+    var cd = RawTimeDiff(t1, timehhmm);
+    var c = cd / td * Math.PI;
+    c = Math.cos(Math.PI - c);// cos(PI to 0) = -1 to 1
+    tide = ((tide2 + tide1) / 2) + ((tide2 - tide1) / 2) * c;
+    return tide;
 }
+
+
