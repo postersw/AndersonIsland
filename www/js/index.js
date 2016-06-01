@@ -1276,6 +1276,7 @@ function ReloadDailyCache(data) {
     parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
     parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
     parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
+    parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     // links for things that could change, like the ferry pictures, burnban, tanner
     parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera steilacoom
     parseCacheRemove(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera anderson
@@ -1597,7 +1598,7 @@ function DisplayFerrySchedule(userdate) {
     var row1, row1col1;
     if (userdate == "") InitializeDates(0);
     else InitializeDates(userdate);
-
+    document.getElementById("ferrymessage").innerHTML = localStorage.getItem("ferrymessage");
 
     table = document.getElementById("ferrytable");
     gTableToClear = "ferrytable";
@@ -1612,7 +1613,8 @@ function DisplayFerrySchedule(userdate) {
     row1col1 = row1.insertCell(1);
     row1col1.style.backgroundColor = "blue";
     row1col1.style.color = "white";
-    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
+    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
+        ((UseFerryTime1()? "" : " (New Schedule)"));
     row1col1 = row1.insertCell(2);
     row1col1.style.backgroundColor = "blue";
 
@@ -1632,7 +1634,8 @@ function DisplayFerrySchedule(userdate) {
         row1col1 = row1.insertCell(1);
         row1col1.style.backgroundColor = "blue";
         row1col1.style.color = "white";
-        row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
+        row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
+             ((UseFerryTime1() ? "" : " (New Schedule)"));
         row1col1 = row1.insertCell(2);
         row1col1.style.backgroundColor = "blue";
         if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
@@ -1741,10 +1744,10 @@ function FormatOneBusiness(Oh, mmdd, showall) {
         if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
     }
     // buttons for call and web site
-    return openlist + "" +
-        "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
-        "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
-        "<a style='display:normal;text-decoration:none;background-color:lightgray;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
+    return openlist + "&nbsp&nbsp " +
+        "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
+        "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
+        "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
 
 
 } // end of function
@@ -1762,16 +1765,16 @@ function ShowOneBusinessFullPage(id) {
     if (t == "Store") t = "General Store";
     document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
 
-    var openlist = "<p style='font-weight:bold;font-size:medium'>" + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
+    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
-    openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p>"
+    openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
         + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" +
         Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp " +
         Oh.Desc +
-        "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p>" +
+        "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p style='margin:10px'>" +
         "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>&nbsp&nbsp " +
         Oh.Addr + "</p>" +
-        "<div style='width:100%;background-color:lightblue;padding:6px'>OPEN HOURS</div><p>";
+        "<div style='width:100%;background-color:lightblue;padding:6px'>OPEN HOURS</div><p style='margin:10px'>";
 
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
@@ -1815,11 +1818,11 @@ function ShowOneBusinessFullPage(id) {
             if ((Oh.Closed[i] >= mmdd) && (Oh.Closed[i] <= mmdd7)) closedlist += "this " + gDayofWeekShort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
             else closedlist += gDayofWeekShort[GetDayofWeek(Oh.Closed[i])] + " " + formatDate(Oh.Closed[i]) + ", ";
         }
-        if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
+        if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/></p>";
     }
-    // buttons for call and web site
+    // buttons for web site
     openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>MORE</div>" +
-        "<p><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" +
+        "<p style='margin:10px'><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" +
         Oh.Href + "'>Web Site</a></p></div>";
 
     document.getElementById("businesspagediv").innerHTML = openlist;
