@@ -1277,11 +1277,14 @@ function ReloadDailyCache(data) {
     parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
     parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
+    s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
+    if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+
     // links for things that could change, like the ferry pictures, burnban, tanner
-    parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera steilacoom
-    parseCacheRemove(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera anderson
-    parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban
-    parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage
+    parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera link steilacoom
+    parseCacheRemove(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera link anderson
+    parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban link 
+    parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage link
     ParseFerryTimes();
 }
 /////////////////////////////
@@ -1416,6 +1419,9 @@ function ShowCachedData() {
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
     //$("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
     //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
+    var s = localStorage.getItem("message");
+    if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+
 
     var s = localStorage.getItem("forecast");
     if (s != null) document.getElementById("forecast").innerHTML = s;
@@ -2335,7 +2341,7 @@ function Bumpmmdd(mmdd, n) {
     }
     // handle subtract which rolls the month backward
     mm = mm - 1; if (mm == 0) mm = 12;
-    return (mm * 100) + gDaysInMonth[mm] - dd;
+    return (mm * 100) + gDaysInMonth[mm] + dd;
 }
 
 //</script>
