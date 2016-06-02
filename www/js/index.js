@@ -1634,16 +1634,17 @@ function DisplayFerrySchedule(userdate) {
         //alert(gMonthDay + " dow " + gDayofWeek);
         row1 = table.insertRow(-1);
         row1col1 = row1.insertCell(0);
+        row1col1.colSpan = "3";
         row1col1.style.backgroundColor = "blue";
         row1col1.style.color = "white";
-        row1col1.innerHTML = gDayofWeekName[gDayofWeek];
-        row1col1 = row1.insertCell(1);
-        row1col1.style.backgroundColor = "blue";
-        row1col1.style.color = "white";
-        row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
+        //row1col1.innerHTML = gDayofWeekName[gDayofWeek];
+        //row1col1 = row1.insertCell(1);
+        //row1col1.style.backgroundColor = "blue";
+        //row1col1.style.color = "white";
+        row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
              ((UseFerryTime1() ? "" : " (New Schedule)"));
-        row1col1 = row1.insertCell(2);
-        row1col1.style.backgroundColor = "blue";
+        //row1col1 = row1.insertCell(2);
+        //row1col1.style.backgroundColor = "blue";
         if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
         else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
     }
@@ -1705,7 +1706,7 @@ function ShowOpenHoursTable(showall) {
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
 //  Exit    returns html for a table entry                             
 function FormatOneBusiness(Oh, mmdd, showall) {
-    var openlist = "<span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span><br/>";
+    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
@@ -1992,7 +1993,7 @@ function DisplayComingEventsList(CE) {
         // add a row for new week. won't work if schedule days are both same day of week
         if (iweek != lastweek) {
             row = table.insertRow(-1);
-            row.style.backgroundColor = "azure";
+            row.style.backgroundColor = "lightblue";
             col = row.insertCell(0);
             // test for this week
             if (iweek == thisweek) col.innerHTML = "This Week";
@@ -2007,8 +2008,9 @@ function DisplayComingEventsList(CE) {
         col = row.insertCell(0);
         if (aCE[0] != previouseventdate) col.innerHTML = gDayofWeekShort[idayofweek] + " " + datefmt; // day of week
         else col.innerHTML = "";
+        col.style.backgroundColor = "azure";
         col = row.insertCell(1);
-        col.innerHTML = VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]); // compressed tim
+        col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
         var col2 = row.insertCell(2);
         col2.innerHTML = aCE[4];//event
         //col.onclick = function(){tabletext(this);}
@@ -2035,9 +2037,10 @@ function tabletext(tc) {
     var nc = 0;
     var d = tc.substr(0, 4);  // mmdd part of id
     var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
-    var as = "Tap entry to add to your Google";
-    ////if (!isPhoneGap()) as += "Google ";
-    as += " calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
+    var as = "Tap entry to add to your ";
+    if (!isPhoneGap() || isAndroid()) as += "Google ";
+    else as += "iPhone ";
+    as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
     var CE = GetEvents().split("\n");
     for (iCE = 0; iCE < CE.length; iCE++) {
         var aCE = CE[iCE].split(';');  // split the string
@@ -2067,6 +2070,7 @@ function tabletext(tc) {
 //  Phonegap:  call plugin.
 //  Entry: id = the index into the CE array of the selected event
 function AddToCal(id) {
+    ModalClose();
     var CE = GetEvents().split("\n");
     var aCE = CE[Number(id)].split(';');
     // prep some variables  Date(year, m, d, h, m, 0, 0
@@ -2096,8 +2100,8 @@ function AddToCal(id) {
    }
 
     // PHONEGAP: IOS create an event interactively using the phonegap plugin
-    var success = function (message) { alert("Success: " + JSON.stringify(message)); };
-    var error = function (message) { alert("Error: " + message); };
+    var success = function (message) { alert("Item added to calendar."); };
+    var error = function (message) { alert("Unable to add to calendar."); };
     window.plugins.calendar.createEventInteractively(title, eventLocation, notes, startDate, endDate, success, error);
 }
 
@@ -2443,7 +2447,7 @@ function ShowTideDataPage(periods, showcurrent) {
                     var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(gMonthDay) +
-                        "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date... ]</span><br/>" + currentTide;
+                        "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [Change...]</span><br/>" + currentTide;
                     // calculate time till next tide                                 
                     currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(gTimehhmm, tidehhmm) + ")";
                     nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
@@ -2475,7 +2479,7 @@ function ShowTideDataPage(periods, showcurrent) {
     // now save the current tide
     if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
         periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
-        "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [ Change Date ]";
+        "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [Change...]";
     document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
     //$("#tideButton").show();
 
