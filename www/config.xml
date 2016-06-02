@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.5.05260000"
-        android:versionCode="170"
-        android:versionName="1.5.05260000">
+        version   = "1.5.06010000"
+        android:versionCode="180"
+        android:versionName="1.5.06010000">
 
     <name>Anderson Island Assistant</name>
 
@@ -76,7 +76,7 @@
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <gap:plugin name="pushbots-cordova-plugin" source="npm"/>
-    <!--<plugin name="cordova-plugin-calendar" source="npm" /> --><!-- calendar plugin-->
+    <plugin name="cordova-plugin-calendar" source="npm" /> <!-- calendar plugin-->
 
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
