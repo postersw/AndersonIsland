@@ -2079,23 +2079,23 @@ function AddToCal(id) {
     // NOT PHONEGAP - use google calendar  http://www.google.com/calendar/event?
     //    action=TEMPLATE&text=title&dates=yyyymmddThhmmssZ/yyyymmddThhmmssZ&details=xxx&location=xxx
     //      NOTE: for google link: convert to UTC, change spaces to %20.
-    ////if (!isPhoneGap()) { TEMPORARY - do everything through the link.
-    title = title.replace(/ /g, '%20');
-    eventLocation = eventLocation.replace(/ /g, '%20');
-    //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
-    //           var link = "http://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
-    var link = "http://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
-        "&dates=" + gYear + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
-        'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
-         gYear + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
-        'T' + Leading0(endDate.getUTCHours()) + Leading0(endDate.getUTCMinutes()) + "00Z" +
-        "&location=" + eventLocation;
-    //alert(link);
-    window.open(link, "_blank");
+    if (!isPhoneGap()  ||isAndroid() ) { //NOT PHONEGAP  OR   Phonegap and Andriod
+        title = title.replace(/ /g, '%20');
+        eventLocation = eventLocation.replace(/ /g, '%20');
+        //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
+        //           var link = "http://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
+        var link = "http://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
+            "&dates=" + gYear + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
+            'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
+             gYear + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
+            'T' + Leading0(endDate.getUTCHours()) + Leading0(endDate.getUTCMinutes()) + "00Z" +
+            "&location=" + eventLocation;
+        //alert(link);
+        window.open(link, "_blank");
     return;
-    //}
+   }
 
-    // PHONEGAP: create an event interactively using the phonegap plugin
+    // PHONEGAP: IOS create an event interactively using the phonegap plugin
     var success = function (message) { alert("Success: " + JSON.stringify(message)); };
     var error = function (message) { alert("Error: " + message); };
     window.plugins.calendar.createEventInteractively(title, eventLocation, notes, startDate, endDate, success, error);
