@@ -2038,7 +2038,7 @@ function tabletext(tc) {
     var d = tc.substr(0, 4);  // mmdd part of id
     var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
     var as = "Tap entry to add to your ";
-    if (!isPhoneGap() || isAndroid()) as += "Google ";
+    if (!isPhoneGap()) as += "Google ";
     else as += "iPhone ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
     var CE = GetEvents().split("\n");
