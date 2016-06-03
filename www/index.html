@@ -79,7 +79,7 @@
 <body style="margin:0;padding:0">
     <div class="app">
 
-        <div style="position:fixed;margin-top:-40px;width:100%;">
+        <div style="position:fixed;margin-top:-42px;width:100%;">
             <h1 id="appheader" style="overflow:auto;width:100%;height:25px">
                 <span  id="h1menu" style='float:left' onclick="OpenMenu()">&#9776</span>
                 <span id="h1title">&nbsp&nbsp&nbsp&nbsp Anderson Island Assistant</span> 
@@ -186,7 +186,7 @@
              <td style="font-size:18px;font-weight:bold;padding-left:6px" colspan="2">ISLAND INFORMATION LINKS
              </td>            
          </tr>
-         <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowPage('helppage')">Help</tr>
+         <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">Help</tr>
         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
          <!-- <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr> -->
@@ -327,7 +327,7 @@
   <div id="emergencypage" style="display:none">
          <!--<h1><button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
             Emergency Contacts</h1>-->
-     <div style="margin:10px;padding-top:10px">
+     <div style="margin:10px;padding-top:2px">
         <p>Tap a phone number to dial it.</p>
         <table id="emergencytable">
         </table>
@@ -342,7 +342,6 @@
     </h1>-->
         <div style="margin:10px;padding-top:1px">
         <p id="currentweatherpage", style="font-size:12pt; font-weight:bold">Current weather: </p>
-        <p id="forecastpage">Please wait for the forecast.</p>
        <table id='forecasttable' style="border:thin solid black;border-collapse:collapse">
             <tr style="background-color:black;color:white;">
                 <td>DAY TIME</td>
@@ -352,9 +351,9 @@
                 <td>WIND mph</td>
             </tr>
         </table>
-        <p>
-            Forecast data provided by OpenWeatherMap.com.
-        </p>
+        <p id="forecastpage">Please wait for the forecast.</p>
+            Forecast data provided by OpenWeatherMap.com.<br />
+
              <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
      </div>
   </div>
@@ -478,7 +477,7 @@
         <td style="color:blue;vertical-align:text-top">TIDES</td>
         <td>Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock, 
             station id 9446705).  This information is updated every minute.  
-            The current tide is interpolated using the 'rule of twelves'.
+            The current tide is interpolated using a sine function.
          <br />TAP to display the projected tides for the next 3 days. Tides are provided by Aeris.com.
             <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.</td>
     </tr>
@@ -486,7 +485,7 @@
         <td style="color:darkgreen;vertical-align:text-top">WEATHER</td>
         <td>Displays the current weather at Steilacoom, and the forcasted weather for 9 hours from now. 
             Forecasted highs and lows are for the next 24 hours. This information is updated every 15 minutes.
-        <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap'.
+        <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap.com'.
             <br />'yellow' rows represent daytime periods; 'gray' rows represent nighttime periods.
     </td>
     <tr>
@@ -576,7 +575,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0603.0000	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0603.0900	</span>
 
 
         </p>

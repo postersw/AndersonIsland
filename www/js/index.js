@@ -2964,6 +2964,13 @@ function ShowLinksPage() {
     SetPageHeader("Island Information Links");
     document.getElementById("islandlinks").innerHTML = localStorage.getItem("links");
 }
+
+// HELP
+function ShowHelpPage() {
+    ShowPage('helppage');
+    SetPageHeader("Help");
+}
+
 //</script>
 
 //<!-- MAIN ---------------------------------->
