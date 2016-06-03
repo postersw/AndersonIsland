@@ -630,6 +630,11 @@ function SaveFerryAlert(r) {
 //  side menu
 /* Set the width of the side navigation to 250px */
 function OpenMenu() {
+    // if we are not on main page, the click is really a 'BACK' click
+    if (gDisplayPage != "mainpage") {
+        ShowMainPage();
+        return;
+    }
     document.getElementById("sidemenu").style.width = "150px";
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
     gMenuOpen = true;
@@ -1489,9 +1494,15 @@ function ShowPage(newpage) {
     gDisplayPage = newpage; // remember it
 }
 
+function SetPageHeader(header) {
+    document.getElementById("h1title").innerHTML = header;
+    document.getElementById("h1menu").innerHTML = "&larr;Back";
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // show main page
 function ShowMainPage() {
+    SetPageHeader("&nbsp&nbsp&nbsp Anderson Island Assistant");
+    document.getElementById("h1menu").innerHTML = "&#9776";
     ShowPage("mainpage");
     timerUp();
 }
@@ -1593,6 +1604,7 @@ function ScheduleByDate() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Display the page
 function DisplayFerrySchedulePage() {
+    SetPageHeader("Ferry Schedule");
     ShowPage("ferryschedulepage");
     DisplayFerrySchedule("");
 }
@@ -1664,6 +1676,7 @@ function DisplayFerrySchedule(userdate) {
 function ShowOpenHoursPage() {
     var openlist;
     gShowAllOpenHours = false;
+    SetPageHeader("Open Hours");
     ShowPage("openhourspage");
     InitializeDates(0);
     ShowOpenHoursTable(gShowAllOpenHours);
@@ -1689,7 +1702,7 @@ function ShowOpenHoursTable(showall) {
         var row = table.insertRow(-1);
         var cell = row.insertCell(0);
         cell.innerHTML = openlist;
-        cell.style.border = "solid gray";
+        //cell.style.border = "solid gray";
         cell.id = i;
         cell.onclick = function () { ShowOneBusinessFullPage(this.id) }
     }
@@ -1764,13 +1777,15 @@ function FormatOneBusiness(Oh, mmdd, showall) {
 //  Entry   id = index into the OpenHours object
 //  Exit    fills out and shows businesspage.                          
 function ShowOneBusinessFullPage(id) {
+
     ShowPage("businesspage");
     InitializeDates(0);
     var Oh = OpenHours[Number(id)]; // one business
     var t = Oh.Name;
     var mmdd = gMonthDay;
     if (t == "Store") t = "General Store";
-    document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
+    SetPageHeader(t);
+    //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
 
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
@@ -1885,15 +1900,17 @@ function DisplayComingEventsPage(type) {
     EventFilter = ""; // clear filter
     document.getElementById("eventA").style.fontWeight = "bold";
     if (type == "events") {
-        document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
+        SetPageHeader("Events");
+        //document.getElementById("comingeventsH1").setAttribute('style', 'display:normal;');
         document.getElementById("showevents").setAttribute('style', 'display:normal;');
         document.getElementById("showactivities").setAttribute('style', 'display:none;');
-        document.getElementById("comingactivitiesH1").setAttribute('style', 'display:none;');
+        //document.getElementById("comingactivitiesH1").setAttribute('style', 'display:none;');
     } else {
-        document.getElementById("comingeventsH1").setAttribute('style', 'display:none;');
+        SetPageHeader("Activities");
+        //document.getElementById("comingeventsH1").setAttribute('style', 'display:none;');
         document.getElementById("showevents").setAttribute('style', 'display:none;');
         document.getElementById("showactivities").setAttribute('style', 'display:normal;');
-        document.getElementById("comingactivitiesH1").setAttribute('style', 'display:normal;');
+        //document.getElementById("comingactivitiesH1").setAttribute('style', 'display:normal;');
     }
     DisplayComingEventsList(GetEvents())
 }
@@ -2361,6 +2378,7 @@ var gPeriods;  // parsed data
 function TidesDataPage() {
     InitializeDates(0);
     ShowPage("tidespage");
+    SetPageHeader("Tides at Yoman Point");
     // show the tide data in the jsontides global
     gUserTideSelection = false;
     gPeriods = JSON.parse(localStorage.getItem("jsontides"));
@@ -2750,6 +2768,7 @@ function ShowNOAA() {
 // ShowEmergency
 function ShowEmergencyPage() {
     ShowPage("emergencypage");
+    SetPageHeader("Emergency Contacts");
     document.getElementById("emergencytable").innerHTML = localStorage.getItem("emergency");
 }
 //</script>
@@ -2760,6 +2779,7 @@ function ShowEmergencyPage() {
 // Weather
 function ShowWeatherPage() {
     ShowPage("weatherpage");
+    SetPageHeader("Weather");
     InitializeDates(0);
     document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong");
     getWeatherForecastPage("today");
@@ -2912,6 +2932,7 @@ function generateWeatherForecastPage() {
 // FERRY WEB CAM
 function ShowFerryWebCam() {
     ShowPage("ferrywebcampage");
+    SetPageHeader("Ferry Lane Cameras");
     // steilacoom link from local storage
     var link = localStorage.getItem("ferrycams");
     if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg";
@@ -2930,6 +2951,7 @@ function ShowFerryWebCam() {
 // About
 function ShowAboutPage() {
     ShowPage("aboutpage");
+    SetPageHeader("About");
     if (isPhoneGap()) document.getElementById("phoneweb").innerHTML = "Phone version.";
     DisplayLoadTimes();
 }
@@ -2939,6 +2961,7 @@ function ShowAboutPage() {
 // About
 function ShowLinksPage() {
     ShowPage("linkspage");
+    SetPageHeader("Island Information Links");
     document.getElementById("islandlinks").innerHTML = localStorage.getItem("links");
 }
 //</script>
