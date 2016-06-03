@@ -76,8 +76,8 @@
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <gap:plugin name="pushbots-cordova-plugin" source="npm"/>
-    <plugin name="cordova-plugin-calendar" source="npm"  platform="ios" /> <!-- calendar plugin. ios only-->
-
+    <!--<plugin name="cordova-plugin-calendar" source="npm"  platform="ios" />  calendar plugin. ios only-->
+    <plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> <!-- pick up android bugfix-->
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
     <!--

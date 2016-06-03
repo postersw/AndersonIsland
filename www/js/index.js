@@ -2083,7 +2083,8 @@ function AddToCal(id) {
     // NOT PHONEGAP - use google calendar  http://www.google.com/calendar/event?
     //    action=TEMPLATE&text=title&dates=yyyymmddThhmmssZ/yyyymmddThhmmssZ&details=xxx&location=xxx
     //      NOTE: for google link: convert to UTC, change spaces to %20.
-    if (!isPhoneGap()  ||isAndroid() ) { //NOT PHONEGAP  OR   Phonegap and Andriod
+    //if (!isPhoneGap() || isAndroid()) { //NOT PHONEGAP  OR   Phonegap and Andriod
+    if (!isPhoneGap() ) { //NOT PHONEGAP 
         title = title.replace(/ /g, '%20');
         eventLocation = eventLocation.replace(/ /g, '%20');
         //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
