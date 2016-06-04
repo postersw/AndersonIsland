@@ -495,6 +495,15 @@ function IsEmpty(string) {
     return false;
 }
 
+///////////////////////////////////////////////////////////////////////
+//  FixiPhoneHeader() - fix the header for the iphone by making it higher and adding a br
+function FixiPhoneHeader() {
+    if (isAndroid()) return;
+    if (!isPhoneGap()) return;
+    document.getElementById("ipfix1").style.display = "block";
+    document.getElementById("ipfix2").style.display = "block"; // extra row to allow for ios status line
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayAlertDetail() - show the alert detail
 //  if user clicks CANCEL, the alert will be hidden until it changes
@@ -1497,7 +1506,7 @@ function ShowPage(newpage) {
 
 function SetPageHeader(header) {
     document.getElementById("h1title").innerHTML = header;
-    document.getElementById("h1menu").innerHTML = "&nbsp&larr;&nbsp&nbsp";
+    document.getElementById("h1menu").innerHTML = "&larr;back";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // show main page
@@ -2981,7 +2990,7 @@ function ShowHelpPage() {
 //
 function StartApp() {
     app.initialize();
-
+    FixiPhoneHeader();
     //alert("started");
     gDisplayPage = "mainpage";
     InitializeDates(0);
