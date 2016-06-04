@@ -81,7 +81,7 @@
 
         <div style="position:fixed;margin-top:-42px;width:100%;">
             <h1 id="appheader" style="overflow:auto;width:100%;height:25px">
-                <span  id="h1menu" style='float:left' onclick="OpenMenu()">&#9776</span>
+                <span  id="h1menu" style='float:left;font-weight:bold' onclick="OpenMenu()">&#9776</span>
                 <span id="h1title">&nbsp&nbsp&nbsp&nbsp Anderson Island Assistant</span> 
             </h1> <!-- why do i need to set width fixed? -->
         </div>
@@ -214,7 +214,7 @@
         </table>
         <hr />
         <p id="schdate"></p>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
       </div>
     </div>
 
@@ -232,7 +232,7 @@
                 <td>Location</td>
             </tr>
         </table>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
    </div>
 
@@ -285,7 +285,7 @@
             </tr>
         </table>
         </div>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
    </div>
 <!--TIDES ------------------------------------------------------------------------------------------>
@@ -318,7 +318,7 @@
         
      </p>
         <p><a href="http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/">Tap for NOAA tides for any station and date.</a><br />
-        </p><button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <!--</p><button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
     </div>
   </div>
 
@@ -331,7 +331,7 @@
         <p>Tap a phone number to dial it.</p>
         <table id="emergencytable">
         </table>
-        <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
   </div>
 <!--WEATHER -------------------------------------------------------------------------------------------->
@@ -354,7 +354,7 @@
         <p id="forecastpage">Please wait for the forecast.</p>
             Forecast data provided by OpenWeatherMap.com.<br />
 
-             <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+            <!-- <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
      </div>
   </div>
 
@@ -371,7 +371,7 @@
         <hr/>
         <strong>Anderson Island Camera </strong>- refreshes every minute<br /><br>
         <img id="aicam" src="icon.png"><br />
-           <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>
+        <!--   <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
 </div>
  <!-- ABOUT ------------------------------------------------------------------------------------->
@@ -450,10 +450,26 @@
     <p>The Anderson Island Assistant is a handy little mobile app that provides instant access 
         to a wealth of up-to-the-minute Anderson Island information.  
        </p>
-<table>
-    <tr>
-        <td style="color:darkblue;vertical-align:text-top">FERRY</td>
-        <td>Displays the time of next 2 ferrys to arrive at Anderson Island and Steilacoom, based on the <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">Pierce County PUBLISHED ferry schedule.</a>.
+         <a style="color:darkblue;font-weight:bold" href="#hferry">FERRY</a><br />
+         <a style="color:darkblue;font-weight:bold" href="#hwebcam">WEBCAM</a><br />
+         <a style="color:darkblue;font-weight:bold" href="#hlocation">LOCATION</a><br />
+         <a style="color:blue;font-weight:bold" href="#htides">TIDES</a><br />
+         <a style="color:darkgreen;font-weight:bold" href="#hweather">WEATHER</a><br />
+         <a style="color:darkmagenta;font-weight:bold" href="#hevents">EVENTS</a><br />
+         <a style="color:darkmagenta;font-weight:bold" href="#hactivities">ACTIVITIES</a><br />
+         <a style="color:black;font-weight:bold" href="#hopenhours">OPEN HOURS</a><br />
+         <a style="color:#ff3300;font-weight:bold" href="#hburnban">BURNBAN</a><br />
+         <a style="color:brown;font-weight:bold" href="#htanner">TANNER</a><br />
+         <a style="color:green;font-weight:bold" href="#hparks">PARKS</a><br />
+         <a style="color:black;font-weight:bold" href="#hnews">NEWS</a><br />
+         <a style="color:darkred;font-weight:bold" href="#hcontacts">EMERGENCY CONTACTS</a><br />
+         <a style="color:black;font-weight:bold" href="#hlinks">ISLAND INFORMATION LINKS</a><br />
+         <a style="color:blue;font-weight:bold" href="#hmap">MAP</a><br />
+         <a style="color:darkgray;font-weight:bold" href="#hreload">MENU: RELOAD DATA</a><br />
+         <a style="color:darkgray;font-weight:bold" href="#hnotify">MENU: NOTIFY</a><br />
+<hr />
+        <h3 id="hferry" style="color:darkblue;font-weight:bold"><br />FERRY</h3>
+        Displays the time of next 2 ferrys to arrive at Anderson Island and Steilacoom, based on the <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">Pierce County PUBLISHED ferry schedule.</a>.
             It is NOT updated if the ferry is late or out of service.
             (Use the LOCATION button to see where the ferry actually is.)
             <br />The time becomes red within 12 minutes of the departure time.<br />
@@ -462,42 +478,30 @@
             The schedule automatically factors in day-of-the-week, holidays, and other unique rules.
             However, it is NOT updated if the ferry is late or out of service.
             <br />"DATES" lets you get the ferry schedule for an arbitrary date. You will be prompted for the date.
-            <br />"FERRY LOCATION" displays the current location of the ferry. This information is maintained by Pierce County.
-            <br />"FERRY WEB SITE" brings up the full Pierce County Ferry web site, including fares, schedule, ticket purchase, etc.</br>
-    </tr>
-    <tr>
-        <td style="color:darkblue;vertical-align:text-top">WEBCAMS</td>
-        <td>Displays the web cams showing the ferry lines. These pictures are automatically updated every minute.</td>
-    </tr>
-    <tr>
-        <td style="color:darkblue;vertical-align:text-top">LOCATION</td>
-        <td>Displays the actual current location of the ferry in real time. This information is maintained by Pierce County and is updated every 5 seconds.</td>
-    </tr>
-    <tr>
-        <td style="color:blue;vertical-align:text-top">TIDES</td>
-        <td>Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock, 
+            <br />"FERRY WEB SITE" brings up the full Pierce County Ferry web site, including fares, schedule, ticket purchase, etc.
+    
+   
+ <h3 id="hwebcam" style="color:darkblue;font-weight:bold"><br /><br />WEBCAM</h3>
+        Displays the Pierce County Ferry web cams showing the ferry lines. These pictures are automatically updated every minute.
+
+ <h3 id="hlocation" style="color:darkblue;font-weight:bold"><br /><br />LOCATION</h3>
+        Displays the actual current location of the ferry in real time. This information is maintained by Pierce County and is updated every 5 seconds.
+<hr />
+<h3 id="htides" style="color:blue;font-weight:bold"><br /><br />TIDES</h3>
+        Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock, 
             station id 9446705).  This information is updated every minute.  
             The current tide is interpolated using a sine function.
          <br />TAP to display the projected tides for the next 3 days. Tides are provided by Aeris.com.
-            <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.</td>
-    </tr>
-    <tr>
-        <td style="color:darkgreen;vertical-align:text-top">WEATHER</td>
-        <td>Displays the current weather at Steilacoom, and the forcasted weather for 9 hours from now. 
+            <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.
+
+        <h3 id="hweather" style="color:darkgreen;font-weight:bold"><br /><br />WEATHER</h3>
+        Displays the current weather at Steilacoom, and the forcasted weather for 9 hours from now. 
             Forecasted highs and lows are for the next 24 hours. This information is updated every 15 minutes.
         <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap.com'.
             <br />'yellow' rows represent daytime periods; 'gray' rows represent nighttime periods.
-    </td>
-    <tr>
-        <td style="color:#ff3300;vertical-align:text-top">BURNBAN</td>
-        <td>Tap to display the current PS Clean Air Agency burn-ban status. Anderson Island is part of "Peninsula". 
-            Note that this is the air-pollution burn ban only - it is NOT the burn-ban due to fire risk.
-            <a href="www.pscleanair.org">Click here for the full site.</a>
-        </td>
-    </tr>
-    <tr>
-        <td style="color:darkmagenta;vertical-align:text-top">EVENTS</td>
-        <td>Displays all the coming events for today, or the next coming event for any later day.<br />
+ 
+        <h3 id="hevents" style="color:darkmagenta;font-weight:bold"><br /><br />EVENTS</h3>
+        Displays all the coming events for today, or the next coming event for any later day.<br />
             TAP to display all the coming events for the next 6 months, in a scrolling list.
             <br />"WEEK" will show the coming events for this week in a one-week grid.
             <br />"MONTH" will show the coming events for the next 6 weeks in a monthly-calendar format.
@@ -506,68 +510,53 @@
             <br />Events are color coded. Click on a color on the 'SHOW' row to show only those type of events.
             <br /> Tap on an event to show more detail, and to add it to your calendar.
             <br /><a href="email:support@anderson-island.org">Organizations: To add your events to the AIA calendar, email us.</a>
-        </td>
-    </tr>
-        <tr>
-        <td style="color:darkmagenta;vertical-align:text-top">ACTIVITY</td>
-        <td>Activities are similar to EVENTS, but generally occur multiple times/month, often weekly.
-        </td>
-    </tr>
-        <tr>
-        <td style="color:black;vertical-align:text-top">OPEN HOURS</td>
-        <td>Displays the 'open' status for the major island businesses.
+
+
+         <h3 id="hactivities" style="color:darkmagenta;font-weight:bold"><br /><br />ACTIVITIES</h3>
+       Activities are similar to EVENTS, but generally occur multiple times/month, often weekly.
+       
+        <h3 id="hopenhours" style="color:black;vertical-align:text-top"><br /><br />OPEN HOURS</h3>
+       Displays the 'open' status for the major island businesses.
             <br />TAP to display the full weekly hours for each business.
             <br />TAB on a business to display a full page with contact and map information.
             <br /><a href="email:support@anderson-island.org">To update your business hours, email us.</a>
-        </td>
-    </tr>
-        <tr>
-        <td style="color:brown;vertical-align:text-top">TANNER</td>
-        <td>TAP to display the current Anderson Island Outage status as maintained by TANNER Electric. 
-            This takes you to the Tanner web site.
-        </td>
-    </tr>
-     <tr>
-        <td style="color:black;vertical-align:text-top">NEWS</td>
-        <td>Displays news articles for Anderson Island.  To submit a news article, send it to 
-            support@anderson-island.org.
-        </td>
-    </tr>
-         <tr>
-        <td style="color:green;vertical-align:text-top">PARKS</td>
-        <td>Displays a map of Anderson Island Parks, and information about each park.
-        </td>
-    </tr>
 
-    <tr>
-        <td style="color:darkred;vertical-align:text-top">EMERGENCY CONTACTS</td>
-        <td>TAP to display a list of emergency contacts.  Tap an entry to dial the phone number.
+         <h3 id="hburnban" style="color:#ff3300;font-weight:bold"><br /><br />BURNBAN</h3>
+        Tap to display the current PS Clean Air Agency burn-ban status. Anderson Island is part of "Peninsula". 
+            Note that this is the air-pollution burn ban only - it is NOT the burn-ban due to fire risk.
+            <a href="www.pscleanair.org">Click here for the full site.</a>
+
+         <h3 id="htanner" style="color:brown;font-weight:bold"><br /><br />TANNER</h3>
+       TAP to display the current Anderson Island Outage status as maintained by TANNER Electric. 
+             The first part of the tanner outage message is usually shown in the bar on the main page. This is updated every 10 minutes.
+            This takes you to the Tanner web site.
+
+        <h3 id="hnews" style="color:black;vertical-align:text-top"><br /><br />NEWS</h3>
+       Displays news items for Anderson Island.  To submit a news article, send it to 
+            support@anderson-island.org.
+
+        <h3 id="hparks" style="color:green;vertical-align:text-top"><br /><br />PARKS</h3>
+       Displays a map of all Anderson Island Parks, and information about each park.
+
+        <h3 id="hcontacts" style="color:darkred;vertical-align:text-top"><br /><br />EMERGENCY CONTACTS</h3>
+       TAP to display a list of emergency contacts.  Tap an entry to dial the phone number.
             <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
-        </td>
-    </tr>
-    <tr>
-        <td style="color:blue;vertical-align:text-top">MAP</td>
-        <td>TAP to display a Google map of anderson island.</td>
-    </tr>
-    <tr>
-        <td style="color:black;vertical-align:text-top">ISLAND<br />INFORMATION </td>
-        <td>TAP to display a list of links to important Anderson Island web sites.
+
+        <h3 id="hmap" style="color:blue;vertical-align:text-top"><br /><br />MAP</h3>
+       TAP to display a Google map of Anderson Island.
+
+        <h3 id="links" style="color:black;vertical-align:text-top"><br /><br />ISLAND INFORMATION LINKS</h3>
+       TAP to display a list of links to important Anderson Island web sites.
             Taping on a link opens that web site in your phone's browser.
             <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
-        </td>
-    </tr>
-    <tr>
-        <td style="color:gray;vertical-align:text-top">MENU: Reload Data</td>
-        <td>TAP to reload the following data from the servers: Tides, Events, Activities, Open Hours, and the Weather.
-        </td>
-    </tr>
-    <tr>
-        <td style="color:black;vertical-align:text-top">MENU: Notify</td>
-        <td>Controls the PC Ferry Alert messages that show up on your phone's main screen. Tap 'OFF' to
+
+        <h3 id="hreload" style="color:gray;vertical-align:text-top"><br /><br />MENU: Reload Data</h3>
+       TAP to reload the following data from the servers: Tides, Events, Activities, Open Hours, and the Weather.
+
+        <h3 id="hnotify" style="color:black;vertical-align:text-top"><br /><br />MENU: Notify</h3>
+       Controls the PC Ferry Alert messages that show up on your phone's main screen. Tap 'OFF' to
             turn these messages off. The ferry alerts will still show at the top of the screen for the AI App.
-        </td>
-    </tr>
-</table>
+       
 </div>
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
@@ -575,7 +564,7 @@
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />        
-        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0603.0900	</span>
+        <span style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.5.0603.1900	</span>
 
 
         </p>

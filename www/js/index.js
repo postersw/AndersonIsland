@@ -1496,13 +1496,13 @@ function ShowPage(newpage) {
 
 function SetPageHeader(header) {
     document.getElementById("h1title").innerHTML = header;
-    document.getElementById("h1menu").innerHTML = "&larr;Back";
+    document.getElementById("h1menu").innerHTML = "&nbsp&larr;&nbsp&nbsp";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // show main page
 function ShowMainPage() {
-    SetPageHeader("&nbsp&nbsp&nbsp Anderson Island Assistant");
-    document.getElementById("h1menu").innerHTML = "&#9776";
+    SetPageHeader(" Anderson Island Assistant");
+    document.getElementById("h1menu").innerHTML = "&#9776&nbsp&nbsp";
     ShowPage("mainpage");
     timerUp();
 }
