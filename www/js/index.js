@@ -1776,11 +1776,11 @@ function FormatOneBusiness(Oh, mmdd, showall) {
     }
     // buttons for call and web site
     return openlist + "&nbsp&nbsp " +
-        "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
-        "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
-        "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
-
-
+        "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp&nbsp&nbsp" +
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_system\");'>&nbsp Web Site &nbsp</button>&nbsp&nbsp&nbsp&nbsp" +
+        "<button onclick='window.open(\"" + Oh.Map + "\", \"_system\");'>&nbsp Map &nbsp</button>";
+    // "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
+    //    "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
 } // end of function
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1801,11 +1801,10 @@ function ShowOneBusinessFullPage(id) {
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
-        + "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" +
-        Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp " +
+        + "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +
         Oh.Desc +
         "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p style='margin:10px'>" +
-        "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>&nbsp&nbsp " +
+        "<button onclick='window.open(\"" + Oh.Map + "\", \"_system\");'>&nbsp Map &nbsp</button>&nbsp&nbsp " +
         Oh.Addr + "</p>" +
         "<div style='width:100%;background-color:lightblue;padding:6px'>OPEN HOURS</div><p style='margin:10px'>";
 
@@ -1855,8 +1854,7 @@ function ShowOneBusinessFullPage(id) {
     }
     // buttons for web site
     openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>MORE</div>" +
-        "<p style='margin:10px'><a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" +
-        Oh.Href + "'>Web Site</a></p></div>";
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_system\");'>&nbsp Web Site &nbsp</button></div>";
 
     document.getElementById("businesspagediv").innerHTML = openlist;
 } // end of function
