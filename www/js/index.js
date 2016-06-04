@@ -10,7 +10,8 @@
             0527: call getalerts.php for ferry, burnban, tanner alers.
             0529: jquery removed.  remove it from git.
             0530: moved all javascript into index.js.
- *  5/30/16, version 1.5.0530.2200.   
+            0603.2300: fixed top bar. 
+ * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
  *
@@ -628,7 +629,7 @@ function SaveFerryAlert(r) {
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 //  side menu
-/* Set the width of the side navigation to 250px */
+/* Set the width of the side navigation to 150px */
 function OpenMenu() {
     // if we are not on main page, the click is really a 'BACK' click
     if (gDisplayPage != "mainpage") {
@@ -2056,7 +2057,6 @@ function tabletext(tc) {
     var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
     var as = "Tap entry to add to your ";
     if (!isPhoneGap()) as += "Google ";
-    else as += "iPhone ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
     var CE = GetEvents().split("\n");
     for (iCE = 0; iCE < CE.length; iCE++) {
