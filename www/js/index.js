@@ -1506,7 +1506,8 @@ function ShowPage(newpage) {
 
 function SetPageHeader(header) {
     document.getElementById("h1title").innerHTML = header;
-    document.getElementById("h1menu").innerHTML = "&larr;back";
+    if (isPhoneGap() && !isAndroid()) document.getElementById("h1menu").innerHTML = "&larr;back";
+    else document.getElementById("h1menu").innerHTML = "&nbsp&larr;&nbsp";
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // show main page
