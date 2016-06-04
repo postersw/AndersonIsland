@@ -10,7 +10,8 @@
             0527: call getalerts.php for ferry, burnban, tanner alers.
             0529: jquery removed.  remove it from git.
             0530: moved all javascript into index.js.
-            0603.2300: fixed top bar. 
+            0603.2300: fixed top bar.
+            0604.1600: add TIDEDATALINK to dailycache.txt. 
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -1127,6 +1128,8 @@ function getTideData() {
     //    dataType: 'jsonp',
     //    success: function (json) {
     myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
+    var s = localStorage.getItem("tidedatalink");  // alternate link. probably tides.php.
+    if (!IsEmpty(s)) myurl = s; // 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleTidesReply(xhttp.responseText);
@@ -1300,6 +1303,7 @@ function ReloadDailyCache(data) {
     parseCacheRemove(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera link anderson
     parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban link 
     parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage link
+    parseCacheRemove(data, "tidedatalink", "TIDEDATALINK", "\n"); // tide data
     ParseFerryTimes();
 }
 /////////////////////////////
@@ -2736,7 +2740,7 @@ function getCustomTideData(fromdate) {
     //url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
     //dataType: 'jsonp',
     //success: function (json) {
-    var myurl = 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours';
+    var myurl = 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours';   
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCustomTidesReply(xhttp.responseText);
