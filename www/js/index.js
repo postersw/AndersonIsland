@@ -2950,12 +2950,14 @@ function ShowFerryWebCam() {
     if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg";
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
+    document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank')");
 
     // anderson link from local storage
     var link = localStorage.getItem("ferrycama");
     if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg";
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
+    document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank')");
 }
 
 //====ABOUT=========================================================================================
