@@ -49,6 +49,24 @@ ANDROID DEBUG/BUILD
 	 But only the production apk can be uploaded to the google store. 
 	Note: if you install the debug version on the phone, you must uninstall it before you can install the prod version,
 	 and vice versa. Otherwise the phone gives a message: "install failed"  
+
+DEBUG CHECKOUT:
+	0. Update config.xml for version.
+	1. Check each screen.
+	2. Check each button.
+	3. Check each menu item.
+	4. Reload data. check times in About.
+	5. Test on web.
+	6. Test on Android.
+	7. Test on iphone.
+
+ANDROID GOOGLE PLAY STORE
+	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
+		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; ver 1.5 on 6/5/16.
+	2. Click on Anderson Island Assistant.  Click on "APK".   Click on "Upload new APK to Production";
+
+
+
 IOS DEBUG/BUILD 
 	to debug: in pg build, select the IOS Developer2 certificate (pw=dd). then build.  Then download to the device.
 	I think this is done by running pg build on the phone, and clicking on the ipa icon.

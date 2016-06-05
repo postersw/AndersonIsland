@@ -2129,7 +2129,7 @@ function AddToCal(id) {
    }
 
     // PHONEGAP: IOS create an event interactively using the phonegap plugin
-    var success = function (message) { alert("Item added to calendar."); };
+    //var success = function (message) { alert("Item added to calendar."); };
     var error = function (message) { alert("Unable to add to calendar."); };
     window.plugins.calendar.createEventInteractively(title, eventLocation, notes, startDate, endDate, success, error);
 }
