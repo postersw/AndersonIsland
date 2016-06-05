@@ -474,15 +474,13 @@ function isMobile() {
     return /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
-// FixURL = make URL fully qualified if a phonegap app
+// FixURL = make URL fully qualified if a phonegap app and add "?<seconds>" to turn off cache
 //  entry   url = the url
 //  eixt    returns url
 function FixURL(url) {
-    url += "?" + Date.now(); // turn off cache
-    if (isPhoneGap() == false) {
-        if (document.URL.substr(0, 4) == "file") return document.URL.replace("index.html", "") + url;
-        else return url;
-    }
+    if (url.indexOf("?") < 0) url += "?" + Date.now(); // turn off cache if no '?'
+    if (isPhoneGap() == false) return url;
+    if (url.indexOf("//") > -1) return url;  // if it already is qualified
     return 'http://anderson-island.org/' + url;
 }
 
@@ -1130,6 +1128,7 @@ function getTideData() {
     myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
     var s = localStorage.getItem("tidedatalink");  // alternate link. probably tides.php.
     if (!IsEmpty(s)) myurl = s; // 
+    myurl = FixURL(myurl);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleTidesReply(xhttp.responseText);
