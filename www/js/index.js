@@ -1779,9 +1779,9 @@ function FormatOneBusiness(Oh, mmdd, showall) {
     }
     // buttons for call and web site
     return openlist + "&nbsp&nbsp " +
-        "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp&nbsp&nbsp" +
-        "<button onclick='window.open(\"" + Oh.Href + "\", \"_system\");'>&nbsp Web Site &nbsp</button>&nbsp&nbsp&nbsp&nbsp" +
-        "<button onclick='window.open(\"" + Oh.Map + "\", \"_system\");'>&nbsp Map &nbsp</button>";
+        "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>" + Oh.Phone + "</a></button>&nbsp&nbsp" +
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web Site</button>&nbsp&nbsp" +
+        "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp Map &nbsp</button>";
     // "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
     //    "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
 } // end of function
@@ -1807,7 +1807,7 @@ function ShowOneBusinessFullPage(id) {
         + "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +
         Oh.Desc +
         "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p style='margin:10px'>" +
-        "<button onclick='window.open(\"" + Oh.Map + "\", \"_system\");'>&nbsp Map &nbsp</button>&nbsp&nbsp " +
+        "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp Map &nbsp</button>&nbsp&nbsp " +
         Oh.Addr + "</p>" +
         "<div style='width:100%;background-color:lightblue;padding:6px'>OPEN HOURS</div><p style='margin:10px'>";
 
@@ -1856,8 +1856,8 @@ function ShowOneBusinessFullPage(id) {
         if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/></p>";
     }
     // buttons for web site
-    openlist += "<div style='width:100%;background-color:lightblue;padding:6px'>MORE</div>" +
-        "<button onclick='window.open(\"" + Oh.Href + "\", \"_system\");'>&nbsp Web Site &nbsp</button></div>";
+    openlist += "<div style='width:100%;background-color:lightblue;padding:6px;margin-bottom:10px'>MORE</div>" +
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>&nbsp Web Site &nbsp</button></div>";
 
     document.getElementById("businesspagediv").innerHTML = openlist;
 } // end of function
@@ -2949,14 +2949,14 @@ function ShowFerryWebCam() {
     if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg";
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
-    document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank')");
+    document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
 
     // anderson link from local storage
     var link = localStorage.getItem("ferrycama");
     if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg";
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
-    document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank')");
+    document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
 }
 
 //====ABOUT=========================================================================================
