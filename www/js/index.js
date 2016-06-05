@@ -1780,8 +1780,8 @@ function FormatOneBusiness(Oh, mmdd, showall) {
     // buttons for call and web site
     return openlist + "&nbsp&nbsp " +
         "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>" + Oh.Phone + "</a></button>&nbsp&nbsp" +
-        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web Site</button>&nbsp&nbsp" +
-        "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp Map &nbsp</button>";
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web</button>&nbsp&nbsp" +
+        "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>Map</button>";
     // "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
     //    "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
 } // end of function
