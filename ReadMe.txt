@@ -76,3 +76,16 @@ IOS DEBUG/BUILD
 	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
 	8. Make sure that your build is selected under the build section of the web page.
 	9. Click SAVE and SUBMIT FOR REVIEW.
+
+	DATA LOADS
+	Data is loaded from:
+	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app.
+	2. Coming Events: comingevents.php  which copies comingevents.txt to stdout.
+		comingevents.txt is manually maintained by rfb. loaded 1/day by the app.
+	3. getalerts.php which copies alerts.txt (filled by getferryalerts.php cron every 5 min),
+		 tanneroutage.txt (filled by gettanneralerts.php cron every 10 min),
+		 burnban.txt (filled by getburnbanalerts.php cron every 15 min) to stdout.
+		 run every 10 minutes by the app.
+	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the app.
+	5. openweathermap.com which returns json structures for current weather and forecast.
+		current loaded every 15 min by the app. forecast loaded every 30 min by the app.
