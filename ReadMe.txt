@@ -36,6 +36,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Parks:  row and link. Weather: correct month. Tanner and Burnban: support status in getalerts. 
 		Internal: Links now in dailycache. Use getalerts.php.
 5/30/16. 1.5.0530. remove jquery use for ajax.
+6/05/16. 1.5.0605.1400 versionCode 220 (but play shows it as 2208). Uploaded to Google Play. as version 1.5....
+
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
@@ -51,7 +53,8 @@ ANDROID DEBUG/BUILD
 	 and vice versa. Otherwise the phone gives a message: "install failed"  
 
 DEBUG CHECKOUT:
-	0. Update config.xml for version.
+	0. Update config.xml for version and versionCode. Note for some reason I set the versionCode = 220
+		and googleplay shows it as 2208.
 	1. Check each screen.
 	2. Check each button.
 	3. Check each menu item.
@@ -64,6 +67,8 @@ ANDROID GOOGLE PLAY STORE
 	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; ver 1.5 on 6/5/16.
 	2. Click on Anderson Island Assistant.  Click on "APK".   Click on "Upload new APK to Production";
+	3. Set the what's new.
+	4. make sure that the versioncode is higher than the previous version.
 
 
 
