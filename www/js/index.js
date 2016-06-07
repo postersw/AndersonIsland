@@ -34,7 +34,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.6.0606.1900";
+var gVer = "1.6.0607.1601";
 
 var app = {
     // Application Constructor
@@ -478,13 +478,14 @@ function isMobile() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-//  DeviceInfo - returns device info as a string
+//  DeviceInfo - returns device info as a string: 
+//  PG=phonegap, MW=mobile web, DW=desktop web, And=Android, IOS=IOS
 function DeviceInfo() {
     var kind;
-    if (isPhoneGap()) kind = "Phonegap-";
-    else if (isMobile()) kind = "MobileWeb-";
-    else kind = "DesktopWeb-";
-    if (isAndroid()) kind += "Android";
+    if (isPhoneGap()) kind = "PG-";
+    else if (isMobile()) kind = "MW-";
+    else kind = "DW-";
+    if (isAndroid()) kind += "And";
     else kind += "IOS";
     return kind;
 }
@@ -530,6 +531,27 @@ function DisplayAlertDetail() {
         DisplayAlertInfo();  // this will hide the alert
     }
 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+// CountPage - bump page counter in localStorage.
+function CountPage(page) {
+    var id = "C" + page;
+    var c = localStorage.getItem(id);
+    if (c == null) localStorage.setItem(id, "1");
+    else localStorage.setItem(id, (Number(c) + 1).toFixed(0));
+}
+
+///////////////////////////////////////////////////////////////////////////
+//  LSget - local storage get always returns string or "". never returns null.
+function LSget(id) {
+    var s = localStorage.getItem(id);
+    if (s != null) return s;
+    return "";
+}
+
+function LSappend(id, s) {
+    localStorage.setItem(id, LSget(id) + s)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1260,7 +1282,8 @@ function GetDailyCache() {
     // ajax async request
     ////var myurl = FixURL("dailycache.txt");
 
-    var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo());
+    var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
+        "&P=" + LSget("pagehits").substr(0,30));
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1271,6 +1294,8 @@ function GetDailyCache() {
 }
 function HandleDailyCacheReply(data) {
     InitializeDates(0);
+    localStorage.setItem("Cmain", "0");  // clear page count
+    localStorage.setItem("pagehits", "");
     ParseDailyCache(data);
     localStorage.setItem("dailycacheloaded", gMonthDay); // save event loaded date/time
     localStorage.setItem("dailycacheloadedtime", gTimehhmm); // save event loaded date/time
@@ -1401,11 +1426,13 @@ function timerUp() {
             return;
         case "weatherpage":
             return;
-        case "ferrywebcampage":
+        case "mferrywebcampage":
             ShowFerryWebCam();
             return; // how to force redisplay
         case "aboutpage":
             DisplayLoadTimes();
+            return;
+        case "businesspage":
             return;
 
     }
@@ -1539,6 +1566,7 @@ function DisplayLoadTimes() {
 function ShowPage(newpage) {
     if (gMenuOpen) CloseMenu();  // close the menu
     if (gDisplayPage == newpage) return;
+    if(newpage != "mainpage") LSappend("pagehits", newpage.substr(0, 1)); // ADD PAGE LETTER
     // clear out rows of table for former page
     if (gTableToClear != null) {
         var table = document.getElementById(gTableToClear);
@@ -2978,7 +3006,7 @@ function generateWeatherForecastPage() {
 
 
 
-//</script>
+//</script>show
 
 //<!-- ABOUT ------------------------>
 //<script>
@@ -2986,7 +3014,7 @@ function generateWeatherForecastPage() {
 
 // FERRY WEB CAM
 function ShowFerryWebCam() {
-    ShowPage("ferrywebcampage");
+    ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
     // steilacoom link from local storage
     var link = localStorage.getItem("ferrycams");
@@ -3041,6 +3069,7 @@ function StartApp() {
     FixiPhoneHeader();
     document.getElementById("versionnumber").innerHTML = "&nbsp&nbsp AIA Ver: " + gVer; // version stamp on footer
     gDisplayPage = "mainpage";
+    CountPage("main");
     InitializeDates(0);
     if (gYear % 4 == 0) gDaysInMonth[2] = 29; // leap year
     gDateSunrise = new Date(Number(localStorage.getItem("sunrise"))); // reload sunrise and sunset

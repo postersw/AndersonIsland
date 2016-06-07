@@ -10,7 +10,7 @@ copyfile("tidedata.txt", "TIDES");
 // log it
 $log = 'dailycachelog.txt';
 $tlh = fopen($log, 'a');
-fwrite($tlh, date('c') . ',' . $_GET['VER'] . "," . $_GET['KIND'] . ',' . $_SERVER['REMOTE_ADDR'] . "\n");
+fwrite($tlh, date('c') . ',V=' . $_GET['VER'] . ",K=" . $_GET['KIND'] . ',N='  . $_GET['N'] . ',P=' . $_GET['P'] . ',I='. $_SERVER['REMOTE_ADDR'] . "\n");
 return;
 
 // copyfile from file to stdout
