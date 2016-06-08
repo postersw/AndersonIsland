@@ -37,6 +37,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Internal: Links now in dailycache. Use getalerts.php.
 5/30/16. 1.5.0530. remove jquery use for ajax.
 6/05/16. 1.5.0605.1400 versionCode 220 (but play shows it as 2208). Uploaded to Google Play. as version 1.5....
+6/07/16. 1.6.0607.1601 versionCode 221 (2218). Consoldate dailycache.txt, comingevents.txt, tidedata.txt into dailycache.php.
+		send usage statistics up with dailycache.php.  Uploaded to Google Play.
 
 
 WEB DEBUG/BUILD
