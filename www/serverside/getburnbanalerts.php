@@ -11,9 +11,15 @@
     $burnbanfile = "burnban.txt";
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($burnbanlink);
-    $j = strpos($str, 'Peninsula\n                            <input name="ctl00$MainContent$Repeater1$ctl05$TextBox" type="text" value="No Ban"', $i);
-    if($j == -1) {  // if string not found
-        echo("Peninsula no ban not found");
+    // $j = strpos($str, 'Peninsula\n                            <input name="ctl00$MainContent$Repeater1$ctl05$TextBox" type="text" value="No Ban"');
+
+     $j = preg_match('/Peninsula[^<]*<input [^<]* value="No Ban"/', $str); // look for this string
+     //echo("preg_match j=$j ");
+
+    if($j === false) {  // if string not found
+        $old = file_get_contents($burnbanfile, $r);
+        if($old == "") return 0;
+        echo("Peninsula 'No Ban' not found");
         unlink($burnbanfile);
         return 0;
     }

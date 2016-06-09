@@ -14,13 +14,13 @@
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($tanneroutagelink);
     $i = strpos($str, "<h1>Outages for Anderson Island");
-    if($i == -1) {  // if string not found
+    if($i === false) {  // if string not found
         echo("<h1> not found");
         unlink($tanneroutagefile);
         return 0;
     }
     $j = strpos($str, "<h6>", $i);
-    if($j == -1) {  // if string not found
+    if($j === false) {  // if string not found
             echo("<h6> not found");
         unlink($tanneroutagefile);
         return 0;
@@ -30,7 +30,7 @@
     $len = strlen($str); // lenght of string 
 
     $k = strpos($str, "</h6>", $j + 4);  // find the 2nd<h6> tag
-    if($k == -1) {  // if string not found
+    if($k === false) {  // if string not found
             echo("</h6> not found");
         unlink($tanneroutagefile);
         return 0;
