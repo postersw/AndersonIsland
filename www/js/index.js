@@ -34,7 +34,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.6.0607.1601";
+var gVer = "1.6.0610.1604";
 
 var app = {
     // Application Constructor
@@ -393,31 +393,42 @@ OpenHours = [{  // single preload for testing and if there is no connectivity
 /////////////////////////////////////////////////////////////////////////////////////////
 // load web pages
 function ShowFerry() {
+    MarkPage("x");
     window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793", "_system");
 }
 
 function ShowMap() {
+    MarkPage("g");
     window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4", "_blank");
 }
 
 function ShowBurnBan() {
+    MarkPage("u");
     var link = localStorage.getItem("burnbanlink");
     if (IsEmpty(link)) link = "http://wc.pscleanair.org/burnban411/";  // default
     window.open(link, "_blank");
 }
 
 function ShowTannerOutage() {
+    MarkPage("r");
     var link = localStorage.getItem("tanneroutagelink");
     if (IsEmpty(link)) link = "http://www.tannerelectric.coop/andersonisland";  // default
     window.open(link, "_blank");
 }
 
+function ShowParks() {
+    MarkPage("p");
+    window.open('http://www.anderson-island.org/parks/parks.html', '_blank','EnableViewPortScale=yes' );
+}
+
 function ShowNews() {
+    MarkPage("n");
     window.open('http://www.anderson-island.org/news.html', "_blank");
 }
 
 // open the correct web page for an upgrade. If its web, force a page reload.
 function UpdateApp() {
+    MarkPage("y");
     if (isPhoneGap()) {
         if (isAndroid()) {
             window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');
@@ -440,6 +451,7 @@ function NotifyOn() {
     }
 }
 function NotifyOff() {
+    MarkPage("4");
     localStorage.setItem('notifyoff', 'OFF');
     if (isPhoneGap()) {
         window.plugins.PushbotsPlugin.unregister();
@@ -540,6 +552,21 @@ function CountPage(page) {
     var c = localStorage.getItem(id);
     if (c == null) localStorage.setItem(id, "1");
     else localStorage.setItem(id, (Number(c) + 1).toFixed(0));
+}
+
+// MarkPage - add the page 1st letter to the "pagehits" string. 
+//  limit m to 1 call.
+function MarkPage(page) {
+    var s = localStorage.getItem("pagehits");
+    if (s == null) {
+        localStorage.setItem("pagehits", page);
+        return s;
+    }
+    if (s.length > 30) return;
+    if (page == "m") {  // dont create a string of mmmmm
+        if (s.substr(s.length - 1) == "m") return;
+    }
+    localStorage.setItem("pagehits", s + page);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1552,7 +1579,7 @@ function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-        ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+        ", Tides:" + localStorage.getItem("tidesloadedmmdd") + " " + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
 
@@ -1566,7 +1593,7 @@ function DisplayLoadTimes() {
 function ShowPage(newpage) {
     if (gMenuOpen) CloseMenu();  // close the menu
     if (gDisplayPage == newpage) return;
-    if(newpage != "mainpage") LSappend("pagehits", newpage.substr(0, 1)); // ADD PAGE LETTER
+    if(newpage != "mainpage") MarkPage(newpage.substr(0, 1)); // ADD PAGE LETTER
     // clear out rows of table for former page
     if (gTableToClear != null) {
         var table = document.getElementById(gTableToClear);
@@ -1629,6 +1656,7 @@ function ShowFerrySchedule() {
     window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200", "_blank");
 }
 function ShowFerryLocation() {
+    MarkPage("s");
     window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/", "_blank");
 }
 
@@ -1995,6 +2023,7 @@ function DisplayComingEventsPage(type) {
         document.getElementById("showevents").setAttribute('style', 'display:none;');
         document.getElementById("showactivities").setAttribute('style', 'display:normal;');
         //document.getElementById("comingactivitiesH1").setAttribute('style', 'display:normal;');
+        MarkPage("v");
     }
     DisplayComingEventsList(GetEvents())
 }
@@ -2171,6 +2200,7 @@ function tabletext(tc) {
 //  Entry: id = the index into the CE array of the selected event
 function AddToCal(id) {
     ModalClose();
+    MarkPage("d");
     var CE = GetEvents().split("\n");
     var aCE = CE[Number(id)].split(';');
     // prep some variables  Date(year, m, d, h, m, 0, 0
@@ -2216,6 +2246,7 @@ function DisplayComingWeek(CE) {
     var col;
     var startmmdd;
     var table // ref to table
+    MarkPage("3");
     EventDisp = "W";
     table = document.getElementById("comingeventstable");
     var iCE; // iterator through CE
@@ -2332,6 +2363,7 @@ function DisplayComingMonth(CE) {
     var row;
     var col;
     var table // ref to table
+    MarkPage("2");
     EventDisp = "M";
     table = document.getElementById("comingeventstable");
     var iCE; // iterator through CE
@@ -2773,6 +2805,7 @@ function ShowCustom() {
     var tidedate = GetDateFromUser();
     if (tidedate == "") return;
     gUserTideSelection = true;
+    MarkPage("1");
     getCustomTideData(tidedate);
 
 }

@@ -114,3 +114,20 @@ IOS DEBUG/BUILD
 	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the app.
 	5. openweathermap.com which returns json structures for current weather and forecast.
 		current loaded every 15 min by the app. forecast loaded every 30 min by the app.
+
+	DAILYCACHE.PHP
+	1. Called 1/day per app starting with ver 1.6 on 6/6/16.
+	2. Retrieves dailycache.txt, comingevents.txt, tidesdata.txt and returns them as one data string with keywords.
+	3. Replaces separate loads of dailycache.txt, comingevents.php (which loaded comingevents.txt), and the call to 
+		aerisweather.com to load the daily tides (which was replaed in early june by gettidescron.php which runs 
+		every 6 hours to get the tides and write thgem to tidesdata.txt. So there are only 4 calls/day to aerisweather.com)
+	4. Logs data to dailycachelog.txt.  Codes:
+		V=version number.
+		K=kind. PG=phonegap, MW = mobile web, DW=desktop web.  And=Android. IOS=IOS.
+		N=number of app starts since last call to dailycache.php. (usually 24 hours).
+		P=page loads:	a=about, b=business, c=coming events, d=add to cal, e=emergency num, f=ferry schedule, g=google map,
+						h=help, l=links,
+						m=web cam, n=News, o=openhours, p=parks, r=Tanner, s=show location, t=tides, u=Burn Ban, 
+						v=activities, w=weather, x=PC web page, y=upgrade, 
+						1=custom tides, 2=monthly activities, 3=weekly activities, 4=motify off
+		
