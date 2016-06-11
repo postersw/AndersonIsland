@@ -34,7 +34,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.6.0610.1604";
+var gVer = "1.6.0610.1700";
 
 var app = {
     // Application Constructor
@@ -1579,7 +1579,8 @@ function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-        ", Tides:" + localStorage.getItem("tidesloadedmmdd") + " " + localStorage.getItem("pagehits") + 
+        ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
 
