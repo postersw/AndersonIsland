@@ -99,8 +99,11 @@ IOS DEBUG/BUILD
 	5. You will get a new page. fill out the what's new.
 	6. Start "Application Loader".   select Deliver Your App and click on 'Choose'.  
 	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
-	8. Make sure that your build is selected under the build section of the web page.
+	8. Wait until you get the email that says "Version x of Anderson Island Assistant has finished processing".
+	9. Go back to the itunes connect my app page. under the build section of the web page, select the version you just uploaded.
 	9. Click SAVE and SUBMIT FOR REVIEW.
+	10. You app will go into a waiting for review state.
+	11. Log out (under the apple icon).
 
 	DATA LOADS
 	Data is loaded from:
