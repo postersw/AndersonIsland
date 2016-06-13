@@ -2,12 +2,15 @@
 /////////////////////////////////////////////////////////////
 //  getburnban - gets the burnban status from pscleanair
 //  web site and writes it to burnban.txt.
+//  Also gets the burnban status from PFFD27 (AI Fire department) and writes it to burnban.txt.
 //  this file is picked up by the getalerts.php script and sent to the app.
-//  format is:
-//      Peninsula\n                            <input name="ctl00$MainContent$Repeater1$ctl05$TextBox" type="text" value="No Ban"
-//              6/4/16.
+//  Air Quality format is:   Peninsula ... <input ... value="xxxxxx"
+//  Fire department: looks for string "NO BURN BAN".
+//              6/4/16.   
+//  Fire department added 6/12/16.   rfb.
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
+    $pcfdlink = "http://www.pcfd27.com/";
     $burnbanfile = "burnban.txt";
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($burnbanlink);
@@ -30,11 +33,24 @@
     if($bb == "") Bailout("bb=null");
 
     // write it
-    $r = "Peninsula: " . $bb;
-    $old = file_get_contents($burnbanfile, $r);
-    if($r == $old) return 0;
-    echo $r;
-    file_put_contents($burnbanfile, $r);
+    $airqual = "Peninsula air quality: " . $bb;
+
+    // fire department
+    $fire = "?";
+    $str = file_get_contents($pcfdlink);
+    if($str == "") file_get_contents($pcfdlink); // 1 retry
+    if($str != "") {
+        $j = strpos($str, 'NO BURN BAN'); // j = position of 'NO BURN BAN'
+        if($j == false) $fire == "<strong>Burn Ban</strong>";
+        else $fire = "No Ban";
+    }
+
+    // write it
+    $msg = $airqual . "<br/>AI Fire District: " . $fire;
+    $old = file_get_contents($burnbanfile);
+    if($msg == $old) return 0;
+    echo $msg;
+    file_put_contents($burnbanfile, $msg);
     return 0;
 
     // $j = preg_match('/Peninsula[^<]*<input [^<]* value="No Ban"/', $str); // look for this string
