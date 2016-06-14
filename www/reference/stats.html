@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        table {
+            border-collapse:collapse;
+            border: thin solid black ;
+        }
+        td {border: thin solid black;}
+    </style>
+ </head >
+ <body > 
+    <h1 > Stats for Anderson Island Assistant (dailycachelog)</h1 >
+     <p id="a" > </p > 
+    <script>
+        var starttime = "", endtime = ""; 
+        var rows = 0; 
+        var PGIOS = 0, PGAnd = 0, DWIOS = 0, DWAnd = 0, MWAnd = 0, MWIOS = 0;
+        var N = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var PagesPerDay = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var Pages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var nip = 0;  // index into IP array
+        var IP = [0, 0];
+        var nudate = 0; // index into udate
+        var UDate = [0, 0]; 
+        var UDateCount = [0, 0]; // uses/date
+        
+        ReadStatsFile(); // ReadStats 
+        
+        function ReadStatsFile() {
+            var myurl = 'http://www.anderson-island.org/dailycachelog.txt';
+            var xhttp = new XMLHttpRequest();
+            xhttp .onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) AnalyzeStats(xhttp.responseText);
+            }
+
+            xhttp.open("GET", myurl, true); xhttp.send();
+        }
+
+
+        // Analyze file // Entry s = entire file in one long string // sample entry: 2016-06-13T22:58:02+00:00, V=1.6.0610.1700, K=PG-IOS, N=1, P=wat, I=63.142.206.30 // 0 1 2 3 4 5
+        function AnalyzeStats(s) {
+            var A = s.split("\n");
+            rows = A.length;
+            // loop through the file var i;
+            for (var ai = 0; ai < rows ; ai++) {
+                var W = A[ai].split(",");
+                if (W.length < 5) continue;
+                if (starttime == "") starttime = W[0];
+                endtime = W[0];
+                if (W[5] == "I=67.183.229.238") continue;
+                // skip me 
+                if (W[5] == "I=70.199.146.144") continue;
+                if (W[5] == "I=99.196.60.196") continue;
+                // count op system 
+                switch (W[2]) {
+                    case "K=PG-IOS": PGIOS++;
+                        break;
+                    case "K=PG-And": PGAnd++;
+                        break;
+                    case "K=DW-IOS": DWIOS++;
+                        break;
+                    case "K=DW-And": DWAnd++;
+                        break;
+                    case "K=MW-IOS": MWIOS++;
+                        break;
+                    case "K=MW-And": MWAnd++;
+                        break;
+                }
+
+                // count N (uses) 
+                var nn = Number(W[3].substr(2)); 
+                N[nn]++;
+
+                // count version 
+
+                // count pages 
+                var p = W[4].substr(2); 
+                p = p.replace("mm", "m"); 
+                p = p.replace("mm", "m"); 
+                p = p.replace("mm", "m"); 
+                var plen = p.length; // length 
+                if (plen > 20) plen = 20; 
+                PagesPerDay[plen] ++; // pages per visit 
+                PA = p.split(""); 
+                for (k = 0; k < PA.length; k++) {
+                    nn = PA[0].charCodeAt(0) - 97;
+                    if (nn < 0) nn = nn + 97 - 30;
+                    Pages [nn]++;
+                }
+
+                // count ip
+                for (var i = 0; i < nip; i++) {
+                    if (IP[i] == W[5]) break;
+                }
+                if (i == nip) {
+                    IP[nip] = W[5];
+                    nip++;
+                }
+
+                // count date
+                var rowdate = W[0].substr(0, 10);  // get date
+                if (rowdate == UDate[nudate]) UDateCount[nudate]++;  // if in table
+                else {
+                    nudate++;
+                    UDate[nudate] = rowdate;
+                    UDateCount[nudate] = 1;
+                }
+
+            }
+        PrintStats();
+        }
+
+        ////////////////////////// 
+        // PrintStats // 
+       function PrintStats() {
+           var s1 = "Total=" + rows + "<br/>Start: " + starttime + ",  End: " + endtime + ", Days: " + nudate + "<br/>" +
+               "Unique IPs: " + nip + "<br/>";
+
+           // by os 
+            var s4 = "<br/><strong>OS:</strong><table>" + "<tr><td>PG:Android: </td><td>" + PGAnd + "</td><td> " + (PGAnd / rows * 100).toFixed(0) + "%</td></tr>" + "<tr><td> PG:IOS:</td><td> " + PGIOS + "</td><td> " + (PGIOS / rows * 100).toFixed(0) + "%</td></tr>" + "<tr><td> MWeb:Android:</td><td> " + MWAnd + " </td><td>" + (MWAnd / rows * 100).toFixed(0) + "%</td></tr>" + "<tr><td> MWeb: IOS:</td><td>  " + MWIOS + "</td><td>  " + (MWIOS / rows * 100).toFixed(0) + "%</td></tr>" + "<tr><td> DWeb:Android:</td><td>  " + DWAnd + "</td><td>  " + (DWAnd / rows * 100).toFixed(0) + "%</td></tr>" + "<tr><td> DWeb: IOS:</td><td> " + DWIOS + " </td><td>" + (DWIOS / rows * 100).toFixed(0) + "%</td></tr>" + "</table>";
+           // uses/day 
+            var s2 = "<br/><strong>Uses/Day:</strong><table>";
+            var i=0;
+            for (i = 0; i < 10; i++) s2 = s2 + "<tr><td>" + i.toFixed(0) + "</td><td>" + N[i].toFixed(0) + "</td><td>" + (N[i] / rows * 100).toFixed(0) + "%</td></tr>";
+            s2 += "</table>"
+           // pages/day 
+            var s3 = "<br/><strong>Pages/Day:</strong><table>";
+            for (i = 0; i < 20; i++) s3 = s3 + "<tr><td>" + i.toFixed(0) + "</td><td>" + PagesPerDay[i].toFixed(0) + "</td><td>" + (PagesPerDay[i] / rows * 100).toFixed(0) + "%</td></tr>";
+            s3 += "</table>"
+           // counts/page 
+            var s5 = "<br/><strong>Counts/Page: </strong><table>";
+            var x = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678";
+            var pname=["About","Business","Events","Add to Cal", "Emergency", "Ferry Sch","Map","Help","I","J","K","Links","WebcaM","News","Open Hours","Parks","Q","Tanner",
+           "Location","Tides","Burn Ban","V","Weather","PC Ferry page","Y","Upgrade app","0","Custom Tides","CE Month","CE Week","Notify Off","5","6","7","8"];
+            for (i = 0; i < 35; i++) s5 = s5 + "<tr><td>" + pname[i] + "</td><td>" + Pages[i].toFixed(0) + "</td><td>" + (Pages[i] / rows * 100).toFixed(0) + "%</td></tr>";
+            s5 += "</table>";
+           // use by date
+            s6 = "<br/><strong>Uses by Date</strong><table>";
+            for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + UDateCount[i] + "</td><td>" + (UDateCount[i] / rows * 100).toFixed(0) + "%</td></tr>"
+            s6 +=  "</table>";
+
+            document.getElementById("a").innerHTML = s1 + s4 + s2 + s3 + s5 + s6;
+        }
+
+        </script>
+     </body > 
+</html >
+        
