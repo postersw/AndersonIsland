@@ -9,7 +9,7 @@
 //      4/22/16. Added IOS.
 //  Sample RSS feed:
 //
-echo("PHP START");
+
 chdir("/home/postersw/public_html");
 $alertclearhours = 5;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
@@ -44,7 +44,7 @@ $alertts[6] = "/";
 $alertts[11] = ":";
 //change Fri, 11 Mar 2016 21:30:08 -0800 into "10/Oct/2000:13:55:36 -0700"
 // strip out day, and strip out -ms
-echo ("  |pubDate=" . $alertts . " " . $title);
+//echo ("  |pubDate=" . $alertts . " " . $title);
 // check expiration
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $talert=strtotime($alertts); // covert to timestamp
@@ -98,7 +98,7 @@ function ClearAlertFile($alertfile, $alertlog) {
      $fh = fopen($alertfile, 'w');
      fwrite($fh, "");
      fclose($fh);   
-     echo("ClearAlertFile cleared the $alertfile");
+     echo("ClearAlertFile cleared  $alertfile");
      // log it
      $fhl = fopen($alertlog, 'a');
      fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file.\n");
