@@ -41,7 +41,8 @@
         ReadStatsFile(); // ReadStats 
         
         function ReadStatsFile() {
-            var myurl = 'http://www.anderson-island.org/dailycachelog.txt';
+            var d = Date();
+            var myurl = 'http://www.anderson-island.org/dailycachelog.txt?' + Date.now();
             var xhttp = new XMLHttpRequest();
             xhttp .onreadystatechange = function () {
                 if (xhttp.readyState == 4 && xhttp.status == 200) AnalyzeStats(xhttp.responseText);
