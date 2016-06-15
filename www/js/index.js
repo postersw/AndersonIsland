@@ -13,6 +13,8 @@
             0603.2300: fixed top bar.
             0604.1600: add TIDEDATALINK to dailycache.txt. 
         1.6 0606.1600: move dailycache.txt, comingevents.txt, tidedata.txt to getdailycache.php.
+        1.6.0610.1700: Android & IOS release on 6/10. IOS release approved 6/13.
+        1.6.0614.2100: reactivate android message. 
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -34,7 +36,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.6.0610.1700";
+var gVer = "1.6.0614.2117";
 
 var app = {
     // Application Constructor
@@ -497,7 +499,9 @@ function DeviceInfo() {
     if (isPhoneGap()) kind = "PG-";
     else if (isMobile()) kind = "MW-";
     else kind = "DW-";
-    if (isAndroid()) kind += "And";
+    if (navigator.userAgent.toLowerCase().indexOf('edge') > -1) kind += "MSEdge";
+    else if (navigator.userAgent.toLowerCase().indexOf('.net') > -1) kind += "MSIE";
+    else if (isAndroid()) kind += "And";
     else kind += "IOS";
     return kind;
 }
@@ -1580,7 +1584,7 @@ function DisplayLoadTimes() {
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
-        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
+        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
 
@@ -3119,8 +3123,8 @@ function StartApp() {
     // point user to google play only if a mobile browser that is NOT PhoneGap
     if (!isPhoneGap() && isMobile()) {  // if not phonegap
         if (isAndroid()) { // if chrome for android
-            //document.getElementById("androidapp").setAttribute('style', 'display:block;');
-            //document.getElementById("topline").innerHTML = "";
+            document.getElementById("androidapp").setAttribute('style', 'display:block;');
+            document.getElementById("topline").innerHTML = "";
         } else {
             document.getElementById("iphoneapp").setAttribute('style', 'display:block;');
             document.getElementById("topline").innerHTML = "";
