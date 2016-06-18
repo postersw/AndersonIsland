@@ -14,6 +14,8 @@
     $tanneroutagefile = "tanneroutage.txt";
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($tanneroutagelink);
+    if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
+    if($str == "") $str = file_get_contents($tanneroutagelink);
     $i = strpos($str, "<h1>Outages for Anderson Island");
     if($i === false) {  // if string not found
         echo("h1 not found");
@@ -22,6 +24,7 @@
     }
 
     // Now extract the TEXT that occurs after the <h1> structure.  Stop at </div
+    //  TEXT is everything between <...> and <...>
 
     $result = "";
     $str = substr($str, $i+31); // string after Outages for Anderson Island

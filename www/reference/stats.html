@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Stats</title>
     <style>
         table {
             border-collapse:collapse;
@@ -180,6 +180,7 @@
 
            // counts/page 
             var s5 = "<br/><strong>Counts/Page: </strong><table>";
+            s5 = s5 + "<tr><td>NONE</td><td>" + PagesPerDay[0].toFixed(0) + "</td><td>" + (PagesPerDay[0] / rows * 100).toFixed(0) + "%</td></tr>";
             var x = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678";
             SortPages();
             for (i = 0; i < 35; i++) s5 = s5 + "<tr><td>" + pname[i] + "</td><td>" + Pages[i].toFixed(0) + "</td><td>" + (Pages[i] / rows * 100).toFixed(0) + "%</td></tr>";
