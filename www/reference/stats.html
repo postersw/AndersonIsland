@@ -18,11 +18,15 @@
     <script>
         var starttime = "", endtime = ""; 
         var rows = 0;
+        var ROWtot = 0;
         var nOS = 0;
+        var OStot = 0;
         var OS = ["", ""]; // os list
         var OSCount = [0, 0];
         var PGIOS = 0, PGAnd = 0, DWIOS = 0, DWAnd = 0, MWAnd = 0, MWIOS = 0;
         var N = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var Ntot = 0;
+        var Pagestot = 0;
         var PagesPerDay = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var Pages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var pname = ["About", "Business", "Events", "Add to Cal", "Emergency", "Ferry Sch", "Map", "Help", "I", "J", "K", "Links", "WebcaM", "News", "Open Hours", "Parks", "Q", "Tanner",
@@ -35,6 +39,7 @@
         var nver = 0; // index into version
         var Ver = ["", ""];  // version array
         var VerCount = [0, 0]; // users/version
+        var Vertot = 0;
         var VerFirstDate = ["", ""]; // first date the version was used
         var VerLastDate = ["", ""]; // last date the version was used
         
@@ -70,7 +75,7 @@
                 // skip me 
                 if (W[5] == "I=70.199.146.144") continue;
                 if (W[5] == "I=99.196.60.196") continue;
-
+                ROWtot++;
                 // count op system 
                 for (i = 0; i < nOS; i++) {
                     if (OS[i] == W[2]) {
@@ -151,63 +156,82 @@
         ////////////////////////// 
         // PrintStats // 
        function PrintStats() {
-           var s1 = "Total=" + rows + "<br/>Start: " + starttime + ",  End: " + endtime + ", Days: " + nudate + "<br/>" +
+           var s1 = "Total=" + ROWtot + "<br/>Start: " + starttime + ",  End: " + endtime + ", Days: " + nudate + "<br/>" +
                "Unique IPs: " + nip + "<br/>";
 
            // by os 
+           SortMe(nOS, OSCount, OS);
            var sos = "<br/><strong>OS:</strong><table>" 
            var i = 0;
-           for (i = 0; i < nOS; i++) sos += "<tr><td>" + OS[i] + "</td><td>" + OSCount[i].toFixed(0) + "</td><td>" + (OSCount[i] / rows * 100).toFixed(0) + "%</td></tr>";
+           for (i = 0; i < nOS; i++) sos += "<tr><td>" + OS[i] + "</td><td>" + OSCount[i].toFixed(0) + "</td><td>" + (OSCount[i] / ROWtot * 100).toFixed(0) + "%</td></tr>";
            sos += "</table>";
 
 
            // by ver
+
            var sv = "<br/><strong>Uses/Version:</strong><table>";
            var i=0;
-           for (i = 0; i < nver; i++) sv += "<tr><td>" + Ver[i] + "</td><td>" + VerFirstDate[i] + "</td><td>" + VerLastDate[i] + "</td><td>" + VerCount[i].toFixed(0) + "</td><td>" + (VerCount[i] / rows * 100).toFixed(0) + "%</td></tr>";
+           for (i = 0; i < nver; i++) sv += "<tr><td>" + Ver[i] + "</td><td>" + VerFirstDate[i] + "</td><td>" + VerLastDate[i] + "</td><td>" + VerCount[i].toFixed(0) + "</td><td>" + (VerCount[i] / ROWtot * 100).toFixed(0) + "%</td></tr>";
            sv += "</table>";
 
            // uses/day 
             var s2 = "<br/><strong>Uses/Day:</strong><table>";
             var i=0;
-            for (i = 0; i < 10; i++) s2 = s2 + "<tr><td>" + i.toFixed(0) + "</td><td>" + N[i].toFixed(0) + "</td><td>" + (N[i] / rows * 100).toFixed(0) + "%</td></tr>";
+            for (i = 0; i < 10; i++) s2 = s2 + "<tr><td>" + i.toFixed(0) + "</td><td>" + N[i].toFixed(0) + "</td><td>" + (N[i] / ROWtot * 100).toFixed(0) + "%</td></tr>";
             s2 += "</table>"
 
            // pages/day 
             var s3 = "<br/><strong>Pages/Day:</strong><table>";
-            for (i = 0; i < 20; i++) s3 = s3 + "<tr><td>" + i.toFixed(0) + "</td><td>" + PagesPerDay[i].toFixed(0) + "</td><td>" + (PagesPerDay[i] / rows * 100).toFixed(0) + "%</td></tr>";
+            for (i = 0; i < 20; i++) s3 = s3 + "<tr><td>" + i.toFixed(0) + "</td><td>" + PagesPerDay[i].toFixed(0) + "</td><td>" + (PagesPerDay[i] / ROWtot * 100).toFixed(0) + "%</td></tr>";
             s3 += "</table>";
 
            // counts/page 
             var s5 = "<br/><strong>Counts/Page: </strong><table>";
-            s5 = s5 + "<tr><td>NONE</td><td>" + PagesPerDay[0].toFixed(0) + "</td><td>" + (PagesPerDay[0] / rows * 100).toFixed(0) + "%</td></tr>";
+            s5 = s5 + "<tr><td>NONE</td><td>" + PagesPerDay[0].toFixed(0) + "</td><td>" + (PagesPerDay[0] / ROWtot * 100).toFixed(0) + "%</td></tr>";
             var x = "ABCDEFGHIJKLMNOPQRSTUVWXYZ012345678";
-            SortPages();
-            for (i = 0; i < 35; i++) s5 = s5 + "<tr><td>" + pname[i] + "</td><td>" + Pages[i].toFixed(0) + "</td><td>" + (Pages[i] / rows * 100).toFixed(0) + "%</td></tr>";
+            SortMe(35, Pages, pname);
+            for (i = 0; i < 35; i++) s5 = s5 + "<tr><td>" + pname[i] + "</td><td>" + Pages[i].toFixed(0) + "</td><td>" + (Pages[i] / ROWtot * 100).toFixed(0) + "%</td></tr>";
             s5 += "</table>";
 
            // use by date
             s6 = "<br/><strong>Uses by Date</strong><table>";
-            for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + UDateCount[i] + "</td><td>" + (UDateCount[i] / rows * 100).toFixed(0) + "%</td></tr>"
+            for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + UDateCount[i] + "</td><td>" + (UDateCount[i] / ROWtot * 100).toFixed(0) + "%</td></tr>"
             s6 +=  "</table>";
 
             document.getElementById("a").innerHTML = s1 + sos + sv + s2 + s3 + s5 + s6;
        }
-
-        // sort pages
-       function SortPages() {
+    /////////////////////////////////////////////////////////////////////
+        // sort n, A, B, C     
+        //  n = number of elements
+        //  A = array to sort
+        //  B = arrays to exchange places
+       function SortMe(n, A, B) {
            var i = 0, j = 0;
            var nt = 0; var t = "";
-           for (i = 0; i < 34; i++) {
+           for (i = 0; i < n; i++) {
                for (j = i; j < 35; j++) {
-                   if (Pages[i] < Pages[j]) {
-                       nt = Pages[i]; Pages[i] = Pages[j]; Pages[j] = nt;
-                       t = pname[i]; pname[i] = pname[j]; pname[j] = t;
+                   if (A[i] < A[j]) {
+                       nt = A[i]; A[i] = A[j]; A[j] = nt;
+                       t = B[i]; B[i] = B[j]; B[j] = t;
                    }
                }
            }
 
        }
+
+       //function SortPages() {
+       //    var i = 0, j = 0;
+       //    var nt = 0; var t = "";
+       //    for (i = 0; i < 34; i++) {
+       //        for (j = i; j < 35; j++) {
+       //            if (Pages[i] < Pages[j]) {
+       //                nt = Pages[i]; Pages[i] = Pages[j]; Pages[j] = nt;
+       //                t = pname[i]; pname[i] = pname[j]; pname[j] = t;
+       //            }
+       //        }
+       //    }
+
+       //}
 
         </script>
      </body > 
