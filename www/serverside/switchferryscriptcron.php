@@ -36,7 +36,7 @@ if($dc == 0) {
 // 3 delete the ferry stuff
 $i = strpos($dc, "FERRYTIMESS");
 $dc = substr($dc, 0, $i);
-$j = strpos($dc, "FERRYDATE2"); $j = strpos($dc, "/n", $j+12);  // trailing /n after date
+$j = strpos($dc, "FERRYDATE2"); $j = strpos($dc, "\n", $j+12);  // trailing /n after date
 $dc = substr($dc, $j);  
 
 // 4 copy the schedule onto dailycache.txt.
