@@ -11,11 +11,11 @@
 $ferryschedule = "ferryschedule.txt";
 $dailycache = "dailycache.txt";
 
-$today = Date();
+$today = date("m/d/Y"); //  06/13/2016
 
 // 1 find the schedule for today. if none, exit.
 $s = file_get_contexts($ferryschedule);
-if($s == "") {
+if($s == '') {
     echo("No ferryschedule.txt");
     exit(0);
 }
