@@ -11,7 +11,7 @@
 //
 $ferryschedule = "ferryschedule.txt";
 $dailycache = "dailycache.txt";
-$test = true;
+$test = false;
 if($test) {
     //$ferryschedule = "test" . $ferryschedule;
     $dailycache = "test" . $dailycache;
