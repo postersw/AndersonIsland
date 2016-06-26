@@ -1,5 +1,5 @@
 // New 6/26 schedule for old apps
-<ferry>06/25/2016
+<ferry>06/26/2016
 FERRYTIMESS
 445,12345,545,123456,645,*,800,*,900,*,1000,HF,1200,*,1230,5,1350,5,1420,*,1450,5,1520,*,1550,5,1620,*,1650,5,1730,*,1800,5,1840,*,2040,*,2200,X6H,2300,Y
 FERRYTIMESA
@@ -14,6 +14,9 @@ FERRYTIMESK2
 0,,0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,0,,0,,0,,0,,0,,0,,0,,1935,*,0,,2250,X6H,2350,Y;
 FERRYDATE2
 06/26/2016
+FERRYMESSAGE
+The new ferry schedule is now in effect. A 4:45am run has been added. 
+FERRYMESSAGEEND
 </ferry>
 
 //  FRI & SUN 2 boat runs plus july 4 lookahead for the 545/615 monday holiday 7/4 run.
@@ -32,6 +35,8 @@ FERRYTIMESK2
 0,,0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,0,,0,,0,,0,,0,,0,,0,,1935,*,0,,2250,X6H,2350,Y;
 FERRYDATE2
 07/04/2016
+FERRYMESSAGE
+FERRYMESSAGEEND
 </ferry>
 
 //  FRI & SUN 2 boat runs plus the 545/615 monday holiday 7/4 run.
@@ -49,5 +54,6 @@ FERRYTIMESA2
 FERRYTIMESK2
 0,,0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,0,,0,,0,,0,,0,,0,,0,,1935,*,0,,2250,X6H,2350,Y;
 FERRYDATE2
-
+FERRYMESSAGE
+FERRYMESSAGEEND
 </ferry>
