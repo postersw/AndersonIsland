@@ -18,6 +18,7 @@
     <script>
         var starttime = "", endtime = ""; 
         var rows = 0;
+        var oldrows = 0;
         var ROWtot = 0;
         var nOS = 0;
         var OStot = 0;
@@ -36,14 +37,16 @@
         var nudate = 0; // index into udate
         var UDate = [0, 0]; 
         var UDateCount = [0, 0]; // uses/date
+        var UDateOldCount = [0, 0]; // Old uses/date
         var nver = 0; // index into version
         var Ver = ["", ""];  // version array
         var VerCount = [0, 0]; // users/version
         var Vertot = 0;
         var VerFirstDate = ["", ""]; // first date the version was used
         var VerLastDate = ["", ""]; // last date the version was used
-        
-        ReadStatsFile(); // ReadStats 
+
+        ReadOldStatsFile();
+        //ReadStatsFile(); // ReadStats 
         
         function ReadStatsFile() {
             var d = Date();
@@ -56,6 +59,49 @@
             xhttp.open("GET", myurl, true); xhttp.send();
         }
 
+        function ReadOldStatsFile() {
+            var myurl = 'http://www.anderson-island.org/comingeventslog.txt';
+            var xhttp = new XMLHttpRequest();
+            xhttp .onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) AnalyzeOldStats(xhttp.responseText);
+            }
+
+            xhttp.open("GET", myurl, true); xhttp.send();
+        }
+
+        // Analyze Old stats file 
+        // Entry s = entire file in one long string 
+        // sample entry: 2016-03-08T22:43:06+00:00CE access from 184.21.245.107
+
+        function AnalyzeOldStats(s) {
+            var A = s.split("\n");
+            oldrows = A.length;
+            var i = 0;
+            // loop through the file var i;
+            for (var ai = 0; ai < oldrows ; ai++) {
+                var rowdate = A[ai].substr(0, 10);  // get date
+                if (rowdate == "") continue;
+                if (starttime == "") starttimeold = rowdate;
+                endtimeold = rowdate;
+                var ipa = A[ai].substr(40);
+                if (ipa == "67.183.229.238") continue;
+                // skip me 
+                if (ipa == "70.199.146.144") continue;
+                if (ipa == "99.196.60.196") continue;
+                if (ipa == "184.21.245.107") continue;
+                // count date
+                if (rowdate == UDate[nudate]) UDateOldCount[nudate]++;  // if in table
+                else {
+                    nudate++;
+                    UDate[nudate] = rowdate;
+                    UDateOldCount[nudate] = 1;
+                    UDateCount[nudate] = 0;
+                }
+
+            }
+            ReadStatsFile(); // ReadStats 
+            //PrintOldStats();
+        }
 
         // Analyze file 
         // Entry s = entire file in one long string 
@@ -69,6 +115,7 @@
                 var W = A[ai].split(",");
                 if (W.length < 5) continue;
                 var rowdate = W[0].substr(0, 10);  // get date
+                if (rowdate == "") continue;
                 if (starttime == "") starttime = W[0];
                 endtime = W[0];
                 if (W[5] == "I=67.183.229.238") continue;
@@ -139,14 +186,21 @@
                     nver++;
                 }
 
-
                 // count date
 
-                if (rowdate == UDate[nudate]) UDateCount[nudate]++;  // if in table
-                else {
+                if (rowdate == UDate[nudate]) UDateCount[nudate]++;  // if in table as last row
+                else if (rowdate > UDate[nudate]) {  // if not in table
                     nudate++;
                     UDate[nudate] = rowdate;
                     UDateCount[nudate] = 1;
+                    UDateOldCount[nudate] = 0;
+                } else {
+                    for (i = nudate; i >= 0; i--) {
+                        if (UDate[i] == rowdate) {
+                            UDateCount[i]++;
+                            break;
+                        }
+                    }
                 }
 
             }
@@ -156,7 +210,7 @@
         ////////////////////////// 
         // PrintStats // 
        function PrintStats() {
-           var s1 = "Total=" + ROWtot + "<br/>Start: " + starttime + ",  End: " + endtime + ", Days: " + nudate + "<br/>" +
+           var s1 = "Old Total=" + oldrows + "<br/> New Total=" + ROWtot + "<br/>Start: " + starttime + ",  End: " + endtime + ", Days: " + nudate + "<br/>" +
                "Unique IPs: " + nip + "<br/>";
 
            // by os 
@@ -194,8 +248,12 @@
             s5 += "</table>";
 
            // use by date
-            s6 = "<br/><strong>Uses by Date</strong><table>";
-            for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + UDateCount[i] + "</td><td>" + (UDateCount[i] / ROWtot * 100).toFixed(0) + "%</td></tr>"
+            s6 = "<br/><strong>Uses by Date</strong><table>" + 
+                "<tr><td>Date</td><td>Total</td><td>Old</td><td>New</td><td>Old%</td><td>New%</td></tr>";
+            for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + (UDateCount[i]+UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
+                UDateCount[i] + "</td><td>" +
+                (UDateOldCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
+                (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td></tr>"
             s6 +=  "</table>";
 
             document.getElementById("a").innerHTML = s1 + sos + sv + s2 + s3 + s5 + s6;

@@ -134,3 +134,7 @@ IOS DEBUG/BUILD
 						v=activities, w=weather, x=PC web page, y=upgrade, 
 						1=custom tides, 2=monthly activities, 3=weekly activities, 4=motify off
 		
+	PHP DEBUGGING:
+	Switch to project AIAPHP.  This uses the files in the 'serverside' directory, so it is still under GIT control.
+	Use F5 to debug a file using the local php and phptools. (you must set the file to the startup file).
+	Only works on my laptop.

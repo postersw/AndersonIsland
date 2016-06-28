@@ -8,6 +8,7 @@ copyfile("dailycache.txt", "");
 copyfile("comingevents.txt", "COMINGEVENTS");
 copyfile("tidedata.txt", "TIDES");
 // log it
+date_default_timezone_set("America/Los_Angeles");  // write the time in PDT/PST
 $log = 'dailycachelog.txt';
 $tlh = fopen($log, 'a');
 fwrite($tlh, date('c') . ',V=' . $_GET['VER'] . ",K=" . $_GET['KIND'] . ',N='  . $_GET['N'] . ',P=' . $_GET['P'] . ',I='. $_SERVER['REMOTE_ADDR'] . "\n");

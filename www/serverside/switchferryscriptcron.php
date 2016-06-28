@@ -17,7 +17,7 @@ if($test) {
     $dailycache = "test" . $dailycache;
     echo ("Test Run<br/>");
 }
-
+date_default_timezone_set("America/Los_Angeles");  // write the time in PDT/PST
 $today = date("m/d/Y"); //  06/13/2016
 //echo ("Switch Ferry Schedule:" . $today . "<br/>");
 
@@ -27,7 +27,7 @@ if($s == '') {
     echo("No $ferryschedule");
     exit(0);
 }
-$s = str_replace("\r", "", $s); // remove any returns, leaving only line breaks I hope
+$s = str_replace("\r\n", "\n", $s); // remove any returns, leaving only line breaks I hope
 $sa = explode("\n", $s);  // break the file up into lines
 //echo("count=" . count($sa) . "<br/>");
 for($i=0; $i<count($sa); $i++) {
