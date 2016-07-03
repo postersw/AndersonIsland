@@ -1,5 +1,5 @@
 <?php
-// Switch ferry schedule.  Runs once/day.
+// OBSOLETE. UNUSED. Switch ferry schedule.  Runs once/day.
 // Copies the dated schedule entries from ferryschedule.txt to the dailycache.txt file iff the date matches today.
 // This script is meant to run once/day at 2300  Note that the cron time is GMT, so it should run at 6am GMT. ;
 // Bob. 6/22/2016.

@@ -2,8 +2,9 @@
 //////////////////////////////////////////////////////////////////////////////
 // getcomingevents.php - returns the comingevents as a text file.
 // copies comingevents.txt to output.
-
-// read it from disk.  need to add a filter by date. don't send earlier than this week.
+// Only used by version 1.3 apps (March 2016).  Not used by version 1.6 apps (June 2016).
+//  Slowly becoming obsolete.
+//  7/2/16 - switch to PDT/PST.   
 header('Content-Type: application/text');
 $diskfile = 'comingevents.txt';
 $fh = fopen($diskfile, 'r');
@@ -14,7 +15,7 @@ while(! feof($fh)) {
     echo($line);
 }
 fclose($fh);
-
+date_default_timezone_set("America/Los_Angeles");  // write the time in PDT/PST
 $log = 'comingeventslog.txt';
 $tlh = fopen($log, 'a');
 fwrite($tlh, date('c') . 'CE access from ' . $_SERVER['REMOTE_ADDR'] . "\n");
