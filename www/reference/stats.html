@@ -35,9 +35,9 @@
         var nip = 0;  // index into IP array
         var IP = [0, 0];
         var nudate = 0; // index into udate
-        var UDate = [0, 0]; 
-        var UDateCount = [0, 0]; // uses/date
-        var UDateOldCount = [0, 0]; // Old uses/date
+        var UDate = ["2016-01-01"];
+        var UDateCount = [0]; // uses/date
+        var UDateOldCount = [0]; // Old uses/date
         var nver = 0; // index into version
         var Ver = ["", ""];  // version array
         var VerCount = [0, 0]; // users/version
@@ -91,12 +91,20 @@
                 if (ipa == "184.21.245.107") continue;
                 // count date
                 if (rowdate == UDate[nudate]) UDateOldCount[nudate]++;  // if in table
-                else {
+                else if (rowdate > UDate[nudate]) {  // if not in table
                     nudate++;
                     UDate[nudate] = rowdate;
                     UDateOldCount[nudate] = 1;
                     UDateCount[nudate] = 0;
+                } else { // go backwards to find the date
+                    for (i = nudate; i >= 0; i--) {
+                        if (UDate[i] == rowdate) {
+                            UDateOldCount[i]++;
+                            break;
+                        }
+                    }
                 }
+
 
             }
             ReadStatsFile(); // ReadStats 
@@ -194,7 +202,7 @@
                     UDate[nudate] = rowdate;
                     UDateCount[nudate] = 1;
                     UDateOldCount[nudate] = 0;
-                } else {
+                } else {  // go backwards to find the date
                     for (i = nudate; i >= 0; i--) {
                         if (UDate[i] == rowdate) {
                             UDateCount[i]++;
