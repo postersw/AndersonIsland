@@ -7,11 +7,21 @@
 //      4/16/16. Added call to pushbots. activated for android only.
 //      4/20/16. Shortened date displayed to user.
 //      4/22/16. Added IOS.
+//      7/02/16. Reformatted date as "Jul 02, 4:45p"
 //  Sample RSS feed:
+//<item>
+//<title>The ferry is currently running 22 minutes late.</title>
+//<link>
+//http://www.co.pierce.wa.us/AlertCenter.aspx?AID=548
+//</link>
+//<pubDate>Sat, 02 Jul 2016 16:58:06 -0800</pubDate>
+//<description>
+//The ferry is currently running 22 minutes late. Thank you for your patience.
+//</description>
 //
 
 chdir("/home/postersw/public_html");
-$alertclearhours = 5;  // hours to clear an alert
+$alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 $alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
@@ -27,13 +37,13 @@ for($i=0; $i<10; $i++) {
 if($title == "") {
 	ClearAlertFile($alertfile, $alertlog);
 	logalertlast("no title");
-	exit(0); // if no reply 
+	exit(0); // if no reply
 }
 // get actual message
-$title = $x->channel->item[0]->title; 
+$title = $x->channel->item[0]->title;
 if($title == "") {
 	ClearAlertFile($alertfile, $alertlog);
-	exit(0); // if no title 
+	exit(0); // if no title
 }
 
 $desc = $x->channel->item[0]->description;
@@ -62,8 +72,18 @@ $deltat = $t - $talert;
 
 // write alert to file
 //echo ("writing alert to file.");
-$alertts  = substr($x->channel->item[0]->pubDate, 5, 7) . substr($x->channel->item[0]->pubDate, 17, 5);
-$alertstring = $alertts . " " . $title . "\n" . $desc;
+//$alertts  = substr($x->channel->item[0]->pubDate, 5, 7) . substr($x->channel->item[0]->pubDate, 17, 5);
+$alertday  = substr($x->channel->item[0]->pubDate, 8, 3) . " " . substr($x->channel->item[0]->pubDate, 5, 2);
+$alerthr = substr($x->channel->item[0]->pubDate, 17, 2);
+$alertam = "a";
+if($alerthr > "12") {  // convert to 12 hour
+    $alerthr = $alerthr - 12;
+    $alertam = "p";
+}
+$alertmin = substr($x->channel->item[0]->pubDate, 19, 3);
+$alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
+//$alertdatestring = date("m/d h:ia", $talert); // 7/2 5:17pm This should have worked, but it didn't to DST correctly.
+$alertstring = $alertdatestring . " " . $title . "\n" . $desc;
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
 	logalertlast("alert already written");
@@ -78,7 +98,7 @@ fclose($fh);
 // log it
  $fhl = fopen($alertlog, 'a');
 fwrite($fhl, date("Y/m/d H:i:s") . "|" . $alertstring . "\n");
-fclose($fhl);  
+fclose($fhl);
 echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
 
@@ -94,15 +114,15 @@ function ClearAlertFile($alertfile, $alertlog) {
      logalertlast("cleared alert file");
      $alc = file_get_contents($alertfile);
      if($alc=="") return; // if already empty
-     
+
      $fh = fopen($alertfile, 'w');
      fwrite($fh, "");
-     fclose($fh);   
+     fclose($fh);
      echo("ClearAlertFile cleared  $alertfile");
      // log it
      $fhl = fopen($alertlog, 'a');
      fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file.\n");
-     fclose($fhl);  
+     fclose($fhl);
 	 logalertlast("physically cleared alert file");
      //echo("ClearAlertFile wrote to log");
 }
@@ -114,9 +134,9 @@ function logalertlast($s) {
 	$alertlast = "alertlast.txt";
     $fh = fopen($alertlast, 'w');
     fwrite($fh, date("Y/m/d H:i:s") . $s);
-    fclose($fh);  
+    fclose($fh);
 }
- 
+
 
 ////////////////////////////////////////////////////////////////////////
 //  Push notification - send a notificatyion using Pushbots to all android users
@@ -129,7 +149,7 @@ function PushANotification($note) {
     // Application Secret
     $appSecret = '297abd3ebd83cd643ea94cbc4536318d';
     $pb->App($appID, $appSecret);
- 
+
     // Notification Settings
     $pb->Alert($note);
     $pb->Platform(array("0","1"));  // android
