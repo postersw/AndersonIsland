@@ -13,8 +13,11 @@
             0603.2300: fixed top bar.
             0604.1600: add TIDEDATALINK to dailycache.txt. 
         1.6 0606.1600: move dailycache.txt, comingevents.txt, tidedata.txt to getdailycache.php.
-        1.6.0610.1700: Android & IOS release on 6/10. IOS release approved 6/13.
+        1.6.0607.1601: Android release.  tracks pages used.
+        1.6.0610.1700: IOS release on 6/10. IOS release approved 6/13.
         1.6.0614.2100: reactivate android message. 
+        1.7.0702.2300: Created branch Ver17 for dev. Branch 16Prod captures the prod 1.6.0614 branch.
+                       Force alert reload on every start. Set alert timeout=8 min.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -655,10 +658,10 @@ function DisplayAlertInfo() {
 //          'burnbanalert' = burn ban alert info
 //          'tanneralert' = tanner alert info
 function getAlertInfo() {
-    var alerttimeout = 720; // alert timeout in sec 12 minutes
+    var alerttimeout = 480; // alert timeout in sec 8 minutes
     var timestamp = Date.now() / 1000; // time in sec
     var t = localStorage.getItem("alerttime");
-    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
+    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 8 min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
@@ -3143,7 +3146,8 @@ function StartApp() {
     ShowCachedData();
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
-    getAlertInfo(); // always get alert info every 12 minutes (time check is in routine)
+    localStorage.removeItem("alerttime"); // force immediate reload of alert info
+    getAlertInfo(); // always get alert info every 10 minutes (time check is in routine)
     getCurrentWeather(); // gets weather async every 20 min.
     getForecast(); // updates forecast every 2 hrs
 
