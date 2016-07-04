@@ -39,7 +39,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0702.2300";
+var gVer = "1.7.0704.0000";
 
 var app = {
     // Application Constructor
@@ -97,7 +97,7 @@ var gYear; // year
 var gMonth;  // month 1-12. note starts with 1
 var gDayofMonth; // day of month 1-31
 var gMonthDay; // mmdd
-var laborday; // first monday in sept.  we need to compute this dyanmically
+var laborday = 0; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
 var holiday;  // true if  holiday
@@ -146,7 +146,7 @@ function InitializeDates(dateincr) {
     gMonthDay = gMonth * 100 + gDayofMonth;
     gYear = Gd.getFullYear();
     // build holidays once only
-    if (dateincr == 0) {
+    if (dateincr == 0 && laborday == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
         var dlabordate, dlabor;
         dlabordate = new Date(gYear, 8, 1); // earlies possible date
@@ -763,11 +763,16 @@ function FindNextFerryTime(ferrytimes, ferrytimeK) {
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
     if (i >= ferrytimes.length) {
-        i = 0;
-        // need to compute if tomorrow is a holiday
-        if (!IsHoliday(gMonthDay + 1) && (gDayofWeek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
-        //handle ferry schedule cutover
-        ft = ft + "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
+        //i = 0;
+        //// need to compute if tomorrow is a holiday
+        //if (!IsHoliday(gMonthDay + 1) && (gDayofWeek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
+        // full loop;  Does NOT handle the cutover to an alternate schedule
+        InitializeDates(1);   // tomorrow
+        for (i = 0; i < ferrytimes.length; i = i + 2) {
+            if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
+        }
+        InitializeDates(0); // reset to today
+        if(i < ferrytimes.length) ft = ft + "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
     }
 
     if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
