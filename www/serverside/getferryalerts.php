@@ -40,13 +40,13 @@ if($title == "") {
 	exit(0); // if no reply
 }
 // get actual message
-$title = $x->channel->item[0]->title;
+$title = trim($x->channel->item[0]->title);
 if($title == "") {
 	ClearAlertFile($alertfile, $alertlog);
 	exit(0); // if no title
 }
 
-$desc = $x->channel->item[0]->description;
+$desc = trim($x->channel->item[0]->description);
 $alertts = $x->channel->item[0]->pubDate;
 $alertts = substr($alertts, 5);
 $alertts[2] = "/";
@@ -83,6 +83,8 @@ if($alerthr > "12") {  // convert to 12 hour
 $alertmin = substr($x->channel->item[0]->pubDate, 19, 3);
 $alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
 //$alertdatestring = date("m/d h:ia", $talert); // 7/2 5:17pm This should have worked, but it didn't to DST correctly.
+
+if($title != $desc) $title = $title . " ...>";
 $alertstring = $alertdatestring . " " . $title . "\n" . $desc;
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
@@ -103,8 +105,7 @@ echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
 
 // now send alert using Pushbots and Google Cloud Messaging
-$alertts  = substr($x->channel->item[0]->pubDate, 17, 5);
-PushANotification( $alertts . " " . $title );
+PushANotification(  $alerthr . $alertmin . $alertam . " " . $title );
 exit(0);
 
 /////////////////////////////////////////////////////////////////
