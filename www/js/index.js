@@ -18,7 +18,8 @@
         1.6.0614.2100: reactivate android message. 
         1.7.0702.2300: Created branch Ver17 for dev. Branch 16Prod captures the prod 1.6.0614 branch.
                        Force alert reload on every start. Set alert timeout=8 min.
-            0705.2100: Fishing link. Add parameters to ShowLinksPage
+            0705.2100: Web. Fishing link. Add parameters to ShowLinksPage
+            0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -40,7 +41,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0705.2100";
+var gVer = "1.7.0706.2100";
 
 var app = {
     // Application Constructor
@@ -1080,8 +1081,8 @@ function HandleCurrentWeatherReply(r) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// getForecast using WorldWeatherMap. License for 
-// get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+// getForecast using OpenWeatherMap. This is the ONLY routine that gets the forecast
+// get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
 //  exit: forecastjson = json full forecast structure, used on full forecast page
 //        forecastjsontime = timestamp
@@ -1128,6 +1129,9 @@ function HandleForecastAReply(jsondata) {
         r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
     localStorage.setItem("forecast", forecast);
     document.getElementById("forecast").innerHTML = forecast;
+
+    // if the forecast page is being displayed, regenerate it
+    if (gDisplayPage == "weatherpage") generateWeatherForecastPage(); 
 }  // end of function
 
 
@@ -2913,10 +2917,12 @@ function ShowWeatherPage() {
     SetPageHeader("Weather");
     InitializeDates(0);
     document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong");
-    getWeatherForecastPage("today");
+    generateWeatherForecastPage(); // display page from cache
+    getForecast(); // start refresh of forecast if necessary (only happens every 60 min)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+// REMVOED for 1.7 7/6/16. 
 // get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/minute for free.
 //  fromdate = optional starting date for the weather
@@ -2946,33 +2952,37 @@ function ShowWeatherPage() {
 //    });  // end of ajax call
 //}  // end of function
 
-function getWeatherForecastPage(fromdate) {
-    var olddate, newdate; // dates
-    var ampm; // am or pm
-    var currentTemp;
-    generateWeatherForecastPage(); // display page from cache
-    if (localStorage.getItem("forecastjsontime") != null) {
-        var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), gTimehhmm); // age of forecast in min
-        if (td < 30) return; // don't update more than every 30 minutes
-    }
-    // ajax request without jquery
-    var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
-    }
-    xhttp.open("GET", myurl, true);
-    xhttp.send();
-}
+//function getWeatherForecastPage(fromdate) {
+//    var olddate, newdate; // dates
+//    var ampm; // am or pm
+//    var currentTemp;
+//    generateWeatherForecastPage(); // display page from cache
+//    getForecast(); // start refresh of forecast if necessary
+    //if (localStorage.getItem("forecastjsontime") != null) {
+    //    var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), gTimehhmm); // age of forecast in min
+    //    if (td < 30) return; // don't update more than every 30 minutes
+    //}
+    //// ajax request without jquery
+    //var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+    //var xhttp = new XMLHttpRequest();
+    //xhttp.onreadystatechange = function () {
+    //    if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
+    //}
+    //xhttp.open("GET", myurl, true);
+    //xhttp.send();
+//}
 
-function HandleForecastReply(json) {
-    localStorage.setItem("forecastjson", json);
-    localStorage.setItem("forecastjsontime", gTimehhmm);
-    generateWeatherForecastPage();
-}  // end of function
+//function HandleForecastReply(json) {
+//    localStorage.setItem("forecastjson", json);
+//    localStorage.setItem("forecastjsontime", gTimehhmm);
+//    generateWeatherForecastPage();
+//}  // end of function
 
 //////////////////////////////////////////////////////////////////////////////////
-//  generateWeatherForecastPage - generates the forecast using the json reply from openweathermap
+//  generateWeatherForecastPage - generates the forecast using the existing json reply from openweathermap
+//  Entry   forecastjson = string version of json forecast object (must be parsed)
+//          forecastjsontime = hhmm of when the json forecast was last retrieved
+//
 function generateWeatherForecastPage() {
     if (localStorage.getItem("forecastjson") == null) return;
     var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
