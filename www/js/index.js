@@ -20,6 +20,7 @@
                        Force alert reload on every start. Set alert timeout=8 min.
             0705.2100: Web. Fishing link. Add parameters to ShowLinksPage
             0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
+            0710.2300: Improve selection of ferry schedule.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -41,7 +42,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0706.2100";
+var gVer = "1.7.0710.2324";
 
 var app = {
     // Application Constructor
@@ -612,45 +613,7 @@ function DisplayAlertInfo() {
     document.getElementById("tanneroutagealert").innerHTML = s;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// getAlertInfo - gets the alert info from the server every 12 minutes and save it in alerttext and alertdetail
-//  Entry   'alerthide' = true to hide the alert in 'alerttext'
-//  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
-//function getAlertInfoOLDANDOBSOLETE() {
-//    var alerttimeout = 720; // alert timeout in sec 12 minutes
-//    var timestamp = Date.now() / 1000; // time in sec
-//    var t = localStorage.getItem("alerttime");
-//    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
-//    var myurl = FixURL('alert.txt');
 
-//    $.ajax({
-//        url: myurl,
-//        dataType: 'text',
-//        success: function (r) {
-//            var timestamp = Date.now() / 1000; // time in sec
-//            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
-//            if (r == "") {  // if the alert is gone, clear it
-//                if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
-//                    var a = localStorage.getItem('alerttext');
-//                    if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-//                }
-//                localStorage.setItem("alerttext", "");
-//                localStorage.setItem("alertdetail", "");
-//                localStorage.removeItem("alerthide");  // turn off hide
-//            } else {  // if there is an alert, save it
-//                r = r + "\n";
-//                var i = r.indexOf("\n");
-//                var atext = r.substr(0, i);
-//                if(atext != localStorage.getItem("alerttext")) {  // if alert changed
-//                    localStorage.setItem("alerttext", atext);
-//                    localStorage.setItem("alertdetail", r.substr(i));
-//                    localStorage.removeItem("alerthide");  // turn off hide because alert changed
-//                }
-//            }
-//            DisplayAlertInfo();
-//        }
-//    });
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // getAlertInfo - without jQuery- gets the alert info from the server every 12 minutes via php and save it in 
@@ -733,8 +696,9 @@ function CloseMenu() {
 // return the next ferry time as a string. 
 //      entry ferrytimes is the array of times and days (see ferrytimeA)
 //            ferrytimeK = is the array of times and days for ketron
+//            SA = S or A
 //      exit  returns html string of ferry times
-function FindNextFerryTime(ferrytimes, ferrytimeK) {
+function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
     InitializeDates(0);
     var i = 0;
@@ -764,75 +728,28 @@ function FindNextFerryTime(ferrytimes, ferrytimeK) {
         };
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
-    if (i >= ferrytimes.length) {
-        //i = 0;
-        //// need to compute if tomorrow is a holiday
-        //if (!IsHoliday(gMonthDay + 1) && (gDayofWeek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
-        // full loop;  Does NOT handle the cutover to an alternate schedule
-        InitializeDates(1);   // tomorrow
-        for (i = 0; i < ferrytimes.length; i = i + 2) {
-            if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
-        }
-        InitializeDates(0); // reset to today
-        if(i < ferrytimes.length) ft = ft + "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
-    }
-
-    if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
+    if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA);
+ 
+    //if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
     if ((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
     return ft;
 }
 
-//  TABLE VERSION. Does now work when tomorrow is in col 1 and col 2.
-//function FindNextFerryTime(ferrytimes, ferrytimeK) {
-//    var ShowTimeDiff = false;
-//	InitializeDates(0);	
-//    var i = 0;
-//	var ketron = false; //ketron run ;
-//	var nruns = 0; 
-//	var ft = ""; var ketront = "";
-//    // roll through the ferry times, skipping runs that are not valid for today
-//    for (i = 0; i < ferrytimes.length; i = i + 2) {
-//        if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
-//        // now determine if the next run will run today.  If it is a valid run, break out of loop.
-//        if (ValidFerryRun(ferrytimes[i + 1])) {
-//            ft = ft + "<td style='padding:0px'>"
-//			if(RawTimeDiff(timehhmm, ferrytimes[i])<13) {
-//			    ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>&nbsp </td>";
-//			} else {
-//			    ft = ft + VeryShortTime(ferrytimes[i]) + "&nbsp </td>";
-//			}
+//  FindNextFerryTimeTomorrow - finds the 1st run on the NEXT day
+//  Entry   SA = S or A
+//  Exit    returns string with 1st valid run for tomorrow
+function FindNextFerryTimeTomorrow(SA) {
+    var i;
+    InitializeDates(1);   // tomorrow
+    var ferrytimes = UseFerryTime(SA); // get the ferry time for tomorrow
+    for (i = 0; i < ferrytimes.length; i = i + 2) {
+        if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
+    }
+    InitializeDates(0); // reset to today
+    if (i < ferrytimes.length) return "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
+}
 
-//			if (ferrytimeK!="") { // add ketron time for this run
-
-//				if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
-//					ketron = true;
-//					ketront = ketront + "<td style='padding:0px'>" + VeryShortTime(ferrytimeK[i]) + "</td>";
-//				} else ketront = ketront + "<td style='padding:0px'> ---</td> ";
-//			}
-//			if(nruns > 0) break;  // show 2 runs
-//			//ft = ft + ", "; 
-//			//ketront = ketront + ", "; 
-//			nruns++;
-//		};
-//    }
-
-//    // we ran out of the schedule today so give the 1st run for tomorrow
-//    if (i >= ferrytimes.length) {
-//        i = 0;
-//        // need to compute if tomorrow is a holiday
-//        if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
-//        //handle ferry schedule cutover
-//        ft = ft + "<td style='padding:0px'>" + VeryShortTime(ferrytimes[i]) + " tomorrow</td>";
-//    }
-//    ft = ft + "</tr>";
-
-//    //if(ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
-
-//    // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-//    if ((ferrytimeK != null) && ketron) ft = ft + "<tr><td style='padding:0px'><span style='font-weight:bold;color:gray'>Ketron:</span></td>" + ketront + "</tr>";
-//	return ft;
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Finds the next ferry times and puts them into the Dom for the FRONT PAGE
@@ -846,40 +763,13 @@ function WriteNextFerryTimes() {
     var str;
     var v = "";
     if (holiday) v = "Hoilday<br/>"
-    v = v + "<span style='font-weight:bold'>Steilacoom: ";
-    if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "") + "</span>";
-    else v = v + FindNextFerryTime(ferrytimeS2, "") + "</span>";
-    // make it bold if not tomorrow
-    //if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-    var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp "
-    if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK) + "</span>";
-    else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2) + "</span>";
-    //if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;'>" + a + "</span>";
-    //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
+    v = v + "<span style='font-weight:bold'>Steilacoom: " + 
+         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
+    var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
+             FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
     document.getElementById("ferrytimes").innerHTML = v + a;
 }
-//////////////////// TABLE VERSION. Does now work when tomorrow is in col 1 and col 2.
-//function WriteNextFerryTimes() {
-//    // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
-//    // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
-//    //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-//    //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-//    // at this point, i = the next valid ferry run
-//    var v = "";
-//    var str;
-//    if (holiday) v = "<strong>Holiday<strong>";
-//    v = v + "<table style='border:none'><tr style='font-weight:bold'><td style='padding:0px'>Steilacoom:&nbsp </td>";
-//    if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "") ;
-//    else v = v + FindNextFerryTime(ferrytimeS2, "");
-//    // make it bold if not tomorrow
-//    //if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-//    var a = "<tr style='font-weight:bold;color:blue'><td style='padding:0px'>Anderson:</td>"
-//    if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
-//    else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
-//    //if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
-//    //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
-//    document.getElementById("ferrytimes").innerHTML = v + a + "</table>";
-//}
+
 
 ////////////////////////////////////////////////////////////////////////
 //  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimex
@@ -905,16 +795,38 @@ function ParseFerryTimes() {
 }
 
 /////////////////////////////////////////////////////////////////////////
-//  UseFerryTime1 - select ferrytime 1 or ferry time 2 based on cutover date
+//  UseFerryTime1 - REMOVED 7/10/16. select ferrytime 1 or ferry time 2 based on cutover date
 //  entry   gFerryDate2 = cutover time in ms
 //          gTimeStampms = 'current' time for this function
 //  exit    true to use ferrytime1, false to use gFerryDate2
-function UseFerryTime1() {
-    if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return true
-    else return false;
+//function UseFerryTime1() {
+//    if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return true
+//    else return false;
+//}
+
+/////////////////////////////////////////////////////////////////////////
+//  GetFerryTimeArray - select proper ferry time array (S or A) based on date
+//  entry   SA = "S" for Steilacoom, A for Anderson, K for Ketron
+//          gFerryDate2 = cutover time in ms
+//          gTimeStampms = 'current' time for this function
+//  exit    returns if SA=S: ferrytimeS , ferrytimeS2 if >=cutover date, 
+//                  if SA=A: ferrytimeA , ferrytimeA2 if >=cutover date, 
+function UseFerryTime(SA) {
+    switch (SA) {
+        case "S":
+            if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return ferrytimeS;
+            else return ferrytimeS2;
+            break;
+        case "A":
+            if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return ferrytimeA;
+            else return ferrytimeA2;
+            break;
+        case "K":
+            if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return ferrytimeK;
+            else return ferrytimeK2;
+            break;
+    }
 }
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1764,14 +1676,12 @@ function DisplayFerrySchedule(userdate) {
     row1col1 = row1.insertCell(1);
     row1col1.style.backgroundColor = "blue";
     row1col1.style.color = "white";
-    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
-        ((UseFerryTime1()? "" : " (New Schedule)"));
+    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") ;
     row1col1 = row1.insertCell(2);
     row1col1.style.backgroundColor = "blue";
 
-    if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
-    else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
-    // build next 6 days
+    BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
+ 
     gTimehhmm = 0;  // ignore current time
     var i;
     for (i = 0; i < 7; i++) {
@@ -1786,12 +1696,10 @@ function DisplayFerrySchedule(userdate) {
         //row1col1 = row1.insertCell(1);
         //row1col1.style.backgroundColor = "blue";
         //row1col1.style.color = "white";
-        row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
-             ((UseFerryTime1() ? "" : " (New Schedule)"));
+        row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
         //row1col1 = row1.insertCell(2);
         //row1col1.style.backgroundColor = "blue";
-        if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
-        else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
+        BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
     }
     InitializeDates(0);  // reset dates back
 }
