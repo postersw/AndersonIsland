@@ -29,7 +29,7 @@
     $result = "";
     $str = substr($str, $i+31); // string after Outages for Anderson Island
     $A = explode("<", $str);  // break the string up into: < s1 > s2
- 
+
     // loop through the $A strings, each of which is: < s1 > s2
     for($i = 0; $i < count($A); $i++) {
         $s = $A[$i];
@@ -46,9 +46,14 @@
         $result = $result . $s2;
         if($s1 == "/div") break;  // quit at the first /div
     }
-    
+
     // eliminate newline and multiple blanks
     $r = preg_replace('/\s+/', ' ', $result); // remove all duplicate blanks and whitespace characters
+    // if an update, find the last one.
+    $i = strripos ($r, "Update");
+    if($i > 0) {
+        $r = substr($r, $i);  // get the update
+    }
     if (strlen($r) > 137) $r = substr($r, 0, 137) . "...";
 
     // write it to the file
@@ -58,5 +63,5 @@
     echo $r;
     file_put_contents($tanneroutagefile, $r);
     return 0;
- 
+
 ?>
