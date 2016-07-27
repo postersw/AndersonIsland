@@ -50,7 +50,7 @@
     // eliminate newline and multiple blanks
     $r = preg_replace('/\s+/', ' ', $result); // remove all duplicate blanks and whitespace characters
     // if an update, find the last one.
-    $i = strripos ($r, "Update");
+    $i = strripos ($r, "Update ");
     if($i > 0) {
         $r = substr($r, $i);  // get the update
     }
