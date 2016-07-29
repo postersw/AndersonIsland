@@ -50,10 +50,10 @@
     // eliminate newline and multiple blanks
     $r = preg_replace('/\s+/', ' ', $result); // remove all duplicate blanks and whitespace characters
     // if an update, find the last one.
-    $i = strripos ($r, "Update ");
-    if($i > 0) {
-        $r = substr($r, $i);  // get the update
-    }
+    //$i = strripos ($r, "Update ");
+    //if($i > 0) {
+    //    $r = substr($r, $i);  // get the update
+    //}
     if (strlen($r) > 137) $r = substr($r, 0, 137) . "...";
 
     // write it to the file
