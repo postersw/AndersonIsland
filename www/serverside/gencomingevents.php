@@ -3,11 +3,21 @@
 //  gencomingevents.php Generate Coming Events using Recurring Events
 //  8/1/2016.   rfb.
 //
+//  comingevents.txt + recurring.txt -> gencomingevents.php -> newcomingevents.txt.
+//  EVENTS are not touched (but are copied over into newcomingevents.txt).
+//  ACTIVITIES are copied over and ADDED to using recurring.txt.
+//      NO activities are deleted.   NO activities are duplicated.
+//      New activities are added.
+//  Run this script once/month. Change $monthstart and $monthend.
+//
+//  recurring.txt: recurring events.  This is the driving file.
+// week (0=every week, 1-4 = week of month),dayofweek(0-6),starthhmm,endhhmm,type,event,where,sponsor
+//  e.g.: 0;1;0900;1000;A;Yoga;MSR-Riviera;Riviera
 
 // globals
 echo("started gencomingevents<br/>");
 $frecur = "recurring.txt";  // recurring events
-$fcein = "comingeventstest.txt"; // coming events
+$fcein = "comingevents.txt"; // coming events
 $fceout = "newcomingevents.txt"; // new coming events
 // events
 $cemmdd = array(0);
@@ -38,28 +48,42 @@ $monthend = 9;
 $year = 2016;
 
 // doit
-readfcein($fcein); // read it in
 readfrecur($frecur); // read recurring
+$filefceout = fopen($fceout, "w") or die("cant open $fceout for write");
+readfcein($fcein, $filefceout); // read it in
+if($nrec == 0) exit("no recurring events");
 dorecur();
-writefceout($fceout);
-echo("EXIT<br/>");
+writefceout($fceout, $filefceout );
 exit("FINAL EXIT");
 
 //////////////////////////////////////////////////////
 // readfcein - read the coming events file
-function readfcein($fcein){
+//  $fcein = name of input coming events file
+//  $filefceout = handle for coming events output file
+function readfcein($fcein, $filefceout){
     global $actmmdd,$actshhmm,$actehhmm,$acttype,$acttherest,$nact;
     //  read it in
     $activities = false;
     $file = fopen($fcein, "r") or die("cant open $fcein<br/>");
     while(!feof($file)) {
         $s = fgets($file);
-        if(substr($s, 0, 1) == "/") continue; // skip comment
+        if(substr($s, 0, 1) == "/") {
+            fputs($filefceout, $s);
+            continue; // skip comment
+        }
+
+        // copy EVENTS to fceout
         if(!$activities) {
-            if($s != "ACTIVITIES") continue;
+            if($s != "ACTIVITIES\n") {
+                fputs($filefceout, $s);
+                continue; // skip comment
+            }
             $activities = true;
+            fputs($filefceout, $s);  // write ACTIVITIES
             continue;
         }
+
+        // load activities into arrays
         $a = explode(";", $s, 5);  // split the string and save in an  array
         $actmmdd[$nact] = intval($a[0]);
         $actshhmm[$nact] = $a[1];
@@ -75,6 +99,8 @@ function readfcein($fcein){
 
 //////////////////////////////////////////////////////
 // readfrecur - read the recuring events file
+//  entry   $frecur = name of recurring events file
+//
 function readfrecur($frecur){
     global $recweek,$recdow,$recshhmm,$recehhmm,$rectype,$rectherest,$nrec;
     //  read it in
@@ -123,7 +149,7 @@ function dorecur() {
                 $mmdd = gendate($month, 3, $recdow[$i]); // generate the date
                 insertintoce($mmdd, $recshhmm[$i], $recehhmm[$i], $rectype[$i], $rectherest[$i] );
                 $mmdd = gendate($month, 4, $recdow[$i]); // generate the date
-                insertintoce($mmdd, $recshhmm[$i], $recehhmm[$i], $rectype[$i], $rectherest[$i] );
+                if($mmdd > 0) insertintoce($mmdd, $recshhmm[$i], $recehhmm[$i], $rectype[$i], $rectherest[$i] );
                 $mmdd = gendate($month, 5, $recdow[$i]); // generate the date
                 if($mmdd > 0) insertintoce($mmdd, $recshhmm[$i], $recehhmm[$i], $rectype[$i], $rectherest[$i] );
             }
@@ -132,8 +158,9 @@ function dorecur() {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-//  insertintoce inserts into the ce array
+//  insertintoce inserts into the actxxxx arrays in the proper date&time sequence
 //  entry   mmdd, start hhmm, endhhmm, type, the rest of the string
+//  exit    item added to the actxxxx arrays, $nact bumped
 function insertintoce($mmdd, $shhmm, $ehhmm, $t, $therest) {
     global $actmmdd,$actshhmm,$actehhmm,$acttype,$acttherest,$nact;
     for($i=0; $i<$nact; $i++) {
@@ -141,9 +168,10 @@ function insertintoce($mmdd, $shhmm, $ehhmm, $t, $therest) {
         if($mmdd > $actmmdd[$i]) continue;
         //echo("    after the continue");
         if($mmdd == $actmmdd[$i] && $shhmm > $actshhmm[$i]) continue;
-        if($mmdd == $actmmdd[$i] && $shhmm == $actshhmm[$i] && $ehhmm<$actehhmm) continue;
-        if($mmdd == $actmmdd[$i] && $shhmm == $actshhmm[$i] && $ehhmm==$actehhmm &&
-            $t==$actype[$i] && $therest==$acttherest[$i]) return;  // if a duplicate, skip it
+        if($mmdd == $actmmdd[$i] && $shhmm == $actshhmm[$i] && $ehhmm<$actehhmm[$i]) continue;
+        if($mmdd == $actmmdd[$i] && $shhmm == $actshhmm[$i] && $ehhmm==$actehhmm[$i] &&
+            $t==$acttype[$i] && $therest==$acttherest[$i]) return;  // if a duplicate, skip it
+        //echo("$mmdd/$actmmdd[$i];$shhmm/$actshhmm[$i];$ehhmm/$actehhmm[$i];$t/$acttype[$i];$therest/$acttherest[$i]<br/>");
         // move the rest up. At this point, the $i value is pointing to the 1st entry to move up.
         for($j = $nact; $j>=$i; $j--) {
             $actmmdd[$j+1] = $actmmdd[$j];
@@ -168,27 +196,29 @@ function insertintoce($mmdd, $shhmm, $ehhmm, $t, $therest) {
 
 /////////////////////////////////////////////////////////////////////////
 //  writefceout write out the file
-//  writes all entries in the actxxxx arrays
-function writefceout($fceout){
+//  writes all entries in the actxxxx arrays to fceout
+//  entry   $fceout = name of output coming events
+//          $filefceout = handle of output coming events.  Events have already been copied to it.
+function writefceout($fceout, $filefceout){
     global $actmmdd,$actshhmm,$actehhmm,$acttype,$acttherest,$nact;
-    $file = fopen($fceout, "w") or die("cant open $fceout for write");
     for($i=0; $i<$nact; $i++) {
         $s = $actmmdd[$i] . ";" . $actshhmm[$i] .";" .  $actehhmm[$i] .";" .  $acttype[$i] .";" .  $acttherest[$i];
-        fputs($file, $s);
+        if($actmmdd[$i]<1000) $s = "0" . $s; // leading 0 if needed
+        fputs($filefceout, $s);
     }
-    fclose($file);
+    fclose($filefceout);
     echo("wrote $nact lines to $fceout<br/>");
 }
 
 ////////////////////////////////////////////////////////////////////////
  //gendate - generate the date gendate(month, week (1-5), dow (day of week))
- //month = 1 - 12
- // week in month = 1 - 5
- // dow = day of week, as 0 (sun) - 6
+ // entry: month = 1 - 12
+ //     week of the month = 1 - 5
+ //     dow = day of week, as 0 (sun) - 6
  // exit: date as mmdd, 0 if invalid
 function gendate($month, $week, $dow) {
     global $year;
-    $dom=array(31,28,31,30,31,30,31,31,30,31,30,31);
+    $dom=array(31,28,31,30,31,30,31,31,30,31,30,31); // days in month, indexed by month
 
     $jd = cal_to_jd(CAL_GREGORIAN,$month,1,$year); // julian day of year
     $jdow = jddayofweek($jd,0); // day of week
