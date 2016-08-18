@@ -42,7 +42,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0710.2324";
+var gVer = "1.7.0817.1700";
 
 var app = {
     // Application Constructor
@@ -898,11 +898,11 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
                 //  closed today find next open time
                 j = gDayofWeek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
-                if (H[j * 2] > 0) return " Opens tomorrow " + VeryShortTime(H[j * 2]);
+                if (H[j * 2] > 0) return openlist + " Opens tomorrow " + VeryShortTime(H[j * 2]);
                 // not open tomorrow. find next open day.
                 for (var k = 0; k < 7; k++) {  // ensure we check each day only once
                     j++; if (j == 7) j = 0; // handle day rollover
-                    if (H[j * 2] > 0) return " Opens " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
+                    if (H[j * 2] > 0) return openlist + " Opens " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
                 } // find open day
             }
         }
@@ -1171,10 +1171,12 @@ function DisplayNextEvents(CE) {
         // found it
         if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if (aCEmonthday == gMonthDay) {
-            if (datefmt == "") datefmt += "<span style='font-weight:bold'>Today</span>";  // mark the 1st entry only as TODAY
-        } else if (aCEmonthday == (gMonthDay + 1)) datefmt += "Tomorrow";
-        else if (aCEmonthday <= (gMonthDay + 6)) datefmt += gDayofWeekShort[GetDayofWeek(aCE[0])];  // fails on month chagne
-        else datefmt += gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
+            if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
+            datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            continue;
+        } else if (aCEmonthday == (gMonthDay + 1)) datefmt += "<strong>Tomorrow</strong>";
+        else if (aCEmonthday <= (gMonthDay + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
+        else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4) + "</strong>";
         datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
         // show all events for today
         //if (Number(aCE[0]) == monthday) datefmt += "<br/>";  // event is for today, so go on to the next one
