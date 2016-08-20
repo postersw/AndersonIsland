@@ -10,7 +10,8 @@
 //  Fire department added 6/12/16.   rfb.
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
-    $pcfdlink = "http://www.pcfd27.com/";
+    //$pcfdlink = "http://www.pcfd27.com/";
+    $pcfdlink = "http://www.co.pierce.wa.us/index.aspx?NID=982";  // moved to pierce county 8/17/16
     $burnbanfile = "burnban.txt";
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($burnbanlink);
@@ -35,18 +36,35 @@
     // write it
     $airqual = "Peninsula air quality: " . $bb;
 
-    // fire department
+    // fire department. removed 8/19/16. 
+    //$fire = "?";
+    //$str = file_get_contents($pcfdlink);
+    //if($str == "") file_get_contents($pcfdlink); // 1 retry
+    //if($str != "") {
+    //    $j = strpos($str, 'NO BURN BAN'); // j = position of 'NO BURN BAN'
+    //    if($j == false) $fire == "<strong>Burn Ban</strong>";
+    //    else $fire = "No Ban";
+    //}
+    // County burn bans 8/19/16.
+    // Extract the BURN BAN status after 'Current fire safety burn ban status
     $fire = "?";
+    $lookfor = "Current fire safety burn ban status in Pierce County";
     $str = file_get_contents($pcfdlink);
     if($str == "") file_get_contents($pcfdlink); // 1 retry
     if($str != "") {
-        $j = strpos($str, 'NO BURN BAN'); // j = position of 'NO BURN BAN'
-        if($j == false) $fire == "<strong>Burn Ban</strong>";
-        else $fire = "No Ban";
+        $j = stripos($str, $lookfor); // j = start of burn ban status
+        if($j == false) break; // we couldn't find it
+        $j = $j + strlen($lookfor);
+        $bb = stripos($str, "BURN BAN", $j);  // find BURN BAN
+        $bbstart = strrpos($str, ">", $bb); // find > before BURN BAN
+        $bbend = strpos($str, "<", $bb); // find > after BURN BAN
+        $fire = substr($str, $bbstart+1, $bbend-1); // entire phrase
+        if(stripos($fire, "NO ") == false) $fire = '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">' . $fire . "</a>";
+        else $fire = '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:green;">' . $fire . "</a>";
     }
 
     // write it
-    $msg = $airqual . "<br/>AI Fire District: " . $fire;
+    $msg = $airqual . "<br/>Fire Safety: " . $fire;
     $old = file_get_contents($burnbanfile);
     if($msg == $old) return 0;
     echo $msg;
