@@ -1,13 +1,16 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  getferryalerts - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
-//  alerts are cleared after 4 hours or if they are removed from the rss feed
+//  alerts are cleared after 4 hours or if they are removed from the rss feed.
+//  To change the default message (from "") change $DefaultMessage in function ClearAlertFile().
+//
 //  Bob Bedoll. 3/13/16.
 //		4/09/16. Changed alertfile to alert.txt
 //      4/16/16. Added call to pushbots. activated for android only.
 //      4/20/16. Shortened date displayed to user.
 //      4/22/16. Added IOS.
 //      7/02/16. Reformatted date as "Jul 02, 4:45p"
+//      8/17/16. Added 'Default Message' to be displayed if there is no alert.
 //  Sample RSS feed:
 //<item>
 //<title>The ferry is currently running 22 minutes late.</title>
@@ -112,17 +115,20 @@ exit(0);
 //  ClearAlertFile - writes an empty string to the alert file
 //
 function ClearAlertFile($alertfile, $alertlog) {
+    $DefaultMessage = "";
+    $DefaultMessage = "<span style='color:black;'>8/17 Ferry Lane Webcam Status: The Steilacoom camera is back up. The Anderson Island camera is still down (since 8/6)</span>";
      logalertlast("cleared alert file");
      $alc = file_get_contents($alertfile);
-     if($alc=="") return; // if already empty
+     //if($alc=="") return; // if already empty
+     if($alc==$DefaultMessage) return; // if already empty
 
      $fh = fopen($alertfile, 'w');
-     fwrite($fh, "");
+     fwrite($fh, $DefaultMessage);
      fclose($fh);
-     echo("ClearAlertFile cleared  $alertfile");
+     echo("ClearAlertFile cleared  $alertfile and wrote: $DefaultMessage");
      // log it
      $fhl = fopen($alertlog, 'a');
-     fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file.\n");
+     fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file and wrote: $DefaultMessage.\n");
      fclose($fhl);
 	 logalertlast("physically cleared alert file");
      //echo("ClearAlertFile wrote to log");

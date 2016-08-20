@@ -8,7 +8,7 @@
     </RootNamespace>
     <OutputType>Library</OutputType>
     <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
-    <SpecificPageValue>getferryalerts.php</SpecificPageValue>
+    <SpecificPageValue>gencomingevents.php</SpecificPageValue>
     <StartAction>SpecificPage</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include=".pgbomit" />
     <Compile Include="burnban.txt" />
+    <Compile Include="gencomingevents.php" />
     <Compile Include="getalerts.php" />
     <Compile Include="getburnbanalerts.php" />
     <Compile Include="getcomingevents.php" />
