@@ -42,7 +42,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0817.1700";
+var gVer = "1.7.0820.2200";
 
 var app = {
     // Application Constructor
@@ -893,8 +893,8 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             else {
                 // closed right now. Find next open time.
                 openlist += " <span style='color:red;font-weight:bold'> Closed. </span>";
-                if (hhmm < opentime) return " Opens today " + VeryShortTime(opentime);
-                if (hhmm < opentime2) return " Reopens today " + VeryShortTime(opentime2);
+                if (hhmm < opentime) return openlist + " Opens today " + VeryShortTime(opentime);
+                if (hhmm < opentime2) return openlist + " Reopens today " + VeryShortTime(opentime2);
                 //  closed today find next open time
                 j = gDayofWeek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
@@ -1149,13 +1149,18 @@ function ShowNextTides() {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' local storage object on the main page
-//  object consists of rows (separated by /n) 1 for each event or activity
+// DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' 
+//          local storage object on the main page.
+//      Displays all activities or events for a day.
+//  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
+//  Exit    returns the information to display on the main screen
 function DisplayNextEvents(CE) {
-    var datefmt = ""; // formatted date
+    var datefmt = ""; // formatted date and event list
     var iCE; // iterator through CE
     var aCE; // CE split array 
     var aCEmonthday;
+    var DisplayDate = 0; // event date we are displaying
+    var nEvents = 0; // number of events displayed
     if (CE === null) return;
     // break CE up into rows
     CE = CE.split("\n");  // break it up into rows
@@ -1169,18 +1174,27 @@ function DisplayNextEvents(CE) {
         // if the entry is for today and it is done, skip it
         if (aCEmonthday == gMonthDay && Number(aCE[2]) < gTimehhmm) continue; // if today and it is done, skip it
         // found it
-        if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
+        //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
+        if ((aCEmonthday != DisplayDate) && (nEvents>=2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
+
+        // if Today
         if (aCEmonthday == gMonthDay) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
             datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            nEvents = 99; // ensure only today
+            DisplayDate = aCEmonthday;
             continue;
-        } else if (aCEmonthday == (gMonthDay + 1)) datefmt += "<strong>Tomorrow</strong>";
-        else if (aCEmonthday <= (gMonthDay + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
-        else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4) + "</strong>";
+        }
+        // if Tomorrow or another day
+        //if (datefmt == "") {  // put date in
+        if(aCEmonthday != DisplayDate) {
+            if (aCEmonthday == (gMonthDay + 1)) datefmt += "<strong>Tomorrow</strong>";
+            else if (aCEmonthday <= (gMonthDay + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
+            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4) + "</strong>";
+        }
         datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
-        // show all events for today
-        //if (Number(aCE[0]) == monthday) datefmt += "<br/>";  // event is for today, so go on to the next one
-        //else return datefmt;
+        DisplayDate = aCEmonthday;
+        nEvents++; // count the events
     }
     return datefmt; // end case
 }
