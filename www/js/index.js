@@ -42,7 +42,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0820.2200";
+var gVer = "1.7.0821.1241";
 
 var app = {
     // Application Constructor
@@ -2293,7 +2293,7 @@ function DisplayComingWeek(CE) {
 // Leading4 - returns number n (999 - 9999) as a 4 digit string
 function Leading4(n) {
     var s = n.toFixed();
-    if (s.len == 4) return s;
+    if (s.length == 4) return s;
     else return "0" + s;
 
 }
