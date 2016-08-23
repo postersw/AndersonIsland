@@ -18,7 +18,9 @@
         1.6.0614.2100: reactivate android message. 
         1.7.0702.2300: Created branch Ver17 for dev. Branch 16Prod captures the prod 1.6.0614 branch.
                        Force alert reload on every start. Set alert timeout=8 min.
-            0705.2100: Fishing link. Add parameters to ShowLinksPage
+            0705.2100: Web. Fishing link. Add parameters to ShowLinksPage
+            0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
+            0710.2300: Improve selection of ferry schedule.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -40,7 +42,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0705.2100";
+var gVer = "1.7.0822.2300";
 
 var app = {
     // Application Constructor
@@ -90,6 +92,7 @@ var table; // the schedule table as a DOM object
 var Gd; // date object
 var gTimeStampms; // unix ms since 1970
 var gDayofWeek;  // day of week in 0-6
+var gWeekofMonth; // week of the month
 var gLetterofWeek; // letter for day of week
 var gTimehhmm;  // hhmm in 24 hour format
 var gTimehh; // time in hours
@@ -146,6 +149,7 @@ function InitializeDates(dateincr) {
     gDayofMonth = Gd.getDate(); // day of month 1-31
     gMonthDay = gMonth * 100 + gDayofMonth;
     gYear = Gd.getFullYear();
+    gWeekofMonth = Math.floor((gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
     // build holidays once only
     if (dateincr == 0 && laborday == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
@@ -206,7 +210,7 @@ function DateDiff(mmdd1, mmdd2) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// return true if a valid ferry time, else false.
+// ValidFerryRun return true if a valid ferry time, else false.
 // the crazy special rules go here.
 // flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules
 //  A=July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
@@ -217,6 +221,7 @@ function DateDiff(mmdd1, mmdd2) {
 
 function ValidFerryRun(flag) {
     if (flag.indexOf("*") > -1) return true; // good every day
+     return ValidFerryRun2(flag);///////////////////////////////////////////////////////////////
 
     // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
     if (holiday) {
@@ -251,6 +256,36 @@ function ValidFerryRun(flag) {
     }
     return false; // not a valid run;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ValidFerryRun2 return true if a valid ferry time, else false.
+//  alternate to having the rules special cased
+// the crazy special rules go here.
+// flag: *=always, 0-6=days of week, {xxxx} = eval rules
+
+function ValidFerryRun2(flag) {
+    if (flag.indexOf("*") > -1) return true; // good every day
+    if (flag.substr(0, 1) != "(") {
+        if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
+        return false;
+    }
+
+    // {eval rules }
+    var t = eval(flag);
+    return t;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//  InList check for the argument in the list
+//  entry   a = value
+//          a1, a2, ... = values to test for
+//  returns true if a = a1 or a2 or a3, ...; e.g. InList(3,0,1,2,3,4) returns true because 3 is in the list
+function InList(a) {
+    var i;
+    for (i=1; i < arguments.length; i++) { if (arguments[0] == arguments[i]) return true; }
+    return false;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // format ferry time for display. 
 //  ft = time in hhmm 24 hour form. 
@@ -611,45 +646,7 @@ function DisplayAlertInfo() {
     document.getElementById("tanneroutagealert").innerHTML = s;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// getAlertInfo - gets the alert info from the server every 12 minutes and save it in alerttext and alertdetail
-//  Entry   'alerthide' = true to hide the alert in 'alerttext'
-//  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
-//function getAlertInfoOLDANDOBSOLETE() {
-//    var alerttimeout = 720; // alert timeout in sec 12 minutes
-//    var timestamp = Date.now() / 1000; // time in sec
-//    var t = localStorage.getItem("alerttime");
-//    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 12 min.
-//    var myurl = FixURL('alert.txt');
 
-//    $.ajax({
-//        url: myurl,
-//        dataType: 'text',
-//        success: function (r) {
-//            var timestamp = Date.now() / 1000; // time in sec
-//            localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
-//            if (r == "") {  // if the alert is gone, clear it
-//                if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
-//                    var a = localStorage.getItem('alerttext');
-//                    if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-//                }
-//                localStorage.setItem("alerttext", "");
-//                localStorage.setItem("alertdetail", "");
-//                localStorage.removeItem("alerthide");  // turn off hide
-//            } else {  // if there is an alert, save it
-//                r = r + "\n";
-//                var i = r.indexOf("\n");
-//                var atext = r.substr(0, i);
-//                if(atext != localStorage.getItem("alerttext")) {  // if alert changed
-//                    localStorage.setItem("alerttext", atext);
-//                    localStorage.setItem("alertdetail", r.substr(i));
-//                    localStorage.removeItem("alerthide");  // turn off hide because alert changed
-//                }
-//            }
-//            DisplayAlertInfo();
-//        }
-//    });
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // getAlertInfo - without jQuery- gets the alert info from the server every 12 minutes via php and save it in 
@@ -732,8 +729,9 @@ function CloseMenu() {
 // return the next ferry time as a string. 
 //      entry ferrytimes is the array of times and days (see ferrytimeA)
 //            ferrytimeK = is the array of times and days for ketron
+//            SA = S or A
 //      exit  returns html string of ferry times
-function FindNextFerryTime(ferrytimes, ferrytimeK) {
+function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
     InitializeDates(0);
     var i = 0;
@@ -763,75 +761,28 @@ function FindNextFerryTime(ferrytimes, ferrytimeK) {
         };
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
-    if (i >= ferrytimes.length) {
-        //i = 0;
-        //// need to compute if tomorrow is a holiday
-        //if (!IsHoliday(gMonthDay + 1) && (gDayofWeek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
-        // full loop;  Does NOT handle the cutover to an alternate schedule
-        InitializeDates(1);   // tomorrow
-        for (i = 0; i < ferrytimes.length; i = i + 2) {
-            if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
-        }
-        InitializeDates(0); // reset to today
-        if(i < ferrytimes.length) ft = ft + "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
-    }
-
-    if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
+    if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA);
+ 
+    //if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
     if ((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
     return ft;
 }
 
-//  TABLE VERSION. Does now work when tomorrow is in col 1 and col 2.
-//function FindNextFerryTime(ferrytimes, ferrytimeK) {
-//    var ShowTimeDiff = false;
-//	InitializeDates(0);	
-//    var i = 0;
-//	var ketron = false; //ketron run ;
-//	var nruns = 0; 
-//	var ft = ""; var ketront = "";
-//    // roll through the ferry times, skipping runs that are not valid for today
-//    for (i = 0; i < ferrytimes.length; i = i + 2) {
-//        if (timehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
-//        // now determine if the next run will run today.  If it is a valid run, break out of loop.
-//        if (ValidFerryRun(ferrytimes[i + 1])) {
-//            ft = ft + "<td style='padding:0px'>"
-//			if(RawTimeDiff(timehhmm, ferrytimes[i])<13) {
-//			    ft = ft + "<span style='color:red'>" + VeryShortTime(ferrytimes[i]) + "</span>&nbsp </td>";
-//			} else {
-//			    ft = ft + VeryShortTime(ferrytimes[i]) + "&nbsp </td>";
-//			}
+//  FindNextFerryTimeTomorrow - finds the 1st run on the NEXT day
+//  Entry   SA = S or A
+//  Exit    returns string with 1st valid run for tomorrow
+function FindNextFerryTimeTomorrow(SA) {
+    var i;
+    InitializeDates(1);   // tomorrow
+    var ferrytimes = UseFerryTime(SA); // get the ferry time for tomorrow
+    for (i = 0; i < ferrytimes.length; i = i + 2) {
+        if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
+    }
+    InitializeDates(0); // reset to today
+    if (i < ferrytimes.length) return "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
+}
 
-//			if (ferrytimeK!="") { // add ketron time for this run
-
-//				if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i+1]))){
-//					ketron = true;
-//					ketront = ketront + "<td style='padding:0px'>" + VeryShortTime(ferrytimeK[i]) + "</td>";
-//				} else ketront = ketront + "<td style='padding:0px'> ---</td> ";
-//			}
-//			if(nruns > 0) break;  // show 2 runs
-//			//ft = ft + ", "; 
-//			//ketront = ketront + ", "; 
-//			nruns++;
-//		};
-//    }
-
-//    // we ran out of the schedule today so give the 1st run for tomorrow
-//    if (i >= ferrytimes.length) {
-//        i = 0;
-//        // need to compute if tomorrow is a holiday
-//        if (!IsHoliday(monthday + 1) && (dayofweek == 6)) i = 2; // special case kludge. on saturday, start sunday at 
-//        //handle ferry schedule cutover
-//        ft = ft + "<td style='padding:0px'>" + VeryShortTime(ferrytimes[i]) + " tomorrow</td>";
-//    }
-//    ft = ft + "</tr>";
-
-//    //if(ShowTimeDiff) ft = ft + " (in " + timeDiff(timehhmm, ferrytimes[i]) + ")";
-
-//    // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-//    if ((ferrytimeK != null) && ketron) ft = ft + "<tr><td style='padding:0px'><span style='font-weight:bold;color:gray'>Ketron:</span></td>" + ketront + "</tr>";
-//	return ft;
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Finds the next ferry times and puts them into the Dom for the FRONT PAGE
@@ -845,40 +796,13 @@ function WriteNextFerryTimes() {
     var str;
     var v = "";
     if (holiday) v = "Hoilday<br/>"
-    v = v + "<span style='font-weight:bold'>Steilacoom: ";
-    if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "") + "</span>";
-    else v = v + FindNextFerryTime(ferrytimeS2, "") + "</span>";
-    // make it bold if not tomorrow
-    //if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-    var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp "
-    if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK) + "</span>";
-    else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2) + "</span>";
-    //if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;'>" + a + "</span>";
-    //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
+    v = v + "<span style='font-weight:bold'>Steilacoom: " + 
+         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
+    var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
+             FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
     document.getElementById("ferrytimes").innerHTML = v + a;
 }
-//////////////////// TABLE VERSION. Does now work when tomorrow is in col 1 and col 2.
-//function WriteNextFerryTimes() {
-//    // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
-//    // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
-//    //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-//    //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-//    // at this point, i = the next valid ferry run
-//    var v = "";
-//    var str;
-//    if (holiday) v = "<strong>Holiday<strong>";
-//    v = v + "<table style='border:none'><tr style='font-weight:bold'><td style='padding:0px'>Steilacoom:&nbsp </td>";
-//    if (UseFerryTime1()) v = v + FindNextFerryTime(ferrytimeS, "") ;
-//    else v = v + FindNextFerryTime(ferrytimeS2, "");
-//    // make it bold if not tomorrow
-//    //if (v.indexOf('tomorrow') < 0) v = "<span style='font-weight:bold'>" + v + "</span>";
-//    var a = "<tr style='font-weight:bold;color:blue'><td style='padding:0px'>Anderson:</td>"
-//    if (UseFerryTime1()) a = a + FindNextFerryTime(ferrytimeA, ferrytimeK);
-//    else a = a + FindNextFerryTime(ferrytimeA2, ferrytimeK2);
-//    //if (a.indexOf('tomorrow') < 0) a = "<span style='font-weight:bold;color:darkblue'>" + a + "</span>";
-//    //v = v + FindNextFerryTime(lftS) + "</br>Next Anderson Is: " + FindNextFerryTime(lftA);
-//    document.getElementById("ferrytimes").innerHTML = v + a + "</table>";
-//}
+
 
 ////////////////////////////////////////////////////////////////////////
 //  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimex
@@ -886,17 +810,17 @@ function WriteNextFerryTimes() {
 //  Exit    arrays ferrytimexx are set 
 function ParseFerryTimes() {
     var str = localStorage.getItem("ferrytimess");
-    if (str != null) ferrytimeS = str.split(",");
+    if (str != null) ferrytimeS = str.split(";");
     str = localStorage.getItem("ferrytimesa");
-    if (str != null) ferrytimeA = str.split(",");
+    if (str != null) ferrytimeA = str.split(";");
     str = localStorage.getItem("ferrytimesk");
-    if (str != null) ferrytimeK = str.split(",");
+    if (str != null) ferrytimeK = str.split(";");
     var str = localStorage.getItem("ferrytimess2");
-    if (str != null) ferrytimeS2 = str.split(",");
+    if (str != null) ferrytimeS2 = str.split(";");
     str = localStorage.getItem("ferrytimesa2");
-    if (str != null) ferrytimeA2 = str.split(",");
+    if (str != null) ferrytimeA2 = str.split(";");
     str = localStorage.getItem("ferrytimesk2");
-    if (str != null) ferrytimeK2 = str.split(",");
+    if (str != null) ferrytimeK2 = str.split(";");
     str = localStorage.getItem("ferrydate2");
     if (IsEmpty(str)) return;
     var d = new Date(str);  // convert ferry date 2 to ms
@@ -904,16 +828,38 @@ function ParseFerryTimes() {
 }
 
 /////////////////////////////////////////////////////////////////////////
-//  UseFerryTime1 - select ferrytime 1 or ferry time 2 based on cutover date
+//  UseFerryTime1 - REMOVED 7/10/16. select ferrytime 1 or ferry time 2 based on cutover date
 //  entry   gFerryDate2 = cutover time in ms
 //          gTimeStampms = 'current' time for this function
 //  exit    true to use ferrytime1, false to use gFerryDate2
-function UseFerryTime1() {
-    if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return true
-    else return false;
+//function UseFerryTime1() {
+//    if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return true
+//    else return false;
+//}
+
+/////////////////////////////////////////////////////////////////////////
+//  GetFerryTimeArray - select proper ferry time array (S or A) based on date
+//  entry   SA = "S" for Steilacoom, A for Anderson, K for Ketron
+//          gFerryDate2 = cutover time in ms
+//          gTimeStampms = 'current' time for this function
+//  exit    returns if SA=S: ferrytimeS , ferrytimeS2 if >=cutover date, 
+//                  if SA=A: ferrytimeA , ferrytimeA2 if >=cutover date, 
+function UseFerryTime(SA) {
+    switch (SA) {
+        case "S":
+            if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return ferrytimeS;
+            else return ferrytimeS2;
+            break;
+        case "A":
+            if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return ferrytimeA;
+            else return ferrytimeA2;
+            break;
+        case "K":
+            if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return ferrytimeK;
+            else return ferrytimeK2;
+            break;
+    }
 }
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -980,16 +926,16 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             else {
                 // closed right now. Find next open time.
                 openlist += " <span style='color:red;font-weight:bold'> Closed. </span>";
-                if (hhmm < opentime) return " Opens today " + VeryShortTime(opentime);
-                if (hhmm < opentime2) return " Reopens today " + VeryShortTime(opentime2);
+                if (hhmm < opentime) return openlist + " Opens today " + VeryShortTime(opentime);
+                if (hhmm < opentime2) return openlist + " Reopens today " + VeryShortTime(opentime2);
                 //  closed today find next open time
                 j = gDayofWeek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
-                if (H[j * 2] > 0) return " Opens tomorrow " + VeryShortTime(H[j * 2]);
+                if (H[j * 2] > 0) return openlist + " Opens tomorrow " + VeryShortTime(H[j * 2]);
                 // not open tomorrow. find next open day.
                 for (var k = 0; k < 7; k++) {  // ensure we check each day only once
                     j++; if (j == 7) j = 0; // handle day rollover
-                    if (H[j * 2] > 0) return " Opens " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
+                    if (H[j * 2] > 0) return openlist + " Opens " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
                 } // find open day
             }
         }
@@ -1080,8 +1026,8 @@ function HandleCurrentWeatherReply(r) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-// getForecast using WorldWeatherMap. License for 
-// get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+// getForecast using OpenWeatherMap. This is the ONLY routine that gets the forecast
+// get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
 //  exit: forecastjson = json full forecast structure, used on full forecast page
 //        forecastjsontime = timestamp
@@ -1128,6 +1074,9 @@ function HandleForecastAReply(jsondata) {
         r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
     localStorage.setItem("forecast", forecast);
     document.getElementById("forecast").innerHTML = forecast;
+
+    // if the forecast page is being displayed, regenerate it
+    if (gDisplayPage == "weatherpage") generateWeatherForecastPage(); 
 }  // end of function
 
 
@@ -1233,13 +1182,18 @@ function ShowNextTides() {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' local storage object on the main page
-//  object consists of rows (separated by /n) 1 for each event or activity
+// DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' 
+//          local storage object on the main page.
+//      Displays all activities or events for a day.
+//  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
+//  Exit    returns the information to display on the main screen
 function DisplayNextEvents(CE) {
-    var datefmt = ""; // formatted date
+    var datefmt = ""; // formatted date and event list
     var iCE; // iterator through CE
     var aCE; // CE split array 
     var aCEmonthday;
+    var DisplayDate = 0; // event date we are displaying
+    var nEvents = 0; // number of events displayed
     if (CE === null) return;
     // break CE up into rows
     CE = CE.split("\n");  // break it up into rows
@@ -1253,16 +1207,27 @@ function DisplayNextEvents(CE) {
         // if the entry is for today and it is done, skip it
         if (aCEmonthday == gMonthDay && Number(aCE[2]) < gTimehhmm) continue; // if today and it is done, skip it
         // found it
-        if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
+        //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
+        if ((aCEmonthday != DisplayDate) && (nEvents>=2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
+
+        // if Today
         if (aCEmonthday == gMonthDay) {
-            if (datefmt == "") datefmt += "<span style='font-weight:bold'>Today</span>";  // mark the 1st entry only as TODAY
-        } else if (aCEmonthday == (gMonthDay + 1)) datefmt += "Tomorrow";
-        else if (aCEmonthday <= (gMonthDay + 6)) datefmt += gDayofWeekShort[GetDayofWeek(aCE[0])];  // fails on month chagne
-        else datefmt += gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
+            if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
+            datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            nEvents = 99; // ensure only today
+            DisplayDate = aCEmonthday;
+            continue;
+        }
+        // if Tomorrow or another day
+        //if (datefmt == "") {  // put date in
+        if(aCEmonthday != DisplayDate) {
+            if (aCEmonthday == (gMonthDay + 1)) datefmt += "<strong>Tomorrow</strong>";
+            else if (aCEmonthday <= (gMonthDay + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
+            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4) + "</strong>";
+        }
         datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
-        // show all events for today
-        //if (Number(aCE[0]) == monthday) datefmt += "<br/>";  // event is for today, so go on to the next one
-        //else return datefmt;
+        DisplayDate = aCEmonthday;
+        nEvents++; // count the events
     }
     return datefmt; // end case
 }
@@ -1323,7 +1288,8 @@ function GetDailyCache() {
     ////var myurl = FixURL("dailycache.txt");
 
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
-        "&P=" + LSget("pagehits").substr(0,30));
+        "&P=" + LSget("pagehits").substr(0, 30));
+ 
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1363,9 +1329,13 @@ function ParseDailyCache(data) {
     }
 
     localStorage.setItem("dailycacheloaded", gMonthDay); // remember date time
-    parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
-    parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
-    parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
+    //parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
+    //parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
+    //parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
+    parseCache(data, "ferrytimess", "FERRYTS", "\n");
+    parseCache(data, "ferrytimesa", "FERRYTA", "\n");
+    parseCache(data, "ferrytimesk", "FERRYTK", "\n");
+
     //parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");  obsolete in ver 1.5 5/2016.
     //parseCache(data, "morehours", "MOREHOURS", "MHEND");
     parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
@@ -1373,10 +1343,13 @@ function ParseDailyCache(data) {
     s = parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
     if (s != "") OpenHours = JSON.parse(s);  // parse it
     // new ferry schedule 
-    parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
-    parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
-    parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
-    parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
+    //parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
+    //parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
+    //parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
+    parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
+    parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
+    parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
+    parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
@@ -1743,6 +1716,7 @@ function DisplayFerrySchedulePage() {
 //  entry userdate = "" for today, else mm/dd
 function DisplayFerrySchedule(userdate) {
     var row1, row1col1;
+
     if (userdate == "") InitializeDates(0);
     else InitializeDates(userdate);
     document.getElementById("ferrymessage").innerHTML = localStorage.getItem("ferrymessage");
@@ -1760,14 +1734,12 @@ function DisplayFerrySchedule(userdate) {
     row1col1 = row1.insertCell(1);
     row1col1.style.backgroundColor = "blue";
     row1col1.style.color = "white";
-    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
-        ((UseFerryTime1()? "" : " (New Schedule)"));
+    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") ;
     row1col1 = row1.insertCell(2);
     row1col1.style.backgroundColor = "blue";
 
-    if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
-    else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
-    // build next 6 days
+    BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
+ 
     gTimehhmm = 0;  // ignore current time
     var i;
     for (i = 0; i < 7; i++) {
@@ -1782,13 +1754,12 @@ function DisplayFerrySchedule(userdate) {
         //row1col1 = row1.insertCell(1);
         //row1col1.style.backgroundColor = "blue";
         //row1col1.style.color = "white";
-        row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") + 
-             ((UseFerryTime1() ? "" : " (New Schedule)"));
+        row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
         //row1col1 = row1.insertCell(2);
         //row1col1.style.backgroundColor = "blue";
-        if (UseFerryTime1()) BuildFerrySchedule(table, ferrytimeS, ferrytimeA, ferrytimeK);
-        else BuildFerrySchedule(table, ferrytimeS2, ferrytimeA2, ferrytimeK2);
+        BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
     }
+
     InitializeDates(0);  // reset dates back
 }
 ////</script>
@@ -2365,7 +2336,7 @@ function DisplayComingWeek(CE) {
 // Leading4 - returns number n (999 - 9999) as a 4 digit string
 function Leading4(n) {
     var s = n.toFixed();
-    if (s.len == 4) return s;
+    if (s.length == 4) return s;
     else return "0" + s;
 
 }
@@ -2913,10 +2884,12 @@ function ShowWeatherPage() {
     SetPageHeader("Weather");
     InitializeDates(0);
     document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong");
-    getWeatherForecastPage("today");
+    generateWeatherForecastPage(); // display page from cache
+    getForecast(); // start refresh of forecast if necessary (only happens every 60 min)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+// REMVOED for 1.7 7/6/16. 
 // get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/minute for free.
 //  fromdate = optional starting date for the weather
@@ -2946,33 +2919,37 @@ function ShowWeatherPage() {
 //    });  // end of ajax call
 //}  // end of function
 
-function getWeatherForecastPage(fromdate) {
-    var olddate, newdate; // dates
-    var ampm; // am or pm
-    var currentTemp;
-    generateWeatherForecastPage(); // display page from cache
-    if (localStorage.getItem("forecastjsontime") != null) {
-        var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), gTimehhmm); // age of forecast in min
-        if (td < 30) return; // don't update more than every 30 minutes
-    }
-    // ajax request without jquery
-    var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
-    }
-    xhttp.open("GET", myurl, true);
-    xhttp.send();
-}
+//function getWeatherForecastPage(fromdate) {
+//    var olddate, newdate; // dates
+//    var ampm; // am or pm
+//    var currentTemp;
+//    generateWeatherForecastPage(); // display page from cache
+//    getForecast(); // start refresh of forecast if necessary
+    //if (localStorage.getItem("forecastjsontime") != null) {
+    //    var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), gTimehhmm); // age of forecast in min
+    //    if (td < 30) return; // don't update more than every 30 minutes
+    //}
+    //// ajax request without jquery
+    //var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+    //var xhttp = new XMLHttpRequest();
+    //xhttp.onreadystatechange = function () {
+    //    if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
+    //}
+    //xhttp.open("GET", myurl, true);
+    //xhttp.send();
+//}
 
-function HandleForecastReply(json) {
-    localStorage.setItem("forecastjson", json);
-    localStorage.setItem("forecastjsontime", gTimehhmm);
-    generateWeatherForecastPage();
-}  // end of function
+//function HandleForecastReply(json) {
+//    localStorage.setItem("forecastjson", json);
+//    localStorage.setItem("forecastjsontime", gTimehhmm);
+//    generateWeatherForecastPage();
+//}  // end of function
 
 //////////////////////////////////////////////////////////////////////////////////
-//  generateWeatherForecastPage - generates the forecast using the json reply from openweathermap
+//  generateWeatherForecastPage - generates the forecast using the existing json reply from openweathermap
+//  Entry   forecastjson = string version of json forecast object (must be parsed)
+//          forecastjsontime = hhmm of when the json forecast was last retrieved
+//
 function generateWeatherForecastPage() {
     if (localStorage.getItem("forecastjson") == null) return;
     var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again

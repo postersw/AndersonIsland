@@ -42,7 +42,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0821.1241";
+var gVer = "1.7.0822.2300";
 
 var app = {
     // Application Constructor
@@ -92,6 +92,7 @@ var table; // the schedule table as a DOM object
 var Gd; // date object
 var gTimeStampms; // unix ms since 1970
 var gDayofWeek;  // day of week in 0-6
+var gWeekofMonth; // week of the month
 var gLetterofWeek; // letter for day of week
 var gTimehhmm;  // hhmm in 24 hour format
 var gTimehh; // time in hours
@@ -148,6 +149,7 @@ function InitializeDates(dateincr) {
     gDayofMonth = Gd.getDate(); // day of month 1-31
     gMonthDay = gMonth * 100 + gDayofMonth;
     gYear = Gd.getFullYear();
+    gWeekofMonth = Math.floor((gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
     // build holidays once only
     if (dateincr == 0 && laborday == 0) {
         // laborday // first monday in sept.  we need to compute this dyanmically
@@ -208,7 +210,7 @@ function DateDiff(mmdd1, mmdd2) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// return true if a valid ferry time, else false.
+// ValidFerryRun return true if a valid ferry time, else false.
 // the crazy special rules go here.
 // flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules
 //  A=July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
@@ -217,42 +219,70 @@ function DateDiff(mmdd1, mmdd2) {
 //  X=Friday Only labor day-12/31, 0101-6/30,
 //  Y=Fridays only 7/1=labor day
 
+//function ValidFerryRun(flag) {
+//    if (flag.indexOf("*") > -1) return true; // good every day
+//    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
+//    if (holiday) {
+//        if (flag.indexOf("H") > -1) { // yes a valid run		 
+//            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
+//            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
+//                if (!((gMonthDay == 1231) || (gMonthDay == 1224) || (gMonthDay == 703))) return false; // if not 1231,1224,or 703, its not valid		
+//                if (gDayofWeek >= 1 && gDayofWeek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
+//                return false;
+//            } else return true;  // holiday		
+//        } else return false;
+//    }
+
+
+//    if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
+//    // special cases F, skip 1st and 3rd wednesday of every month
+//    if (flag.indexOf("F") > -1) {
+//        if (gDayofWeek != 3) return true;  // if not wednesday, accept it
+//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
+//        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
+//    }
+//    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
+//        if (gDayofWeek != 2) return false;  // if not tuesday reject it
+//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
+//        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
+//    }
+//    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
+//        if ((gDayofWeek == 5) && ((gMonthDay >= laborday) || (gMonthDay <= 630))) return true;
+//    }
+//    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
+//        if ((gDayofWeek == 5) && (gMonthDay >= 701) && (gMonthDay <= laborday)) return true;
+//    }
+//    return false; // not a valid run;
+//}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ValidFerryRun2 return true if a valid ferry time, else false.
+//  alternate to having the rules special cased
+// flag: *=always, 0-6=days of week, (xxxx) = eval rules in javascript
+
 function ValidFerryRun(flag) {
     if (flag.indexOf("*") > -1) return true; // good every day
-
-    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
-    if (holiday) {
-        if (flag.indexOf("H") > -1) { // yes a valid run		 
-            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
-            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
-                if (!((gMonthDay == 1231) || (gMonthDay == 1224) || (gMonthDay == 703))) return false; // if not 1231,1224,or 703, its not valid		
-                if (gDayofWeek >= 1 && gDayofWeek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
-                return false;
-            } else return true;  // holiday		
-        } else return false;
+    if (flag.substr(0, 1) != "(") {
+        if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
+        return false;
     }
 
-
-    if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
-    // special cases F, skip 1st and 3rd wednesday of every month
-    if (flag.indexOf("F") > -1) {
-        if (gDayofWeek != 3) return true;  // if not wednesday, accept it
-        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
-    }
-    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
-        if (gDayofWeek != 2) return false;  // if not tuesday reject it
-        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
-    }
-    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
-        if ((gDayofWeek == 5) && ((gMonthDay >= laborday) || (gMonthDay <= 630))) return true;
-    }
-    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
-        if ((gDayofWeek == 5) && (gMonthDay >= 701) && (gMonthDay <= laborday)) return true;
-    }
-    return false; // not a valid run;
+    // {eval rules }
+    var t = eval(flag);
+    return t;
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//  InList check for the argument in the list
+//  entry   a = value
+//          a1, a2, ... = values to test for
+//  returns true if a = a1 or a2 or a3, ...; e.g. InList(3,0,1,2,3,4) returns true because 3 is in the list
+function InList(a) {
+    var i;
+    for (i=1; i < arguments.length; i++) { if (arguments[0] == arguments[i]) return true; }
+    return false;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // format ferry time for display. 
 //  ft = time in hhmm 24 hour form. 
@@ -777,17 +807,17 @@ function WriteNextFerryTimes() {
 //  Exit    arrays ferrytimexx are set 
 function ParseFerryTimes() {
     var str = localStorage.getItem("ferrytimess");
-    if (str != null) ferrytimeS = str.split(",");
+    if (str != null) ferrytimeS = str.split(";");
     str = localStorage.getItem("ferrytimesa");
-    if (str != null) ferrytimeA = str.split(",");
+    if (str != null) ferrytimeA = str.split(";");
     str = localStorage.getItem("ferrytimesk");
-    if (str != null) ferrytimeK = str.split(",");
+    if (str != null) ferrytimeK = str.split(";");
     var str = localStorage.getItem("ferrytimess2");
-    if (str != null) ferrytimeS2 = str.split(",");
+    if (str != null) ferrytimeS2 = str.split(";");
     str = localStorage.getItem("ferrytimesa2");
-    if (str != null) ferrytimeA2 = str.split(",");
+    if (str != null) ferrytimeA2 = str.split(";");
     str = localStorage.getItem("ferrytimesk2");
-    if (str != null) ferrytimeK2 = str.split(",");
+    if (str != null) ferrytimeK2 = str.split(";");
     str = localStorage.getItem("ferrydate2");
     if (IsEmpty(str)) return;
     var d = new Date(str);  // convert ferry date 2 to ms
@@ -1255,7 +1285,8 @@ function GetDailyCache() {
     ////var myurl = FixURL("dailycache.txt");
 
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
-        "&P=" + LSget("pagehits").substr(0,30));
+        "&P=" + LSget("pagehits").substr(0, 30));
+ 
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1295,9 +1326,13 @@ function ParseDailyCache(data) {
     }
 
     localStorage.setItem("dailycacheloaded", gMonthDay); // remember date time
-    parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
-    parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
-    parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
+    //parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
+    //parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
+    //parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
+    parseCache(data, "ferrytimess", "FERRYTS", "\n");
+    parseCache(data, "ferrytimesa", "FERRYTA", "\n");
+    parseCache(data, "ferrytimesk", "FERRYTK", "\n");
+
     //parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");  obsolete in ver 1.5 5/2016.
     //parseCache(data, "morehours", "MOREHOURS", "MHEND");
     parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
@@ -1305,10 +1340,13 @@ function ParseDailyCache(data) {
     s = parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
     if (s != "") OpenHours = JSON.parse(s);  // parse it
     // new ferry schedule 
-    parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
-    parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
-    parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
-    parseCache(data, "ferrydate2", "FERRYDATE2", "\n"); // cutover date to ferrtimes2 as 'mm/dd/yyyy'
+    //parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
+    //parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
+    //parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
+    parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
+    parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
+    parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
+    parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
@@ -1675,6 +1713,7 @@ function DisplayFerrySchedulePage() {
 //  entry userdate = "" for today, else mm/dd
 function DisplayFerrySchedule(userdate) {
     var row1, row1col1;
+
     if (userdate == "") InitializeDates(0);
     else InitializeDates(userdate);
     document.getElementById("ferrymessage").innerHTML = localStorage.getItem("ferrymessage");
@@ -1717,6 +1756,7 @@ function DisplayFerrySchedule(userdate) {
         //row1col1.style.backgroundColor = "blue";
         BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
     }
+
     InitializeDates(0);  // reset dates back
 }
 ////</script>
