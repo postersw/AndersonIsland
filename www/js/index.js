@@ -21,6 +21,7 @@
             0705.2100: Web. Fishing link. Add parameters to ShowLinksPage
             0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
             0710.2300: Improve selection of ferry schedule.
+            0823.2300: Use FERRYTA/S/K with embedded rules. No hardcoded rules.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -42,7 +43,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0822.2300";
+var gVer = "1.7.0823.2300";
 
 var app = {
     // Application Constructor
@@ -259,6 +260,8 @@ function DateDiff(mmdd1, mmdd2) {
 // ValidFerryRun2 return true if a valid ferry time, else false.
 //  alternate to having the rules special cased
 // flag: *=always, 0-6=days of week, (xxxx) = eval rules in javascript
+//  eval rules are javascript, returning true for a valid run, else false
+//    can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
 
 function ValidFerryRun(flag) {
     if (flag.indexOf("*") > -1) return true; // good every day
@@ -267,7 +270,7 @@ function ValidFerryRun(flag) {
         return false;
     }
 
-    // {eval rules }
+    // (eval rules ).
     var t = eval(flag);
     return t;
 }
@@ -764,6 +767,27 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
     if ((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
     return ft;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// return the single next ferry time as a string. 
+//      entry ferrytimes is the array of times and days (eigher for steilacoom or ai))
+//      exit  returns string of next single ferry time.
+function FindNextSingleFerryTime(ferrytimes) {
+    InitializeDates(0);
+    var i = 0;
+    // roll through the ferry times, skipping runs that are not valid for today
+    for (i = 0; i < ferrytimes.length; i = i + 2) {
+        if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        // now determine if the next run will run today.  If it is a valid run, break out of loop.
+        if (ValidFerryRun(ferrytimes[i + 1])) {
+            var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
+            if (rtd < 13) return ShortTime(ferrytimes[i]) + "(in <span style='color:red'>" + rtd  + " min)</span>";
+            else return ShortTime(ferrytimes[i]) + "(in " + rtd  + " min)";
+        }
+    }
+    // we ran out of the schedule today so give the 1st run for tomorrow
+    return "tomorrow";
 }
 
 //  FindNextFerryTimeTomorrow - finds the 1st run on the NEXT day
@@ -3044,13 +3068,15 @@ function ShowFerryWebCam() {
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
     document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
-
+    document.getElementById("scamera").innerHTML="Steilacoom: next @ " + FindNextSingleFerryTime(UseFerryTime("S"));
     // anderson link from local storage
     var link = localStorage.getItem("ferrycama");
     if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg";
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
     document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
+    document.getElementById("aicamera").innerHTML="Anderson Island: next @ " + FindNextSingleFerryTime(UseFerryTime("A"));
+
 }
 
 //====ABOUT=========================================================================================
