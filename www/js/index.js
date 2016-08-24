@@ -43,7 +43,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0823.2300";
+var gVer = "1.7.0824.1300";
 
 var app = {
     // Application Constructor
@@ -257,13 +257,14 @@ function DateDiff(mmdd1, mmdd2) {
 //}
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// ValidFerryRun2 return true if a valid ferry time, else false.
+// ValidFerryRun return true if a valid ferry time, else false.
 //  alternate to having the rules special cased
 // flag: *=always, 0-6=days of week, (xxxx) = eval rules in javascript
 //  eval rules are javascript, returning true for a valid run, else false
 //    can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
 
 function ValidFerryRun(flag) {
+    if (flag == undefined || flag == "") return false;
     if (flag.indexOf("*") > -1) return true; // good every day
     if (flag.substr(0, 1) != "(") {
         if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
@@ -477,7 +478,8 @@ function UpdateApp() {
             window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');
         }
     } else {
-        window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
+        window.location.reload(true);
+        //window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
     }
 }
 
