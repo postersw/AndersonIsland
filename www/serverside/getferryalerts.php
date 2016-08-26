@@ -116,7 +116,7 @@ exit(0);
 //
 function ClearAlertFile($alertfile, $alertlog) {
     $DefaultMessage = "";
-    $DefaultMessage = "<span style='color:black;'>8/22: Both Ferry Lane Webcams are now UP.</span>";
+    //$DefaultMessage = "<span style='color:black;'>8/22: Both Ferry Lane Webcams are now UP.</span>";
      logalertlast("cleared alert file");
      $alc = file_get_contents($alertfile);
      //if($alc=="") return; // if already empty
