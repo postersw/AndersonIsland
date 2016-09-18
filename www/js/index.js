@@ -23,6 +23,7 @@
             0710.2300: Improve selection of ferry schedule.
             0823.2300: Use FERRYTA/S/K with embedded rules. No hardcoded rules.
             0918.1000: Call Pushbots only every 3 days to cut down on API calls.
+                       Add version check for ANDRIODVER and IOSVER.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -44,7 +45,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0918.1013";
+var gVer = "1.07.0918.1635";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -588,6 +589,40 @@ function FixiPhoneHeader() {
     if (!isPhoneGap()) return;
     document.getElementById("ipfix1").style.display = "block";
     document.getElementById("ipfix2").style.display = "block"; // extra row to allow for ios status line
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// UpdateAvailable - set message if update is available
+// NOTE: version MUST be 4 chars in the form n.nn  e.g. 1.07;  Version comparison is a string comparison.
+function UpdateAvailable() {
+    if (!isPhoneGap()) return;
+    if (isAndroid()) UpdateCheck("androidver", "androidapp");
+    else UpdateCheck("iosver", "iphoneapp");
+    return;
+}
+function UpdateCheck(ver, id) {
+    var rver = LSget(ver);
+    if (rver == "") return;
+    if (rver > gVer.substr(0, 4)) {
+        document.getElementById(id).innerHTML = "Update available. Tap here to upgrade.";
+        document.getElementById(id).setAttribute('style', 'display:block;');
+        document.getElementById("topline").innerHTML = "";
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// InstallAvailable -    point user to google play if a mobile browser that is NOT PhoneGap
+function InstallAvailable() {
+    if (!isPhoneGap() && isMobile()) {  // if not phonegap
+        if (isAndroid()) { // if chrome for android
+            document.getElementById("androidapp").setAttribute('style', 'display:block;');
+            document.getElementById("topline").innerHTML = "";
+        } else {
+            document.getElementById("iphoneapp").setAttribute('style', 'display:block;');
+            document.getElementById("topline").innerHTML = "";
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1390,6 +1425,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+    parseCache(data, "androidver", "ANDROIDVER", "\n");
+    parseCache(data, "iosver", "IOSVER", "\n");
 
     // links for things that could change, like the ferry pictures, burnban, tanner
     parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera link steilacoom
@@ -3151,17 +3188,9 @@ function StartApp() {
     gForceCacheReload = false; // cache reload not needed
     gForceTideReload = false;
 
+    InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
+    UpdateAvailable(); // point user to google play only if a new version is available
 
-    // point user to google play only if a mobile browser that is NOT PhoneGap
-    if (!isPhoneGap() && isMobile()) {  // if not phonegap
-        if (isAndroid()) { // if chrome for android
-            document.getElementById("androidapp").setAttribute('style', 'display:block;');
-            document.getElementById("topline").innerHTML = "";
-        } else {
-            document.getElementById("iphoneapp").setAttribute('style', 'display:block;');
-            document.getElementById("topline").innerHTML = "";
-        }
-    }
 
     //  pushbots - set the notify switch. hide it for web.
     if (isPhoneGap()) {
