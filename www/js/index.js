@@ -22,6 +22,7 @@
             0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
             0710.2300: Improve selection of ferry schedule.
             0823.2300: Use FERRYTA/S/K with embedded rules. No hardcoded rules.
+            0918.1000: Call Pushbots only every 3 days to cut down on API calls.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -43,7 +44,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0824.1300";
+var gVer = "1.7.0918.1013";
 
 var app = {
     // Application Constructor
@@ -64,7 +65,13 @@ var app = {
     onDeviceReady: function () {
         navigator.splashscreen.hide();
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-            window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+            // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
+            var pbtime = Number(LSget("pushbotstime"));
+            var timems = GetTimeMS();
+            if ((pbtime == 0) || ((timems - pbtime) > (72 * 3600000))) {
+                window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                localStorage.setItem("pushbotstime", timems.toFixed(0));
+            }
             window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }
         app.receivedEvent('deviceready');
@@ -208,6 +215,13 @@ function DateDiff(mmdd1, mmdd2) {
     var r = dayspermonth[m1] + d1 - dayspermonth[m2] - d2;
     if (r < 0) r += 365;
     return r;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// GetTimeMS - get time stamp in MS since 1970
+function GetTimeMS() {
+    var d = new Date();
+    return d.getTime(); // milisec since 1970
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1589,6 +1603,7 @@ function DisplayLoadTimes() {
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(0) +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
