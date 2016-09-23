@@ -6,7 +6,7 @@
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
         version   = "1.7.09231800"
-        versionCode="222"
+        versionCode="223"
         android:versionName="1.7.09231800">
 
     <name>Anderson Island Assistant</name>
@@ -21,7 +21,6 @@
 
     <!-- Define the main entry-point to the application -->
     <content src="index.html" />
-  <preference name="phonegap-version" value="cli-6.2.0" />
 
     <!--
         If you do not want any permissions to be added to your app, add the
