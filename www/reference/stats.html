@@ -37,6 +37,7 @@
         var nudate = 0; // index into udate
         var UDate = ["2016-01-01"];
         var UDateCount = [0]; // uses/date
+        var UDateUses = [0]; // total uses/date (main page views per date)
         var UDateOldCount = [0]; // Old uses/date
         var nver = 0; // index into version
         var Ver = ["", ""];  // version array
@@ -90,16 +91,20 @@
                 if (ipa == "99.196.60.196") continue;
                 if (ipa == "184.21.245.107") continue;
                 // count date
-                if (rowdate == UDate[nudate]) UDateOldCount[nudate]++;  // if in table
-                else if (rowdate > UDate[nudate]) {  // if not in table
+                if (rowdate == UDate[nudate]) {
+                    UDateOldCount[nudate]++;  // if in table
+                    UDateUses[nudate]++; // count the views as 1 for the old version
+                }  else if (rowdate > UDate[nudate]) {  // if not in table
                     nudate++;
                     UDate[nudate] = rowdate;
                     UDateOldCount[nudate] = 1;
                     UDateCount[nudate] = 0;
+                    UDateUses[nudate] = 1; // count the views as 1 for the old version
                 } else { // go backwards to find the date
                     for (i = nudate; i >= 0; i--) {
                         if (UDate[i] == rowdate) {
                             UDateOldCount[i]++;
+                            UDateUses[i]++;
                             break;
                         }
                     }
@@ -149,14 +154,15 @@
                 
 
                 // count N (uses) 
-                var nn = Number(W[3].substr(2)); 
+                var nn = Number(W[3].substr(2));
+                if (isNaN(nn)) nn = 1;
                 N[nn]++;
 
                 // count version 
 
-                // count pages 
+                // count pages based on the letter in the page list, e.g. P=wat
                 var p = W[4].substr(2); 
-                p = p.replace("mm", "m"); 
+                p = p.replace("mm", "m"); // eliminate too many webcam page visits
                 p = p.replace("mm", "m"); 
                 p = p.replace("mm", "m"); 
                 var plen = p.length; // length 
@@ -164,19 +170,19 @@
                 PagesPerDay[plen] ++; // pages per visit 
                 PA = p.split(""); 
                 for (k = 0; k < PA.length; k++) {
-                    nn = PA[0].charCodeAt(0) - 97;
-                    if (nn < 0) nn = nn + 97 - 30;
-                    Pages [nn]++;
+                    var np = PA[0].charCodeAt(0) - 97;
+                    if (np < 0) np = np + 97 - 30;
+                    Pages[np]++;
                 }
 
                 // count ip
-                for (var i = 0; i < nip; i++) {
-                    if (IP[i] == W[5]) break;
-                }
-                if (i == nip) {
-                    IP[nip] = W[5];
-                    nip++;
-                }
+                //for (var i = 0; i < nip; i++) {
+                //    if (IP[i] == W[5]) break;
+                //}
+                //if (i == nip) {
+                //    IP[nip] = W[5];
+                //    nip++;
+                //}
 
                 // count ver
                 for (i = 0; i < nver; i++) {
@@ -196,16 +202,22 @@
 
                 // count date
 
-                if (rowdate == UDate[nudate]) UDateCount[nudate]++;  // if in table as last row
-                else if (rowdate > UDate[nudate]) {  // if not in table
+                if (nn == 0) nn = 1;
+                if (isNaN(nn)) alert(W[3]);
+                if (rowdate == UDate[nudate]) { //if in table as last row
+                    UDateCount[nudate]++;  // 
+                    UDateUses[nudate] += nn; // count main page visits
+                } else if (rowdate > UDate[nudate]) {  // if not in table
                     nudate++;
                     UDate[nudate] = rowdate;
                     UDateCount[nudate] = 1;
+                    UDateUses[nudate] = nn; // main page visits
                     UDateOldCount[nudate] = 0;
                 } else {  // go backwards to find the date
                     for (i = nudate; i >= 0; i--) {
                         if (UDate[i] == rowdate) {
                             UDateCount[i]++;
+                            UDateUses[i] += nn; // count main page visits
                             break;
                         }
                     }
@@ -257,9 +269,9 @@
 
            // use by date
             s6 = "<br/><strong>Uses by Date</strong><table>" + 
-                "<tr><td>Date</td><td>Total</td><td>Old</td><td>New</td><td>Old%</td><td>New%</td></tr>";
+                "<tr><td>Date</td><td>Total</td><td>Old</td><td>New</td><td>MainPageViews</td><td>Old%</td><td>New%</td></tr>";
             for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + (UDateCount[i]+UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
-                UDateCount[i] + "</td><td>" +
+                UDateCount[i] + "</td><td>" + UDateUses[i] + "</td><td>" +
                 (UDateOldCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
                 (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td></tr>"
             s6 +=  "</table>";

@@ -45,7 +45,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.0918.1635";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.0923.1335";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -461,15 +461,13 @@ function ShowMap() {
 
 function ShowBurnBan() {
     MarkPage("u");
-    var link = localStorage.getItem("burnbanlink");
-    if (IsEmpty(link)) link = "http://wc.pscleanair.org/burnban411/";  // default
+    var link = GetLink("burnbanlink", "http://wc.pscleanair.org/burnban411/");  // default
     window.open(link, "_blank");
 }
 
 function ShowTannerOutage() {
     MarkPage("r");
-    var link = localStorage.getItem("tanneroutagelink");
-    if (IsEmpty(link)) link = "http://www.tannerelectric.coop/andersonisland";  // default
+    var link = GetLink("tanneroutagelink", "http://www.tannerelectric.coop/andersonisland");  // default
     window.open(link, "_blank");
 }
 
@@ -580,6 +578,17 @@ function IsEmpty(string) {
     if (string == null) return true;
     if (string == "") return true;
     return false;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// GetLink - returns the contents of the storage item, or the default if it is null
+//  Entry   localstoragename = name of link in local storage
+//          defaultlink = link to return if localstoragename doesn't exist
+//  Exit    returns the contents of the storage item, or the default if it is null
+function GetLink(localstoragename, defaultlink) {
+    var link = localStorage.getItem(localstoragename);
+    if (link == null || link == "") return defaultlink;
+    return link;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1062,7 +1071,7 @@ function getCurrentWeather() {
     //$.ajax({
     //    url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
     //    dataType: 'jsonp',
-    var myurl = 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+    var myurl = GetLink("currentweatherlink", 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCurrentWeatherReply(JSON.parse(xhttp.responseText));
@@ -1114,7 +1123,7 @@ function getForecast() {
 
     //    dataType: 'jsonp',
     //    success: function (json) {
-    var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+    var myurl = GetLink("weatherforecastlink", 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1434,6 +1443,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban link 
     parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage link
     parseCacheRemove(data, "tidedatalink", "TIDEDATALINK", "\n"); // tide data
+    parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
+    parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
     ParseFerryTimes();
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
@@ -3117,15 +3128,13 @@ function ShowFerryWebCam() {
     ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
     // steilacoom link from local storage
-    var link = localStorage.getItem("ferrycams");
-    if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg";
+    var link = GetLink("ferrycams","http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
     document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
     document.getElementById("scamera").innerHTML="Steilacoom: next @ " + FindNextSingleFerryTime(UseFerryTime("S"));
     // anderson link from local storage
-    var link = localStorage.getItem("ferrycama");
-    if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg";
+    link = GetLink("ferrycama","http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
     document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
