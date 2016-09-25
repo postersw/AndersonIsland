@@ -103,7 +103,6 @@
    <!-- --------------------------------------------------------------------------------------------------- -->   
      <div id="mainpage"  style="display:block">
         <span id="topline" style="font-size:small;margin-top:0px;margin-bottom:0px;margin-left:6px;">Tap an entry for more information.</span>
-
         <!--App message-->
         <div id='androidapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
             <strong>Tap for free Install from Google Play Store</strong><br />
@@ -507,11 +506,14 @@
         Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock, 
             station id 9446705).  This information is updated every minute.  
             The current tide is interpolated using a sine function.
-         <br />TAP to display the projected tides for the next 3 days. Tides are provided by Aeris.com.
+         <br />TAP to display the projected tides for the next 7 days. Tides are provided by Aeris.com.  
+        'Range' (column 4) is the difference between the low and high tide.
+                <br />TAP on any row in the tide table to display a graph of that tide.
             <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.
+        <br />Scroll to the bottom of the screen to get the tidal currents for Balch passage.
 
         <h3 id="hweather" style="color:darkgreen;font-weight:bold"><br /><br />WEATHER</h3>
-        Displays the current weather at Steilacoom, and the forcasted weather for 9 hours from now. 
+        Displays the current weather at Steilacoom, and the forcasted weather for the next few hours. 
             Forecasted highs and lows are for the next 24 hours. This information is updated every 15 minutes.
         <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap.com'.
             <br />'yellow' rows represent daytime periods; 'gray' rows represent nighttime periods.
@@ -538,9 +540,10 @@
             <br /><a href="email:support@anderson-island.org">To update your business hours, email us.</a>
 
          <h3 id="hburnban" style="color:#ff3300;font-weight:bold"><br /><br />BURNBAN</h3>
-        Tap to display the current PS Clean Air Agency burn-ban status. Anderson Island is part of "Peninsula". 
-            Note that this is the air-pollution burn ban only - it is NOT the burn-ban due to fire risk.
-            <a href="www.pscleanair.org">Click here for the full site.</a>
+       Displays the current PS Clean Air Agency burn-ban status (Anderson Island is part of "Peninsula")
+        and the current Pierce County fire-danger burn ban (for outdoor burning). 
+        <br />TAP do display the full sites. 
+            <a href="www.pscleanair.org">Click here for PS Clean Air.</a>
 
          <h3 id="htanner" style="color:brown;font-weight:bold"><br /><br />TANNER</h3>
        TAP to display the current Anderson Island Outage status as maintained by TANNER Electric. 
@@ -577,11 +580,12 @@
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
+        <div id="offlinemsg" style="display:none;color:magenta;margin-top:2px;margin-bottom:2px;margin-left:6px;">No network connection. </div>
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
         <span id="versionnumber" style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.6.0606.1600	</span>
-        <span style="font-size:x-small"> (824)</span>
+        <span style="font-size:x-small"> (924)</span>
 
         </p>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->

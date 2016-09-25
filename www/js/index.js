@@ -45,7 +45,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.0923.1335";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.0925.0036";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -614,7 +614,7 @@ function UpdateCheck(ver, id) {
     if (rver == "") return;
     if (rver > gVer.substr(0, 4)) {
         document.getElementById(id).innerHTML = "Update available. Tap here to upgrade.";
-        document.getElementById(id).setAttribute('style', 'display:block;');
+        Show(id);
         document.getElementById("topline").innerHTML = "";
     }
 }
@@ -625,10 +625,10 @@ function UpdateCheck(ver, id) {
 function InstallAvailable() {
     if (!isPhoneGap() && isMobile()) {  // if not phonegap
         if (isAndroid()) { // if chrome for android
-            document.getElementById("androidapp").setAttribute('style', 'display:block;');
+            Show("androidapp");
             document.getElementById("topline").innerHTML = "";
         } else {
-            document.getElementById("iphoneapp").setAttribute('style', 'display:block;');
+            Show("iphoneapp");
             document.getElementById("topline").innerHTML = "";
         }
     }
@@ -672,6 +672,16 @@ function MarkPage(page) {
     localStorage.setItem("pagehits", s + page);
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Show(divid)  Hide(Divid)  Show or hide a div by setting the display style.
+//  divid = id of div to show or hide
+function Show(divid) {
+    document.getElementById(divid).style.display = "block";
+}
+function Hide(divid) {
+    document.getElementById(divid).style.display = "none";
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //  LSget - local storage get always returns string or "". never returns null.
 function LSget(id) {
@@ -690,10 +700,12 @@ function LSappend(id, s) {
 //  Also processes the burnban and tanner alerts.
 function DisplayAlertInfo() {
     if (IsEmpty(localStorage.getItem("alerttext")) || localStorage.getItem("alerthide") != null) {
-        document.getElementById("alertdiv").setAttribute('style', 'display:none;');
+        Hide("alertdiv");
+        //document.getElementById("alertdiv").setAttribute('style', 'display:none;');
     } else {
         document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
-        document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
+        Show("alertdiv");
+        //document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
     }
 
     // burnban status or alert
@@ -722,15 +734,25 @@ function getAlertInfo() {
     if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 8 min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
+    Hide("offlinemsg");
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleAlertReply(xhttp.responseText);
+        if (xhttp.readyState == 4 && xhttp.status == 0) Show("offlinemsg"); // this one works when net is disconnected
     }
-    xhttp.open("GET", myurl, true);
-    xhttp.send();
+    try{
+        xhttp.open("GET", myurl, true);
+        xhttp.timeout = 12000;  // 12 second timeout; this doesn't seem to work
+        xhttp.ontimeout = function () {Show("offlinemsg"); }  // after 12 seconds, show the offline msg
+        xhttp.send();
+    }
+    catch(e){
+        Show("offlinemsg"); // if an error
+    }
 }
 
 function HandleAlertReply(r) {
+    Hide("offlinemsg");
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
     var s = parseCache(r, "", "FERRY", "FERRYEND");
@@ -908,15 +930,6 @@ function ParseFerryTimes() {
     gFerryDate2 = d.getTime(d); // ms till cutover
 }
 
-/////////////////////////////////////////////////////////////////////////
-//  UseFerryTime1 - REMOVED 7/10/16. select ferrytime 1 or ferry time 2 based on cutover date
-//  entry   gFerryDate2 = cutover time in ms
-//          gTimeStampms = 'current' time for this function
-//  exit    true to use ferrytime1, false to use gFerryDate2
-//function UseFerryTime1() {
-//    if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return true
-//    else return false;
-//}
 
 /////////////////////////////////////////////////////////////////////////
 //  GetFerryTimeArray - select proper ferry time array (S or A) based on date
@@ -1218,45 +1231,6 @@ function ShowNextTides() {
     gForceTideReload = true; // if we haven't gotten today's tides, reload it
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// getTideData - call the aeri api and store the response as a local storage string
-//  replaced by load from getdailycache.php
-//
-////function getTideData() {
-////    var hilow;
-////    var nextTides;
-////    var oldtide = -1;
-////    var t = localStorage.getItem("tidesloadedmmdd");
-////    if (t != null && (Number(t) == gMonthDay)) return; // gets tides async every day
-////    //url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
-////    //$.ajax({
-////    //    url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours',
-////    //    dataType: 'jsonp',
-////    //    success: function (json) {
-////    myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
-////    var s = localStorage.getItem("tidedatalink");  // alternate link. probably tides.php.
-////    if (!IsEmpty(s)) myurl = s; // 
-////    myurl = FixURL(myurl);
-////    var xhttp = new XMLHttpRequest();
-////    xhttp.onreadystatechange = function () {
-////        if (xhttp.readyState == 4 && xhttp.status == 200) HandleTidesReply(xhttp.responseText);
-////    }
-////    xhttp.open("GET", myurl, true);
-////    xhttp.send();
-////}
-////function HandleTidesReply(reply) {
-////    var json = JSON.parse(reply);
-////    if (json.success == true) {
-////        localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
-////        localStorage.setItem("tidesloadedmmdd", gMonthDay);
-////        ShowNextTides();
-////    } else {
-////        // error
-////        //alert("cant get tides");
-////        //localStorage.setItem("tidesloadedmmdd", monthday);
-////    }
-////}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayNextEvent
@@ -1299,8 +1273,8 @@ function DisplayNextEvents(CE) {
             DisplayDate = aCEmonthday;
             continue;
         }
-        // if Tomorrow or another day
-        //if (datefmt == "") {  // put date in
+        // if Tomorrow or another day show the 1st 3 events
+        // put date in
         if(aCEmonthday != DisplayDate) {
             if (aCEmonthday == (gMonthDay + 1)) datefmt += "<strong>Tomorrow</strong>";
             else if (aCEmonthday <= (gMonthDay + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
@@ -1309,49 +1283,12 @@ function DisplayNextEvents(CE) {
         datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEmonthday;
         nEvents++; // count the events
+        if (nEvents >= 3) break; // exit after 3 events that are not today
     }
     return datefmt; // end case
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-//  GetComingEvents - retrieves the coming events into the comingevents local storage object
-//  Load from server using ajax async request.
-//  Store into local cache at 'comingevents' and 'comingactivities'  monthday of load stored into local cache at 'comingeventsloaded'
-//  >>>changed 6/6/16 to be loaded by 'getdailycache.php'
-//function GetComingEvents() {
-// ajax async request
-//$.get("comingevents.txt", ComingEventsReceived());
-//                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
-// changed 3/8/16 to use a php script;
-//var myurl = FixURL("comingevents.txt");
-//    var myurl = FixURL("getcomingevents.php");
-//    $.ajax({
-//        url: myurl,
-//        success: function (data) {
-//}
-////function GetComingEvents() {   
-////    var myurl = FixURL("getcomingevents.php");
-////    // ajax request without jquery
-////    var xhttp = new XMLHttpRequest();
-////    xhttp.onreadystatechange = function () {
-////        if (xhttp.readyState == 4 && xhttp.status == 200) HandleComingEventsReply(xhttp.responseText);
-////    }
-////    xhttp.open("GET", myurl, true);
-////    xhttp.send();
-////}
-////function HandleComingEventsReply(data) {
-////    var i = data.indexOf("ACTIVITIES");
-////    if (i == 0) i = data.length;
-////    localStorage.setItem("comingevents", data.substring(0, i));
-////    if (i < data.length) localStorage.setItem("comingactivities", data.substring(i + 11, data.length));
-////    localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
-////    //alert("coming events loaded at " + gMonthDay);
-////    document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-////    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
-////    //$("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
-////    //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
-////}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //  GetDailyCache - retrieves the daily cache into the local storage objects 
@@ -1674,8 +1611,10 @@ function ShowPage(newpage) {
         gTableToClear = null;
     }
     // now switch to new page
-    document.getElementById(gDisplayPage).setAttribute('style', 'display:none;');
-    document.getElementById(newpage).setAttribute('style', 'display:block;');
+    Hide(gDisplayPage);
+    Show(newpage);
+    //document.getElementById(gDisplayPage).setAttribute('style', 'display:none;');
+    //document.getElementById(newpage).setAttribute('style', 'display:block;');
     gDisplayPage = newpage; // remember it
     window.scroll(0, 0);  // force scroll (1.7)
 }
@@ -1714,7 +1653,8 @@ function Dialog(text, heading) {
 //  close the modal dialog and clear out its text.
 function ModalClose() {
     document.getElementById("modaltext").innerHTML = ""; // clear the display
-    document.getElementById("modaldialog").style.display = "none";
+    Hide("modaldialog");
+    //document.getElementById("modaldialog").style.display = "none";
 }
 
 //</script>
@@ -2974,62 +2914,6 @@ function ShowWeatherPage() {
     getForecast(); // start refresh of forecast if necessary (only happens every 60 min)
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// REMVOED for 1.7 7/6/16. 
-// get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
-// License as of 2/25/16 is for 60 hits/minute for free.
-//  fromdate = optional starting date for the weather
-//  Note: json data is cached in 'forecastjson', and time stamped in 'forecastjsontime'.
-//      cached data is always used. A new request is allowed only after 12 minutes.
-//function getWeatherForecastPage(fromdate) {
-//    var olddate, newdate; // dates
-//    var ampm; // am or pm
-//    var currentTemp;
-//    generateWeatherForecastPage(); // display page from cache
-//    if (localStorage.getItem("forecastjsontime") != null) {
-//        var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), timehhmm); // age of forecast in min
-//        if (td < 12) return; // don't update more than every 12 minutes
-//    }
-
-//    //update the forecast from ajax. 
-
-//    $.ajax({
-//        url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
-//        dataType: 'jsonp',
-//        success: function (json) {
-//            // save the data
-//            localStorage.setItem("forecastjson", JSON.stringify(json));
-//            localStorage.setItem("forecastjsontime", timehhmm);
-//            generateWeatherForecastPage();
-//        }
-//    });  // end of ajax call
-//}  // end of function
-
-//function getWeatherForecastPage(fromdate) {
-//    var olddate, newdate; // dates
-//    var ampm; // am or pm
-//    var currentTemp;
-//    generateWeatherForecastPage(); // display page from cache
-//    getForecast(); // start refresh of forecast if necessary
-    //if (localStorage.getItem("forecastjsontime") != null) {
-    //    var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), gTimehhmm); // age of forecast in min
-    //    if (td < 30) return; // don't update more than every 30 minutes
-    //}
-    //// ajax request without jquery
-    //var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
-    //var xhttp = new XMLHttpRequest();
-    //xhttp.onreadystatechange = function () {
-    //    if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
-    //}
-    //xhttp.open("GET", myurl, true);
-    //xhttp.send();
-//}
-
-//function HandleForecastReply(json) {
-//    localStorage.setItem("forecastjson", json);
-//    localStorage.setItem("forecastjsontime", gTimehhmm);
-//    generateWeatherForecastPage();
-//}  // end of function
 
 //////////////////////////////////////////////////////////////////////////////////
 //  generateWeatherForecastPage - generates the forecast using the existing json reply from openweathermap
@@ -3162,8 +3046,8 @@ function ShowLinksPage(showme,hideme) {
     ShowPage("linkspage");
     SetPageHeader("Island Information Links");
     document.getElementById("islandlinks").innerHTML = localStorage.getItem("links");
-    document.getElementById(showme).style.display = "block";
-    document.getElementById(hideme).style.display = "none";
+    Show(showme);
+    Hide(hideme);
 }
 
 // HELP
