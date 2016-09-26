@@ -45,7 +45,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.0925.0036";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.0926.0036";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -682,6 +682,24 @@ function Hide(divid) {
     document.getElementById(divid).style.display = "none";
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//  MarkOffline - mark the app offline
+//      offline = true if offline, false if online
+function MarkOffline(offline) {
+    var ofl = "Offline. ";
+    var tle = document.getElementById("topline");
+    var topline = tle.innerHTML;
+    if (offline) {
+        Show("offlinemsg"); 
+        if (topline.substr(0, 9) == ofl) return;
+        tle.innerHTML = ofl + topline; // set it offline
+    } else {  // not offline
+        Hide("offlinemsg");
+        if (topline.substr(0, 9) != ofl) return;
+        tle.innerHTML = topline.substr(9); // remove offline prefix
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //  LSget - local storage get always returns string or "". never returns null.
 function LSget(id) {
@@ -734,25 +752,25 @@ function getAlertInfo() {
     if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 8 min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
-    Hide("offlinemsg");
+    MarkOffline(false);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleAlertReply(xhttp.responseText);
-        if (xhttp.readyState == 4 && xhttp.status == 0) Show("offlinemsg"); // this one works when net is disconnected
+        if (xhttp.readyState == 4 && xhttp.status == 0) MarkOffline(true); // this one works when net is disconnected
     }
     try{
         xhttp.open("GET", myurl, true);
         xhttp.timeout = 12000;  // 12 second timeout; this doesn't seem to work
-        xhttp.ontimeout = function () {Show("offlinemsg"); }  // after 12 seconds, show the offline msg
+        xhttp.ontimeout = function () { MarkOffline(true); }  // after 12 seconds, show the offline msg
         xhttp.send();
     }
-    catch(e){
-        Show("offlinemsg"); // if an error
+    catch (e) {
+        MarkOffline(true);
     }
 }
 
 function HandleAlertReply(r) {
-    Hide("offlinemsg");
+    MarkOffline(false);
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
     var s = parseCache(r, "", "FERRY", "FERRYEND");
