@@ -21,6 +21,9 @@
             0705.2100: Web. Fishing link. Add parameters to ShowLinksPage
             0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
             0710.2300: Improve selection of ferry schedule.
+            0823.2300: Use FERRYTA/S/K with embedded rules. No hardcoded rules.
+            0918.1000: Call Pushbots only every 3 days to cut down on API calls.
+                       Add version check for ANDRIODVER and IOSVER.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -42,7 +45,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.7.0822.2300";
+var gVer = "1.07.0929.1840";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -63,7 +66,13 @@ var app = {
     onDeviceReady: function () {
         navigator.splashscreen.hide();
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-            window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+            // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
+            var pbtime = Number(LSget("pushbotstime"));
+            var timems = GetTimeMS();
+            if ((pbtime == 0) || ((timems - pbtime) > (72 * 3600000))) {
+                window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                localStorage.setItem("pushbotstime", timems.toFixed(0));
+            }
             window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }
         app.receivedEvent('deviceready');
@@ -101,6 +110,7 @@ var gYear; // year
 var gMonth;  // month 1-12. note starts with 1
 var gDayofMonth; // day of month 1-31
 var gMonthDay; // mmdd
+var gYYmmdd; // yymmdd
 var laborday = 0; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
@@ -149,6 +159,7 @@ function InitializeDates(dateincr) {
     gDayofMonth = Gd.getDate(); // day of month 1-31
     gMonthDay = gMonth * 100 + gDayofMonth;
     gYear = Gd.getFullYear();
+    gYYmmdd = gMonthDay + (gYear-2000)*10000; // yymmdd
     gWeekofMonth = Math.floor((gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
     // build holidays once only
     if (dateincr == 0 && laborday == 0) {
@@ -180,16 +191,28 @@ function InitializeDates(dateincr) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// GetDayofWeek - returns 0-6 for an arbitrary date in mmdd format. this gYear assumed.
+// GetDayofWeek - returns 0-6 for an arbitrary date in mmdd or yymmdd format. 
+//  entry   mmdd = mmdd (assumes gYear) or yymmdd
 function GetDayofWeek(mmdd) {
     var mmdd = Number(mmdd);
-    var d = new Date(gYear, Math.floor(mmdd / 100) - 1, mmdd % 100);
+    var yyyy = gYear;
+    if (mmdd > 9999) {
+        yyyy = Math.floor(mmdd / 10000) + 2000; // extract year
+        mmdd = mmdd % 10000;
+    }
+    var d = new Date(yyyy, Math.floor(mmdd / 100) - 1, mmdd % 100);
     return d.getDay();
 }
 /////////////////////////////////////////////////////////////////////////////////////
 // GetWeekofYear - returns week of year
+//  entry   mmdd = mmdd (assumes gYear) or yymmdd
 function GetWeekofYear(mmdd) {
     var mmdd = Number(mmdd);
+    var yyyy = gYear;
+    if (mmdd > 9999) {
+        yyyy = Math.floor(mmdd / 10000) + 2000; // extract year
+        mmdd = mmdd % 10000;
+    }
     var januaryFirst = new Date(gYear, 0, 1);
     var thedate = new Date(gYear, Math.floor(mmdd / 100) - 1, mmdd % 100);
     return Math.floor((((thedate - januaryFirst) / 86400000) + januaryFirst.getDay()) / 7);
@@ -210,6 +233,13 @@ function DateDiff(mmdd1, mmdd2) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+// GetTimeMS - get time stamp in MS since 1970
+function GetTimeMS() {
+    var d = new Date();
+    return d.getTime(); // milisec since 1970
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
 // ValidFerryRun return true if a valid ferry time, else false.
 // the crazy special rules go here.
 // flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules
@@ -219,58 +249,58 @@ function DateDiff(mmdd1, mmdd2) {
 //  X=Friday Only labor day-12/31, 0101-6/30,
 //  Y=Fridays only 7/1=labor day
 
-function ValidFerryRun(flag) {
-    if (flag.indexOf("*") > -1) return true; // good every day
-     return ValidFerryRun2(flag);///////////////////////////////////////////////////////////////
-
-    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
-    if (holiday) {
-        if (flag.indexOf("H") > -1) { // yes a valid run		 
-            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
-            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
-                if (!((gMonthDay == 1231) || (gMonthDay == 1224) || (gMonthDay == 703))) return false; // if not 1231,1224,or 703, its not valid		
-                if (gDayofWeek >= 1 && gDayofWeek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
-                return false;
-            } else return true;  // holiday		
-        } else return false;
-    }
+//function ValidFerryRun(flag) {
+//    if (flag.indexOf("*") > -1) return true; // good every day
+//    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
+//    if (holiday) {
+//        if (flag.indexOf("H") > -1) { // yes a valid run		 
+//            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
+//            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
+//                if (!((gMonthDay == 1231) || (gMonthDay == 1224) || (gMonthDay == 703))) return false; // if not 1231,1224,or 703, its not valid		
+//                if (gDayofWeek >= 1 && gDayofWeek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
+//                return false;
+//            } else return true;  // holiday		
+//        } else return false;
+//    }
 
 
-    if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
-    // special cases F, skip 1st and 3rd wednesday of every month
-    if (flag.indexOf("F") > -1) {
-        if (gDayofWeek != 3) return true;  // if not wednesday, accept it
-        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
-    }
-    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
-        if (gDayofWeek != 2) return false;  // if not tuesday reject it
-        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
-    }
-    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
-        if ((gDayofWeek == 5) && ((gMonthDay >= laborday) || (gMonthDay <= 630))) return true;
-    }
-    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
-        if ((gDayofWeek == 5) && (gMonthDay >= 701) && (gMonthDay <= laborday)) return true;
-    }
-    return false; // not a valid run;
-}
+//    if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
+//    // special cases F, skip 1st and 3rd wednesday of every month
+//    if (flag.indexOf("F") > -1) {
+//        if (gDayofWeek != 3) return true;  // if not wednesday, accept it
+//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
+//        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
+//    }
+//    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
+//        if (gDayofWeek != 2) return false;  // if not tuesday reject it
+//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
+//        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
+//    }
+//    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
+//        if ((gDayofWeek == 5) && ((gMonthDay >= laborday) || (gMonthDay <= 630))) return true;
+//    }
+//    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
+//        if ((gDayofWeek == 5) && (gMonthDay >= 701) && (gMonthDay <= laborday)) return true;
+//    }
+//    return false; // not a valid run;
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// ValidFerryRun2 return true if a valid ferry time, else false.
+// ValidFerryRun return true if a valid ferry time, else false.
 //  alternate to having the rules special cased
-// the crazy special rules go here.
-// flag: *=always, 0-6=days of week, {xxxx} = eval rules
+// flag: *=always, 0-6=days of week, (xxxx) = eval rules in javascript
+//  eval rules are javascript, returning true for a valid run, else false
+//    can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
 
-function ValidFerryRun2(flag) {
+function ValidFerryRun(flag) {
+    if (flag == undefined || flag == "") return false;
     if (flag.indexOf("*") > -1) return true; // good every day
     if (flag.substr(0, 1) != "(") {
         if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
         return false;
     }
 
-    // {eval rules }
+    // (eval rules ).
     var t = eval(flag);
     return t;
 }
@@ -445,15 +475,13 @@ function ShowMap() {
 
 function ShowBurnBan() {
     MarkPage("u");
-    var link = localStorage.getItem("burnbanlink");
-    if (IsEmpty(link)) link = "http://wc.pscleanair.org/burnban411/";  // default
+    var link = GetLink("burnbanlink", "http://wc.pscleanair.org/burnban411/");  // default
     window.open(link, "_blank");
 }
 
 function ShowTannerOutage() {
     MarkPage("r");
-    var link = localStorage.getItem("tanneroutagelink");
-    if (IsEmpty(link)) link = "http://www.tannerelectric.coop/andersonisland";  // default
+    var link = GetLink("tanneroutagelink", "http://www.tannerelectric.coop/andersonisland");  // default
     window.open(link, "_blank");
 }
 
@@ -477,7 +505,8 @@ function UpdateApp() {
             window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');
         }
     } else {
-        window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
+        window.location.reload(true);
+        //window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
     }
 }
 
@@ -565,6 +594,17 @@ function IsEmpty(string) {
     return false;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+// GetLink - returns the contents of the storage item, or the default if it is null
+//  Entry   localstoragename = name of link in local storage
+//          defaultlink = link to return if localstoragename doesn't exist
+//  Exit    returns the contents of the storage item, or the default if it is null
+function GetLink(localstoragename, defaultlink) {
+    var link = localStorage.getItem(localstoragename);
+    if (link == null || link == "") return defaultlink;
+    return link;
+}
+
 ///////////////////////////////////////////////////////////////////////
 //  FixiPhoneHeader() - fix the header for the iphone by making it higher and adding a br
 function FixiPhoneHeader() {
@@ -572,6 +612,40 @@ function FixiPhoneHeader() {
     if (!isPhoneGap()) return;
     document.getElementById("ipfix1").style.display = "block";
     document.getElementById("ipfix2").style.display = "block"; // extra row to allow for ios status line
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// UpdateAvailable - set message if update is available
+// NOTE: version MUST be 4 chars in the form n.nn  e.g. 1.07;  Version comparison is a string comparison.
+function UpdateAvailable() {
+    if (!isPhoneGap()) return;
+    if (isAndroid()) UpdateCheck("androidver", "androidapp");
+    else UpdateCheck("iosver", "iphoneapp");
+    return;
+}
+function UpdateCheck(ver, id) {
+    var rver = LSget(ver);
+    if (rver == "") return;
+    if (rver > gVer.substr(0, 4)) {
+        document.getElementById(id).innerHTML = "Update available. Tap here to upgrade.";
+        Show(id);
+        document.getElementById("topline").innerHTML = "";
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// InstallAvailable -    point user to google play if a mobile browser that is NOT PhoneGap
+function InstallAvailable() {
+    if (!isPhoneGap() && isMobile()) {  // if not phonegap
+        if (isAndroid()) { // if chrome for android
+            Show("androidapp");
+            document.getElementById("topline").innerHTML = "";
+        } else {
+            Show("iphoneapp");
+            document.getElementById("topline").innerHTML = "";
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -612,6 +686,34 @@ function MarkPage(page) {
     localStorage.setItem("pagehits", s + page);
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Show(divid)  Hide(Divid)  Show or hide a div by setting the display style.
+//  divid = id of div to show or hide
+function Show(divid) {
+    document.getElementById(divid).style.display = "block";
+}
+function Hide(divid) {
+    document.getElementById(divid).style.display = "none";
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//  MarkOffline - mark the app offline
+//      offline = true if offline, false if online
+function MarkOffline(offline) {
+    var ofl = "Offline. ";
+    var tle = document.getElementById("topline");
+    var topline = tle.innerHTML;
+    if (offline) {
+        Show("offlinemsg"); 
+        if (topline.substr(0, 9) == ofl) return;
+        tle.innerHTML = ofl + topline; // set it offline
+    } else {  // not offline
+        Hide("offlinemsg");
+        if (topline.substr(0, 9) != ofl) return;
+        tle.innerHTML = topline.substr(9); // remove offline prefix
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //  LSget - local storage get always returns string or "". never returns null.
 function LSget(id) {
@@ -630,10 +732,12 @@ function LSappend(id, s) {
 //  Also processes the burnban and tanner alerts.
 function DisplayAlertInfo() {
     if (IsEmpty(localStorage.getItem("alerttext")) || localStorage.getItem("alerthide") != null) {
-        document.getElementById("alertdiv").setAttribute('style', 'display:none;');
+        Hide("alertdiv");
+        //document.getElementById("alertdiv").setAttribute('style', 'display:none;');
     } else {
         document.getElementById("alerttext").innerHTML = localStorage.getItem("alerttext");
-        document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
+        Show("alertdiv");
+        //document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
     }
 
     // burnban status or alert
@@ -662,15 +766,25 @@ function getAlertInfo() {
     if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 8 min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
+    MarkOffline(false);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleAlertReply(xhttp.responseText);
+        if (xhttp.readyState == 4 && xhttp.status == 0) MarkOffline(true); // this one works when net is disconnected
     }
-    xhttp.open("GET", myurl, true);
-    xhttp.send();
+    try{
+        xhttp.open("GET", myurl, true);
+        xhttp.timeout = 12000;  // 12 second timeout; this doesn't seem to work
+        xhttp.ontimeout = function () { MarkOffline(true); }  // after 12 seconds, show the offline msg
+        xhttp.send();
+    }
+    catch (e) {
+        MarkOffline(true);
+    }
 }
 
 function HandleAlertReply(r) {
+    MarkOffline(false);
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
     var s = parseCache(r, "", "FERRY", "FERRYEND");
@@ -769,6 +883,27 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     return ft;
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+// return the single next ferry time as a string. 
+//      entry ferrytimes is the array of times and days (eigher for steilacoom or ai))
+//      exit  returns string of next single ferry time.
+function FindNextSingleFerryTime(ferrytimes) {
+    InitializeDates(0);
+    var i = 0;
+    // roll through the ferry times, skipping runs that are not valid for today
+    for (i = 0; i < ferrytimes.length; i = i + 2) {
+        if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        // now determine if the next run will run today.  If it is a valid run, break out of loop.
+        if (ValidFerryRun(ferrytimes[i + 1])) {
+            var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
+            if (rtd < 13) return ShortTime(ferrytimes[i]) + "(in <span style='color:red'>" + rtd  + " min)</span>";
+            else return ShortTime(ferrytimes[i]) + "(in " + rtd  + " min)";
+        }
+    }
+    // we ran out of the schedule today so give the 1st run for tomorrow
+    return "tomorrow";
+}
+
 //  FindNextFerryTimeTomorrow - finds the 1st run on the NEXT day
 //  Entry   SA = S or A
 //  Exit    returns string with 1st valid run for tomorrow
@@ -827,15 +962,6 @@ function ParseFerryTimes() {
     gFerryDate2 = d.getTime(d); // ms till cutover
 }
 
-/////////////////////////////////////////////////////////////////////////
-//  UseFerryTime1 - REMOVED 7/10/16. select ferrytime 1 or ferry time 2 based on cutover date
-//  entry   gFerryDate2 = cutover time in ms
-//          gTimeStampms = 'current' time for this function
-//  exit    true to use ferrytime1, false to use gFerryDate2
-//function UseFerryTime1() {
-//    if ((gFerryDate2 == 0) || (gTimeStampms < gFerryDate2)) return true
-//    else return false;
-//}
 
 /////////////////////////////////////////////////////////////////////////
 //  GetFerryTimeArray - select proper ferry time array (S or A) based on date
@@ -990,7 +1116,7 @@ function getCurrentWeather() {
     //$.ajax({
     //    url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
     //    dataType: 'jsonp',
-    var myurl = 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+    var myurl = GetLink("currentweatherlink", 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCurrentWeatherReply(JSON.parse(xhttp.responseText));
@@ -1042,7 +1168,7 @@ function getForecast() {
 
     //    dataType: 'jsonp',
     //    success: function (json) {
-    var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
+    var myurl = GetLink("weatherforecastlink", 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1137,45 +1263,6 @@ function ShowNextTides() {
     gForceTideReload = true; // if we haven't gotten today's tides, reload it
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// getTideData - call the aeri api and store the response as a local storage string
-//  replaced by load from getdailycache.php
-//
-////function getTideData() {
-////    var hilow;
-////    var nextTides;
-////    var oldtide = -1;
-////    var t = localStorage.getItem("tidesloadedmmdd");
-////    if (t != null && (Number(t) == gMonthDay)) return; // gets tides async every day
-////    //url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-20hours&to=+96hours',
-////    //$.ajax({
-////    //    url: 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours',
-////    //    dataType: 'jsonp',
-////    //    success: function (json) {
-////    myurl = 'http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+96hours';
-////    var s = localStorage.getItem("tidedatalink");  // alternate link. probably tides.php.
-////    if (!IsEmpty(s)) myurl = s; // 
-////    myurl = FixURL(myurl);
-////    var xhttp = new XMLHttpRequest();
-////    xhttp.onreadystatechange = function () {
-////        if (xhttp.readyState == 4 && xhttp.status == 200) HandleTidesReply(xhttp.responseText);
-////    }
-////    xhttp.open("GET", myurl, true);
-////    xhttp.send();
-////}
-////function HandleTidesReply(reply) {
-////    var json = JSON.parse(reply);
-////    if (json.success == true) {
-////        localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
-////        localStorage.setItem("tidesloadedmmdd", gMonthDay);
-////        ShowNextTides();
-////    } else {
-////        // error
-////        //alert("cant get tides");
-////        //localStorage.setItem("tidesloadedmmdd", monthday);
-////    }
-////}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayNextEvent
@@ -1191,7 +1278,7 @@ function DisplayNextEvents(CE) {
     var datefmt = ""; // formatted date and event list
     var iCE; // iterator through CE
     var aCE; // CE split array 
-    var aCEmonthday;
+    var aCEyymmdd; // yymmdd of Calendar Entry
     var DisplayDate = 0; // event date we are displaying
     var nEvents = 0; // number of events displayed
     if (CE === null) return;
@@ -1202,75 +1289,37 @@ function DisplayNextEvents(CE) {
     for (iCE = 0; iCE < CE.length; iCE++) {
         aCE = CE[iCE].split(';');  // split the string
         //  advance schedule date to today
-        aCEmonthday = Number(aCE[0]);
-        if (aCEmonthday < gMonthDay) continue; // not there yet
+        aCEyymmdd = Number(aCE[0]);
+        if (aCEyymmdd < gYYmmdd) continue; // not there yet.
         // if the entry is for today and it is done, skip it
-        if (aCEmonthday == gMonthDay && Number(aCE[2]) < gTimehhmm) continue; // if today and it is done, skip it
+        if (aCEyymmdd == gYYmmdd && Number(aCE[2]) < gTimehhmm) continue; // if today and it is done, skip it
         // found it
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
-        if ((aCEmonthday != DisplayDate) && (nEvents>=2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
+        if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
         // if Today
-        if (aCEmonthday == gMonthDay) {
+        if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
             datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
             nEvents = 99; // ensure only today
-            DisplayDate = aCEmonthday;
+            DisplayDate = aCEyymmdd;
             continue;
         }
-        // if Tomorrow or another day
-        //if (datefmt == "") {  // put date in
-        if(aCEmonthday != DisplayDate) {
-            if (aCEmonthday == (gMonthDay + 1)) datefmt += "<strong>Tomorrow</strong>";
-            else if (aCEmonthday <= (gMonthDay + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
-            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + " " + aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4) + "</strong>";
+        // if Tomorrow or another day show the 1st 3 events
+        // put date in
+        if (aCEyymmdd != DisplayDate) {
+            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong>";
+            else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
+            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong>";
         }
         datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
-        DisplayDate = aCEmonthday;
+        DisplayDate = aCEyymmdd;
         nEvents++; // count the events
+        if (nEvents >= 3) break; // exit after 3 events that are not today
     }
     return datefmt; // end case
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-//  GetComingEvents - retrieves the coming events into the comingevents local storage object
-//  Load from server using ajax async request.
-//  Store into local cache at 'comingevents' and 'comingactivities'  monthday of load stored into local cache at 'comingeventsloaded'
-//  >>>changed 6/6/16 to be loaded by 'getdailycache.php'
-//function GetComingEvents() {
-// ajax async request
-//$.get("comingevents.txt", ComingEventsReceived());
-//                 url: "http://anderson-island.org/comingevents.txt" for phone use fully qualified url
-// changed 3/8/16 to use a php script;
-//var myurl = FixURL("comingevents.txt");
-//    var myurl = FixURL("getcomingevents.php");
-//    $.ajax({
-//        url: myurl,
-//        success: function (data) {
-//}
-////function GetComingEvents() {   
-////    var myurl = FixURL("getcomingevents.php");
-////    // ajax request without jquery
-////    var xhttp = new XMLHttpRequest();
-////    xhttp.onreadystatechange = function () {
-////        if (xhttp.readyState == 4 && xhttp.status == 200) HandleComingEventsReply(xhttp.responseText);
-////    }
-////    xhttp.open("GET", myurl, true);
-////    xhttp.send();
-////}
-////function HandleComingEventsReply(data) {
-////    var i = data.indexOf("ACTIVITIES");
-////    if (i == 0) i = data.length;
-////    localStorage.setItem("comingevents", data.substring(0, i));
-////    if (i < data.length) localStorage.setItem("comingactivities", data.substring(i + 11, data.length));
-////    localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
-////    //alert("coming events loaded at " + gMonthDay);
-////    document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-////    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
-////    //$("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
-////    //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
-////}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //  GetDailyCache - retrieves the daily cache into the local storage objects 
@@ -1353,6 +1402,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+    parseCache(data, "androidver", "ANDROIDVER", "\n");
+    parseCache(data, "iosver", "IOSVER", "\n");
 
     // links for things that could change, like the ferry pictures, burnban, tanner
     parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera link steilacoom
@@ -1360,6 +1411,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban link 
     parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage link
     parseCacheRemove(data, "tidedatalink", "TIDEDATALINK", "\n"); // tide data
+    parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
+    parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
     ParseFerryTimes();
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
@@ -1367,6 +1420,8 @@ function ParseDailyCache(data) {
     parseCache(data, "comingevents", "COMINGEVENTS", "ACTIVITIES");
     parseCache(data, "comingactivities", "ACTIVITIES", "COMINGEVENTSEND");
     localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
+    FixDates("comingevents");
+    FixDates("comingactivities");
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
 
@@ -1406,6 +1461,27 @@ function parseCacheRemove(data, localstoragename, startstr, endstr) {
     var s = parseCache(data, localstoragename, startstr, endstr);
     if (s == "") localStorage.removeItem(localstoragename);
     return s;
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// FixDates - add year to coming events and activities. So 0122;1000;1100... becomes 160122;1000;1100....
+//  This is kinda ugly.  maybe we should do it inline.  But this way we only do it once.
+//  NOTE: there MUST be a new year event to change years: 0101;0000;0000;E;yy
+//  entry   itemname = name of storage item
+//  exit    year added to all dates to become yymmdd
+function FixDates(itemname) {
+    var year = (gYear - 2000).toFixed(0) ; //yy
+    var data = localStorage.getItem(itemname);
+    var CE = data.split("\n");  // break it up into an array of rows
+    // run through each row, add date
+    for (var i = 0; i < CE.length; i++) {
+        if (CE[i] == "") continue;
+        if (CE[i].charAt(4) != ";") continue; // if not nnnn; skip because it will be a year
+        if (CE[i].substr(0, 17) == "0101;0000;0000;E;") year = CE[i].substr(17, 2); // new year flag
+        CE[i] = year + CE[i]; // insert year
+    }
+    CE = CE.join("\n");  // reassemble the string
+    localStorage.setItem(itemname, CE); // replace it
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1566,6 +1642,7 @@ function DisplayLoadTimes() {
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(0) +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
@@ -1588,8 +1665,10 @@ function ShowPage(newpage) {
         gTableToClear = null;
     }
     // now switch to new page
-    document.getElementById(gDisplayPage).setAttribute('style', 'display:none;');
-    document.getElementById(newpage).setAttribute('style', 'display:block;');
+    Hide(gDisplayPage);
+    Show(newpage);
+    //document.getElementById(gDisplayPage).setAttribute('style', 'display:none;');
+    //document.getElementById(newpage).setAttribute('style', 'display:block;');
     gDisplayPage = newpage; // remember it
     window.scroll(0, 0);  // force scroll (1.7)
 }
@@ -1628,7 +1707,8 @@ function Dialog(text, heading) {
 //  close the modal dialog and clear out its text.
 function ModalClose() {
     document.getElementById("modaltext").innerHTML = ""; // clear the display
-    document.getElementById("modaldialog").style.display = "none";
+    Hide("modaldialog");
+    //document.getElementById("modaldialog").style.display = "none";
 }
 
 //</script>
@@ -1954,10 +2034,11 @@ function ShowYRHours() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-// formatDate - transforms mmdd into string: mm/dd
+// formatDate - transforms mmdd or yymmdd into string: mm/dd
 //  entry   integer date in mmdd form
 //  exit    string: mm/dd
 function formatDate(nmmdd) {
+    if (nmmdd > 9999) nmmdd = nmmdd % 10000; // remove year
     return Math.floor(nmmdd / 100).toFixed(0) + "/" + (nmmdd % 100).toFixed(0);
 }
 
@@ -2060,7 +2141,6 @@ function DisplayComingEventsList(CE) {
     var col;
     var idayofweek;
     var lastweek = 0;
-    var lastdayofweek = 100; // 0-6 of previous row
     var previouseventdate; // date of previous event
     var datefmt; // formatted date
     var table // ref to table
@@ -2075,6 +2155,7 @@ function DisplayComingEventsList(CE) {
     if (CE == "") return;
     clearTable(table); // clear table
     table.deleteRow(-1);
+
     // add a new week header
     row = table.insertRow(-1);
     row.style.border = "solid thin gray";
@@ -2084,27 +2165,32 @@ function DisplayComingEventsList(CE) {
     col = row.insertCell(1); col.innerHTML = "Time";
     col = row.insertCell(2); col.innerHTML = "Event";
     col = row.insertCell(3); col.innerHTML = "Location";
-    // calculate end month day. 6 for events, 1 for activities.
-    var endmmdd;
-    if (localStorage.getItem("eventtype") == "events") endmmdd = (gMonth + 6) * 100 + gDayofMonth;
-    else endmmdd = (gMonth + 1) * 100 + gDayofMonth;
-    var thisweek = GetWeekofYear(gMonthDay); // this week #
 
-    // roll through the CE array
+    // calculate end month day. 6 for events, 1 for activities.
+    var endyymmdd;
+    if (localStorage.getItem("eventtype") == "events") endyymmdd = BumpyymmddByMonths(gYYmmdd, 6);
+    else endyymmdd = BumpyymmddByMonths(gYYmmdd, 1);
+    var thisweek = GetWeekofYear(gMonthDay); // this week #
+    var gYYmmdd = gYYmmdd; // TODAY 
+
+    // roll through the CE array.  Dates are yymmdd
     for (iCE = 0; iCE < CE.length; iCE++) {
         aCE = CE[iCE].split(';');  // split the string
         if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
-        var dateCE = Number(aCE[0]); // mmdd
-        if (dateCE > endmmdd) return; // past one month
-        if (dateCE < gMonthDay) continue; // if before today
-        if (dateCE == gMonthDay && Number(aCE[2]) < (gTimehhmm + 10)) continue; // end time not reached.
+        var CEyymmdd = Number(aCE[0]); // yymmdd
+            // ALTERNATE on the fly year addition
+            // if(CE[iCE].substr(0,15) == "0101;0000;0000;") CEyear = Number(aCE[4]);
+            // CEyymmdd = CEYear*10000;
+        if (CEyymmdd > endyymmdd) return; // past end date (one month)
+        if (CEyymmdd < gYYmmdd) continue; // if before today
+        if ((CEyymmdd == gYYmmdd) && (Number(aCE[2]) < (gTimehhmm + 10))) continue; // end time not reached.
         // found it
-        datefmt = aCE[0].substring(0, 2) + "/" + aCE[0].substring(2, 4);
+        datefmt = aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6);
 
-        var dd = new Date(datefmt + "/" + gYear); // wont work for next year
-        iweek = GetWeekofYear(dateCE);
-        idayofweek = GetDayofWeek(dateCE);
+        //var dd = new Date(datefmt + "/" + (CEyymmdd%10000));  // date object for Calendar Entry WHY?????
+        iweek = GetWeekofYear(CEyymmdd);
+        idayofweek = GetDayofWeek(CEyymmdd);
 
         // add a row for new week. won't work if schedule days are both same day of week
         if (iweek != lastweek) {
@@ -2120,7 +2206,7 @@ function DisplayComingEventsList(CE) {
         // add a new table row
         row = table.insertRow(-1);
         row.style.border = "thin solid gray";//
-        if (dateCE == gMonthDay && Number(aCE[2]) > (gTimehhmm + 10)) row.style.fontWeight = "bold"; // end time not reached.
+        if ((CEyymmdd == gYYmmdd) && (Number(aCE[2]) > (gTimehhmm + 10))) row.style.fontWeight = "bold"; // end time not reached.
         col = row.insertCell(0);
         if (aCE[0] != previouseventdate) col.innerHTML = gDayofWeekShort[idayofweek] + " " + datefmt; // day of week
         else col.innerHTML = "";
@@ -2135,7 +2221,7 @@ function DisplayComingEventsList(CE) {
         color = eventcolor(aCE[3]);
         col2.style.color = color;
         col.style.color = color;
-        row.id = aCE[0] + aCE[1];
+        row.id = aCE[0] + aCE[1];  // id = 1602141300  i.e. yymmddhhmm
         row.onclick = function () { tabletext(this.id) }
         lastweek = iweek;
         previouseventdate = aCE[0];
@@ -2151,8 +2237,8 @@ function DisplayComingEventsList(CE) {
 function tabletext(tc) {
     //alert(tc);
     var nc = 0;
-    var d = tc.substr(0, 4);  // mmdd part of id
-    var t = tc.substr(4, 8); // hhhmm part of id. could be hh99 or 9999
+    var d = tc.substr(0, 6);  // yymmdd part of id
+    var t = tc.substr(6, 10); // hhhmm part of id. could be hh99 or 9999
     var as = "Tap entry to add to your ";
     if (!isPhoneGap()) as += "Google ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
@@ -2190,8 +2276,11 @@ function AddToCal(id) {
     var CE = GetEvents().split("\n");
     var aCE = CE[Number(id)].split(';');
     // prep some variables  Date(year, m, d, h, m, 0, 0
-    var startDate = new Date(gYear, Number(aCE[0].substring(0, 2)) - 1, Number(aCE[0].substring(2, 4)), Number(aCE[1].substring(0, 2)), Number(aCE[1].substring(2, 4)), 0, 0); // beware: month 0 = january, 11 = december
-    var endDate = new Date(gYear, Number(aCE[0].substring(0, 2)) - 1, Number(aCE[0].substring(2, 4)), Number(aCE[2].substring(0, 2)), Number(aCE[2].substring(2, 4)), 0, 0);
+    var y = Number(aCE[0].substring(0, 2)) + 2000; // year
+    var m = Number(aCE[0].substring(2, 4)) - 1; // month
+    var d = Number(aCE[0].substring(4, 6)); // day
+    var startDate = new Date(y, m, d, Number(aCE[1].substring(0, 2)), Number(aCE[1].substring(2, 4)), 0, 0); // beware: month 0 = january, 11 = december
+    var endDate = new Date(y, m, d, Number(aCE[2].substring(0, 2)), Number(aCE[2].substring(2, 4)), 0, 0);
     var title = aCE[4];
     var eventLocation = aCE[5];
     var notes = "";
@@ -2206,7 +2295,7 @@ function AddToCal(id) {
         //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
         //           var link = "http://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
         var link = "http://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
-            "&dates=" + gYear + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
+            "&dates=" + y + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
             'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
              gYear + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
             'T' + Leading0(endDate.getUTCHours()) + Leading0(endDate.getUTCMinutes()) + "00Z" +
@@ -2225,12 +2314,13 @@ function AddToCal(id) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingWeek - display the events in the CE structure in a 1 week form
 // CE = string of events, \n separated.
+// changed to include year. 9/29/16.
 function DisplayComingWeek(CE) {
 
     var i, h;
     var row;
     var col;
-    var startmmdd;
+    var startyymmdd;
     var table // ref to table
     MarkPage("3");
     EventDisp = "W";
@@ -2247,11 +2337,11 @@ function DisplayComingWeek(CE) {
     clearTable(table);
     table.deleteRow(-1);
 
-    var mmdd = Bumpmmdd(gMonthDay, -gDayofWeek);  // reset mmdd to 1st day of week
+    var yymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek) ;  // reset mmdd to 1st day of week
 
     // loop for each week
     for (var nw = 0; nw < 2; nw++) {
-        startmmdd = mmdd;
+        startyymmdd = yymmdd;
         // add a new week header
         row = table.insertRow(-1);
         row.style.border = "solid thin gray";
@@ -2262,10 +2352,10 @@ function DisplayComingWeek(CE) {
         col = row.insertCell(0); col.innerHTML = ""; col.style.width = "5%"; //
         for (i = 0; i < 7; i++) {
             col = row.insertCell(-1);
-            col.innerHTML = gDayofWeekShort[i] + "<br/>" + (mmdd % 100).toFixed(0);
+            col.innerHTML = gDayofWeekShort[i] + "<br/>" + (yymmdd % 100).toFixed(0);
             col.style.width = "13%"// 
-            if (mmdd == gMonthDay) col.style.backgroundColor = "yellow"; // color today yellow
-            mmdd = Bumpmmdd(mmdd, 1);
+            if (yymmdd == gYYmmdd) col.style.backgroundColor = "yellow"; // color today yellow
+            yymmdd = Bumpyymmdd(yymmdd, 1);
         }
 
 
@@ -2281,39 +2371,39 @@ function DisplayComingWeek(CE) {
             if (gTimehh == h) col.style.backgroundColor = "pink";
             else col.style.backgroundColor = "azure";
             col.style.border = "thin solid lightblue";
-            mmdd = startmmdd;
+            yymmdd = startyymmdd;
             // add day columns (add  one for each hour row)
             for (i = 0; i < 7; i++) {
                 col = row.insertCell(-1);
-                var id = Leading4(mmdd) + Leading0(h) + "99";
+                var id = yymmdd.toFixed(0) + Leading0(h) + "99"; //yymmddhh99
                 col.id = id;
                 col.onclick = function () { tabletext(this.id) }
                 col.innerHTML = "";
-                if (mmdd == gMonthDay) {  // highlight today and now
+                if (yymmdd == gYYmmdd) {  // highlight today and now
                     if (gTimehh == h) col.style.backgroundColor = "pink";
                     else col.style.backgroundColor = "lightyellow";  // make today yellow
                 }
                 col.style.border = "thin solid lightblue";
-                mmdd = Bumpmmdd(mmdd, 1);
+                yymmdd = Bumpyymmdd(yymmdd, 1);
             }
         }
 
         // roll through the CE array for 7 days and populate the week table with events from CE
-        var endmmdd = mmdd;  // end day + 1
+        var endyymmdd = yymmdd;  // end day + 1j
         for (iCE = 0; iCE < CE.length; iCE++) {
             aCE = CE[iCE].split(';');  // split the string
-            var dateCE = Number(aCE[0]); // mmdd
-            if (dateCE >= endmmdd) break; // past one week
-            if (dateCE < startmmdd) continue; // if before today
+            var dateCE = Number(aCE[0]); // yymmdd
+            if (dateCE >= endyymmdd) break; // past one week
+            if (dateCE < startyymmdd) continue; // if before today
             if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
-            // add to entry. entries have an id of: mmddhh99
+            // add to entry. entries have an id of: yymmddhh99
             var e = "";
-            if (dateCE == gMonthDay) e = "<strong>";
+            if (dateCE == gYYmmdd) e = "<strong>";
             if (aCE[1].substring(2, 4) != "00") e = ShortTime(aCE[1]) + " "; // add time if not one the hour
             e += "<span style=color:" + eventcolor(aCE[3]) + ">" + aCE[4] + "</span>";
-            var id = aCE[0] + aCE[1].substring(0, 2) + "99";
+            var id = aCE[0] + aCE[1].substring(0, 2) + "99"; //id = yymmddhh99
             var c = document.getElementById(id);
-            if (dateCE == gMonthDay) e = "<strong>" + e + "</strong>";
+            if (dateCE == gYYmmdd) e = "<strong>" + e + "</strong>";
             c.innerHTML += e + "<br/>";
             c.style.backgroundColor = "azure";
             // now the fancy part:  if end time is > 1 hour more than start time, color next blocks if they exist
@@ -2323,7 +2413,7 @@ function DisplayComingWeek(CE) {
             if (eh < 7) eh = 7; if (eh > 22) eh = 22;
             // if > 1 hour, color next cell
             for (var i = sh + 1; i < eh; i++) {
-                var id = aCE[0] + Leading0(i) + "99";
+                var id = aCE[0] + Leading0(i) + "99";//id = yymmddhh99
                 document.getElementById(id).style.backgroundColor = "azure";
             }
 
@@ -2338,7 +2428,6 @@ function Leading4(n) {
     var s = n.toFixed();
     if (s.length == 4) return s;
     else return "0" + s;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -2360,14 +2449,14 @@ function DisplayComingMonth(CE) {
     if (CE == null) return;
     CE = CE.split("\n");  // break it up into rows
 
-    var startmmdd = Bumpmmdd(gMonthDay, -gDayofWeek); // back up to beginning of month
+    var startyymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek); // back up to beginning of month
     //if (year % 4 == 0) gDaysInMonth[2] = 29; // leap year
     // compute starting date
     //var dd = dayofmonth - gDayofWeek; // starting dayy of the month
     //var mm = month;
     //if (dd <= 0) { mm--; dd = gDaysInMonth[mm] + dd; } // if we had to back of
     //var startmmdd = mm * 100 + dd;
-    var mmdd = startmmdd;
+    var yymmdd = startyymmdd;
 
     // build table
     clearTable(table);
@@ -2378,16 +2467,15 @@ function DisplayComingMonth(CE) {
     row.style.border.width = 1;
     row.style.backgroundColor = "lightblue";
     row.style.fontWeight = "bold";
-    col = row.insertCell(0); col.innerHTML = "Sun"; col.style.width = "14%"// 
-    col = row.insertCell(1); col.innerHTML = "Mon"; col.style.width = "14%"  // 
-    col = row.insertCell(2); col.innerHTML = "Tue"; col.style.width = "14%" // 
-    col = row.insertCell(3); col.innerHTML = "Wed"; col.style.width = "14%"//
-    col = row.insertCell(4); col.innerHTML = "Thur"; col.style.width = "14%"//
-    col = row.insertCell(5); col.innerHTML = "Fri"; col.style.width = "14%"
-    col = row.insertCell(6); col.innerHTML = "Sat"; col.style.width = "14%"
-    ;
+    col = row.insertCell(0); col.innerHTML = "Sun"; col.style.width = "14%";//
+    col = row.insertCell(1); col.innerHTML = "Mon"; col.style.width = "14%";  //
+    col = row.insertCell(2); col.innerHTML = "Tue"; col.style.width = "14%"; //
+    col = row.insertCell(3); col.innerHTML = "Wed"; col.style.width = "14%";//
+    col = row.insertCell(4); col.innerHTML = "Thur"; col.style.width = "14%";//
+    col = row.insertCell(5); col.innerHTML = "Fri"; col.style.width = "14%";
+    col = row.insertCell(6); col.innerHTML = "Sat"; col.style.width = "14%";
 
-    // build the month table with all rows and columns. Each day has an id of 'mmdd9999'.
+    // build the month table with all rows and columns. Each day has an id of 'yymmdd9999'.
     for (w = 1; w < 12; w++) {
         var rowN = table.insertRow(-1);
         row = table.insertRow(-1);
@@ -2396,39 +2484,38 @@ function DisplayComingMonth(CE) {
         for (i = 0; i < 7; i++) {
             // cell with date
             col = rowN.insertCell(i);
-
-            if (Math.floor(mmdd / 100) != gMonth) col.innerHTML = formatDate(mmdd);
-            else col.innerHTML = (mmdd % 100).toFixed(0);
+            if ((yymmdd % 100) == 1) col.innerHTML = formatDate(yymmdd); // use month on 1st day
+            else col.innerHTML = (yymmdd % 100).toFixed(0);
             col.style.color = "darkblue";
-            if (mmdd == gMonthDay) col.style.backgroundColor = "yellow";
+            if (yymmdd == gYYmmdd) col.style.backgroundColor = "yellow";
             else col.style.backgroundColor = "azure";
             col.style.border = "thin solid lightblue";
             // cell that will hold the events
             col = row.insertCell(i);
             col.innerHTML = "&nbsp";
             col.style.border = "thin solid lightblue";
-            col.id = Leading4(mmdd) + '9999';
+            col.id = yymmdd.toFixed(0) + '9999';  // id = yymmdd9999
             col.onclick = function () { tabletext(this.id) }
-            if (mmdd == gMonthDay) col.style.backgroundColor = "lightyellow";  // make today yellow
-            mmdd = Bumpmmdd(mmdd, 1); // quick bump of mmdd//
+            if (yymmdd == gYYmmdd) col.style.backgroundColor = "lightyellow";  // make today yellow
+            yymmdd = Bumpyymmdd(yymmdd, 1); // quick bump of yymmdd//
         }
     }
 
-    var endmmdd = mmdd;
+    var endyymmdd = yymmdd;
     // roll through the CE array for the month days
     for (iCE = 0; iCE < CE.length; iCE++) {
         aCE = CE[iCE].split(';');  // split the string
         //  advance schedule date to today
-        var dateCE = Number(aCE[0]); // mmdd
-        if (dateCE > endmmdd) break; // past end of mothb
-        if (dateCE < startmmdd) continue; // if before start of month
+        var dateCE = Number(aCE[0]); // yymmdd
+        if (dateCE > endyymmdd) break; // past end of mothb
+        if (dateCE < startyymmdd) continue; // if before start of month
         if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
 
-        // add to entry
+        // add to entry using the id to find it in the DOM
         var e;
         e = "<span style=color:" + eventcolor(aCE[3]) + "><strong>" + VeryShortTime(aCE[1]) + "</strong> " +
               aCE[4] + "</span>";// add time 
-        var id = aCE[0] + "9999";
+        var id = aCE[0] + "9999"; // id=yymmdd9999
         var c = document.getElementById(id);
         c.innerHTML += e + "<br/>";
     } // end for
@@ -2449,10 +2536,41 @@ function eventcolor(key) {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-//  Bumpmmdd  add days to mmdd and adjust mm and dd
-//  entry   mmdd = original mmdd
+//  Bumpyymmdd  add DAYS to yymmdd and adjust mm and dd and yyyy
+//  entry   mmdd = original yymmdd
 //          n = days to add or subtract, up to one month
-//  exit    returns new mmdd
+//  exit    returns new mmdd.   Note than 1231 rolls to 0101;
+function Bumpyymmdd(mmdd, n) {
+    if (n == 0) return mmdd;
+    var yyyy = gYear - 2000;   
+    if (mmdd > 9999) {
+        yyyy = Math.floor(mmdd / 10000);
+        mmdd = mmdd % 10000;
+    }
+    var mm = Math.floor(mmdd / 100);
+    var dd = mmdd % 100;
+    dd = dd + n;
+    if (dd > 0) {  // increasing to next month
+        if (dd <= gDaysInMonth[mm]) return mmdd + n  + yyyy*10000;
+        else {
+            dd = dd - gDaysInMonth[mm];
+            mm++;
+            if (mm == 13) { // if next year
+                mm = 1; // dec rolls to jan
+                yyyy++;
+            }
+            return mm * 100 + dd  + yyyy*10000;
+        }
+    }
+
+    // dd<0. handle subtract which rolls the month backward
+    mm = mm - 1; if (mm == 0) {
+        mm = 12;
+        yyyy--;
+    }
+    return (mm * 100) + (gDaysInMonth[mm] + dd) + yyyy * 10000;
+}
+
 function Bumpmmdd(mmdd, n) {
     if (n == 0) return mmdd;
     var mm = Math.floor(mmdd / 100);
@@ -2460,11 +2578,28 @@ function Bumpmmdd(mmdd, n) {
     dd = dd + n;
     if (dd > 0) {  // increasing to next month
         if (dd <= gDaysInMonth[mm]) return mmdd + n;
-        else return (mm + 1) * 100 + dd - gDaysInMonth[mm];
+        else {
+            dd = dd - gDaysInMonth[mm];
+            mm++;
+            if (mm == 13) { // if next year
+                mm = 1; // dec rolls to jan
+            }
+            return mm * 100 + dd;
+        }
     }
     // handle subtract which rolls the month backward
     mm = mm - 1; if (mm == 0) mm = 12;
     return (mm * 100) + gDaysInMonth[mm] + dd;
+}
+
+//  BumpyymmddByMonths - adds MONTHS to mmdd and adjusts mm for rollover to January and adds year
+//  entry   yymmdd = original yymmdd
+//          n = months to add
+//  exit    returns new yymmdd. 
+function BumpyymmddByMonths(yymmdd, m) {
+    var mmdd = (yymmdd % 10000) + m * 100;  // remove yy and add in month
+    if (mmdd > 1300) return yymmdd + m * 100 - 1200 + 10000; // if overflow, add in year
+    else return yymmdd + m * 100;
 }
 
 //</script>
@@ -2888,62 +3023,6 @@ function ShowWeatherPage() {
     getForecast(); // start refresh of forecast if necessary (only happens every 60 min)
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// REMVOED for 1.7 7/6/16. 
-// get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
-// License as of 2/25/16 is for 60 hits/minute for free.
-//  fromdate = optional starting date for the weather
-//  Note: json data is cached in 'forecastjson', and time stamped in 'forecastjsontime'.
-//      cached data is always used. A new request is allowed only after 12 minutes.
-//function getWeatherForecastPage(fromdate) {
-//    var olddate, newdate; // dates
-//    var ampm; // am or pm
-//    var currentTemp;
-//    generateWeatherForecastPage(); // display page from cache
-//    if (localStorage.getItem("forecastjsontime") != null) {
-//        var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), timehhmm); // age of forecast in min
-//        if (td < 12) return; // don't update more than every 12 minutes
-//    }
-
-//    //update the forecast from ajax. 
-
-//    $.ajax({
-//        url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
-//        dataType: 'jsonp',
-//        success: function (json) {
-//            // save the data
-//            localStorage.setItem("forecastjson", JSON.stringify(json));
-//            localStorage.setItem("forecastjsontime", timehhmm);
-//            generateWeatherForecastPage();
-//        }
-//    });  // end of ajax call
-//}  // end of function
-
-//function getWeatherForecastPage(fromdate) {
-//    var olddate, newdate; // dates
-//    var ampm; // am or pm
-//    var currentTemp;
-//    generateWeatherForecastPage(); // display page from cache
-//    getForecast(); // start refresh of forecast if necessary
-    //if (localStorage.getItem("forecastjsontime") != null) {
-    //    var td = RawTimeDiff(localStorage.getItem("forecastjsontime"), gTimehhmm); // age of forecast in min
-    //    if (td < 30) return; // don't update more than every 30 minutes
-    //}
-    //// ajax request without jquery
-    //var myurl = 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0';
-    //var xhttp = new XMLHttpRequest();
-    //xhttp.onreadystatechange = function () {
-    //    if (xhttp.readyState == 4 && xhttp.status == 200) HandleForecastReply(xhttp.responseText);
-    //}
-    //xhttp.open("GET", myurl, true);
-    //xhttp.send();
-//}
-
-//function HandleForecastReply(json) {
-//    localStorage.setItem("forecastjson", json);
-//    localStorage.setItem("forecastjsontime", gTimehhmm);
-//    generateWeatherForecastPage();
-//}  // end of function
 
 //////////////////////////////////////////////////////////////////////////////////
 //  generateWeatherForecastPage - generates the forecast using the existing json reply from openweathermap
@@ -3042,18 +3121,18 @@ function ShowFerryWebCam() {
     ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
     // steilacoom link from local storage
-    var link = localStorage.getItem("ferrycams");
-    if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg";
+    var link = GetLink("ferrycams","http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
     document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
-
+    document.getElementById("scamera").innerHTML="Steilacoom: next @ " + FindNextSingleFerryTime(UseFerryTime("S"));
     // anderson link from local storage
-    var link = localStorage.getItem("ferrycama");
-    if (IsEmpty(link)) link = "http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg";
+    link = GetLink("ferrycama","http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
     document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
+    document.getElementById("aicamera").innerHTML="Anderson Island: next @ " + FindNextSingleFerryTime(UseFerryTime("A"));
+
 }
 
 //====ABOUT=========================================================================================
@@ -3076,8 +3155,8 @@ function ShowLinksPage(showme,hideme) {
     ShowPage("linkspage");
     SetPageHeader("Island Information Links");
     document.getElementById("islandlinks").innerHTML = localStorage.getItem("links");
-    document.getElementById(showme).style.display = "block";
-    document.getElementById(hideme).style.display = "none";
+    Show(showme);
+    Hide(hideme);
 }
 
 // HELP
@@ -3111,17 +3190,9 @@ function StartApp() {
     gForceCacheReload = false; // cache reload not needed
     gForceTideReload = false;
 
+    InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
+    UpdateAvailable(); // point user to google play only if a new version is available
 
-    // point user to google play only if a mobile browser that is NOT PhoneGap
-    if (!isPhoneGap() && isMobile()) {  // if not phonegap
-        if (isAndroid()) { // if chrome for android
-            document.getElementById("androidapp").setAttribute('style', 'display:block;');
-            document.getElementById("topline").innerHTML = "";
-        } else {
-            document.getElementById("iphoneapp").setAttribute('style', 'display:block;');
-            document.getElementById("topline").innerHTML = "";
-        }
-    }
 
     //  pushbots - set the notify switch. hide it for web.
     if (isPhoneGap()) {
