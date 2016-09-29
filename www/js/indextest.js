@@ -1466,7 +1466,7 @@ function parseCacheRemove(data, localstoragename, startstr, endstr) {
 //////////////////////////////////////////////////////////////////////////////////
 // FixDates - add year to coming events and activities. So 0122;1000;1100... becomes 160122;1000;1100....
 //  This is kinda ugly.  maybe we should do it inline.  But this way we only do it once.
-//  NOTE: there MUST be a new year event to change years: 0101;0000;0000;E;yy
+//  NOTE: there MUST be a new year event to change years: 0101;0000;0000;E;20yy
 //  entry   itemname = name of storage item
 //  exit    year added to all dates to become yymmdd
 function FixDates(itemname) {
@@ -1477,7 +1477,7 @@ function FixDates(itemname) {
     for (var i = 0; i < CE.length; i++) {
         if (CE[i] == "") continue;
         if (CE[i].charAt(4) != ";") continue; // if not nnnn; skip because it will be a year
-        if (CE[i].substr(0, 17) == "0101;0000;0000;E;") year = CE[i].substr(17, 2); // new year flag
+        if (CE[i].substr(0, 19) == "0101;0000;0000;E;20")  year = CE[i].substr(19, 2); // new year flag
         CE[i] = year + CE[i]; // insert year
     }
     CE = CE.join("\n");  // reassemble the string
@@ -2144,6 +2144,7 @@ function DisplayComingEventsList(CE) {
     var previouseventdate; // date of previous event
     var datefmt; // formatted date
     var table // ref to table
+    InitializeDates(0);
     EventDisp = "L";
     table = document.getElementById("comingeventstable");
     gTableToClear = "comingeventstable";
@@ -2171,7 +2172,6 @@ function DisplayComingEventsList(CE) {
     if (localStorage.getItem("eventtype") == "events") endyymmdd = BumpyymmddByMonths(gYYmmdd, 6);
     else endyymmdd = BumpyymmddByMonths(gYYmmdd, 1);
     var thisweek = GetWeekofYear(gMonthDay); // this week #
-    var gYYmmdd = gYYmmdd; // TODAY 
 
     // roll through the CE array.  Dates are yymmdd
     for (iCE = 0; iCE < CE.length; iCE++) {
@@ -2238,7 +2238,7 @@ function tabletext(tc) {
     //alert(tc);
     var nc = 0;
     var d = tc.substr(0, 6);  // yymmdd part of id
-    var t = tc.substr(6, 10); // hhhmm part of id. could be hh99 or 9999
+    var t = tc.substr(6, 4); // hhhmm part of id. could be hh99 or 9999
     var as = "Tap entry to add to your ";
     if (!isPhoneGap()) as += "Google ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
@@ -2484,7 +2484,10 @@ function DisplayComingMonth(CE) {
         for (i = 0; i < 7; i++) {
             // cell with date
             col = rowN.insertCell(i);
-            if ((yymmdd % 100) == 1) col.innerHTML = formatDate(yymmdd); // use month on 1st day
+            if ((yymmdd % 100) == 1) {
+                col.innerHTML = formatDate(yymmdd); // use month on 1st day
+                col.style.fontWeight = 'bold';
+            }
             else col.innerHTML = (yymmdd % 100).toFixed(0);
             col.style.color = "darkblue";
             if (yymmdd == gYYmmdd) col.style.backgroundColor = "yellow";
