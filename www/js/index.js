@@ -24,6 +24,7 @@
             0823.2300: Use FERRYTA/S/K with embedded rules. No hardcoded rules.
             0918.1000: Call Pushbots only every 3 days to cut down on API calls.
                        Add version check for ANDRIODVER and IOSVER.
+            0929     : Add year to all calendar entries.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -45,7 +46,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.0929.1840";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.0930.1314";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1287,6 +1288,7 @@ function DisplayNextEvents(CE) {
     if (CE == "") return;
     // roll through the next 30 days
     for (iCE = 0; iCE < CE.length; iCE++) {
+        if (CE[iCE] == "") continue; // skip blank lines
         aCE = CE[iCE].split(';');  // split the string
         //  advance schedule date to today
         aCEyymmdd = Number(aCE[0]);
@@ -2175,6 +2177,7 @@ function DisplayComingEventsList(CE) {
 
     // roll through the CE array.  Dates are yymmdd
     for (iCE = 0; iCE < CE.length; iCE++) {
+        if (CE[iCE] == "") continue; // skip blank lines
         aCE = CE[iCE].split(';');  // split the string
         if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
@@ -2244,6 +2247,7 @@ function tabletext(tc) {
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
     var CE = GetEvents().split("\n");
     for (iCE = 0; iCE < CE.length; iCE++) {
+        if (CE[iCE] == "") continue; // skip blank lines
         var aCE = CE[iCE].split(';');  // split the string
         if (d < aCE[0]) break;
         if (d != aCE[0]) continue;
@@ -2391,6 +2395,7 @@ function DisplayComingWeek(CE) {
         // roll through the CE array for 7 days and populate the week table with events from CE
         var endyymmdd = yymmdd;  // end day + 1j
         for (iCE = 0; iCE < CE.length; iCE++) {
+            if (CE[iCE] == "") continue; // skip blank lines
             aCE = CE[iCE].split(';');  // split the string
             var dateCE = Number(aCE[0]); // yymmdd
             if (dateCE >= endyymmdd) break; // past one week
@@ -2507,6 +2512,7 @@ function DisplayComingMonth(CE) {
     var endyymmdd = yymmdd;
     // roll through the CE array for the month days
     for (iCE = 0; iCE < CE.length; iCE++) {
+        if (CE[iCE] == "") continue; // skip blank lines
         aCE = CE[iCE].split(';');  // split the string
         //  advance schedule date to today
         var dateCE = Number(aCE[0]); // yymmdd
@@ -3223,7 +3229,11 @@ function StartApp() {
     } else if (Number(dailycacheloaded) != gMonthDay) {
         reloadreason = "dailycacheloaded != monthday";
         gForceCacheReload = true;
+    } else if (localStorage.getItem("comingevents").charAt(4) == ";") {
+        gForceCacheReload = true; // reload cache if coming events does not have a year as yymmdd
+        reloadreason = "comingevents year";
     }
+
     if (gForceCacheReload) {
         document.getElementById("reloadreason").innerHTML = reloadreason;
         ReloadCachedData();
