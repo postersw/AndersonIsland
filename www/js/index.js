@@ -46,7 +46,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.0930.1314";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1005.2300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1406,6 +1406,7 @@ function ParseDailyCache(data) {
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
     parseCache(data, "androidver", "ANDROIDVER", "\n");
     parseCache(data, "iosver", "IOSVER", "\n");
+    parseCache(data, "locations", "LOCATIONS", "LOCATIONSEND"); // locations for coming events
 
     // links for things that could change, like the ferry pictures, burnban, tanner
     parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera link steilacoom
@@ -2229,6 +2230,7 @@ function DisplayComingEventsList(CE) {
         lastweek = iweek;
         previouseventdate = aCE[0];
     } // end loop through CE
+    document.getElementById("locations").innerHTML = LSget("locations");
 }
 
 

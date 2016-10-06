@@ -4,7 +4,7 @@
     Robert Bedoll. 2/23/16. 
 	ver 1.1.319: Web. fix weather forecast gmt time conversion
 	ver 1.2: Web. add weather icons
-	ver 1.3.0414: Web add pushbots
+	ver 1.3.0414: Web add pushbots3
     ver 1.3.0422: Android & IOS release. add pushbots.resetBadge
     ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
                   Remove App Store message from non-mobile devices.
@@ -283,9 +283,9 @@
         <div id="showevents" style="display:none">
             These items occur monthy or less. <br />
             <strong>SHOW: </strong><span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
-            <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
-            <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
-            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertainment</span>  
+            <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meeting</span> | 
+            <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Event</span> | 
+            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertain</span>  
          </div>
          <div id="showactivities" style="display:none">
             These items occur multiple times/month. <br />
@@ -302,6 +302,9 @@
             </tr>
         </table>
         </div>
+            <br />
+            <div id="locations"></div>
+         <br />   
         <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
    </div>
@@ -586,7 +589,7 @@
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
         <span id="versionnumber" style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.6.0606.1600	</span>
-        <span style="font-size:x-small"> [1001]</span>
+        <span style="font-size:x-small"> [1005]</span>
 
         </p>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
