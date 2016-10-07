@@ -45,7 +45,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.0929.1840";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.10071247";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1817,6 +1817,19 @@ function DisplayFerrySchedule(userdate) {
     row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") ;
     row1col1 = row1.insertCell(2);
     row1col1.style.backgroundColor = "blue";
+
+    // build steilacoom/ai label
+    row1 = table.insertRow(-1);
+    row1.style.color = "black";
+    row1col1 = row1.insertCell(0);
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.innerHTML = "Steilacoom";
+    row1col1 = row1.insertCell(1);
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.innerHTML = "Anderson";
+    row1col1 = row1.insertCell(2);
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.innerHTML = "Ketron";
 
     BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
  

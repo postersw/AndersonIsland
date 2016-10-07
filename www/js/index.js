@@ -20,11 +20,12 @@
                        Force alert reload on every start. Set alert timeout=8 min.
             0705.2100: Web. Fishing link. Add parameters to ShowLinksPage
             0706.2100: Web. Consolidate GetForecast to one routine to fix weather forecast update bug.
-            0710.2300: Improve selection of ferry schedule.
+            0710.2300: Ferry schedule: handle next day correctly on main page.
             0823.2300: Use FERRYTA/S/K with embedded rules. No hardcoded rules.
-            0918.1000: Call Pushbots only every 3 days to cut down on API calls.
-                       Add version check for ANDRIODVER and IOSVER.
-            0929     : Add year to all calendar entries.
+            0918.1000: Pubhbots: Call Pushbots only every 3 days to cut down on API calls.
+                       Version check: Add version check for ANDRIODVER and IOSVER and display message.
+            0929     : Coming Events: Automatically add year to all calendar dates and hande year rollover correctly.
+            1007     : Ferry Schedule Grid: move headers to each day.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -46,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1005.2300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.10071318";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1716,7 +1717,7 @@ function ModalClose() {
 
 //</script>
 
-//<!-- FERRY ------------------------>
+//<!-- FERRY PAGE -------------------->
 //<script>
 //==== FERRY SCHEDULE =======================================================================================
 
@@ -1795,7 +1796,7 @@ function DisplayFerrySchedulePage() {
 }
 
 ////////////////////////////////////////////////////////////////
-// DisplayFerrySchedule displays the grid
+// DisplayFerrySchedule build and displays the grid 'ferrytable'
 //  entry userdate = "" for today, else mm/dd
 function DisplayFerrySchedule(userdate) {
     var row1, row1col1;
@@ -1807,6 +1808,7 @@ function DisplayFerrySchedule(userdate) {
     table = document.getElementById("ferrytable");
     gTableToClear = "ferrytable";
     clearTable(table);
+    if(table.rows.length>0) table.deleteRow(0);  // clear 1st row
 
     row1 = table.insertRow(-1);
     row1col1 = row1.insertCell(0);
@@ -1821,29 +1823,48 @@ function DisplayFerrySchedule(userdate) {
     row1col1 = row1.insertCell(2);
     row1col1.style.backgroundColor = "blue";
 
+    InsertStAI(table);
     BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
  
     gTimehhmm = 0;  // ignore current time
     var i;
     for (i = 0; i < 7; i++) {
         InitializeDates(1);  // tomorrow
-        //alert(gMonthDay + " dow " + gDayofWeek);
         row1 = table.insertRow(-1);
         row1col1 = row1.insertCell(0);
         row1col1.colSpan = "3";
         row1col1.style.backgroundColor = "blue";
         row1col1.style.color = "white";
-        //row1col1.innerHTML = gDayofWeekName[gDayofWeek];
-        //row1col1 = row1.insertCell(1);
-        //row1col1.style.backgroundColor = "blue";
-        //row1col1.style.color = "white";
         row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
-        //row1col1 = row1.insertCell(2);
-        //row1col1.style.backgroundColor = "blue";
+        InsertStAI(table);
         BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
     }
 
     InitializeDates(0);  // reset dates back
+}
+
+// build steilacoom/ai label
+function InsertStAI(table) {
+    row1 = table.insertRow(-1);
+    row1.style.color = "darkblue";
+    row1col1 = row1.insertCell(0);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.style.color = "black";
+    row1col1.innerHTML = "&nbsp Steilacoom &nbsp";
+    row1col1 = row1.insertCell(1);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.style.color = "darkblue";
+    row1col1.innerHTML = "&nbsp  Anderson Is &nbsp";
+    row1col1 = row1.insertCell(2);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.style.color = "maroon";
+    row1col1.innerHTML = "&nbsp Ketron &nbsp";
 }
 ////</script>
 
