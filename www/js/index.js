@@ -25,7 +25,7 @@
             0918.1000: Pubhbots: Call Pushbots only every 3 days to cut down on API calls.
                        Version check: Add version check for ANDRIODVER and IOSVER and display message.
             0929     : Coming Events: Automatically add year to all calendar dates and hande year rollover correctly.
-            1007     : Ferry Schedule Grid: move headers to each day.
+            1007     : Ferry Schedule Grid: move headers to each day. Color am backgound blue.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.10071318";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.10071448";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1739,6 +1739,7 @@ function ShowFerryLocation() {
 function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
+    var amcolor = "#f8ffff";
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
         if (gTimehhmm >= ferrytimesS[i] && gTimehhmm >= ferrytimesA[i]) continue;  // skip ferrys that have alreaedy run
@@ -1752,12 +1753,14 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
             if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
             row1col1.style.border = "thin solid black";
+            if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
 
             // Anderson Island;
             row1col2 = row1.insertCell(1);
             row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
             row1col2.style.color = "darkblue";
             row1col2.style.border = "thin solid black";
+            if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
 
             // Ketron
             var row1col3 = row1.insertCell(2);
@@ -1766,6 +1769,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
                     row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
                     row1col3.style.color = "brown";
                     row1col3.style.border = "thin solid black";
+                    if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor =amcolor;
                 }
             }
             if (row1.rowIndex == 2) { // row 3 (index=2) is the next run
