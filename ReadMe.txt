@@ -39,7 +39,13 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 6/05/16. 1.5.0605.1400 versionCode 220 (but play shows it as 2208). Uploaded to Google Play. as version 1.5....
 6/07/16. 1.6.0607.1601 versionCode 221 (2218). Consoldate dailycache.txt, comingevents.txt, tidedata.txt into dailycache.php.
 		send usage statistics up with dailycache.php.  Uploaded to Google Play.
-
+10/8/16. 1.07.1007. versonCode 222. Add "Fishing" row. Improve Ferry Schedule display. Improve Coming Events display.
+		Improve ability to support ferry schedule changes (with new ferry schedule including code for special cases.)
+		Improve handling of Alerts by always querying for alert on startup. 
+		Display message when an update is available (using the ANDROIDVER and IOSVER in dailycache).
+		Fix Coming Events year-rollover problem (by inserting the year into comingevents and activities when loaded,
+			and doing all date checks with yymmdd).
+		Fix Coming Events weekly and monthly grid problem.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
@@ -107,14 +113,14 @@ IOS DEBUG/BUILD
 
 	DATA LOADS
 	Data is loaded from:
-	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app.
-	2. Coming Events: comingevents.php  which copies comingevents.txt to stdout.
-		comingevents.txt is manually maintained by rfb. loaded 1/day by the app.
+	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app getdailycache.php.
+	2. Coming Events: (comingevents.php  which copies comingevents.txt to stdout. is ver 1.3 only).
+		comingevents.txt is manually maintained by rfb. loaded 1/day by the app getdailycache.php as of 1.6.
 	3. getalerts.php which copies alerts.txt (filled by getferryalerts.php cron every 5 min),
 		 tanneroutage.txt (filled by gettanneralerts.php cron every 10 min),
 		 burnban.txt (filled by getburnbanalerts.php cron every 15 min) to stdout.
-		 run every 10 minutes by the app.
-	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the app.
+		 run every 10 minutes by the app as of 1.6.
+	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the getdailycache.php script as of 1.6.
 	5. openweathermap.com which returns json structures for current weather and forecast.
 		current loaded every 15 min by the app. forecast loaded every 30 min by the app.
 

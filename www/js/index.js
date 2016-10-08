@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.10072022";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1008.1500";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1740,9 +1740,11 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
     var amcolor = "#f0ffff";
+    var extrat = 13; // extra time in display 12 minutes
+    var boldS = false, boldA = false, boldK = false; 
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
-        if (gTimehhmm >= ferrytimesS[i] && gTimehhmm >= ferrytimesA[i]) continue;  // skip ferrys that have alreaedy run
+        if ((gTimehhmm >= (Number(ferrytimesS[i])+extrat)) && (gTimehhmm >= (Number(ferrytimesA[i])+extrat)) && (gTimehhmm>Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimesS[i + 1])) {
             // Steelacoom
@@ -1758,7 +1760,8 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             // Anderson Island;
             row1col2 = row1.insertCell(1);
             row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
-            row1col2.style.color = "darkblue";
+            if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
+            else row1col2.style.color = "darkblue";
             row1col2.style.border = "thin solid black";
             if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
 
@@ -1767,15 +1770,26 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             if (ferrytimesK[i] != 0) {
                 if (ValidFerryRun(ferrytimesK[i + 1])) {
                     row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
-                    row1col3.style.color = "brown";
+                    if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
+                    else row1col3.style.color = "brown";
                     row1col3.style.border = "thin solid black";
                     if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor =amcolor;
                 }
             }
-            if (row1.rowIndex == 2) { // row 3 (index=2) is the next run
-                row1col1.style.fontWeight = "bold";  // bold  row
-                row1col2.style.fontWeight = "bold";  // bold  row
-                row1col3.style.fontWeight = "bold";  // bold  row
+            // make the next run bold
+            if (row1.rowIndex <= 3) { // row 3 or 4 (index=2 or 3) is the next run
+                if (gTimehhmm <= ferrytimesS[i] && !boldS) {
+                    row1col1.style.fontWeight = "bold";  // bold 
+                    boldS = true;
+                }
+                if (gTimehhmm <= ferrytimesA[i] && !boldA){
+                    row1col2.style.fontWeight = "bold";  // bold
+                    boldA = true;
+                }
+                if (gTimehhmm <= ferrytimesK[i] && !boldK) {
+                    row1col3.style.fontWeight = "bold";  // bold 
+                    boldK = true;
+                }
             }
 
         }
