@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.10071448";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.10072022";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1739,7 +1739,7 @@ function ShowFerryLocation() {
 function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
-    var amcolor = "#f8ffff";
+    var amcolor = "#f0ffff";
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
         if (gTimehhmm >= ferrytimesS[i] && gTimehhmm >= ferrytimesA[i]) continue;  // skip ferrys that have alreaedy run
