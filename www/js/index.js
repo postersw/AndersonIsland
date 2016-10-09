@@ -950,6 +950,7 @@ function WriteNextFerryTimes() {
 //  Entry   localStorage items ferrytimesxx are set
 //  Exit    arrays ferrytimexx are set 
 function ParseFerryTimes() {
+    if (localStorage.getItem("ferrytimess") == null) return; // if no items, return and leave the defaults alone
     ferrytimeS = FillFerryArray("ferrytimess");
     ferrytimeA = FillFerryArray("ferrytimesa");
     ferrytimeK = FillFerryArray("ferrytimesk");
