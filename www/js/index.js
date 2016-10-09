@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1009.1000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1009.1126";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -432,17 +432,20 @@ var gDateSunrise; // sunrise date object
 var gDateSunset; // sunset date object
 var gDaysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-// ferry run times and flags. Heirarchy is:
-//  1. * overrides everything and means always.
-//  2. If a holidays, the run MUST have an H (or *).
-//  3. not a holiday. it goes if it has the day of the week (0-6).
-//  4. otherwise the special case rules are checked (AFHGXY)
-var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-var ferrytimeK = [0, "        ", 655, "*", 0, " ", 0, " ", 1010, "G", 1255, "*", 0, " ", 0, " ", 0, " ", 1800, "*", 0, " ", 0, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
-var ferrytimeS2 = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "HF", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-var ferrytimeA2 = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "HF", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-var ferrytimeK2 = [0, "        ", 655, "*", 0, " ", 0, " ", 1010, "G", 1255, "*", 0, " ", 0, " ", 0, " ", 1800, "*", 0, " ", 0, " ", 2130, "40", 2250, "X6H", 2350, "Y"];
+// Ferry run times and flags. 
+//  These values are valid as of 9/2016 - but are immediately overridden by data in dailycache.txt:
+//  FERRYTS,FERRYTA,FERRYTK,FERRYTS2,FERRYTA2,FERRYTK2   (read in by ParseDailyCache)Heirarchy is:
+//  1. '*' overrides everything and means always.
+//  2. 0-6 = day of week that run is valid on.
+//  3. Starts with a '(': it is the special case rules run with 'eval'
+
+var ferrytimeS = [445,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",545,"123456",645,"*",800,"*",900,"*",1000,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1200,"*",1420,"*",1520,"*",1620,"*",1730,"*",1840,"*",2040,"*",2200,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2300,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeA = [515,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",615,"123456",730,"*",830,"*",930,"*",1030,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1230,"*",1450,"*",1550,"*",1650,"*",1800,"*",1910,"*",2110,"*",2230,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2330,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeK = [0,"",0,"",655,"*",0,"",0,"",1010,"((gDayofWeek==2)&&InList(gWeekofMonth,1,3))",1255,"*",0,"",0,"",0,"",0,"",1935,"*",0,"",2250,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2350,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeS2 = [445,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",545,"123456",645,"*",800,"*",900,"*",1000,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1200,"*",1230,50,1350,50,1420,"*",1450,50,1520,"*",1550,50,1620,"*",1650,50,1730,"*",1800,50,1840,"*",2040,"*",2200,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2300,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeA2 = [515,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",615,"123456",730,"*",830,"*",930,"*",1030,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1230,"*",1300,50,1420,50,1450,"*",1520,50,1550,"*",1620,50,1650,"*",1730,50,1800,"*",1840,50,1910,"*",2110,"*",2230,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2330,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeK2 = [0,"",0,"",655,"*",0,"",0,"",1010,"((gDayofWeek==2)&&InList(gWeekofMonth,1,3))",1255,"*",0,"",0,"",0,"",0,"",0,"",0,"",0,"",0,"",0,"",0,"",1935,"*",0,"",2250,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2350,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+
 var gFerryDate2 = 0;  // cutover time to ferrytimex2
 
 // OpenHours Array object. Array of openhours for the store hours.  This array is loaded by a JSON.parse
