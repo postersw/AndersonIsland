@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1008.1500";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1009.1000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -942,28 +942,41 @@ function WriteNextFerryTimes() {
 
 
 ////////////////////////////////////////////////////////////////////////
-//  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimex
+//  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimeX
+//      which is a mixed array of runtime(number),rules(string), runtime, rules, ...
 //  Entry   localStorage items ferrytimesxx are set
 //  Exit    arrays ferrytimexx are set 
 function ParseFerryTimes() {
-    var str = localStorage.getItem("ferrytimess");
-    if (str != null) ferrytimeS = str.split(";");
-    str = localStorage.getItem("ferrytimesa");
-    if (str != null) ferrytimeA = str.split(";");
-    str = localStorage.getItem("ferrytimesk");
-    if (str != null) ferrytimeK = str.split(";");
-    var str = localStorage.getItem("ferrytimess2");
-    if (str != null) ferrytimeS2 = str.split(";");
-    str = localStorage.getItem("ferrytimesa2");
-    if (str != null) ferrytimeA2 = str.split(";");
-    str = localStorage.getItem("ferrytimesk2");
-    if (str != null) ferrytimeK2 = str.split(";");
+    ferrytimeS = FillFerryArray("ferrytimess");
+    ferrytimeA = FillFerryArray("ferrytimesa");
+    ferrytimeK = FillFerryArray("ferrytimesk");
+    ferrytimeS2 = FillFerryArray("ferrytimess2");
+    ferrytimeA2 = FillFerryArray("ferrytimesa2");
+    ferrytimeK2 = FillFerryArray("ferrytimesk2");
+    
     str = localStorage.getItem("ferrydate2");
     if (IsEmpty(str)) return;
     var d = new Date(str);  // convert ferry date 2 to ms
     gFerryDate2 = d.getTime(d); // ms till cutover
 }
 
+// Helper - convert ferry times from string to number, so "0800" becomes 800
+//  remember that the ferry time is every other entry in each array
+//  exit    returns new ferry time array
+function FillFerryArray(itemname) {
+    var str;
+    var FA;
+    str = localStorage.getItem(itemname);
+    if (str == null) return null;
+    FA = str.split(";"); // fill array with strings
+    // convert ferry time to a number
+    for (var i = 0; i < FA.length; i = i + 2) {
+        FA[i] = Number(FA[i]);  // convert to number
+        if (isNaN(FA[i])) alert("Data error " + itemname + " " + i);
+    }
+    
+    return FA;
+}
 
 /////////////////////////////////////////////////////////////////////////
 //  GetFerryTimeArray - select proper ferry time array (S or A) based on date
@@ -1401,6 +1414,8 @@ function ParseDailyCache(data) {
     parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
     parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
     parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
+    ParseFerryTimes();
+
     parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
@@ -1417,7 +1432,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "tidedatalink", "TIDEDATALINK", "\n"); // tide data
     parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
     parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
-    ParseFerryTimes();
+
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
@@ -1744,7 +1759,8 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var boldS = false, boldA = false, boldK = false; 
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
-        if ((gTimehhmm >= (Number(ferrytimesS[i])+extrat)) && (gTimehhmm >= (Number(ferrytimesA[i])+extrat)) && (gTimehhmm>Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
+        if ((gTimehhmm >= (ferrytimesS[i] + extrat)) && (gTimehhmm >= (ferrytimesA[i] + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
+        //if ((gTimehhmm >= (Number(ferrytimesS[i]) + extrat)) && (gTimehhmm >= (Number(ferrytimesA[i]) + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimesS[i + 1])) {
             // Steelacoom
