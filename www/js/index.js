@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1009.1126";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1010.1400";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -2711,9 +2711,27 @@ function ShowTideDataPage(periods, showcurrent) {
     var nexttidei;
     var currentTide;
     var newdate;
+    var starti = 0;
+
+    // roll through the reply in jason.response.periods[i] and find next tide row
+    if(showcurrent) {
+        for (i = 1; i < periods.length; i++) {
+            var thisperiod = periods[i];
+            var m = Number(thisperiod.dateTimeISO.substring(5, 7));
+            var d = Number(thisperiod.dateTimeISO.substring(8, 10));
+            var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
+            var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
+            var tidehhmm = ((h) * 100) + (mi);
+            // if tide is past, move on to next row
+            if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) continue;
+            starti = i - 1; // back up one row
+            break;  // exit loop
+        }
+    }
+
 
     // roll through the reply in jason.response.periods[i]
-    for (i = 0; i < periods.length; i++) {
+    for (i = starti; i < periods.length; i++) {
         // if date changed, add a blank row
         newdate = periods[i].dateTimeISO.substring(5, 10);
         if (newdate != olddate) {
