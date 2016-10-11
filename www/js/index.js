@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1010.1400";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1010.1720";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -2689,6 +2689,7 @@ function TidesDataPage() {
     gUserTideSelection = false;
     gPeriods = JSON.parse(localStorage.getItem("jsontides"));
     var i = ShowTideDataPage(gPeriods, true);
+    showingtidei = i;
     GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
         gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, true);
 }
@@ -2712,6 +2713,7 @@ function ShowTideDataPage(periods, showcurrent) {
     var currentTide;
     var newdate;
     var starti = 0;
+    var showingtidei = 0;  // row id of tide to display
 
     // roll through the reply in jason.response.periods[i] and find next tide row
     if(showcurrent) {
@@ -2823,6 +2825,7 @@ function ShowTideDataPage(periods, showcurrent) {
     if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
         periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
         "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [Change...]";
+    currentTide += "<br/><span style='background:lightgray;fontweight:bold' onclick='ShowTidePrevious()'>&nbsp < &nbsp</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span style='background:lightgray;fontweight:bold' onclick='ShowTideNext()'>&nbsp > &nbsp</span>";
     document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
     //$("#tideButton").show();
 
@@ -2835,10 +2838,18 @@ function ShowTideDataPage(periods, showcurrent) {
 function TideClick(id) {
     var i = Number(id);
     if (i == 0) i = 1;
-    if (i > (gPeriods.length - 2)) return;
+    if (i > (gPeriods.length - 2)) i = gPreiods.length - 2;
+    showingtidei = i;
     GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
         gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
 
+}
+
+function ShowTideNext() {
+    TideClick(showingtidei + 1);   
+}
+function ShowTidePrevious() {
+    TideClick(showingtidei - 1);
 }
 
 /////////////////////////////////////////////////////////////////////////
