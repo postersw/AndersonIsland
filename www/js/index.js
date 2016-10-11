@@ -47,7 +47,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1010.1720";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.1010.2242";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -2825,7 +2825,6 @@ function ShowTideDataPage(periods, showcurrent) {
     if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
         periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
         "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [Change...]";
-    currentTide += "<br/><span style='background:lightgray;fontweight:bold' onclick='ShowTidePrevious()'>&nbsp < &nbsp</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span style='background:lightgray;fontweight:bold' onclick='ShowTideNext()'>&nbsp > &nbsp</span>";
     document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
     //$("#tideButton").show();
 
@@ -2833,16 +2832,25 @@ function ShowTideDataPage(periods, showcurrent) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-//  TideClick   draw a graph for the clicked row
+//  TideClick   draw a graph for the clicked row.
+//  Entry id = row index into gPeriods array
 //
 function TideClick(id) {
     var i = Number(id);
     if (i == 0) i = 1;
-    if (i > (gPeriods.length - 2)) i = gPreiods.length - 2;
+    if (i > (gPeriods.length - 2)) i = gPeriods.length - 2;
     showingtidei = i;
+    gUserTideSelection = true;
     GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
         gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
-
+    var h = Number(gPeriods[i].dateTimeISO.substring(11, 13)); // tide hour
+    var tidehhmm = (h * 100) + Number(gPeriods[i].dateTimeISO.substring(14, 16));
+    var hilo = "HIGH tide: ";
+    if (gPeriods[i].heightFT < gPeriods[i - 1].heightFT) hilo = "Low tide: ";
+    document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
+      gPeriods[i].dateTimeISO.substring(5, 7) + "/" + gPeriods[i].dateTimeISO.substring(8, 10) +
+      "&nbsp&nbsp&nbsp<span style='background-color:silver;' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" +
+      hilo + gPeriods[i].heightFT + " ft. at " + ShortTime(tidehhmm);
 }
 
 function ShowTideNext() {
@@ -3078,8 +3086,9 @@ function HandleCustomTidesReply(reply) {
     if (json.success == true) {
         gPeriods = json.response.periods;
         ShowTideDataPage(gPeriods, false);
-        GraphTideData(gPeriods[1].heightFT, gPeriods[2].heightFT, gPeriods[3].heightFT,
-            gPeriods[1].dateTimeISO, gPeriods[2].dateTimeISO, gPeriods[3].dateTimeISO, false);
+        TideClick(2);
+        //GraphTideData(gPeriods[1].heightFT, gPeriods[2].heightFT, gPeriods[3].heightFT,
+        //    gPeriods[1].dateTimeISO, gPeriods[2].dateTimeISO, gPeriods[3].dateTimeISO, false);
     }
     else {
         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;

@@ -315,7 +315,10 @@
    <div id="tidespage" style="display:none">
         <!-- <h1> <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button> Tides at Yoman Point (ferry) </h1>-->
         <div style="margin:10px;padding-top:2px">
-        <p id="tidepagecurrent" >Please wait for tide data .... </p>
+        <span id="tidepagecurrent" >Please wait for tide data .... </span>
+        <br/><div style='text-align:center;width:300px'><span style='background:lightgray;font-weight:bold;float:left' onclick='ShowTidePrevious()'>&nbsp < &nbsp</span>
+             <span style='background:lightgray;font-weight:bold;float:right' onclick='ShowTideNext()'>&nbsp > &nbsp</span>
+             </div><br />
         <canvas id="tidecanvas" width="300" height="300"></canvas>
         <hr />
         <table id='tidestable' style="border:thin solid gray;border-collapse:collapse;padding-left:10px">
