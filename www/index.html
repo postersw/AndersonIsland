@@ -4,7 +4,7 @@
     Robert Bedoll. 2/23/16. 
 	ver 1.1.319: Web. fix weather forecast gmt time conversion
 	ver 1.2: Web. add weather icons
-	ver 1.3.0414: Web add pushbots
+	ver 1.3.0414: Web add pushbots3
     ver 1.3.0422: Android & IOS release. add pushbots.resetBadge
     ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
                   Remove App Store message from non-mobile devices.
@@ -103,12 +103,11 @@
    <!-- --------------------------------------------------------------------------------------------------- -->   
      <div id="mainpage"  style="display:block">
         <span id="topline" style="font-size:small;margin-top:0px;margin-bottom:0px;margin-left:6px;">Tap an entry for more information.</span>
-
         <!--App message-->
-        <div id='androidapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
+        <div id='androidapp' style="display:none;background-color:lightgray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
             <strong>Tap for free Install from Google Play Store</strong><br />
         </div>
-       <div id='iphoneapp' style="display:none;background-color:gray;margin-top:0;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');" >
+       <div id='iphoneapp' style="display:none;background-color:lightgray;margin-top:0;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');" >
             <strong>Tap for free Install from Apple App Store</strong><br />
         </div>
 
@@ -153,12 +152,12 @@
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('events');">
             <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
             EVENTS </td>
-            <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Event:</td>
+            <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;">Next Event:</td>
         </tr>
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('activity');">
             <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
             ACTIVITY </td>
-            <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px">Next Activity:</td>
+            <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;">Next Activity:</td>
         </tr>
 
      <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
@@ -185,7 +184,7 @@
              <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">FISHING / SHELLFISH
              </td>            
          </tr>
-        <tr style="background-color:white;" onclick="ShowNews()")>  
+        <tr style="background-color:#f0f0f5;" onclick="ShowNews()")>  
             <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
              NEWS</td>
          </tr>
@@ -194,15 +193,16 @@
             <td style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
             MAP </td>  
          </tr>
-         <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">  
+
+         <tr style="background-color:azure;" onclick="ShowLinksPage('island', 'fishing');">
+             <td style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">ISLAND INFORMATION LINKS
+             </td>            
+         </tr>
+              <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">  
             <td style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
              EMERGENCY CONTACTS</td>
          </tr>
 
-         <tr style="background-color:lightgray;" onclick="ShowLinksPage('island', 'fishing');">
-             <td style="font-size:18px;font-weight:bold;padding-left:6px" colspan="2" class="auto-style1">ISLAND INFORMATION LINKS
-             </td>            
-         </tr>
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">Help</tr>
         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
@@ -223,11 +223,13 @@
         <button style="width:40%;" onclick="ShowFerry();">Web Site</button>
         <p id="ferrymessage"> </p>
         <table id='ferrytable' style="border:thin solid black;border-collapse:collapse;padding-left:10px">
+            <!--
             <tr style="background-color:black;color:white">
                 <td>Steilacoom</td>
                 <td>| Anderson Island&nbsp</td>
                 <td>| Ketron&nbsp</td>
             </tr>
+            -->
         </table>
         <hr />
         <p id="schdate"></p>
@@ -283,9 +285,9 @@
         <div id="showevents" style="display:none">
             These items occur monthy or less. <br />
             <strong>SHOW: </strong><span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |  
-            <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meetings</span> | 
-            <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Events</span> | 
-            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertainment</span>  
+            <span  id='eventM' style="color:black" onclick="SetEventFilter('M')">Meeting</span> | 
+            <span  id='eventE' style="color:blue" onclick="SetEventFilter('E')">Event</span> | 
+            <span  id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertain</span>  
          </div>
          <div id="showactivities" style="display:none">
             These items occur multiple times/month. <br />
@@ -302,6 +304,9 @@
             </tr>
         </table>
         </div>
+            <br />
+            <div id="locations"></div>
+         <br />   
         <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
    </div>
@@ -507,11 +512,14 @@
         Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock, 
             station id 9446705).  This information is updated every minute.  
             The current tide is interpolated using a sine function.
-         <br />TAP to display the projected tides for the next 3 days. Tides are provided by Aeris.com.
+         <br />TAP to display the projected tides for the next 7 days. Tides are provided by Aeris.com.  
+        'Range' (column 4) is the difference between the low and high tide.
+                <br />TAP on any row in the tide table to display a graph of that tide.
             <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.
+        <br />Scroll to the bottom of the screen to get the tidal currents for Balch passage.
 
         <h3 id="hweather" style="color:darkgreen;font-weight:bold"><br /><br />WEATHER</h3>
-        Displays the current weather at Steilacoom, and the forcasted weather for 9 hours from now. 
+        Displays the current weather at Steilacoom, and the forcasted weather for the next few hours. 
             Forecasted highs and lows are for the next 24 hours. This information is updated every 15 minutes.
         <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap.com'.
             <br />'yellow' rows represent daytime periods; 'gray' rows represent nighttime periods.
@@ -538,9 +546,10 @@
             <br /><a href="email:support@anderson-island.org">To update your business hours, email us.</a>
 
          <h3 id="hburnban" style="color:#ff3300;font-weight:bold"><br /><br />BURNBAN</h3>
-        Tap to display the current PS Clean Air Agency burn-ban status. Anderson Island is part of "Peninsula". 
-            Note that this is the air-pollution burn ban only - it is NOT the burn-ban due to fire risk.
-            <a href="www.pscleanair.org">Click here for the full site.</a>
+       Displays the current PS Clean Air Agency burn-ban status (Anderson Island is part of "Peninsula")
+        and the current Pierce County fire-danger burn ban (for outdoor burning). 
+        <br />TAP do display the full sites. 
+            <a href="www.pscleanair.org">Click here for PS Clean Air.</a>
 
          <h3 id="htanner" style="color:brown;font-weight:bold"><br /><br />TANNER</h3>
        TAP to display the current Anderson Island Outage status as maintained by TANNER Electric. 
@@ -577,11 +586,12 @@
 </div>
 <!-- debugging times ----------------------------------------------------------------------------------->
 
+        <div id="offlinemsg" style="display:none;color:magenta;margin-top:2px;margin-bottom:2px;margin-left:6px;">No network connection. </div>
 
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
         <span id="versionnumber" style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.6.0606.1600	</span>
-        <span style="font-size:x-small"> (824)</span>
+        <span style="font-size:x-small"> [1008]</span>
 
         </p>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
