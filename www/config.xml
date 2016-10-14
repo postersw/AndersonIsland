@@ -119,11 +119,11 @@
     <splash src="www/res/screen/android/screen.png"       platform="android" density="port-mdpi" />
     <splash src="www/res/screen/android/screen.png"       platform="android" density="port-hdpi" />
     <splash src="www/res/screen/android/screen.png"       platform="android" density="port-xhdpi" />
-    <splash scr="Default.png"                         platform="ios" width="320" height="480" />
-    <splash src="Default-568h.png"                 platform="ios" width="320" height="480" />
-    <splash src="Default-568h@2x.png" platform="ios" width="640" height="1136"/>
+    <!--<splash scr="www/Default.png"                         platform="ios" width="320" height="480" />
+    <splash src="www/Default-568h.png"                 platform="ios" width="320" height="480" />
+    <splash src="www/Default-568h@2x.png" platform="ios" width="640" height="1136"/> -->
 
-    <splash src="www/res/screen/ios/screen.png"       platform="ios"     width="514" height="514" />
+    <splash src="www/res/screen/ios/screen.png"       platform="ios" />  <!--    width="514" height="514" -->
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
