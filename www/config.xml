@@ -63,7 +63,7 @@
     <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
      <!--<gap:plugin name="org.apache.cordova.console" />-->
     <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-    <plugin name="cordova.device"  source="npm"/>
+    <plugin name="cordova-plugin-device"  source="npm"/>
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
     <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
     <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
@@ -72,14 +72,14 @@
     <!--<gap:plugin name="org.apache.cordova.geolocation" />-->
     <!--<gap:plugin name="org.apache.cordova.globalization" />-->
   <!--<gap:plugin name="org.apache.cordova.inappbrowser" />-->  10/13/16. Removed the inapp browser to build on ios.
-    <plugin name="cordova.inappbrowser" source="npm"/>
+    <plugin name="cordova-plugin-inappbrowser" source="npm"/>
   <!--<gap:plugin name="org.apache.cordova.media" />-->
     <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-    <gap:plugin name="cordova.splashscreen"  source="npm"/>
+    <plugin name="cordova-plugin-splashscreen"  source="npm"/>
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-	  <gap:plugin name="pushbots-cordova-plugin" source="npm"/>
-    <!--<plugin name="cordova-plugin-calendar" source="npm"  platform="ios" />  calendar plugin. ios only-->
-    <plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> <!-- pick up android bugfix-->
+	  <plugin name="pushbots-cordova-plugin" source="npm"/>
+    <plugin name="cordova-plugin-calendar" source="npm"/>  
+    <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> pick up android bugfix-->
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
     <!--
