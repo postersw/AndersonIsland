@@ -948,11 +948,14 @@ function WriteNextFerryTimes() {
 
 ////////////////////////////////////////////////////////////////////////
 //  ParseFerryTimes - convert the ferrytimesx strings into arrays ferrytimeX
-//      which is a mixed array of runtime(number),rules(string), runtime, rules, ...
+//      which is a mixed array of runtime(number);rules(string); runtime; rules, ...
+//      works on ver 1.7 data.  ignores comma delimited ver 1.5 data.
 //  Entry   localStorage items ferrytimesxx are set
 //  Exit    arrays ferrytimexx are set 
 function ParseFerryTimes() {
-    if (localStorage.getItem("ferrytimess") == null) return; // if no items, return and leave the defaults alone
+    var s = localStorage.getItem("ferrytimess");
+    if (IsEmpty(s)) return; // if no items, return and leave the defaults alone
+    if (s.charAt(3) == ",") { gForceCacheReload = true; return; } // if ver 1.5 comma delimited time [445,] return and leave defaults
     ferrytimeS = FillFerryArray("ferrytimess");
     ferrytimeA = FillFerryArray("ferrytimesa");
     ferrytimeK = FillFerryArray("ferrytimesk");
