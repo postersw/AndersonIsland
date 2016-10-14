@@ -63,7 +63,7 @@
     <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
      <!--<gap:plugin name="org.apache.cordova.console" />-->
     <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-    <gap:plugin name="org.apache.cordova.device" />
+    <plugin name="cordova.device"  source="npm"/>
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
     <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
     <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
@@ -72,9 +72,10 @@
     <!--<gap:plugin name="org.apache.cordova.geolocation" />-->
     <!--<gap:plugin name="org.apache.cordova.globalization" />-->
   <!--<gap:plugin name="org.apache.cordova.inappbrowser" />-->  10/13/16. Removed the inapp browser to build on ios.
-    <!--<gap:plugin name="org.apache.cordova.media" />-->
+    <plugin name="cordova.inappbrowser" source="npm"/>
+  <!--<gap:plugin name="org.apache.cordova.media" />-->
     <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-    <gap:plugin name="org.apache.cordova.splashscreen" />
+    <gap:plugin name="cordova.splashscreen"  source="npm"/>
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <gap:plugin name="pushbots-cordova-plugin" source="npm"/>
     <!--<plugin name="cordova-plugin-calendar" source="npm"  platform="ios" />  calendar plugin. ios only-->

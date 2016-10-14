@@ -26,6 +26,8 @@
                        Version check: Add version check for ANDRIODVER and IOSVER and display message.
             0929     : Coming Events: Automatically add year to all calendar dates and hande year rollover correctly.
             1007     : Ferry Schedule Grid: move headers to each day. Color am backgound blue.
+            1010     : Android ver 2220 to Google Play
+            10.14    : ClearCacheandExit button; extra null protections.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -47,7 +49,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.1010.2242";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.10141012";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 
 var app = {
     // Application Constructor
@@ -1507,6 +1509,13 @@ function FixDates(itemname) {
     localStorage.setItem(itemname, CE); // replace it
 }
 
+//////////////////////////////////////////////////////////////////////////////////
+//  ClearCacheandExit   a debug aid to simulate initial startup by removing all elements from cache
+function ClearCacheandExit() {
+    localStorage.clear();
+    if(isPhoneGap()) navigator.app.exitApp();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 //  update all data on a regular basis. 
 //  also redisplay the next ferry times & tides & open hours every minute
@@ -1602,7 +1611,7 @@ function onResume() {
 
 function backKeyDown() {
     // Call my back key code here.
-    if (gDisplayPage == 'mainpage') navigator.app.exitApp();
+    if (gDisplayPage == 'mainpage' && isPhoneGap()) navigator.app.exitApp();
     ShowMainPage();
 }
 
@@ -2687,7 +2696,10 @@ function TidesDataPage() {
     SetPageHeader("Tides at Yoman Point");
     // show the tide data in the jsontides global
     gUserTideSelection = false;
-    gPeriods = JSON.parse(localStorage.getItem("jsontides"));
+    var json = localStorage.getItem("jsontides");
+    if (IsEmpty(json)) return;
+    gPeriods = JSON.parse(json);
+    if (gPeriods == null) return;
     var i = ShowTideDataPage(gPeriods, true);
     showingtidei = i;
     GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
