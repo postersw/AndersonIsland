@@ -49,7 +49,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.10141520";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.07.10141620";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gMyVer; // 1st 4 char of gVer
 
 var app = {
     // Application Constructor
@@ -1135,7 +1136,6 @@ function getCurrentWeather() {
     var timestamp = Date.now() / 1000; // time in sec
     var t = localStorage.getItem("currentweathertime");
     if (t != null && ((timestamp - t) < (15 * 60))) return; // gets weather async every 15 min.
-    localStorage.setItem("currentweathertime", timestamp); // save the cache time so we don't keep asking forever
 
     //$.ajax({
     //    url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
@@ -1153,6 +1153,9 @@ function getCurrentWeather() {
 //  entry r = OBJECT of weather reply
 function HandleCurrentWeatherReply(r) {
     var rain;
+    var timestamp = Date.now() / 1000; // time in sec
+    localStorage.setItem("currentweathertime", timestamp); // save the cache time 
+
     // create short string for front page
     var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
     if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
@@ -1379,6 +1382,7 @@ function HandleDailyCacheReply(data) {
     ParseDailyCache(data);
     localStorage.setItem("dailycacheloaded", gMonthDay); // save event loaded date/time
     localStorage.setItem("dailycacheloadedtime", gTimehhmm); // save event loaded date/time
+    localStorage.setItem("myver", gMyVer);  // save the app version
     // now update stuff on mainpage that uses daily cache data
     ShowOpenHours();
     WriteNextFerryTimes();
@@ -3300,6 +3304,7 @@ function StartApp() {
     app.initialize();
     FixiPhoneHeader();
     document.getElementById("versionnumber").innerHTML = "&nbsp&nbsp AIA Ver: " + gVer; // version stamp on footer
+    gMyVer = gVer.substr(0, 4); //n.nn
     gDisplayPage = "mainpage";
     CountPage("main");
     InitializeDates(0);
@@ -3323,18 +3328,20 @@ function StartApp() {
         else NotifyColor(0);
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
-    //  Show the cached data immediately. 
-    ParseFerryTimes();  // moved saved data into ferry time arrays
-    ParseOpenHours();
-    ShowCachedData();
+    //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
+    if(LSget("myver") == gMyVer) {
+        ParseFerryTimes();  // moved saved data into ferry time arrays
+        ParseOpenHours();
+        ShowCachedData();
+    } else gForceCacheReload = true;
 
-    //reload the 'dailycache' cache + coming events + tides + forecast if the day has changed or > 3 hour.
+    // show Alert and Weather immediately.
     localStorage.removeItem("alerttime"); // force immediate reload of alert info
     getAlertInfo(); // always get alert info every 10 minutes (time check is in routine)
     getCurrentWeather(); // gets weather async every 20 min.
     getForecast(); // updates forecast every 2 hrs
 
-
+    //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
     if (dailycacheloaded == null) {
@@ -3352,11 +3359,7 @@ function StartApp() {
         document.getElementById("reloadreason").innerHTML = reloadreason;
         ReloadCachedData();
     }
-
-    // tide reload every day
-    //getTideData();  merged into ReloadCachedData on 6/6/16
-
-
+    
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
     window.addEventListener("focus", focusEvent);
