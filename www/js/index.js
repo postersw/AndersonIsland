@@ -69,7 +69,7 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function () {
-        navigator.splashscreen.hide();
+        //navigator.splashscreen.hide();
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
             // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
             var pbtime = Number(LSget("pushbotstime"));
