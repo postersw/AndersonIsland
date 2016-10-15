@@ -46,6 +46,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Fix Coming Events year-rollover problem (by inserting the year into comingevents and activities when loaded,
 			and doing all date checks with yymmdd).
 		Fix Coming Events weekly and monthly grid problem.
+10/14/16. 1.07.10142320 version Code 2221. Uploaded to Google Play.   
+		Add myver to cache. Reload cache on version change. Remove splashscreen.hide(). 
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
