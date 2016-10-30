@@ -48,6 +48,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Fix Coming Events weekly and monthly grid problem.
 10/14/16. 1.07.10142320 version Code 2221. Uploaded to Google Play.   
 		Add myver to cache. Reload cache on version change. Remove splashscreen.hide(). 
+10/30/16. 1.07.10142320 version Code 2221. Uploaded to Apple app store as version 1.7. 
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
@@ -71,7 +72,7 @@ DEBUG CHECKOUT:
 	4. Reload data. check times in About.
 	5. Test on web.
 	6. Test on Android.
-	7. Test on iphone.
+	7. Test on iphone or iPad.
 
 ANDROID GOOGLE PLAY STORE
 	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
@@ -83,10 +84,10 @@ ANDROID GOOGLE PLAY STORE
 
 
 IOS DEBUG/BUILD 
-	to debug: in pg build, select the IOS Developer2 certificate (pw=dd). then build.  Then download to the device.
+	to debug: in pg build, select the IOS 'AIADevelopmentPush' certificate (pw=dd). then build.  Then download to the device.
 	I think this is done by running pg build on the phone, and clicking on the ipa icon.
 	This works on moms iphone or ipad. Must be a registered device in developer.apple.com.
-	For deployment: click the Anderson Island certificate.  enter key pw=dd. Then build.  
+	For deployment: click the 'AIADistributionPush' certificate.  enter key pw=dd. Then build.  
 	The resulting ipa must be uploaded using the virtual mac.  This ipa can NOT be run directly on mom's phone or ipad.
 	Start the virtual mac.  Go to the apple dev site.  
 	NOTE: each 'certificate' has a P12 cert AND a provisioning profile.
@@ -97,18 +98,20 @@ IOS DEBUG/BUILD
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
 	iTunes install:
-	0. Windows Utilities -> Remote Desktop Connection -> LA051.macincloud.com:6000.
+	0. Windows Accessories -> Remote Desktop Connection -> LA051.macincloud.com:6000.
 	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
 	   on phonegap build, select the 'AIADistributionPush' key.  This enables push notifications. Then build.
 	1. download the ipa file to your desktop.
-	2. log in to developer.apple.com.  log in.  robertbedoll@gmail.com  pw=2E
+	2. log in to developer.apple.com.  Click on iTunes Connect. log in.  robertbedoll@gmail.com  pw=2...E
 	3. select MyApps, then Anderson Island Assistant, 
-	4. Create a new version.  The ios version (like 1.3) should match the version in the comfig.xml of the app.
+	4. Create a new version.  The AIA version (like 1.3, 1.4, ...) should match the version in the comfig.xml of the app.
 	5. You will get a new page. fill out the what's new.
 	6. Start "Application Loader".   select Deliver Your App and click on 'Choose'.  
 	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
 	8. Wait until you get the email that says "Version x of Anderson Island Assistant has finished processing".
 	9. Go back to the itunes connect my app page. under the build section of the web page, select the version you just uploaded.
+	   If your new version is not there, click on another choice and then back onto your version (1.x Prepare for Submission) to refresh the 
+	   page. Then your new version should show up.
 	9. Click SAVE and SUBMIT FOR REVIEW.
 	10. You app will go into a waiting for review state.
 	11. Log out (under the apple icon).
