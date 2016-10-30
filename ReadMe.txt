@@ -49,6 +49,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 10/14/16. 1.07.10142320 version Code 2221. Uploaded to Google Play.   
 		Add myver to cache. Reload cache on version change. Remove splashscreen.hide(). 
 10/30/16. 1.07.10142320 version Code 2221. Uploaded to Apple app store as version 1.7. 
+10/30/16. Branch Ver17 merged to master.  Branch Ver18 created.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
