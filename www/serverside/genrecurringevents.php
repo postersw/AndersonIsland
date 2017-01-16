@@ -1,6 +1,6 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////////
-//  gencomingevents.php Generate Coming Events using Recurring Events
+//  genrecurringevents.php Generate Coming Events using Recurring Events
 //  8/1/2016.   rfb.
 //
 //  comingevents.txt + recurring.txt -> gencomingevents.php -> newcomingevents.txt.
@@ -15,10 +15,11 @@
 //  e.g.: 0;1;0900;1000;A;Yoga;MSR-Riviera;Riviera
 
 // globals
-echo("started gencomingevents<br/>");
+echo("started genrecurringevents<br/>");
+chdir("/home/postersw/public_html");  // move to web root
 $frecur = "recurring.txt";  // recurring events
-$fcein = "comingevents.txt"; // coming events
-$fceout = "newcomingevents.txt"; // new coming events
+$fcein = "comingeventsmaster.txt"; // coming events
+$fceout = "newcomingeventsmaster.txt"; // new coming events
 // events
 $cemmdd = array(0);
 $ceshhmm = array(0);
@@ -42,13 +43,21 @@ $rectype = array("");
 $rectherest = array("");
 $nrec = 0;
 // settings
-$month = 8; // month to use
-$monthstart = 8;
-$monthend = 9;
-$year = 2016;
+$file = fopen($frecur, "r") or die("cant open $frecur<br/>");
+$s = fgets($file);
+$a = explode(";", $s, 3);
+$monthstart = intval($a[0]);
+$monthend = intval($a[1]);
+$year = intval($a[2]);
+echo "monthstart=$monthstart, monthend=$monthend, year=$year<br/>";
+if($monthstart==0 || $monthend==0 || $year==0) die("monthstart,end,or year=0 in recurring.txt");
+$month = 0; // month to use
+//$monthstart = 8;
+//$monthend = 9;
+//$year = 2016;
 
 // doit
-readfrecur($frecur); // read recurring
+readfrecur($file); // read recurring
 $filefceout = fopen($fceout, "w") or die("cant open $fceout for write");
 readfcein($fcein, $filefceout); // read it in
 if($nrec == 0) exit("no recurring events");
@@ -99,12 +108,13 @@ function readfcein($fcein, $filefceout){
 
 //////////////////////////////////////////////////////
 // readfrecur - read the recuring events file
-//  entry   $frecur = name of recurring events file
+//  entry  $file = handle of recurring events file
 //
-function readfrecur($frecur){
+function readfrecur($file){
     global $recweek,$recdow,$recshhmm,$recehhmm,$rectype,$rectherest,$nrec;
+
     //  read it in
-    $file = fopen($frecur, "r") or die("cant open $frecur<br/>");
+    //$file = fopen($frecur, "r") or die("cant open $frecur<br/>");
     while(!feof($file)) {
         $s = fgets($file);
         if(strlen($s)<10) continue; // skip blanks

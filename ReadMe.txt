@@ -121,7 +121,8 @@ IOS DEBUG/BUILD
 	Data is loaded from:
 	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app getdailycache.php.
 	2. Coming Events: (comingevents.php  which copies comingevents.txt to stdout. is ver 1.3 only).
-		comingevents.txt is manually maintained by rfb. loaded 1/day by the app getdailycache.php as of 1.6.
+		comingevents.txt is loaded 1/day by the app getdailycache.php (called by the app) as of 1.6.
+		comingevents.txt is created daily by getgooglecalendarcron.php cron once/day.  Read google AndersonIsland calendar and extracts 2 months of events.
 	3. getalerts.php which copies alerts.txt (filled by getferryalerts.php cron every 5 min),
 		 tanneroutage.txt (filled by gettanneralerts.php cron every 10 min),
 		 burnban.txt (filled by getburnbanalerts.php cron every 15 min) to stdout.
@@ -145,6 +146,23 @@ IOS DEBUG/BUILD
 						m=web cam, n=News, o=openhours, p=parks, r=Tanner, s=show location, t=tides, u=Burn Ban, 
 						v=activities, w=weather, x=PC web page, y=upgrade, 
 						1=custom tides, 2=monthly activities, 3=weekly activities, 4=motify off
+
+	CRON PHP JOBS:
+	1. gettides.php
+	   RUns 4 times/day. Queries ariesweather.com for tides and writes json output to tidesdata.txt.
+	2. gettanneralerts.php Runs every 10 minutes via cron. Reads tanner AI web page and writes to tanneroutage.txt
+	3. getburnbanalerts.php. Runs every 15 min via cron. Reads pscleanair.com web page and writes to burnban.txt.
+	4. getferryalerts.php. Runs every 5 min via cron. Reads pierce county RSS read and writes to ferryalert.txt. 
+	5. getgooglecalendarcron.php runs nightly. Reads 2 months of events from google AndersonIsland public calendar and writes them to currentevents.txt.
+	6. switchferryscriptcron2.php runs nightly. 
+	OBSOLETE: makecomingevents.php runs nightly. Copies comingeventsmaster.txt to comingevents.txt with 2 months of data.
+	
+	NON CRON PHP JOBS
+	1. genrecurringevents.php  reads comingeventsmaster.txt and recurring.txt and writes newcomingevents.txt with
+		all the recurring events expanded.  
+
+
+	
 		
 	PHP DEBUGGING:
 	Switch to project AIAPHP.  This uses the files in the 'serverside' directory, so it is still under GIT control.
