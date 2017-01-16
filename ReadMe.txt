@@ -154,6 +154,9 @@ IOS DEBUG/BUILD
 	3. getburnbanalerts.php. Runs every 15 min via cron. Reads pscleanair.com web page and writes to burnban.txt.
 	4. getferryalerts.php. Runs every 5 min via cron. Reads pierce county RSS read and writes to ferryalert.txt. 
 	5. getgooglecalendarcron.php runs nightly. Reads 2 months of events from google AndersonIsland public calendar and writes them to currentevents.txt.
+		https://www.googleapis.com/calendar/v3/calendars/orp3n7fmurrrdumicok4cbn5ds@group.calendar.google.com/events?singleEvents=True&key=AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0
+		which is the API key from https://console.developers.google.com/apis/credentials?showWizardSurvey=true&project=andersonislandassistant
+		see https://developers.google.com/google-apps/calendar/v3/reference/events/list.	
 	6. switchferryscriptcron2.php runs nightly. 
 	OBSOLETE: makecomingevents.php runs nightly. Copies comingeventsmaster.txt to comingevents.txt with 2 months of data.
 	
