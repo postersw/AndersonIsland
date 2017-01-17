@@ -1,23 +1,22 @@
 <?php
 /////////////////////////////////////////////////////////////
-//  getburnban - gets the burnban status from pscleanair
+//  getburnban - gets the clean air burnban status from pscleanair
 //  web site and writes it to burnban.txt.
-//  Also gets the burnban status from PFFD27 (AI Fire department) and writes it to burnban.txt.
+//  Also gets the fire safety burnban status www.co.pierce.wa.us and writes it to burnban.txt.
 //  this file is picked up by the getalerts.php script and sent to the app.
 //  Air Quality format is:   Peninsula ... <input ... value="xxxxxx"
-//  Fire department: looks for string "NO BURN BAN".
-//              6/4/16.   
-//  Fire department added 6/12/16.   rfb.
+//      Rev 6/4/16.
+//  Fire department: looks for string "COUNTY WIDE BURN BAN", and then "Lifted" or "Effective".
+//      Rev 9/28/16.
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
-    //$pcfdlink = "http://www.pcfd27.com/";
-    $pcfdlink = "http://www.co.pierce.wa.us/index.aspx?NID=982";  // moved to pierce county 8/17/16
+    $firebblink = "http://www.co.pierce.wa.us/index.aspx?NID=982";
     $burnbanfile = "burnban.txt";
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($burnbanlink);
     if($str == "") file_get_contents($burnbanlink); // 1 retry
     // $j = strpos($str, 'Peninsula\n                            <input name="ctl00$MainContent$Repeater1$ctl05$TextBox" type="text" value="No Ban"');
-    $j = strpos($str, 'Peninsula'); // j = position of Peninsula
+    $j = stripos($str, 'Peninsula'); // j = position of Peninsula
     if($j==false) Bailout("Peninsula not found");
     //echo " len=" . strlen($str); echo (" j=$j " . substr($str, $j, 10));
     $k = strpos($str, "<input ", $j);  //k=position of <input
@@ -32,63 +31,39 @@
     //echo ("  q=$q " . substr($str, $q, 10));  echo (" l = " . ($q-$v-7));
     $bb = substr($str, $v+7, $q-$v-7); // bb = burn ban value
     if($bb == "") Bailout("bb=null");
+    // make it green if no burnban; else red with the text value
+    if($bb == "No Ban") $bb = '<span style="color:green">No Ban</span>';
+    else $bb = '<span style="color:red;font-weight:bold">' . $bb . '</span>';
 
     // write it
     $airqual = "Peninsula air quality: " . $bb;
 
-    // fire department. removed 8/19/16. 
-    //$fire = "?";
-    //$str = file_get_contents($pcfdlink);
-    //if($str == "") file_get_contents($pcfdlink); // 1 retry
-    //if($str != "") {
-    //    $j = strpos($str, 'NO BURN BAN'); // j = position of 'NO BURN BAN'
-    //    if($j == false) $fire == "<strong>Burn Ban</strong>";
-    //    else $fire = "No Ban";
-    //}
-    // County burn bans 8/19/16.
-    // Extract the BURN BAN status after 'Current fire safety burn ban status
-    $fire = "?";
-    $lookfor = "Current fire safety burn ban status in Pierce County";
-    $str = file_get_contents($pcfdlink);
-    if($str == "") file_get_contents($pcfdlink); // 1 retry
-    if($str != "") {
-        $j = stripos($str, $lookfor); // j = start of burn ban status
-        if($j == false) break; // we couldn't find it
-        $j = $j + strlen($lookfor);
-        $bb = stripos($str, "BURN BAN", $j);  // find BURN BAN
-        $bbstart = strrpos($str, ">", $bb); // find > before BURN BAN
-        $bbend = strpos($str, "<", $bb); // find > after BURN BAN
-        $fire = substr($str, $bbstart+1, $bbend-1); // entire phrase
-        if(stripos($fire, "NO ") == false) $fire = '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">' . $fire . "</a>";
-        else $fire = '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:green;">' . $fire . "</a>";
-    }
+    // fire department. read pierce county page and find COUNTY-WIDE BURN BAN.
+    //      then find Lifted or Effective.  Otherwise issue an error.
 
-    // write it
-    $msg = $airqual . "<br/>Fire Safety: " . $fire;
+    $fire = file_get_contents($firebblink); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
+    if($fire == "") $fire = file_get_contents($firebblink); //1 retry
+    //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
+    //$fire = strip_tags($firew);  // remove the tags
+    //echo $fire; echo "<br/>";
+    $cwbb = "COUNTY-WIDE BURN BAN";
+    $i = stripos($fire, $cwbb);
+    if($i == 0) Bailout("could not find $cwbb");
+    $lifted = stripos($fire, "Lifted", $i);
+    $effective = stripos($fire, "Effective", $i);
+    if($lifted > 0) $firebb = '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:green;">No Outdoor Burn Ban</a>';
+    elseif($effective> 0) $firebb =  '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982"style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>';
+    else Bailout("County Burn Ban not = Lifted or Effective. Revise the script.");
+
+    // write to file
+    $msg = $airqual . "<br/>Fire Safety: " . $firebb;
     $old = file_get_contents($burnbanfile);
     if($msg == $old) return 0;
     echo $msg;
     file_put_contents($burnbanfile, $msg);
     return 0;
 
-    // $j = preg_match('/Peninsula[^<]*<input [^<]* value="No Ban"/', $str); // look for this string
-    // //echo("preg_match j=$j ");
 
-    //if($j === false) {  // if string not found
-    //    $old = file_get_contents($burnbanfile, $r);
-    //    if($old == "") return 0;
-    //    echo("Peninsula 'No Ban' not found");
-    //    unlink($burnbanfile);
-    //    return 0;
-    //}
-
-    //// write it
-    //$r = "Peninsula: NO Burn Ban";
-    //$old = file_get_contents($burnbanfile, $r);
-    //if($r == $old) return 0;
-    //echo $r;
-    //file_put_contents($burnbanfile, $r);
-    //return 0;
 
     ////////////////////////////////////////////////////////////
     // Bailout - send error message and delete file and exit

@@ -66,7 +66,7 @@ echo $n . " Events.<br/>";
 fwrite($fce, "ACTIVITIES\r\n");
 fwrite($fce, "0101;0000;0000;E;$y Happy New Year\r\n");  // write year
 echo "ACTIVITIES<br/>";
-$n = fcopy("xAGO", $y);
+$n = fcopy("xACGO", $y);
 echo $n . " Activities.<br/>";
 fclose($fce);
 
