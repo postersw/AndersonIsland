@@ -3,6 +3,11 @@
 //  getgooglecalendarcron - gets the coming events/activities from the google calendar
 //          for the next 2 months.
 //          called by cron every day at 11:50pm.
+//  Google calendar event format:
+//      Event name or summary:  [E|M|S|A|C|G|O];name   MUST USE ;
+//          where x=E(event)|M(meeting)|S(show) for Event, or A(activity)|C(craft)|G(game)|O(other) for activity
+//      Location: the place where it happens (don't use ;)
+//      Description:  sponsor and misc information  (don't use ;)
 //  reads: google AndersonIsland calendar from robertbedoll@gmail.com
 //      "id": "orp3n7fmurrrdumicok4cbn5ds@group.calendar.google.com",
 //  writes: comingevents.txt in the coming events format:
@@ -30,6 +35,9 @@
 //   "description": "Backing calendar for Anderson Island Assistant"
 // uses the api key for the service account aiacalendar@andersonislandassistant.iam.gserviceaccount.com
 //  see https://console.developers.google.com/apis/dashboard?project=andersonislandassistant
+//
+//  01/2017 - initial
+//  02/4/2017 - revised to force ; as 2nd char of event
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -73,13 +81,17 @@ fclose($fce);
 exit;
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// fcopy - copy the calendar events to a file
+// fcopy - copy the calendar events from the jreply structure to a file
 // entry: etype = allowable calendar event types (1st letter of event)
+//        ys = year e.g. '2017'
+// globals: jreply = the calendar list as a json object
+//          fce = the file to write to
+// 
 function fcopy($etype, $ys) {
     global $jreply, $fce;
     $n = 0;
-    foreach ($jreply->items as $event) {
-        $k = substr($event->summary, 0, 1);
+    foreach ($jreply->items as $event) {  // loop through each calendar item
+        $k = substr($event->summary, 0, 1); // k=the key letter of the event
         if(strpos($etype, $k) > 0) {  // if desired event
             //2016-06-28T18:30:00-07:00;2016-06-28T19:30:00-07:00;
             if(substr($event->start->dateTime,0,4) != $ys) {  // if year rollover, write the new year
@@ -88,10 +100,10 @@ function fcopy($etype, $ys) {
             }
             $r = substr($event->start->dateTime,5,2) . substr($event->start->dateTime,8,2) . ";" . substr($event->start->dateTime,11,2) . substr($event->start->dateTime,14,2) . ";" .
                 substr($event->end->dateTime,11,2) . substr($event->end->dateTime,14,2)  . ";" .
-                $event->summary . ";" . $event->location . ";" . $event->description ;
+                $k . ";" . substr($event->summary, 2) . ";" . $event->location . ";" . $event->description ;
             $n++;
             // now write it to the file
-            echo $r . "<br/>";
+            echo $r . "<br/>\r\n";
             fwrite($fce, $r . "\r\n");
         }
     }
