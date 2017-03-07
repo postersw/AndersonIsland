@@ -50,6 +50,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Add myver to cache. Reload cache on version change. Remove splashscreen.hide(). 
 10/30/16. 1.07.10142320 version Code 2221. Uploaded to Apple app store as version 1.7. 
 10/30/16. Branch Ver17 merged to master.  Branch Ver18 created.
+03/07/17. 1.08.030717 version code 2222. Branch Ver18. Uploaded to Google Play @ 1330.
+		Move link for Ferry Location to dailycache. Improve Events table display.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
@@ -77,7 +79,7 @@ DEBUG CHECKOUT:
 
 ANDROID GOOGLE PLAY STORE
 	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
-		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; ver 1.5 on 6/5/16.
+		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
 	2. Click on Anderson Island Assistant.  Click on "APK".   Click on "Upload new APK to Production";
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
