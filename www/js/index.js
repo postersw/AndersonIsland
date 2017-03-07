@@ -28,6 +28,7 @@
             1007     : Ferry Schedule Grid: move headers to each day. Color am backgound blue.
             1010     : Android ver 2220 to Google Play
             10.14    : ClearCacheandExit button; extra null protections.
+        1.8 0307 (2017): Add Ferry Location link and Ferry Schedule link to dailycache.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -49,7 +50,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.07.10142320";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.08.0831030717";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -473,12 +474,14 @@ OpenHours = [{  // single preload for testing and if there is no connectivity
 // load web pages
 function ShowFerry() {
     MarkPage("x");
+    var link = GetLink("ferrypagelink", "http://www.co.pierce.wa.us/index.aspx?NID=1793");
     window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793", "_system");
 }
 
 function ShowMap() {
     MarkPage("g");
-    window.open("https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4", "_blank");
+    var link = GetLink("googlemaplink", "https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4");
+    window.open(link, "_blank");
 }
 
 function ShowBurnBan() {
@@ -495,12 +498,14 @@ function ShowTannerOutage() {
 
 function ShowParks() {
     MarkPage("p");
-    window.open('http://www.anderson-island.org/parks/parks.html', '_blank','EnableViewPortScale=yes' );
+    var link = GetLink("parkslink", 'http://www.anderson-island.org/parks/parks.html');
+    window.open(link, '_blank','EnableViewPortScale=yes' );
 }
 
 function ShowNews() {
     MarkPage("n");
-    window.open('http://www.anderson-island.org/news.html', "_blank");
+    var link = GetLink("newslink", 'http://www.anderson-island.org/news.html');
+    window.open(link, "_blank");
 }
 
 // open the correct web page for an upgrade. If its web, force a page reload.
@@ -508,9 +513,11 @@ function UpdateApp() {
     MarkPage("y");
     if (isPhoneGap()) {
         if (isAndroid()) {
-            window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');
+            var link = GetLink("googleplaylink", 'https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant');
+            window.open(link, '_system');
         } else {
-            window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');
+            var link = GetLink("applestorelink", 'https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8');
+            window.open(link, '_system');
         }
     } else {
         window.location.reload(true);
@@ -1445,7 +1452,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "tidedatalink", "TIDEDATALINK", "\n"); // tide data
     parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
     parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
-
+    parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
@@ -1760,11 +1768,13 @@ function ModalClose() {
 
 // loads the ferry schedule at pierce web page
 function ShowFerrySchedule() {
-    window.open("http://www.co.pierce.wa.us/index.aspx?NID=2200", "_blank");
+    var myurl = GetLink("ferryschedulelink", "http://www.co.pierce.wa.us/index.aspx?NID=2200");
+    window.open(myurl, "_blank");
 }
 function ShowFerryLocation() {
     MarkPage("s");
-    window.open("http://matterhorn11.co.pierce.wa.us/FerryStatus/", "_blank");
+    var myurl = GetLink("ferrylocationlink", "http://matterhorn11.co.pierce.wa.us/FerryStatus/");
+    window.open(myurl, "_blank");
 }
 
 
@@ -2222,6 +2232,7 @@ function DisplayComingEventsList(CE) {
     var previouseventdate; // date of previous event
     var datefmt; // formatted date
     var table // ref to table
+    var oldrow;  // previous row
     InitializeDates(0);
     EventDisp = "L";
     table = document.getElementById("comingeventstable");
@@ -2288,8 +2299,12 @@ function DisplayComingEventsList(CE) {
         if ((CEyymmdd == gYYmmdd) && (Number(aCE[2]) > (gTimehhmm + 10))) row.style.fontWeight = "bold"; // end time not reached.
         col = row.insertCell(0);
         if (aCE[0] != previouseventdate) col.innerHTML = gDayofWeekShort[idayofweek] + " " + datefmt; // day of week
-        else col.innerHTML = "";
+        else {
+            col.innerHTML = "";
+            oldrow.style.borderBottomColor = "lightblue";
+        }
         col.style.backgroundColor = "azure";
+        col.style.fontWeight = "bold";
         col = row.insertCell(1);
         col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
         var col2 = row.insertCell(2);
@@ -2302,6 +2317,7 @@ function DisplayComingEventsList(CE) {
         col.style.color = color;
         row.id = aCE[0] + aCE[1];  // id = 1602141300  i.e. yymmddhhmm
         row.onclick = function () { tabletext(this.id) }
+        oldrow = row; 
         lastweek = iweek;
         previouseventdate = aCE[0];
     } // end loop through CE
@@ -3091,7 +3107,8 @@ function getCustomTideData(fromdate) {
     //url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
     //dataType: 'jsonp',
     //success: function (json) {
-    var myurl = 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours';   
+    var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
+    myurl = myurl + '&from=' + fromdate + '&to=+48hours';   
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCustomTidesReply(xhttp.responseText);
@@ -3119,7 +3136,9 @@ function HandleCustomTidesReply(reply) {
 // ShowNOAA - query NOAA for the tide page
 function ShowNOAA() {
     InitializeDates(0);
-    window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705&beginDate=" + gYear + gMonth + gDayofMonth + "&endDate=" + gYear + gMonth + gDayofMonth + "&datum=MLLW&unit=0& =0&format=html&Submit=Submit", "_blank");
+    var link = GetLink("noaalink", "http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705");
+    link = link & "beginDate=" + gYear + gMonth + gDayofMonth + "&endDate=" + gYear + gMonth + gDayofMonth + "&datum=MLLW&unit=0& =0&format=html&Submit=Submit";
+    window.open(link, "_blank");
 }
 
 //</script>
