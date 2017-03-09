@@ -53,6 +53,14 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/07/17. 1.08.030717 version code 2222. Branch Ver18. Uploaded to Google Play @ 1330.
 		Move link for Ferry Location to dailycache. Improve Events table display.
 
+GIT CREATE NEW BRANCH
+	1. Merge current branch (e.g. Ver18) into Master:
+		1. Switch Current branch to Master: Screen "Branches". Select 'master'.
+		2. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
+	2. Create new branch (e.g. Ver19)
+	3. Download new branch to each PC.
+	4. Switch Build to new branch (e.g. Ver19)
+
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
 	Debug using chrome, F12. All features should work except pushbots.
