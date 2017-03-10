@@ -1455,6 +1455,19 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
     parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
+    parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
+    parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // ferry schedule
+
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
@@ -1784,21 +1797,22 @@ function StartTicketApp() {
     if (isPhoneGap()) {
         if (isAndroid()) {
             // Android
-            var sApp = startApp.set({ "package": "com.ttpapps.pcf" });
+            var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
+            var sApp = startApp.set({ "package": pkg});
             sApp.start(function () { /* success */
-                console.log("OK");
             }, function (error) { /* fail */
-                alert(error);
-                window.open('https://play.google.com/store/apps/details?id=com.ttpapps.pcf', '_system');
+                var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
+                window.open(link, '_system');
             });
         } else {
             // IOS
-            var sApp = startApp.set({ "package": "pierce-county-ferry-tickets" });
+            var pkg = GetLink("iosinternalticketlink", "pierce-county-ferry-tickets://"); // android ticket package
+            var sApp = startApp.set(pkg);
             sApp.start(function () { /* success */
-                console.log("OK");
             }, function (error) { /* fail */
                 alert(error);
-                window.open('https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8', '_system');
+                var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
+                window.open(link, '_system');
             });
         }
     } else {
