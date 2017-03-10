@@ -79,6 +79,8 @@
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <plugin name="pushbots-cordova-plugin" source="npm"/>
     <plugin name="cordova-plugin-calendar" source="npm"/>  
+    <plugin name="com.lampa.startapp" source="npm"/>  
+
     <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> pick up android bugfix-->
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->

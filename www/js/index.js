@@ -29,6 +29,7 @@
             1010     : Android ver 2220 to Google Play
             10.14    : ClearCacheandExit button; extra null protections.
         1.8 0307 (2017): Add Ferry Location link and Ferry Schedule link to dailycache.
+        1.9 039817  : Add TICKETS link that actually starts the ticket app on the phone.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -50,7 +51,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.08.030717";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.09.030917";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1775,6 +1776,35 @@ function ShowFerryLocation() {
     MarkPage("s");
     var myurl = GetLink("ferrylocationlink", "http://matterhorn11.co.pierce.wa.us/FerryStatus/");
     window.open(myurl, "_blank");
+}
+
+
+// Use the startApp plugin to directly start the pierce county ferry tickets app.  
+function StartTicketApp() {
+    if (isPhoneGap()) {
+        if (isAndroid()) {
+            // Android
+            var sApp = startApp.set({ "package": "com.ttpapps.pcf" });
+            sApp.start(function () { /* success */
+                console.log("OK");
+            }, function (error) { /* fail */
+                alert(error);
+                window.open('https://play.google.com/store/apps/details?id=com.ttpapps.pcf', '_system');
+            });
+        } else {
+            // IOS
+            var sApp = startApp.set({ "package": "pierce-county-ferry-tickets" });
+            sApp.start(function () { /* success */
+                console.log("OK");
+            }, function (error) { /* fail */
+                alert(error);
+                window.open('https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8', '_system');
+            });
+        }
+    } else {
+        // WEB
+        window.open('https://tickets.piercecountywa.org/', '_system');
+    }
 }
 
 
