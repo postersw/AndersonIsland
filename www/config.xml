@@ -5,9 +5,10 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.8.030717"
-        versionCode="2222" 
-        android:versionName="1.8.030717"> 
+        version   = "1.9.031017"
+        versionCode="2223" 
+        android:versionName="1.9.031017"> 
+        <!-- versionCode 2223 for 1.9 3/10/17-->
         <!-- versionCode=2220 on 10/13/16 1.7. Used by Android to trigger an upgrade. -->
     
   <name>Anderson Island Assistant</name>
