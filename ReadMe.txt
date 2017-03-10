@@ -55,11 +55,18 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
-		1. Switch Current branch to Master: Screen "Branches". Select 'master'.
-		2. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
+		1. Select 'Branches" Menu
+		2. Switch Current branch to Master: Screen "Branches". Select 'master'.
+		3. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
+		4. Sync.
 	2. Create new branch (e.g. Ver19)
-	3. Download new branch to each PC.
-	4. Switch Build to new branch (e.g. Ver19)
+		1. Select "Branches" menu
+		2. Actions-> Create New Local Branch
+		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
+		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
+ 		   Then it will appear in the 'remotes/origin' list.
+	3. New branch will be on this PC. Be sure to Publish it from the Branches screen. Be sure to use it on other PCs.
+	4. Switch phonegap.build to new branch (e.g. Ver19)
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.

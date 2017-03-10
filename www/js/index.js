@@ -1806,7 +1806,7 @@ function StartTicketApp() {
             });
         } else {
             // IOS
-            var pkg = GetLink("iosinternalticketlink", "pierce-county-ferry-tickets://"); // android ticket package
+            var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
             var sApp = startApp.set(pkg);
             sApp.start(function () { /* success */
             }, function (error) { /* fail */
