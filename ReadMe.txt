@@ -67,6 +67,10 @@ GIT CREATE NEW BRANCH
  		   Then it will appear in the 'remotes/origin' list.
 	3. New branch will be on this PC. Be sure to Publish it from the Branches screen. Be sure to use it on other PCs.
 	4. Switch phonegap.build to new branch (e.g. Ver19)
+	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio GIT/Branches list, 
+	   try switching to the Sync screen and running Fetch. Or set the VS branch to Master, and then run Fetch.
+	   If that doesn't work, try 'git fetch' from the command line.
+	   or run GitUI and click on "Remote -> Fetch from Origin" which will update things. Then restart Visual Studio.
 
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
@@ -95,6 +99,7 @@ DEBUG CHECKOUT:
 ANDROID GOOGLE PLAY STORE
 	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
+		1.9 (2223) on 3/11/17. 
 	2. Click on Anderson Island Assistant.  Click on "APK".   Click on "Upload new APK to Production";
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
