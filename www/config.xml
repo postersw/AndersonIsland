@@ -105,7 +105,12 @@
     <icon src="icon-72-2x.png"         gap:platform="ios"        width="144" height="144" />
     <icon src="www/icon-58.png" platform="ios" width="58" height="58" /> 
     <icon src="www/icon-87.png" platform="ios" width="87" height="87" />
-    <icon src="icon152.png" platform="ios" width="152" height="152" />
+    <!-- Added 3/13/17 for ver 1.9 -->
+    <icon src="icon120.png" platform="ios" width="120" height="120" />  <!-- iPhone 6s -->
+    <icon src="icon152.png" platform="ios" width="152" height="152" />  <!-- WORKS FOR IPAD-->
+    <icon src="icon167.png" platform="ios" width="167" height="167" />  <!-- iPad Pro -->
+    <icon src="icon180.png" platform="ios" width="180" height="180" />  <!-- iPhone 6s Plus-->
+    <icon src="icon1024.png" platform="ios" width="1024" height="1024" />  <!-- App Store -->
   <!--
     <icon src="www/res/icon/ios/icon-57.png"            gap:platform="ios"        width="57" height="57" />
     <icon src="www/res/icon/ios/icon-72.png"            gap:platform="ios"        width="72" height="72" />
