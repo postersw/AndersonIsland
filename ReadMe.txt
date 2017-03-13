@@ -52,6 +52,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 10/30/16. Branch Ver17 merged to master.  Branch Ver18 created.
 03/07/17. 1.08.030717 version code 2222. Branch Ver18. Uploaded to Google Play @ 1330.
 		Move link for Ferry Location to dailycache. Improve Events table display.
+03/11/17. 1.09.030917 version 2223. Branch Ver19. Add main screen button to launch ticket app. Uploaded to Google Play.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -123,6 +124,8 @@ IOS DEBUG/BUILD
 		  'APNs Development iOS) which is the APN cert to be used by Pushbots to send messages to the app. Is is 
 		  separate fromn the Development Certificate, and is not referenced by the app. But it is specific for my app's id.
 	
+	ICON sizes: Note that you need lots of icons of exact size.  To resize the icons, just use Paint and the resize button.
+	Add the icons to the solution (seems to happen automatically if you put them in the root) and config.xml.
 
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
@@ -145,7 +148,7 @@ IOS DEBUG/BUILD
 	10. You app will go into a waiting for review state.
 	11. Log out (under the apple icon).
 
-	DATA LOADS
+DATA LOADS
 	Data is loaded from:
 	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app getdailycache.php.
 	2. Coming Events: (comingevents.php  which copies comingevents.txt to stdout. is ver 1.3 only).
@@ -223,7 +226,7 @@ IOS DEBUG/BUILD
 						1=custom tides, 2=monthly activities, 3=weekly activities, 4=motify off
 
 
-	CRON PHP JOBS:
+CRON PHP JOBS:
 	1. gettides.php
 	   RUns 4 times/day. Queries ariesweather.com for tides and writes json output to tidesdata.txt.
 	2. gettanneralerts.php Runs every 10 minutes via cron. Reads tanner AI web page and writes to tanneroutage.txt
