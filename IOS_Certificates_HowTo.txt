@@ -1,4 +1,13 @@
-1. Create new Development Certificate:
+HISTORY
+These files are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
+3/12/17 Development Certificate (because original one expired)
+	AndersonIslandDevPush.mobileprovision (profile)  Uploaded to build.phonegap.com
+	posterswdev.p12  (cert in P12 format)		 Uploaded to build.phonegap.com
+	ios_development.cer (actual certificate)
+	posterswdev.certSigningRequest 
+
+
+HOW TO Create new Development Certificate:
 	Open Mac.
 		Open Safari. 
 	From Safari:
@@ -40,7 +49,8 @@
 		NOTE: THE APP PROVISIONING PROFILE ONLY HAS THE iOS App Development Code Signing certificate.  
 			IT DOESNT HAVE THE PUSH CERTIFICATE. 
 			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
-		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert. 
+		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.
+			It has no pw because Pushbots does not accept a pw. 
 
 		BUILD.PHONEGAP.COM
 		Log in to build.phonegap.com.  support@postersw.com 

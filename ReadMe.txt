@@ -234,14 +234,11 @@ IOS DEBUG/BUILD
 		which is the API key from https://console.developers.google.com/apis/credentials?showWizardSurvey=true&project=andersonislandassistant
 		see https://developers.google.com/google-apps/calendar/v3/reference/events/list.	
 	6. switchferryscriptcron2.php runs nightly. 
-	OBSOLETE: makecomingevents.php runs nightly. Copies comingeventsmaster.txt to comingevents.txt with 2 months of data.
-	
-	NON CRON PHP JOBS
-	1. genrecurringevents.php  reads comingeventsmaster.txt and recurring.txt and writes newcomingevents.txt with
-		all the recurring events expanded.  
+	OBSOLETE: 
+		makecomingevents.php used to run nightly.  Replaced by getgooglecalendarchron.php. Copies comingeventsmaster.txt to comingevents.txt with 2 months of data.
+		genrecurringevents.php  reads comingeventsmaster.txt and recurring.txt and writes newcomingevents.txt with
+		all the recurring events expanded.  Replaced by google calendar.
 
-
-	
 		
 	PHP DEBUGGING:
 	Switch to project AIAPHP.  This uses the files in the 'serverside' directory, so it is still under GIT control.
