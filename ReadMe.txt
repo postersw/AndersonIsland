@@ -113,10 +113,16 @@ IOS DEBUG/BUILD
 	For deployment: click the 'AIADistributionPush' certificate.  enter key pw=dd. Then build.  
 	The resulting ipa must be uploaded using the virtual mac.  This ipa can NOT be run directly on mom's phone or ipad.
 	Start the virtual mac.  Go to the apple dev site.  
-	NOTE: each 'certificate' has a P12 cert AND a provisioning profile.
-	IOS Development2 is the dev P12 and dev provisioning profile for org.anderson-island.*.  WONT work for PUSH.
-	AndersonIslandDevPush is the dev p12 and provisioning provile for org.anderson-island.andersonislandassistant. WILL work for push with the push P12.
-	Anderson Island Assistant is the distribution profile for org.anderson-island.*. WONT work for push.
+	See Separate file: IOS_Certificates_HowTo.txt.
+	NOTE: my app id is org.anderson-island.andersonislandassistant, and Push Notifications are enabled. 
+	My app has 2 Provisioning Profiles, and each profile has a certificate (which has a P12 file): 
+		1. AndersonIslandDevPush, whose certificate is is called Robert Bedoll, type iOS Development (expires 3/12/18 as of 3/12/17).
+		2. AIADistributionPush, whose certificate is called ?, type iOS Distribution. Expired 3/10/17
+
+		Note that there is an APN certificate called org.anderson-island.andersonislandassistant which is type 
+		  'APNs Development iOS) which is the APN cert to be used by Pushbots to send messages to the app. Is is 
+		  separate fromn the Development Certificate, and is not referenced by the app. But it is specific for my app's id.
+	
 
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
@@ -153,6 +159,53 @@ IOS DEBUG/BUILD
 	5. openweathermap.com which returns json structures for current weather and forecast.
 		current loaded every 15 min by the app. forecast loaded every 30 min by the app.
 
+	DAILYCACHE.TXT
+	Parameters: 
+    parseCache(data, "ferrytimess", "FERRYTS", "\n");
+    parseCache(data, "ferrytimesa", "FERRYTA", "\n");
+    parseCache(data, "ferrytimesk", "FERRYTK", "\n");
+    parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
+    parseCache(data, "links", "LINKS", "LINKSEND");
+    parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
+    parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
+    parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
+    parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
+    ParseFerryTimes();
+    parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
+    parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
+    s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
+    parseCache(data, "androidver", "ANDROIDVER", "\n");
+    parseCache(data, "iosver", "IOSVER", "\n");
+    parseCache(data, "locations", "LOCATIONS", "LOCATIONSEND"); // locations for coming events
+    // links for things that could change, like the ferry pictures, burnban, tanner
+    parseCacheRemove(data, "ferrycams", "FERRYCAMS", "\n");   // ferry camera link steilacoom
+    parseCacheRemove(data, "ferrycama", "FERRYCAMA", "\n");   // ferry camera link anderson
+    parseCacheRemove(data, "burnbanlink", "BURNBANLINK", "\n");   // burn ban link 
+    parseCacheRemove(data, "tanneroutagelink", "TANNEROUTAGELINK", "\n");   // tanner outage link
+    parseCacheRemove(data, "tidedatalink", "TIDEDATALINK", "\n"); // tide data
+    parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
+    parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
+    parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
+    parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
+    parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // ferry schedule
+    // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
+    // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
+    parseCache(data, "comingevents", "COMINGEVENTS", "ACTIVITIES");
+    parseCache(data, "comingactivities", "ACTIVITIES", "COMINGEVENTSEND");
+    // tides (added 6/6/16)
+    var json = JSON.parse(parseCache(data, "", "TIDES", "TIDESEND"));
+
 	DAILYCACHE.PHP
 	1. Called 1/day per app starting with ver 1.6 on 6/6/16.
 	2. Retrieves dailycache.txt, comingevents.txt, tidesdata.txt and returns them as one data string with keywords.
@@ -168,6 +221,7 @@ IOS DEBUG/BUILD
 						m=web cam, n=News, o=openhours, p=parks, r=Tanner, s=show location, t=tides, u=Burn Ban, 
 						v=activities, w=weather, x=PC web page, y=upgrade, 
 						1=custom tides, 2=monthly activities, 3=weekly activities, 4=motify off
+
 
 	CRON PHP JOBS:
 	1. gettides.php
