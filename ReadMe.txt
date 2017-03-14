@@ -53,6 +53,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/07/17. 1.08.030717 version code 2222. Branch Ver18. Uploaded to Google Play @ 1330.
 		Move link for Ferry Location to dailycache. Improve Events table display.
 03/11/17. 1.09.030917 version 2223. Branch Ver19. Add main screen button to launch ticket app. Uploaded to Google Play.
+03/14/176. Branch Ver110.  Ver 1.10 created to fix font width on Ferry webcam row.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
