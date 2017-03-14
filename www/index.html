@@ -21,6 +21,8 @@
     ver 
     1.7.0702.2300: Created branch Ver17 for dev. Branch 16Prod captures the prod 1.6.0614 branch.
             0705: Fishing Link.
+    1.9.031017:  Added Ferry ticket link.
+    1.10.031417: Made ferry ticket link narrower for smaller screens.
 	
     Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
 
@@ -125,12 +127,12 @@
         </tr>
 
         <tr style="background-color:azure" >
-            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0" colspan="2"> 
-                <span onclick="ShowFerryWebCam()">&nbsp&nbsp  WEBCAM&nbsp&nbsp</span>
+            <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;padding-top:2px;padding-bottom:2px" colspan="2"> 
+                <span onclick="ShowFerryWebCam()">&nbsp&nbsp  WEBCAM&nbsp</span>
                 <span style="font-weight:normal;color:gray"">|</span>
-                <span onclick="ShowFerryLocation()">&nbsp&nbsp LOCATION&nbsp&nbsp</span>
+                <span onclick="ShowFerryLocation()">&nbsp LOCATION&nbsp</span>
                 <span style="font-weight:normal;color:gray"">|</span>
-                <span onclick="StartTicketApp()">&nbsp&nbsp TICKETS&nbsp</span>
+                <span onclick="StartTicketApp()">&nbsp TICKETS</span>
 
               </td>
         </tr>
@@ -597,7 +599,7 @@
          <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
         <span id="versionnumber" style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.9.030917	</span>
-        <span style="font-size:x-small"> [030717]</span>
+        <span style="font-size:x-small"> [031417]</span>
 
         </p>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->

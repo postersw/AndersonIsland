@@ -30,6 +30,7 @@
             10.14    : ClearCacheandExit button; extra null protections.
         1.8 0307 (2017): Add Ferry Location link and Ferry Schedule link to dailycache.
         1.9 039817  : Add TICKETS link that actually starts the ticket app on the phone.
+        1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html

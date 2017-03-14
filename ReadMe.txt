@@ -61,9 +61,13 @@ GIT CREATE NEW BRANCH
 		2. Switch Current branch to Master: Screen "Branches". Select 'master'.
 		3. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
 		4. Sync.
-	2. Create new branch (e.g. Ver19)
+	2. Create new branch directly on GetHub. github.com/postersw.
+		Select 'master' in the Branch dropdown.   
+		Select the Branch dropdown again, and fill in the name of the new branch. Then select Create.
+		Then go to  Visual Studio and create a new local branch from this branch.
+	2a. Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
-		2. Actions-> Create New Local Branch
+		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
 		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
 		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
  		   Then it will appear in the 'remotes/origin' list.
