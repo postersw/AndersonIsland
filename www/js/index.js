@@ -52,7 +52,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.09.030917";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.10.031417";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
