@@ -52,6 +52,10 @@
     <preference name="android-minSdkVersion"      value="14" />              <!-- android: MIN SDK version supported on the target device. MAX version is blank by default. -->
     <preference name="android-installLocation"    value="auto" />           <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
     <preference name="android-build-tool"         value="gradle"/>           <!-- required for calendar plugin-->
+        <!-- Permission description for calendar-->
+  <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
+    <string>For copying events to your personal calendar</string>
+  </config-file>
     <!--
         Define a specific version of PhoneGap to build into your app.
         <preference name="phonegap-version"       value="3.5.0" />
@@ -89,6 +93,8 @@
     <!--
         <gap:plugin name="com.phonegap.plugins.barcodescanner" />
     -->
+  
+
 
     <!-- Define app icon for each platform. -->
   <!--icon src="www/icon.png" /> -->
@@ -178,9 +184,6 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-  <!-- Permission description for calendar-->
-  <gap:config-file platform="ios" parent="NSCalendarsUsageDescription ">
-    <string>For copying events to your personal calendar</string>
-  </gap:config-file>
+
 
 </widget>
