@@ -177,6 +177,9 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-
+  <!-- Permission description for calendar-->
+  <gap:config-file platform="ios" parent="NSCalendarsUsageDescription ">
+    <string>For copying events to your personal calendar</string>
+  </gap:config-file>
 
 </widget>
