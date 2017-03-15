@@ -14,18 +14,17 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 	taco.json
 1/30/16  Everything is in GitHub as a free public repository.  //github.com/postersw/AndersonIsland.git
 2/10/16  Linked to phonegap build account. app = org.anderson-island.andersonislandassistant
-3/09/16  Google play store for version 1.0.308.2200 as ver 42. (does not show update time on bottom of main screen);
-
+3/09/16  Google Play Build: version 1.0.308.2200 as ver 42. (does not show update time on bottom of main screen);
 3/15/16 PROBLEMS WITH IOS ICONS. MOVED TO ROOT DIRECTORY ABOVE WWW.
-3/18/16. Approved for Apple app store. 
+3/18/16. IOS Distribution Build: Approved for Apple app store. 
 4/14/16. Uploaded to web. version 1.3.0414.  
 		This version also works with pushbots for android, but has not been deployed to the google play store.
-4/16/16. Version 1.3.16. built and uploaded to google play store as ver 130. (actually build 131). Includes pushbots.
+4/16/16. Google Play Build: Version 1.3.16. built and uploaded to google play store as ver 130. (actually build 131). Includes pushbots.
 		Includes Push notifications for andriod (pushbots), adds splash screen (which I may want to remove).
 		correct dates and icons for weather forecast, caching of the full weather forecast, 
 		minor formatting improvements and the on pause/on resume events.
 		In production on 4/16/16.  Pushbots works from getferryalerts.php.
-4/22/16. Version 1.3.16 submitted to apple app store as ver 1.3. profile AIADistributionPush.
+4/22/16. IOS Distribution build: Version 1.3.16 submitted to apple app store as ver 1.3. profile AIADistributionPush.
 5/9/16. Version 1.5 to Web only. Tides graph.  Open Hours json structure with multiple date ranges.
 		Color coding for Events.
 5/15/16. Version 1.5.0515 for web. local jquery library. Color coding for activities. Tide graph supports other dates.
@@ -36,8 +35,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Parks:  row and link. Weather: correct month. Tanner and Burnban: support status in getalerts. 
 		Internal: Links now in dailycache. Use getalerts.php.
 5/30/16. 1.5.0530. remove jquery use for ajax.
-6/05/16. 1.5.0605.1400 versionCode 220 (but play shows it as 2208). Uploaded to Google Play. as version 1.5....
-6/07/16. 1.6.0607.1601 versionCode 221 (2218). Consoldate dailycache.txt, comingevents.txt, tidedata.txt into dailycache.php.
+6/05/16. Google Play build: 1.5.0605.1400 versionCode 220 (but play shows it as 2208). Uploaded to Google Play. as version 1.5....
+6/07/16. Google Play build: 1.6.0607.1601 versionCode 221 (2218). Consoldate dailycache.txt, comingevents.txt, tidedata.txt into dailycache.php.
 		send usage statistics up with dailycache.php.  Uploaded to Google Play.
 10/8/16. 1.07.1007. versonCode 222. Add "Fishing" row. Improve Ferry Schedule display. Improve Coming Events display.
 		Improve ability to support ferry schedule changes (with new ferry schedule including code for special cases.)
@@ -46,14 +45,17 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		Fix Coming Events year-rollover problem (by inserting the year into comingevents and activities when loaded,
 			and doing all date checks with yymmdd).
 		Fix Coming Events weekly and monthly grid problem.
-10/14/16. 1.07.10142320 version Code 2221. Uploaded to Google Play.   
+10/14/16. Google Play build: 1.07.10142320 version Code 2221. Uploaded to Google Play.   
 		Add myver to cache. Reload cache on version change. Remove splashscreen.hide(). 
-10/30/16. 1.07.10142320 version Code 2221. Uploaded to Apple app store as version 1.7. 
+10/30/16. IOS Distribution build: 1.07.10142320 version Code 2221. Uploaded to Apple app store as version 1.7. 
 10/30/16. Branch Ver17 merged to master.  Branch Ver18 created.
-03/07/17. 1.08.030717 version code 2222. Branch Ver18. Uploaded to Google Play @ 1330.
+03/07/17. Google Play build: 1.08.030717 version code 2222. Branch Ver18. Uploaded to Google Play @ 1330.
 		Move link for Ferry Location to dailycache. Improve Events table display.
-03/11/17. 1.09.030917 version 2223. Branch Ver19. Add main screen button to launch ticket app. Uploaded to Google Play.
-03/14/176. Branch Ver110.  Ver 1.10 created to fix font width on Ferry webcam row.
+03/11/17. Google Play build: 1.09.030917 version 2223. Branch Ver19. Add main screen button to launch ticket app. Uploaded to Google Play.
+03/14/17. Branch Ver110.  Ver 1.10 created to fix font width on Ferry webcam row.
+03/14/17. IOS Distribution build: Build #306, ver 1.10.031417 2342. Using Branch ver110. Submitted to App store 3/14.
+		  using new posterswprod.p12 cert (3/10/17) and the AIADistributionPush profile.   
+		  (Android verion 2224 not yet in GooglePlay).
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -65,7 +67,7 @@ GIT CREATE NEW BRANCH
 		Select 'master' in the Branch dropdown.   
 		Select the Branch dropdown again, and fill in the name of the new branch. Then select Create.
 		Then go to  Visual Studio and create a new local branch from this branch.
-	2a. Create new branch (e.g. Ver19) directly in Visual Studio. 
+	2a. Alternative to #2: Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
 		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
