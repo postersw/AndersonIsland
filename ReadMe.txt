@@ -56,6 +56,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/14/17. IOS Distribution build: Build #306, ver 1.10.031417 2342. Using Branch ver110. Submitted to App store 3/14.
 		  using new posterswprod.p12 cert (3/10/17) and the AIADistributionPush profile.   
 		  (Android verion 2224 not yet in GooglePlay).
+03/18/17. Ver 1.10.031417 accepted by App Store.  NOTE: NEXT TIME MUST REMOVE 'UPDATE APP' menu pick per app store feedback.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
