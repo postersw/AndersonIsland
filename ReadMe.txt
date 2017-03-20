@@ -57,6 +57,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		  using new posterswprod.p12 cert (3/10/17) and the AIADistributionPush profile.   
 		  (Android verion 2224 not yet in GooglePlay).
 03/18/17. Ver 1.10.031417 accepted by App Store.  NOTE: NEXT TIME MUST REMOVE 'UPDATE APP' menu pick per app store feedback.
+03/19/17. Ver 1.10.0314172342 Android version # 2224, released through Google Play @2300. (662 installs).
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
