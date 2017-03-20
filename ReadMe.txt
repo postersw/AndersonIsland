@@ -58,6 +58,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		  (Android verion 2224 not yet in GooglePlay).
 03/18/17. Ver 1.10.031417 accepted by App Store.  NOTE: NEXT TIME MUST REMOVE 'UPDATE APP' menu pick per app store feedback.
 03/19/17. Ver 1.10.0314172342 Android version # 2224, released through Google Play @2300. (662 installs).
+03/19/17. Branch Ver111 created. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -68,7 +69,9 @@ GIT CREATE NEW BRANCH
 	2. Create new branch directly on GetHub. github.com/postersw.
 		Select 'master' in the Branch dropdown.   
 		Select the Branch dropdown again, and fill in the name of the new branch. Then select Create.
-		Then go to  Visual Studio and create a new local branch from this branch.
+		Then go to  Visual Studio on local machine and create a new local branch from this branch: 
+			Branches screen. Right click on AndersonIsland (master) and select Create New Local Branch.
+		    Enter local name (Verxxx) and from: origin/verxxx.   Check 'Checkout branch' and 'Track remote branch'. Click on 'Create Branch'.
 	2a. Alternative to #2: Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
