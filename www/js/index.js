@@ -31,6 +31,7 @@
         1.8 0307 (2017): Add Ferry Location link and Ferry Schedule link to dailycache.
         1.9 039817  : Add TICKETS link that actually starts the ticket app on the phone.
         1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
+        1.11 032017: Remove alert from IOS when the ticket app is not there.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -1811,7 +1812,6 @@ function StartTicketApp() {
             var sApp = startApp.set(pkg);
             sApp.start(function () { /* success */
             }, function (error) { /* fail */
-                alert(error);
                 var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
                 window.open(link, '_system');
             });
@@ -3391,6 +3391,9 @@ function StartApp() {
         if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
         else NotifyColor(0);
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
+
+    // ios - hide the update app at the request of the Apple App Review team 3/19/17.
+    if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
 
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
