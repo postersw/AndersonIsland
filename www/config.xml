@@ -114,7 +114,7 @@
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
             76x76 2xipad1xipad 83.5 2xipad-->
   <platform name="ios">
-    <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />  <!--29x29--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />  <!--29x29--> 
     <icon src="www/res/icon/ios/icon-58.png"  width="58" height="58" />  <!--29x29 2x =58x58-->
     <icon src="www/res/icon/ios/icon-87.png"  width="87" height="87" />  <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
 
@@ -128,7 +128,7 @@
     <icon src="www/res/icon/ios/icon-57.png"     width="57" height="57" />  <!--57x57-->
     <icon src="www/res/icon/ios/icon-57-2x.png"  width="114" height="114" /> <!--57x57 2x =114x114-->
 
-    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" /> <!-- iPhone 6s --> <!--60x60 2x =120x120 iPhone 6s --> 
+    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" /> <!--60x60 2x =120x120 iPhone 6s --> 
     <icon src="www/res/icon/ios/icon-180.png"    width="180" height="180" />  <!--60x60 3x = 180x180 iPhone 6s Plus-->  
 
     <icon src="www/res/icon/ios/icon-72.png"     width="72" height="72" /> <!-- 72x72 -->
