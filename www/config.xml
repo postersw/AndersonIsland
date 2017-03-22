@@ -114,6 +114,7 @@
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
             76x76 2xipad1xipad 83.5 2xipad-->
   <platform name="ios">
+    <icon src="www/res/icon/ios/icon-180.png"    width="180" height="180" /> <!-- DEBUG -->
     <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />  <!--29x29--> 
     <icon src="www/res/icon/ios/icon-58.png"  width="58" height="58" />  <!--29x29 2x =58x58-->
     <icon src="www/res/icon/ios/icon-87.png"  width="87" height="87" />  <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
@@ -142,12 +143,7 @@
 
     <icon src="icon1024.png"                     width="1024" height="1024" />  <!-- App Store -->
   </platform>
-  <!--
-    <icon src="www/res/icon/ios/icon-57.png"            gap:platform="ios"        width="57" height="57" />
-    <icon src="www/res/icon/ios/icon-72.png"            gap:platform="ios"        width="72" height="72" />
-    <icon src="www/res/icon/ios/icon-57-2x.png"         gap:platform="ios"        width="114" height="114" />
-    <icon src="www/res/icon/ios/icon-72-2x.png"         gap:platform="ios"        width="144" height="144" />
-    -->
+
     <icon src="www/res/icon/webos/icon-64.png"          gap:platform="webos" />
     <icon src="www/res/icon/windows-phone/icon-48.png"  gap:platform="winphone" />
     <icon src="www/res/icon/windows-phone/icon-173-tile.png" gap:platform="winphone"   gap:role="background" />
