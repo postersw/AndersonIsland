@@ -58,7 +58,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		  (Android verion 2224 not yet in GooglePlay).
 03/18/17. Ver 1.10.031417 accepted by App Store.  NOTE: NEXT TIME MUST REMOVE 'UPDATE APP' menu pick per app store feedback.
 03/19/17. Ver 1.10.0314172342 Android version # 2224, released through Google Play @2300. (662 installs).
-03/19/17. Branch Ver111 created. 
+03/19/17. Branch Ver111 created. All IOS icons moves to www/res/icon/ios/. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -79,7 +79,8 @@ GIT CREATE NEW BRANCH
 		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
  		   Then it will appear in the 'remotes/origin' list.
 	3. New branch will be on this PC. Be sure to Publish it from the Branches screen. Be sure to use it on other PCs.
-	4. Switch phonegap.build to new branch (e.g. Ver19)
+	4. Switch phonegap.build to new branch (e.g. Ver19). NOTE: branch name must match existing GitHub branch. CASE SENSITIVE.
+	   If it doesn't you get a message "Cannot access Github repository".
 	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio GIT/Branches list, 
 	   try switching to the Sync screen and running Fetch. Or set the VS branch to Master, and then run Fetch.
 	   If that doesn't work, try 'git fetch' from the command line.
