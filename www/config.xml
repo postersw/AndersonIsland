@@ -128,8 +128,7 @@
     <icon src="www/res/icon/ios/icon-57-2x.png"  width="114" height="114" /> <!--57x57 2x =114x114-->
 
     <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" /> <!--60x60 2x =120x120 iPhone 6s -->
-    <!--icon src="www/res/icon/ios/icon-180.png"    width="180" height="180" /--> <!--60x60 3x = 180x180 iPhone 6s Plus-->
-    <icon src="www/res/icon/ios/AppIcon60x60@3x.png"    width="180" height="180" /> <!-- DEBUG-->
+    <icon src="www/res/icon/ios/icon-60@3x.png"  width="180" height="180" /> <!--60x60 3x = 180x180 iPhone 6s Plus-->
     
     <icon src="www/res/icon/ios/icon-72.png"     width="72" height="72" /> <!-- 72x72 -->
     <icon src="www/res/icon/ios/icon-72-2x.png"  width="144" height="144" /> <!-- 72x72 2x =144x144-->
