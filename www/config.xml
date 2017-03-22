@@ -96,8 +96,12 @@
     -->
   
 
+    <!-- ICONS.  TO DEBUG ICONS FOR IOS, UNZIP THE AndersonIslandAssistant.apk/Payload/AndersonIslandAssistant.app file 
+      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17-->
 
+    <icon src="icon.png"   /> 
     <!-- Define app icon for each platform. -->
+  
   <!--icon src="www/icon.png" /> -->
   <!--
     <icon src="www/res/icon/android/icon-36-ldpi.png"   gap:platform="android"    gap:qualifier="ldpi" />
@@ -107,19 +111,36 @@
     -->
     <icon src="www/res/icon/blackberry/icon-80.png"     gap:platform="blackberry" />
     <icon src="www/res/icon/blackberry/icon-80.png"     gap:platform="blackberry" gap:state="hover"/>
-    <icon src="icon-57.png"            gap:platform="ios"        width="57" height="57" />
-    <icon src="icon-72.png"            gap:platform="ios"        width="72" height="72" />
-    <icon src="icon-57-2x.png"         gap:platform="ios"        width="114" height="114" />
-    <icon src="icon-72-2x.png"         gap:platform="ios"        width="144" height="144" />
-    <icon src="www/icon-58.png" platform="ios" width="58" height="58" /> 
-    <icon src="www/icon-87.png" platform="ios" width="87" height="87" />
-  <!-- Added 3/13/17 for ver 1.9 -->
-    <icon src="icon76.png" platform="ios" width="76" height="76" />
-    <icon src="icon120.png" platform="ios" width="120" height="120" />  <!-- iPhone 6s -->
-    <icon src="icon152.png" platform="ios" width="152" height="152" />  <!-- WORKS FOR IPAD-->
-    <icon src="icon167.png" platform="ios" width="167" height="167" />  <!-- iPad Pro -->
-    <icon src="icon180.png" platform="ios" width="180" height="180" />  <!-- iPhone 6s Plus-->
-    <icon src="icon1024.png" platform="ios" width="1024" height="1024" />  <!-- App Store -->
+  <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
+            76x76 2xipad1xipad 83.5 2xipad-->
+  <platform name="ios">
+    <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />  <!--29x29--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    <icon src="www/res/icon/ios/icon-58.png"  width="58" height="58" />  <!--29x29 2x =58x58-->
+    <icon src="www/res/icon/ios/icon-87.png"  width="87" height="87" />  <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
+
+    <icon src="www/res/icon/ios/icon-40.png"     width="40" height="40" />  <!--40x40--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    <icon src="www/res/icon/ios/icon-80.png"     width="80" height="80" />  <!--40x40 2x =80x80--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" />  <!--40x40 3x =120x120--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    <icon src="www/res/icon/ios/icon-50.png"     width="50" height="50" />  <!--50x50--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    <icon src="www/res/icon/ios/icon-100.png"    width="100" height="100" />  <!--50x50 2x =100x100--> xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    <icon src="www/res/icon/ios/icon-57.png"     width="57" height="57" />  <!--57x57-->
+    <icon src="www/res/icon/ios/icon-57-2x.png"  width="114" height="114" /> <!--57x57 2x =114x114-->
+
+    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" /> <!-- iPhone 6s --> <!--60x60 2x =120x120 iPhone 6s --> DOESNT SHOW
+    <icon src="www/res/icon/ios/icon-180.png"    width="180" height="180" />  <!--60x60 3x = 180x180 iPhone 6s Plus-->  SHOWS ALL BLACK
+
+    <icon src="www/res/icon/ios/icon-72.png"     width="72" height="72" /> <!-- 72x72 -->
+    <icon src="www/res/icon/ios/icon-72-2x.png"  width="144" height="144" /> <!-- 72x72 2x =144x144-->
+    
+    <icon src="www/res/icon/ios/icon-76.png"     width="76" height="76" />   <!-- 76x76 -->
+    <icon src="www/res/icon/ios/icon-152.png"    width="152" height="152" /> <!-- 76x76 2x =152x152 WORKS FOR IPAD-->
+    
+    <icon src="www/res/icon/ios/icon-167.png"    width="167" height="167" /> <!-- iPad Pro -->
+
+    <icon src="icon1024.png"                     width="1024" height="1024" />  <!-- App Store -->
+  </platform>
   <!--
     <icon src="www/res/icon/ios/icon-57.png"            gap:platform="ios"        width="57" height="57" />
     <icon src="www/res/icon/ios/icon-72.png"            gap:platform="ios"        width="72" height="72" />
@@ -133,7 +154,7 @@
     <!-- Define app splash screen for each platform. -->
 
   <!-- icon src="icon.png"                                  platform="ios"   />-->
-    <icon src="icon.png"                                  platform="android"   />
+
     <splash src="Default.png"                             platform="android" />
     <splash src="Default.png"                             platform="ios" />
     <splash src="www/res/screen/android/screen.png"       platform="android" density="port-ldpi" />
