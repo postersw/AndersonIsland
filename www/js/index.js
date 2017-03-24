@@ -53,7 +53,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.10.031417";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.032317";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1171,7 +1171,7 @@ function HandleCurrentWeatherReply(r) {
     if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
-        StripDecimal(r.wind.speed) + " mph, " + rain + " rain";// + ", " + r.precipitation.value + r.precipitation.value
+        StripDecimal(r.wind.speed) + " mph, " + ((rain!="0")? rain + " rain" : "");
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
     // detailed string for weather detail page
