@@ -59,6 +59,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/18/17. Ver 1.10.031417 accepted by App Store.  NOTE: NEXT TIME MUST REMOVE 'UPDATE APP' menu pick per app store feedback.
 03/19/17. Ver 1.10.0314172342 Android version # 2224, released through Google Play @2300. (662 installs).
 03/19/17. Branch Ver111 created. All IOS icons moves to www/res/icon/ios/. 
+03/23/17. Ver 1.11.032317 to Web.  Remove '0 rain' from WEATHER line.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
