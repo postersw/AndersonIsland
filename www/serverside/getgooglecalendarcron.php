@@ -46,7 +46,7 @@ $d = date("d"); // day with leading zero
 $mds = $y . $m . $d; // mmdd
 $timemin = $y . "-" . $m . "-" . $d . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
 $ye = $y; // year end
-$me = $m + 2;
+$me = $m + 3;
 if($me > 12) {  // if year rollover
     $me = $m2 - 12;
     $ye = strval($y++);

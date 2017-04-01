@@ -94,11 +94,15 @@ ANDROID DEBUG/BUILD
 	Build on PhoneGap build.  Then download the apk using the bar code scanner to open the download web page.
 	Alernatively run PhoneGap build on the phone and click on the apk icon to download it.
 	Download.  Then find the downloaded file and click on it, which will install it.
+	Test on: 1 My phone, 2 Sue's phone, 3 my old motorola E phone
 	Note:  Debugging can be done without a signed certificate, using 'no key selected': builds xxx-debug.apk.  OR
 	 with a signed certificate, using 'postersw' key (pw=dd): builds xxx-production.apk. unlike the iphone, either cert will work on my phone.
 	 But only the production apk can be uploaded to the google store. 
 	Note: if you install the debug version on the phone, you must uninstall it before you can install the prod version,
-	 and vice versa. Otherwise the phone gives a message: "install failed"  
+	Debug for different phone screen sizes:  Put on web, open Chrome.  
+		Open www.anderson-island.org.  Select 'Developer tools' menu.
+	   Select 'Device Mode' (2nd icon from right).   Select the different phone screen sizes and checkout the results.
+
 
 DEBUG CHECKOUT:
 	0. Update config.xml for version and versionCode. Note for some reason I set the versionCode = 220
@@ -139,7 +143,12 @@ IOS DEBUG/BUILD
 		  separate fromn the Development Certificate, and is not referenced by the app. But it is specific for my app's id.
 	
 	ICON sizes: Note that you need lots of icons of exact size.  To resize the icons, just use Paint and the resize button.
-	Add the icons to the solution (seems to happen automatically if you put them in the root) and config.xml.
+	Add the icons to the solution in www/res/icon/ios and config.xml.  After adding icons, do a build, download the ipa file,
+	  unzip it (change type from ipa to zip), and look at the icons in the file. They should ALL be good.
+
+	Debug for different iphone screen sizes:  Put on web, go to MacinCloud, open Safari.  
+		Open www.anderson-island.org.  Select 'Developer' menu.
+	   Select 'Enter Responsize design mode'.  Select the different iphone screen sizes and checkout the results.
 
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
