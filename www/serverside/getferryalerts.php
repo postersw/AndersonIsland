@@ -11,6 +11,7 @@
 //      4/22/16. Added IOS.
 //      7/02/16. Reformatted date as "Jul 02, 4:45p"
 //      8/17/16. Added 'Default Message' to be displayed if there is no alert.
+//      4/01/17. Add "DELAY: " for late, behind, or delayed. This keyword is a flag to the app to display DELAYED.
 //  Sample RSS feed:
 //<item>
 //<title>The ferry is currently running 22 minutes late.</title>
@@ -87,8 +88,12 @@ $alertmin = substr($x->channel->item[0]->pubDate, 19, 3);
 $alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
 //$alertdatestring = date("m/d h:ia", $talert); // 7/2 5:17pm This should have worked, but it didn't to DST correctly.
 
+// test for a delay
+$delay = "";
+if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancelled") > 0) || (strpos($title, " canceled") > 0) || (strpos($title, " delay") > 0) ) $delay = "DELAY: ";
+
 if($title != $desc) $title = $title . " ...>";
-$alertstring = $alertdatestring . " " . $title . "\n" . $desc;
+$alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
 	logalertlast("alert already written");
@@ -108,7 +113,7 @@ echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
 
 // now send alert using Pushbots and Google Cloud Messaging
-PushANotification(  $alerthr . $alertmin . $alertam . " " . $title );
+PushANotification(  $alerthr . $alertmin . $alertam . " " . $delay . $title );
 exit(0);
 
 /////////////////////////////////////////////////////////////////
