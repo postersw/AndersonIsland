@@ -32,6 +32,7 @@
         1.9 039817  : Add TICKETS link that actually starts the ticket app on the phone.
         1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
         1.11 032017: Remove alert from IOS when the ticket app is not there.
+             040117: Display 'DELAYED' in ferry time if alert message contains 'DELAY:'
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -53,7 +54,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0326172015";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0401170000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -810,6 +811,7 @@ function HandleAlertReply(r) {
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
     DisplayAlertInfo();
+    WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary.
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -948,6 +950,14 @@ function WriteNextFerryTimes() {
 
     var str;
     var v = "";
+    // check for a DELAYED: or DELAYED nn MIN: and extract the string
+    var s = localStorage.getItem('alerttext');
+    var i = s.indexOf("DELAY");
+    if(i > 0) {
+        var j = s.indexOf(":", i);
+        if(j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+    }
+
     if (holiday) v = "Hoilday<br/>"
     v = v + "<span style='font-weight:bold'>Steilacoom: " + 
          FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
@@ -1705,7 +1715,7 @@ function DisplayLoadTimes() {
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(0) +
+        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago"
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";

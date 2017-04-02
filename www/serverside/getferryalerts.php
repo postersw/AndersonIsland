@@ -91,7 +91,13 @@ $alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
 
 // test for a delay
 $delay = "";
-if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancel") > 0) || (strpos($title, " delay") > 0) ) $delay = "DELAY: ";
+if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancel") > 0) || (strpos($title, " delay") > 0) ) {
+    $delay = "DELAYED: ";
+    $matches = "";
+    if(preg_match("\d\d minutes (late|behind)", $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+    else if(preg_match("delayed \d\d minutes", $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
+    else if(preg_match("\d\d minute delay", $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+}
 
 if($title != $desc) $title = $title . " ...>";
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
