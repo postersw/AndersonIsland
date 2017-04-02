@@ -127,6 +127,7 @@ var thanksgiving;
 var holiday;  // true if  holiday
 
 var gDayofWeekName = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+var gDayofWeekNameL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 var gDayofWeekShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var scheduledate = ["5/1/2014"];
 
@@ -1355,12 +1356,20 @@ function DisplayNextEvents(CE) {
         }
         // if Tomorrow or another day show the 1st 3 events
         // put date in
+        //if (aCEyymmdd != DisplayDate) {
+        //    if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong>";
+        //    else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
+        //    else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong>";
+        //}
+        //datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
+
         if (aCEyymmdd != DisplayDate) {
-            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong>";
-            else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
-            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong>";
+            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
+            else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
+            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
         }
-        datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
+        //datefmt += "<span style='margin-left:10px;'>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "</span><br/>";
+        datefmt += VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         if (nEvents >= 3) break; // exit after 3 events that are not today
