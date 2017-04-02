@@ -25,6 +25,7 @@
 //
 
 chdir("/home/postersw/public_html");
+date_default_timezone_set("America/Los_Angeles"); // set PDT
 $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
@@ -60,7 +61,7 @@ $alertts[11] = ":";
 // strip out day, and strip out -ms
 //echo ("  |pubDate=" . $alertts . " " . $title);
 // check expiration
-date_default_timezone_set("America/Los_Angeles"); // set PDT
+
 $talert=strtotime($alertts); // covert to timestamp
 //echo("  |talert:" . $talert . "  |"); echo(date("Y-m-d-H-i-s", $talert));// debug
 $t=time(); // current seconds in PDT I hope
@@ -90,7 +91,7 @@ $alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
 
 // test for a delay
 $delay = "";
-if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancelled") > 0) || (strpos($title, " canceled") > 0) || (strpos($title, " delay") > 0) ) $delay = "DELAY: ";
+if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancel") > 0) || (strpos($title, " delay") > 0) ) $delay = "DELAY: ";
 
 if($title != $desc) $title = $title . " ...>";
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
