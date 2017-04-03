@@ -11,26 +11,32 @@
 //      4/22/16. Added IOS.
 //      7/02/16. Reformatted date as "Jul 02, 4:45p"
 //      8/17/16. Added 'Default Message' to be displayed if there is no alert.
-//      4/01/17. Add "DELAY: " for late, behind, or delayed. This keyword is a flag to the app to display DELAYED.
+//      4/02/17. Add "DELAYED:" or "DELAYED nn MIN: " for late, behind, or delayed. This is displayed by the app.
 //  Sample RSS feed:
+//<rss version="2.0">
+//<channel>
+//<title>Pierce County, WA - Alert Center - Pierce County Ferry Rider Alert</title>
+//<link>http://www.co.pierce.wa.us/AlertCenter.aspx</link>
+//<lastBuildDate>Sun, 02 Apr 2017 16:47:11 -0800</lastBuildDate>
+//<description>Pierce County, WA - Get the latest alerts</description>
+//<language>en-us</language>
 //<item>
 //<title>The ferry is currently running 22 minutes late.</title>
-//<link>
-//http://www.co.pierce.wa.us/AlertCenter.aspx?AID=548
-//</link>
+//<link>http://www.co.pierce.wa.us/AlertCenter.aspx?AID=548</link>
 //<pubDate>Sat, 02 Jul 2016 16:58:06 -0800</pubDate>
-//<description>
-//The ferry is currently running 22 minutes late. Thank you for your patience.
-//</description>
-//
+//<description>The ferry is currently running 22 minutes late. Thank you for your patience.</description>
+//</channel>
+//</rss>
 
 chdir("/home/postersw/public_html");
+//chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 $alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
 
+//  $alertrssurl = "http://www.anderson-island.org/ferry_rsstest.txt";  // TEST URL/////// debug for local pc ///////////////
 //  Read the RSS feed. Isn't this easy! php is great.
 // try 10 times to get content
 for($i=0; $i<10; $i++) {
@@ -94,9 +100,9 @@ $delay = "";
 if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancel") > 0) || (strpos($title, " delay") > 0) ) {
     $delay = "DELAYED: ";
     $matches = "";
-    if(preg_match("\d\d minutes (late|behind)", $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
-    else if(preg_match("delayed \d\d minutes", $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
-    else if(preg_match("\d\d minute delay", $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+    if(preg_match('/\d\d minutes (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+    else if(preg_match('/delayed \d\d minutes/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
+    else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
 
 if($title != $desc) $title = $title . " ...>";
