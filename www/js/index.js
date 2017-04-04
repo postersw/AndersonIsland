@@ -54,7 +54,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0404170930";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0404171212";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1195,7 +1195,8 @@ function HandleCurrentWeatherReply(r) {
     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
         r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
             ", " + rain + " in. rain" +
-        "<br/>Sunrise: " + gDateSunrise.toLocaleTimeString() + ", Sunset: " + gDateSunset.toLocaleTimeString();
+        "<br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString() +
+        "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString() + "</span>";
 
     localStorage.setItem("currentweatherlong", currentlong);
 } // end of function
