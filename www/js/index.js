@@ -1686,8 +1686,9 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-
+ alert("ShowCachedData");///////////////////////////////////////////////////////////////////////////////////
     DisplayLoadTimes();
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
