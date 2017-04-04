@@ -203,7 +203,6 @@
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-        <allow-intent href="ttpapps.pcf:*" />
     </platform>
 
 
