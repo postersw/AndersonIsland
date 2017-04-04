@@ -3264,14 +3264,13 @@ function generateWeatherForecastPage() {
         //var row1 = table.insertRow(-1);
         //var t = r.dt_txt.substring(11, 13) * 100;  // hh00
         var timef = Number(r.dt);// unix gmt time in sec since 1970
+        if (gTimeStampms > (timef * 1000)) continue;// if this row is old, skip it. Happens when weather is not updated .
 
         fdate.setTime(timef * 1000);// force UTC
         newdate = fdate.getDate(); //dd
         var t = fdate.getHours() * 100 + fdate.getMinutes(); //hhmm
 
         // Insert New Row for table for new day 
-
-        //var newdate = r.dt_txt.substring(5, 11);// date
         if (newdate != olddate) {
             row1 = table.insertRow(-1); // dummy row
             var row1col1 = row1.insertCell(0);
