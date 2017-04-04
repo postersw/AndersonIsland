@@ -1686,7 +1686,7 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
- alert("ShowCachedData");///////////////////////////////////////////////////////////////////////////////////
+ alert("ShowCachedData");//////////////////////////////////////////////////////////////**DEBUG**
     DisplayLoadTimes();
 
 }
@@ -3416,11 +3416,11 @@ function StartApp() {
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
 
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
-    if(LSget("myver") == gMyVer) {
+   // if(LSget("myver") == gMyVer) { **DEBUG**
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
         ShowCachedData();
-    } else gForceCacheReload = true;
+  //  } else gForceCacheReload = true;
 
     // show Alert and Weather immediately.
     localStorage.removeItem("alerttime"); // force immediate reload of alert info
