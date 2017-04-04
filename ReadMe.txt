@@ -87,9 +87,13 @@ GIT CREATE NEW BRANCH
 	   If that doesn't work, try 'git fetch' from the command line.
 	   or run GitUI and click on "Remote -> Fetch from Origin" which will update things. Then restart Visual Studio.
 
+------------------------------------------------------------------------------------------------------------------------
+BUILD/DEBUG
+
 WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
 	Debug using chrome, F12. All features should work except pushbots.
+
 ANDROID DEBUG/BUILD
 	Build on PhoneGap build.  Then download the apk using the bar code scanner to open the download web page.
 	Alernatively run PhoneGap build on the phone and click on the apk icon to download it.
@@ -102,7 +106,6 @@ ANDROID DEBUG/BUILD
 	Debug for different phone screen sizes:  Put on web, open Chrome.  
 		Open www.anderson-island.org.  Select 'Developer tools' menu.
 	   Select 'Device Mode' (2nd icon from right).   Select the different phone screen sizes and checkout the results.
-
 
 DEBUG CHECKOUT:
 	0. Update config.xml for version and versionCode. Note for some reason I set the versionCode = 220
@@ -123,13 +126,25 @@ ANDROID GOOGLE PLAY STORE
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
 
-
-
+------------------------------------------------------------------------------------------------------------
 IOS DEBUG/BUILD 
-	to debug: in pg build, select the IOS 'AIADevelopmentPush' certificate (pw=dd). then build.  Then download to the device.
-	I think this is done by running pg build on the phone, and clicking on the ipa icon.
-	This works on moms iphone or ipad. Must be a registered device in developer.apple.com.
-	For deployment: click the 'AIADistributionPush' certificate.  enter key pw=dd. Then build.  
+	DEBUG
+	 in pg build, select the IOS 'AIADevPush040317' certificate (pw=dd). then build.  Then download to the device.
+	This is done by going to build.phonegap.com on the phone in safari, and clicking on the ipa icon.
+	This works on the registered devices in developer.apple.com. Currently Sue's iPad and Ester's iPhone 5.
+
+	To register a new device: 1. log in to developer.apple.com -> certificates -> Devices -> iPhone -> + -> enter the device UDID. 
+	2. You will need the UDID.  To get the UDID:   on the iphone safari browser, enter get.udid.io.  Accept the certificate. 
+	  then it gives you the UDID.  
+	3. copy the UDID into the udid  you got above when you hit the + .  Then click on Register.
+	4. Then go to Provisioning Proviles -> Development -> Edit -> Add devices.  Select the new device.  
+	  you will get a NEW provisioning profile.  Download it to my PC.  
+	5. Then upload this NEW profile with the existing dev p12 key to phonegap build (you can use the existing p12 key with an updated profile): 
+		go to build.phonegap.com, select the Anderson Island Assistant,  Edit Account -> Signing Keys -> IOS add a key
+		select the dev p12 key, and the new Provisioning Profile from the provisioning profile just downloaded. Upload them.
+
+	DEPLOYMENT
+	 click the 'AIADistributionPush' certificate.  enter key pw=dd. Then build.  
 	The resulting ipa must be uploaded using the virtual mac.  This ipa can NOT be run directly on mom's phone or ipad.
 	Start the virtual mac.  Go to the apple dev site.  
 	See Separate file: IOS_Certificates_HowTo.txt.
@@ -170,6 +185,157 @@ IOS DEBUG/BUILD
 	9. Click SAVE and SUBMIT FOR REVIEW.
 	10. You app will go into a waiting for review state.
 	11. Log out (under the apple icon).
+
+-----------------------------------------------------------------------------------------------------------------------
+
+IOS CERTIFICATES
+HISTORY
+These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
+3/12/17 Development Certificate (because original one expired)
+	AndersonIslandDevPush.mobileprovision (profile)  Uploaded to build.phonegap.com
+	posterswdev.p12  (cert in P12 format)		 Uploaded to build.phonegap.com
+	ios_development.cer (actual certificate) this cert is the one referenced by AndersonIslandDevPush.mobileprovision profile.
+	posterswdev.certSigningRequest 
+3/13/17 Production Distribution Certificate (because original one expired)
+	AIADistributionPush.mobileprovision (profile) uploaded to build.phonegap
+	posterswprod.p12  				uploaded to build.phonegap
+	ios_distribution.cer	this cert is the one referenced by AIADistributionPush profile.
+	posterswprod.certSigningRequest
+4/3/14  New Provisioning Profile for Esther's iPhone 5. Created new phonegap build signing key: "AIADevPush040317" consisting
+	of posterswdev.p12 cert and AndersonIslandDevPush.mobileprovision on my PC only which enables Esther's iPhone 5 for testing.
+
+HOW TO Create new Development/Production Certificate:
+	The overall process is: 
+		1. Generate a Certificate Signing Request (CSR) xxxx.certSigningRequest. using Keychain.
+		2. Use that to generate the Certificate on the developer.apple.com web site.
+		3. Import that certificate back into Keychain on the Mac. Then export the Public key to a P12 file.
+		4. Create a Provisioning Profile using the Certificate from #2 on the developer.apple.com web site. 
+		5. Download the MobileProfile file from #4.
+		6. Upload the MobileProfile and the P12 file to build.phonegap.com.
+	DETAILS:
+	Open Mac.
+		Open Safari. 
+	From Safari:
+		Log in to developer.apple.com. 
+		Go to Certificate.  
+		Click on '+' to create a new certificate.  Select 'iOS App Development'. Click on Continue.
+		PRODUCTION: click on 'App Store and Ad Hoc'.
+ 	Back to the Mac. 
+		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
+		To create a CSR file, follow the instructions below to create one using Keychain Access.
+		In the Applications folder on your Mac, open the Utilities folder and launch Keychain Access.
+	     KEYCHAIN ACCESS:
+		Within the Keychain Access drop down menu, select 
+			Keychain Access > Certificate Assistant > Request a Certificate from a Certificate Authority.
+		In the Certificate Information window, enter the following information:
+			In the User Email Address field, enter your email address. 'support@postersw.com'
+			In the Common Name field, create a name for your private key (posterswdev/prodkey.)p
+			The CA Email Address field should be left empty.
+			In the "Request is" group, select the "Saved to disk" option.
+			Click Continue within Keychain Access to complete the CSR generating process.
+			I used the file names posterswdev and posterswprod.certSigningRequest
+	Back to Safari.
+		developer.apple.com:
+		Upload the CSR file (from above): xxxx.certSigningRequest.
+		Now your certificate is done.
+		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
+	Back to the Mac.
+		Then double click the .cer file to install in Keychain Access.
+		It now shows up in Keychain Access- Certificates as
+			 'iPhone Developer Robert Bedoll' or iPhone Distribution: Robert Bedoll.
+	     KEYCHAIN ACCESS:
+		select Keys, and the key just added (posterswdev).  Select the PRIVATE key.
+		right click on Export.  Select the P12 File Format.
+		Set the file name to posterswdev or posterswprod.
+		click Save.  It will prompt for the new password. Create the pw='dd', enter it and click OK.
+		You'll be aked for the Login PW. Use the MacinCloud pw, 'pwd29837'.
+		You will now have a posterswdev.p12 or posterswprod.p12 file.
+		NOTE: posterswprod is really the iOS Distribution key.
+	Backk to Safari.
+		developer.apple.com:
+		Now select correct Provisioning Profile: AIADistributionPush or AndersonIslandDevPush. 
+		click Edit.
+		Add the new iOS Development or iOS Distribution (code signing) certificate.
+		Click on 'Generate.'
+		Download it to the desktop. It will be called AndersonIslandDevPush.mobileprovision.
+		NOTE: THE APP PROVISIONING PROFILE ONLY HAS THE iOS App Development Code Signing certificate.  
+			IT DOESNT HAVE THE PUSH CERTIFICATE. 
+			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
+		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.
+			It has no pw because Pushbots does not accept a pw. 
+
+		BUILD.PHONEGAP.COM
+		Log in to build.phonegap.com.  support@postersw.com 
+		Select Accounts -> Edit Account -> Signing keys.
+		Click on Add key, create a new key with the .P12 file just created and the .mobileprovision file just create.
+		Set the password to the password 'dd' you created above.
+
+
+---------------------------------------------------------------------------------------------------------------------
+APN CERTIFICATES from Bryan Musial 1/2015.
+
+The APNs certificate that you created is used by what the documentation refers to as the "APNs Provider" -- In the simplest case, this is your own server that is responsible for keeping track of APNs device tokens and generating APNs Push Payloads that instruct the APNs what message, sound, or badge to deliver to a specific device token. Just as the arrangement of executable code and other assets in your app is secured by a cryptographic signature (via your iPhone Development or iPhone Distribution certificate and associated provisioning profile), communications between your server and the Apple APNs gateway must also be secured to prevent a rogue 3rd party from masquerading as your server and sending spammy push messages to your users. This APNs SSL certificate is used to secure and authenticate your server's connection to the APNs, authorizing it to deliver push payloads to your app on user's devices -- Keep those certificates secure! If anyone gains access to the private key of the SSL certificate then they could send spammy pushes to your app!
+
+Your APNs Provider (PUSHBOTS) will need access to the private key for this SSL certificate. Without it, Apple's APNs gateways will reject any and all attempts to connect. Your provider, does not need to have your provisioning profiles -- this APNs certificate is entirely separate than the mechanisms used to code sign an iOS app, that is, the server only needs the server certificate, while the app needs the code signing certificate + provisioning profile. These two items do not intersect and do not exchange data with each other.
+
+It is true that your provisioning profiles (Development, Ad-Hoc Distribution, and App Store Distribution) will need to be reissued, but that is specifically to add the aps-environment entitlement to each of these profiles allowing apps signed with these profiles to connect with the APNs environments. To be absolutely clear, reissuing these profiles does not and should not add your APNs SSL certificate anywhere in the profile...your application code doesn't need to leverage this certificate in any way and would lead to a slight increase in your application's size.
+
+You can check if your current provisioning profiles include the aps-environment entitlement by opening Terminal, copy and pasting the following, taking care to update the path to your specific .mobileprovision:
+
+/usr/libexec/PlistBuddy -c 'Print :Entitlements' /dev/stdin <<< $(security cms -D -i /path/to/your/application.mobileprovision)
+
+This command does two things:
+
+Uses the security tool in OS X to extract the plist content from the .mobileprovision file identified after the -i argument and passes all of this content into...
+PlistBuddy printing the entire contents of the Entitlements key to screen.
+The output for a basic Development profile that has not been enabled for Push Notifications will resemble the following:
+
+Dict {
+  get-task-allow = true
+  com.apple.developer.team-identifier = ABC1DEF2G3
+  application-identifier = XYZW1ABC2D.com.mycompany.niftyapp
+  keychain-access-groups = Array {
+      XYZW1ABC2D.*
+  }
+}
+While the output for a basic Ad-Hoc or App Store Distribution that has not been enabled for Push Notifications will resemble:
+
+Dict {
+  get-task-allow = false
+  com.apple.developer.team-identifier = ABC1DEF2G3
+  application-identifier = XYZW1ABC2D.com.mycompany.niftyapp
+  keychain-access-groups = Array {
+      XYZW1ABC2D.*
+  }
+}
+Now that you have the APNs certificates issued for your app's AppId, you do need to step through and reissue your Development, Ad-Hoc, and Distribution provisioning profiles to add the aps-environment entitlement to each of your profiles.
+
+Navigate to Certificates, Identifiers, and Profiles tool and find one of the profiles associated with this application.
+Click the Edit button and walk through each step of the wizard -- you don't have to make any changes to the previously defined settings, you simply need the current profile reissued!
+Click the Download button at the end of the wizard.
+Drag and drop the updated profile on the Xcode icon on your Dock to install.
+If you run that same set of Terminal commands again on these new files (remember to update the path to the new .mobileprovision if necessary!) you'll now see that aps-environment key appear in your App's entitlements:
+
+Dict {
+  get-task-allow = true
+  aps-environment = development
+  com.apple.developer.team-identifier = ABC1DEF2G3
+  application-identifier = XYZW1ABC2D.com.mycompany.niftyapp
+  keychain-access-groups = Array {
+      XYZW1ABC2D.*
+  }
+}
+There are two values for this new key:
+
+aps-environment = development -- This will appear only on Development Provisioning Profiles and allows apps signed using iPhone Developer certificates and may only connect with the Sandbox APNs Environment
+aps-environment = production -- This will appear only on Distribution Provisioning Profiles (Ad-Hoc or App Store), allowing apps signed using iPhone Distribution certificates to connect with the Production APNs Environment
+Depending on which certificate you use to sign a build determines which APNs gateway your app will connect to and fetch a Push token as well as which gateway your app will receive push messages from. One of the most common errors developers make with respect to push notifications is mismatching how the app is signed with how their server is connecting to Apple's APNs gateways:
+
+Apps signed with Development certificates can only successfully negotiate APNs and receive Push Messages when the Provider is also connecting with the Development APNs SSL certificate to the Sandbox APNs gateway and using a sandbox device token in the payloads it generates.
+Apps signed with Distribution certificates can only successfully negotiate APNs and receive Push Messages when the Provider is also connecting with the Production APNs SSL certificate to the Production APNs gateway and using a production device token in the payloads it generates.
+Give it a shot and let us know how things go!
+
+-------------------------------------------------------------------------------------------------------------------------
 
 DATA LOADS
 	Data is loaded from:
