@@ -953,13 +953,15 @@ function WriteNextFerryTimes() {
     var v = "";
     // check for a DELAYED: or DELAYED nn MIN: and extract the string
     var s = localStorage.getItem('alerttext');
-    var i = s.indexOf("DELAY");
-    if(i > 0) {
-        var j = s.indexOf(":", i);
-        if(j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+    if(!IsEmpty(s)) {
+        var i = s.indexOf("DELAY");
+        if(i > 0) {
+            var j = s.indexOf(":", i);
+            if(j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+        }
     }
 
-    if (holiday) v = "Hoilday<br/>"
+    //if (holiday) v = v + "Hoilday<br/>"
     v = v + "<span style='font-weight:bold'>Steilacoom: " + 
          FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
     var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
