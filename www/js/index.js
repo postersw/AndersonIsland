@@ -54,7 +54,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0404170000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0404170930";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1671,7 +1671,6 @@ function backKeyDown() {
 // show all cached data, i.e. all data in localStorage.
 // 
 function ShowCachedData() {
-    alert("ShowCachedData1");//////////////////////////////////////////////////////////////**DEBUG**
     WriteNextFerryTimes();  // show cached ferry schedule
     ShowNextTides(); // show cached tide data
     DisplayAlertInfo();
@@ -1689,7 +1688,6 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
- alert("ShowCachedData2");//////////////////////////////////////////////////////////////**DEBUG**
     DisplayLoadTimes();
 
 }
@@ -3417,13 +3415,12 @@ function StartApp() {
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
-    alert("beforeparseferrytimes");//*DEBUG**
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
-   // if(LSget("myver") == gMyVer) { **DEBUG**
+    if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
         ShowCachedData();
-  //  } else gForceCacheReload = true;
+    } else gForceCacheReload = true;
 
     // show Alert and Weather immediately.
     localStorage.removeItem("alerttime"); // force immediate reload of alert info
