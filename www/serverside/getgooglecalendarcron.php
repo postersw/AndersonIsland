@@ -38,6 +38,7 @@
 //
 //  01/2017 - initial
 //  02/4/2017 - revised to force ; as 2nd char of event
+//  03/31/2017 - fix to prevent illegal end dates like 0631
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -47,11 +48,14 @@ $mds = $y . $m . $d; // mmdd
 $timemin = $y . "-" . $m . "-" . $d . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
 $ye = $y; // year end
 $me = $m + 3;
+$de = $d;
 if($me > 12) {  // if year rollover
     $me = $m2 - 12;
     $ye = strval($y++);
 }
-$timemax = $ye . "-" . sprintf("%02d", $me) . "-" .  $d . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
+if($me == 2 && $de > 28) $de = 28;  // prevent illegal feb  date
+if(($me == 9 || $me == 4 || $me == 6 || $me = 11) && ($de > 30)) $de = 30; // prevent illegal end date
+$timemax = $ye . "-" . sprintf("%02d", $me) . "-" .  $de . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
 echo "Events from $timemin to $timemax <br/>";
 
 $http = "https://www.googleapis.com/calendar/v3/calendars/orp3n7fmurrrdumicok4cbn5ds@group.calendar.google.com/events?singleEvents=True&key=AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0" .
@@ -60,7 +64,14 @@ $reply = file_get_contents($http);  // read the reply
 $jreply = json_decode($reply);  // decode the json reply
 //var_dump($jreply);
 echo count($jreply->items) . " items. <br/>";
-if (count($jreply->items) == 0) die( "No upcoming events found");
+
+// if an error
+if (count($jreply->items) == 0) {
+    echo "ERROR - no upcoming events returned. \n";
+    echo $reply; // print the error
+    die( "No upcoming events found");
+}
+
 print "Upcoming events:<br/>";
 $fce = fopen("comingevents.txt", "w");
 $n=0;
@@ -86,7 +97,7 @@ exit;
 //        ys = year e.g. '2017'
 // globals: jreply = the calendar list as a json object
 //          fce = the file to write to
-// 
+//
 function fcopy($etype, $ys) {
     global $jreply, $fce;
     $n = 0;
