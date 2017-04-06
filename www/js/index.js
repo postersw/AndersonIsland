@@ -1832,7 +1832,8 @@ function StartTicketApp() {
                 window.open(link, '_system');
             }
             var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
-            window.plugins.launcher.launch({ packageName: pkg}, successCallback, errorCallback);
+            //window.plugins.launcher.launch({ packageName: pkg }, successCallback, errorCallback);
+            Launcher.launch({ packageName: pkg }, successCallback, errorCallback);
 
             ////  com.lampa.startapp
             //var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
