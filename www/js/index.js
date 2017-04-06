@@ -1830,10 +1830,12 @@ function StartTicketApp() {
                 alert("Error! " + errMsg);
                 var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
                 window.open(link, '_system');
-            }
+            };
             var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
-            //window.plugins.launcher.launch({ packageName: pkg }, successCallback, errorCallback);
-            Launcher.launch({ packageName: pkg }, successCallback, errorCallback);
+            alert("before lanch " + pkg);
+            window.plugins.launcher.launch({packageName: pkg }, successCallback, errorCallback);
+            alert("after launch");
+            //Launcher.launch({ packageName: pkg }, successCallback, errorCallback);
 
             ////  com.lampa.startapp
             //var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
@@ -1854,7 +1856,7 @@ function StartTicketApp() {
                 alert("Error! " + errMsg);
                 var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
                 window.open(link, '_system');
-            }
+            };
             var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
             window.plugins.launcher.launch({ uri: pkg }, successCallback, errorCallback);
 
