@@ -57,6 +57,7 @@
   <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
     <string>For copying events to your personal calendar</string>
   </config-file>
+  <!-- Allow launch of ferry ticket app-->
   <config-file platform="ios" parent="LSApplicationQueriesSchemes" mode="replace">
   <array>
     <string>ttpapps.pcf</string>

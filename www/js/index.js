@@ -54,7 +54,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0406173";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0406174";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1823,10 +1823,8 @@ function StartTicketApp() {
             // ANDROID: 
             // Default handlers "com.hutchind.cordova.plugins.launcher"
             var successCallback = function (data) {
-                // if calling canLaunch() with getAppList:true, data will contain an array named "appList" with the package names of applications that can handle the uri specified.
             };
             var errorCallback = function (errMsg) {
-                //alert("Error! " + errMsg);
                 var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
                 window.open(link, '_system');
             };
@@ -1845,11 +1843,8 @@ function StartTicketApp() {
             // IOS:
             // Default handlers "com.hutchind.cordova.plugins.launcher"
             var successCallback = function (data) {
-                alert("Success!");
-                // if calling canLaunch() with getAppList:true, data will contain an array named "appList" with the package names of applications that can handle the uri specified.
             };
             var errorCallback = function (errMsg) {
-                alert("Error! " + errMsg);
                 var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
                 window.open(link, '_system');
             }
