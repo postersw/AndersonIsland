@@ -86,9 +86,9 @@
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <plugin name="pushbots-cordova-plugin" source="npm"/>
     <plugin name="cordova-plugin-calendar" source="npm"/>
-  <plugin name="com.lampa.startapp" platform="android" source="npm"/>  Works on Android. Does not work for IOS10. 
+  <!--<plugin name="com.lampa.startapp" platform="android" source="npm"/>  Works on Android. Does not work for IOS10. -->
   <!-- alternate launcher -->
-  <!--<plugin name="com.hutchind.cordova.plugins.launcher" platform="ios" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>-->
+  <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>
 
     <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> pick up android bugfix-->
     <!-- Third party plugins -->
