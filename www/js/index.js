@@ -1845,17 +1845,17 @@ function StartTicketApp() {
         } else {
             // IOS
             // Default handlers "com.hutchind.cordova.plugins.launcher"
-            var successCallback = function (data) {
-                alert("Success!");
-                // if calling canLaunch() with getAppList:true, data will contain an array named "appList" with the package names of applications that can handle the uri specified.
-            };
-            var errorCallback = function (errMsg) {
-                alert("Error! " + errMsg);
-                var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
-                window.open(link, '_system');
-            }
-            var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
-            window.plugins.launcher.launch({ uri: pkg }, successCallback, errorCallback);
+            //var successCallback = function (data) {
+            //    alert("Success!");
+            //    // if calling canLaunch() with getAppList:true, data will contain an array named "appList" with the package names of applications that can handle the uri specified.
+            //};
+            //var errorCallback = function (errMsg) {
+            //    alert("Error! " + errMsg);
+            //    var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
+            //    window.open(link, '_system');
+            //}
+            //var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
+            //window.plugins.launcher.launch({ uri: pkg }, successCallback, errorCallback);
 
             //  com.lampa.startapp
             //var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
