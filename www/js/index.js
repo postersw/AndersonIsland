@@ -1822,24 +1822,26 @@ function StartTicketApp() {
         if (isAndroid()) {
             // Android
             // Default handlers "com.hutchind.cordova.plugins.launcher"
-            var successCallback = function (data) {
-                alert("Success!");
-                // if calling canLaunch() with getAppList:true, data will contain an array named "appList" with the package names of applications that can handle the uri specified.
-            };
-            var errorCallback = function (errMsg) {
-                alert("Error! " + errMsg);
-                var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
-                window.open(link, '_system');
-            }
-            var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
-            window.plugins.launcher.launch({ packageName: pkg}, successCallback, errorCallback);
-            //  com.lampa.startapp
-            //var sApp = startApp.set({ "package": pkg});
-            //sApp.start(function () { /* success */
-            //}, function (error) { /* fail */
+            //var successCallback = function (data) {
+            //    alert("Success!");
+            //    // if calling canLaunch() with getAppList:true, data will contain an array named "appList" with the package names of applications that can handle the uri specified.
+            //};
+            //var errorCallback = function (errMsg) {
+            //    alert("Error! " + errMsg);
             //    var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
             //    window.open(link, '_system');
-            //});
+            //}
+            //var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
+            //window.plugins.launcher.launch({ packageName: pkg}, successCallback, errorCallback);
+
+            //  com.lampa.startapp
+            var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
+            var sApp = startApp.set({ "package": pkg});
+            sApp.start(function () { /* success */
+            }, function (error) { /* fail */
+                var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
+                window.open(link, '_system');
+            });
         } else {
             // IOS
             // Default handlers "com.hutchind.cordova.plugins.launcher"
