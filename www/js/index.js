@@ -54,7 +54,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0406171";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0406172";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1820,7 +1820,6 @@ function ShowFerryLocation() {
 function StartTicketApp() {
     if (isPhoneGap()) {
         if (isAndroid()) {
-             Android
             // Default handlers "com.hutchind.cordova.plugins.launcher"
             var successCallback = function (data) {
                 alert("Success!");
@@ -1856,7 +1855,7 @@ function StartTicketApp() {
                 alert("Error! " + errMsg);
                 var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
                 window.open(link, '_system');
-            };
+            }
             var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
             window.plugins.launcher.launch({ uri: pkg }, successCallback, errorCallback);
 
