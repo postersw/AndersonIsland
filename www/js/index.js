@@ -54,7 +54,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0401170000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0404171212";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -953,13 +953,15 @@ function WriteNextFerryTimes() {
     var v = "";
     // check for a DELAYED: or DELAYED nn MIN: and extract the string
     var s = localStorage.getItem('alerttext');
-    var i = s.indexOf("DELAY");
-    if(i > 0) {
-        var j = s.indexOf(":", i);
-        if(j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+    if(!IsEmpty(s)) {
+        var i = s.indexOf("DELAY");
+        if(i > 0) {
+            var j = s.indexOf(":", i);
+            if(j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+        }
     }
 
-    if (holiday) v = "Hoilday<br/>"
+    //if (holiday) v = v + "Hoilday<br/>"
     v = v + "<span style='font-weight:bold'>Steilacoom: " + 
          FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
     var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
@@ -1193,7 +1195,8 @@ function HandleCurrentWeatherReply(r) {
     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
         r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
             ", " + rain + " in. rain" +
-        "<br/>Sunrise: " + gDateSunrise.toLocaleTimeString() + ", Sunset: " + gDateSunset.toLocaleTimeString();
+        "<br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString() +
+        "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString() + "</span>";
 
     localStorage.setItem("currentweatherlong", currentlong);
 } // end of function
@@ -1686,8 +1689,8 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-
     DisplayLoadTimes();
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -1724,7 +1727,7 @@ function DisplayLoadTimes() {
         ", update counter: " + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago"
+        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
@@ -3262,14 +3265,13 @@ function generateWeatherForecastPage() {
         //var row1 = table.insertRow(-1);
         //var t = r.dt_txt.substring(11, 13) * 100;  // hh00
         var timef = Number(r.dt);// unix gmt time in sec since 1970
+        if (gTimeStampms > (timef * 1000)) continue;// if this row is old, skip it. Happens when weather is not updated .
 
         fdate.setTime(timef * 1000);// force UTC
         newdate = fdate.getDate(); //dd
         var t = fdate.getHours() * 100 + fdate.getMinutes(); //hhmm
 
         // Insert New Row for table for new day 
-
-        //var newdate = r.dt_txt.substring(5, 11);// date
         if (newdate != olddate) {
             row1 = table.insertRow(-1); // dummy row
             var row1col1 = row1.insertCell(0);
@@ -3413,7 +3415,6 @@ function StartApp() {
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
-
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
