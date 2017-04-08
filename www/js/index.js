@@ -55,7 +55,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0408171";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0408172";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -132,9 +132,10 @@ var gDayofWeekNameL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "
 var gDayofWeekShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var scheduledate = ["5/1/2014"];
 
-
 var openHoursLastUpdate; // time of last update
-
+var gAlertCounter = 0;
+var gFocusCounter = 0;
+var gResumeCounter = 0;
 
 
 // tides
@@ -809,6 +810,7 @@ function HandleAlertReply(r) {
     MarkOffline(false);
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+    gAlertCounter++; // count the alert reply
     var s = parseCache(r, "", "FERRY", "FERRYEND");
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
@@ -1640,7 +1642,9 @@ function timerUp() {
 
 /////////////////////////////////////////////////////////////////////////////
 // focus and blur events
+// focus: if > 60 sec since last update, call timerUp();
 function focusEvent() {
+    gFocusTimer++;
     if (gMyTimer == null) {  // if timer is off
         gMyTimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
         timerUp(); // restart the timer if needed
@@ -1660,7 +1664,9 @@ function blurEvent() {
 function onPause() {
 }
 
+//  resume: handle as a focus event.
 function onResume() {
+    gResumeCounter++;
     focusEvent();
 }
 
@@ -1726,14 +1732,15 @@ function ReloadCachedDataButton() {
 // DisplayLoadTimes() displays time data loaded
 function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
-        ", update counter: " + gUpdateCounter +
+        ", Update #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-        ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
+        ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
-        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
+        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
         "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago " +
-        "<br/>Alerts: " + (gTimeStampms/1000 - localStorage.getItem("alerttime")) + " sec ago.";
+        "<br/>Alerts: " + (gTimeStampms / 1000 - Number(localStorage.getItem("alerttime"))).toFixed(0) + " sec ago, #" + gAlertCounter.toFixed(0) +
+        "<br/>Focus #" + gFocusCounter.toFixed(0) + ", Resume #" + gResumeCounter.toFixed(0);
 
 }
 
