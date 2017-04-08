@@ -33,6 +33,7 @@
         1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
         1.11 032017: Remove alert from IOS when the ticket app is not there.
              040117: Display 'DELAYED' in ferry time if alert message contains 'DELAY:'
+             040817: Get Alerts every minute.
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
@@ -54,7 +55,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0406174";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0408171";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -773,17 +774,18 @@ function DisplayAlertInfo() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// getAlertInfo - without jQuery- gets the alert info from the server every 12 minutes via php and save it in 
+// getAlertInfo - without jQuery- gets the alert info from the server every minute via php and save it in 
 //      alerttext and alertdetail and ...
 //  Entry   'alerthide' = true to hide the alert in 'alerttext'
 //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
 //          'burnbanalert' = burn ban alert info
 //          'tanneralert' = tanner alert info
 function getAlertInfo() {
-    var alerttimeout = 480; // alert timeout in sec 8 minutes
+    //var alerttimeout = 480; // alert timeout in sec 8 minutes
+    var alerttimeout = 60; // alert timeout in sec. 1 min  as of 4/8/17, v1.11.
     var timestamp = Date.now() / 1000; // time in sec
     var t = localStorage.getItem("alerttime");
-    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 8 min.
+    if (t != null && (timestamp - Number(t)) < alerttimeout) return; // gets alert async every min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
     MarkOffline(false);
@@ -1630,7 +1632,7 @@ function timerUp() {
     // forecast every 4 hours
     getForecast(); // gets weather async every 4 hour. Timer is in routine.
 
-    // alerts every 12 minutes
+    // alerts every minute
     getAlertInfo();
 
     DisplayLoadTimes();
@@ -1689,7 +1691,7 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 
 }
 
@@ -1730,7 +1732,8 @@ function DisplayLoadTimes() {
         ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
         "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
-        "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
+        "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago " +
+        "<br/>Alerts: " + (gTimeStampms/1000 - localStorage.getItem("alerttime")) + " sec ago.";
 
 }
 
@@ -3446,7 +3449,7 @@ function StartApp() {
 
     // show Alert and Weather immediately.
     localStorage.removeItem("alerttime"); // force immediate reload of alert info
-    getAlertInfo(); // always get alert info every 10 minutes (time check is in routine)
+    getAlertInfo(); // always get alert info 
     getCurrentWeather(); // gets weather async every 20 min.
     getForecast(); // updates forecast every 2 hrs
 
@@ -3476,7 +3479,7 @@ function StartApp() {
     document.addEventListener("backbutton", backKeyDown, true);
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 }
 
 //</script>
