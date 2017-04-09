@@ -55,7 +55,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0408172";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0408174";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -135,7 +135,9 @@ var scheduledate = ["5/1/2014"];
 var openHoursLastUpdate; // time of last update
 var gAlertCounter = 0;
 var gFocusCounter = 0;
+var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
+var gResumeTime = 0;// saved value in sec
 
 
 // tides
@@ -1582,7 +1584,7 @@ function timerUp() {
 
     // everything you want to do every minute. These all go against localStorage strings, so no query
     InitializeDates(0);
-    gLastUpdatems = gTimeStampms;
+    gLastUpdatems = Date.now();
     gUpdateCounter++;
     document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
 
@@ -1644,13 +1646,15 @@ function timerUp() {
 // focus and blur events
 // focus: if > 60 sec since last update, call timerUp();
 function focusEvent() {
-    gFocusTimer++;
+    gFocusCounter++;
+    gFocusTime = Date.now();
     if (gMyTimer == null) {  // if timer is off
         gMyTimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
         timerUp(); // restart the timer if needed
     } else {
-        var d = new Date();
-        if ((d.getTime() - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
+        //var d = new Date();
+        //if ((d.getTime() - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
+        if ((gFocusTime - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
     }
 }
 
@@ -1667,6 +1671,7 @@ function onPause() {
 //  resume: handle as a focus event.
 function onResume() {
     gResumeCounter++;
+    gResumeTime = Date.now();
     focusEvent();
 }
 
@@ -1732,16 +1737,26 @@ function ReloadCachedDataButton() {
 // DisplayLoadTimes() displays time data loaded
 function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
-        ", Update #" + gUpdateCounter +
+        ", Update " + CalcElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
-        "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
-        "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago " +
-        "<br/>Alerts: " + (gTimeStampms / 1000 - Number(localStorage.getItem("alerttime"))).toFixed(0) + " sec ago, #" + gAlertCounter.toFixed(0) +
-        "<br/>Focus #" + gFocusCounter.toFixed(0) + ", Resume #" + gResumeCounter.toFixed(0);
+        "<br/>Forecast:" + CalcElapsedMin("forecasttime") + 
+        "CurrentWeather:" +  CalcElapsedMin("currentweathertime") + 
+        "<br/>Alerts: " + CalcElapsedSec("alerttime", 1) + " #" + gAlertCounter.toFixed(0) +
+        "<br/>Focus " + CalcElapsedTime("focustime") + " #" + gFocusCounter.toFixed(0) +
+        ", Resume " + CalcElapsedSec("resumetime") + " #" + gResumeCounter.toFixed(0);
 
+}
+
+//  CalcElapsedTime = calculate elapsed time between now and the time stored in the tag
+//  oldtime = saved seconds value (NOT ms)
+function CalcElapsedSec(oldtime) {
+    return (gTimeStampms / 1000 - oldtime).toFixed(0) + " sec ago";
+}
+function CalcElapsedMin(localstoragetag) {
+    return ((gTimeStampms / 1000 - Number(localStorage.getItem(localstoragetag)))/60).toFixed(0) + " min ago";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
