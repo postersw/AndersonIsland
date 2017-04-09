@@ -55,7 +55,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0408177";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0409171";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1741,14 +1741,14 @@ function ReloadCachedDataButton() {
 //////////////////////////////////////////////////////////////////////////////////////
 // DisplayLoadTimes() displays time data loaded
 function DisplayLoadTimes() {
-    document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
+    document.getElementById("reloadtime").innerHTML = "<br/>Stats:<br/>App started " + gAppStartedDate +
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
+        ", PBotsInit:" + (isPhoneGap()? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + 
-        "CurrentWeather:" + DispElapsedMin("currentweathertime") +
+        ", CurrentWeather:" + DispElapsedMin("currentweathertime") +
         "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
         "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
         ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0);
