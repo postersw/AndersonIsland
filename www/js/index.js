@@ -55,7 +55,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0408174";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0408177";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -134,6 +134,7 @@ var scheduledate = ["5/1/2014"];
 
 var openHoursLastUpdate; // time of last update
 var gAlertCounter = 0;
+var gAlertTime = 0; // saved value in sec
 var gFocusCounter = 0;
 var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
@@ -785,10 +786,9 @@ function DisplayAlertInfo() {
 //          'tanneralert' = tanner alert info
 function getAlertInfo() {
     //var alerttimeout = 480; // alert timeout in sec 8 minutes
-    var alerttimeout = 60; // alert timeout in sec. 1 min  as of 4/8/17, v1.11.
-    var timestamp = Date.now() / 1000; // time in sec
-    var t = localStorage.getItem("alerttime");
-    if (t != null && (timestamp - Number(t)) < alerttimeout) return; // gets alert async every min.
+    var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
+    //var timestamp = Date.now() / 1000; // time in sec
+    if ((Date.now() - gAlertTime) < alerttimeout) return; // gets alert async every min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
     MarkOffline(false);
@@ -810,8 +810,8 @@ function getAlertInfo() {
 
 function HandleAlertReply(r) {
     MarkOffline(false);
-    var timestamp = Date.now() / 1000; // time in sec
-    localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+    gAlertTime = Date.now(); // time in ms
+    //localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
     gAlertCounter++; // count the alert reply
     var s = parseCache(r, "", "FERRY", "FERRYEND");
     SaveFerryAlert(s);
@@ -1637,9 +1637,9 @@ function timerUp() {
     getForecast(); // gets weather async every 4 hour. Timer is in routine.
 
     // alerts every minute
-    getAlertInfo();
+    getAlertInfo(); // alerts every minute. Timer is in routine.
 
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1708,13 +1708,16 @@ function ShowCachedData() {
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Reload cached data - calls all the ajax calls to get the data and recache it in localStorage.
+//  Forces reload of: Daily cache
+//                  Alerts, weather forecast, current weather
 //
-function ReloadCachedData() {
+function
+    ReloadCachedData() {
     //alert("reload cached data");
     InitializeDates(0);
     GetDailyCache();  // no limit
     //GetComingEvents();// merged into GetDailyCache on 6/6/16
-    localStorage.removeItem("alerttime");
+    gAlertTime = 0; // force alert reload
     getAlertInfo();
     //localStorage.removeItem("tidesloadedmmdd"); // force tides
     //getTideData();// no limitmerged into GetDailyCache on 6/6/16
@@ -1722,13 +1725,15 @@ function ReloadCachedData() {
     getForecast();// limited to every 120 min
     localStorage.removeItem("currentweathertime"); // force weather reload at start of new day
     getCurrentWeather();// limited to every 20 min
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 }
 
+//  ReloadCachedDataButton - called only when user manually asks to reload the data
 var gReloadCachedDataButtonInProgress = false;
 function ReloadCachedDataButton() {
     if (gMenuOpen) CloseMenu();  // close the menu            if (gMenuOpen) CloseMenu();  // close the men
     gReloadCachedDataButtonInProgress = true;
+
     ReloadCachedData();
 
 }
@@ -1737,26 +1742,29 @@ function ReloadCachedDataButton() {
 // DisplayLoadTimes() displays time data loaded
 function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
-        ", Update " + CalcElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
+        ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
-        "<br/>Forecast:" + CalcElapsedMin("forecasttime") + 
-        "CurrentWeather:" +  CalcElapsedMin("currentweathertime") + 
-        "<br/>Alerts: " + CalcElapsedSec("alerttime", 1) + " #" + gAlertCounter.toFixed(0) +
-        "<br/>Focus " + CalcElapsedTime("focustime") + " #" + gFocusCounter.toFixed(0) +
-        ", Resume " + CalcElapsedSec("resumetime") + " #" + gResumeCounter.toFixed(0);
+        "<br/>Forecast:" + DispElapsedMin("forecasttime") + 
+        "CurrentWeather:" + DispElapsedMin("currentweathertime") +
+        "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
+        "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
+        ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0);
 
 }
 
-//  CalcElapsedTime = calculate elapsed time between now and the time stored in the tag
-//  oldtime = saved seconds value (NOT ms)
-function CalcElapsedSec(oldtime) {
-    return (gTimeStampms / 1000 - oldtime).toFixed(0) + " sec ago";
+//  DispElapsedSec = calculate  & display elapsed time between now and the passed in time
+//  oldtime = saved millisec (ms) value 
+function DispElapsedSec(oldtime) {
+    if (oldtime == 0) return "";
+    return ((Date.now() - oldtime)/1000).toFixed(0) + " sec ago";
 }
-function CalcElapsedMin(localstoragetag) {
-    return ((gTimeStampms / 1000 - Number(localStorage.getItem(localstoragetag)))/60).toFixed(0) + " min ago";
+//  DispElapsedMin = calculate  & display elapsed time between now and the time stored in the tag
+//  localstoragetag = local storage saved seconds value 
+function DispElapsedMin(localstoragetag) {
+    return ((Date.now()/1000 - Number(localStorage.getItem(localstoragetag))) / 60).toFixed(0) + " min ago";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -3469,12 +3477,6 @@ function StartApp() {
         ShowCachedData();
     } else gForceCacheReload = true;
 
-    // show Alert and Weather immediately.
-    localStorage.removeItem("alerttime"); // force immediate reload of alert info
-    getAlertInfo(); // always get alert info 
-    getCurrentWeather(); // gets weather async every 20 min.
-    getForecast(); // updates forecast every 2 hrs
-
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
@@ -3491,7 +3493,14 @@ function StartApp() {
 
     if (gForceCacheReload) {
         document.getElementById("reloadreason").innerHTML = reloadreason;
-        ReloadCachedData();
+        ReloadCachedData();  // reload daily cache, alerts (always), weather (always)
+    } else {
+        // show Alert and Weather immediately.
+        gAlertTime = 0; // force immediate reload of alert info
+        getAlertInfo(); // always get alert info 
+        getCurrentWeather(); // gets weather async every 20 min.
+        getForecast(); // updates forecast every 2 hrs
+
     }
     
     // set refresh timners
