@@ -33,7 +33,9 @@
         1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
         1.11 032017: Remove alert from IOS when the ticket app is not there.
              040117: Display 'DELAYED' in ferry time if alert message contains 'DELAY:'
+             040617: Switch Ticket launcher to hutchind.cordova.plugins.launcher that works for the iphone. 
              040817: Get Alerts every minute.
+             041017: Change sunrise/sunset to hh:mm. 
  * 
  *  copyright 2016, Bob Bedoll
  * All Javascript removed from index.html
