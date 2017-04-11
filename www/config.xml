@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.11.0410172"
+        version   = "1.11.0410173"
         versionCode="2225" 
-        android:versionName="1.11.0410172"> 
+        android:versionName="1.11.0410173"> 
         <!-- versionCode 2225 for 1.11 3/20/17-->
         <!-- versionCode 2224 for 1.10 3/14/17-->
         <!-- versionCode 2223 for 1.9 3/10/17-->
@@ -78,7 +78,7 @@
     <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
      <!--<gap:plugin name="org.apache.cordova.console" />-->
     <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-    <plugin name="cordova-plugin-device"  source="npm"/>
+  <!--<plugin name="cordova-plugin-device"  source="npm"/> TEST DEBUG------------------------------------- -->
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
     <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
     <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
