@@ -78,7 +78,7 @@
     <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
      <!--<gap:plugin name="org.apache.cordova.console" />-->
     <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-  <!--<plugin name="cordova-plugin-device"  source="npm"/> TEST DEBUG------------------------------------- -->
+  <!--<plugin name="cordova-plugin-device"  source="npm"/> TEST DEBUG xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
     <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
     <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
