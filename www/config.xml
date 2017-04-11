@@ -90,7 +90,7 @@
     <plugin name="cordova-plugin-inappbrowser" source="npm"/>
   <!--<gap:plugin name="org.apache.cordova.media" />-->
     <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-    <plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> <!-- ANDROID ONLY 10/14/16-->
+  <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> xxxxxxxxxxxxxxxxxxx ANDROID ONLY 10/14/16-->
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <plugin name="pushbots-cordova-plugin" source="npm"/>
     <plugin name="cordova-plugin-calendar" source="npm"/>
