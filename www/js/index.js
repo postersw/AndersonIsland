@@ -58,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0411171";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0411172";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -3462,6 +3462,7 @@ function StartApp() {
     }
     
     Show("mainpage");  // now display the main page
+    Show("vermsg"); // display the version
 
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
