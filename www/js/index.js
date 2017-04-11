@@ -36,8 +36,9 @@
              040617: Switch Ticket launcher to hutchind.cordova.plugins.launcher that works for the iphone. 
              040817: Get Alerts every minute.
              041017: Change sunrise/sunset to hh:mm. 
+             041117: remove splash screen for android and hide mainpage during startup.
  * 
- *  copyright 2016, Bob Bedoll
+ *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -57,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0410176";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.11.0411171";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -257,51 +258,6 @@ function GetTimeMS() {
     return d.getTime(); // milisec since 1970
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// ValidFerryRun return true if a valid ferry time, else false.
-// the crazy special rules go here.
-// flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules
-//  A=July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
-//  F=every day except 1st and 3rd wednesdays of every month
-//  G=1st and 3rd Tue only
-//  X=Friday Only labor day-12/31, 0101-6/30,
-//  Y=Fridays only 7/1=labor day
-
-//function ValidFerryRun(flag) {
-//    if (flag.indexOf("*") > -1) return true; // good every day
-//    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
-//    if (holiday) {
-//        if (flag.indexOf("H") > -1) { // yes a valid run		 
-//            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
-//            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
-//                if (!((gMonthDay == 1231) || (gMonthDay == 1224) || (gMonthDay == 703))) return false; // if not 1231,1224,or 703, its not valid		
-//                if (gDayofWeek >= 1 && gDayofWeek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
-//                return false;
-//            } else return true;  // holiday		
-//        } else return false;
-//    }
-
-
-//    if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
-//    // special cases F, skip 1st and 3rd wednesday of every month
-//    if (flag.indexOf("F") > -1) {
-//        if (gDayofWeek != 3) return true;  // if not wednesday, accept it
-//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-//        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
-//    }
-//    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
-//        if (gDayofWeek != 2) return false;  // if not tuesday reject it
-//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-//        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
-//    }
-//    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
-//        if ((gDayofWeek == 5) && ((gMonthDay >= laborday) || (gMonthDay <= 630))) return true;
-//    }
-//    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
-//        if ((gDayofWeek == 5) && (gMonthDay >= 701) && (gMonthDay <= laborday)) return true;
-//    }
-//    return false; // not a valid run;
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // ValidFerryRun return true if a valid ferry time, else false.
@@ -3505,6 +3461,8 @@ function StartApp() {
 
     }
     
+    Show("mainpage");  // now display the main page
+
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
     window.addEventListener("focus", focusEvent);
@@ -3514,11 +3472,6 @@ function StartApp() {
     document.addEventListener("resume", onResume, false);
     //DisplayLoadTimes();
 
-    Show("mainpage");
+
 
 }
-
-//</script>
-
-
-
