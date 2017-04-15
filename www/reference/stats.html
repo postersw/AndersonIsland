@@ -39,6 +39,7 @@
         var UDateCountV = new Array();
         UDateCountV[0] = [0, 0, 0, 0, 0, 0,0,0,0,0];
         var UDateV = ["1.3.", "1.6.", "1.07", "1.08", "1.09", "1.10", "1.11", "1.12", "1.13", "1.14"];
+        var UDateOS = ["1.3.", "1.6.", "IOS", "And", "And", "Both", "IOS", "And", "1.13", "1.14"];
         var UDateCount = [0]; // uses/date
         var UDateUses = [0]; // total uses/date (main page views per date)
         var UDateOldCount = [0]; // Old uses/date
@@ -287,6 +288,11 @@
                 UDateV[0] + "</td><td>" + UDateV[1] + "</td><td>" + UDateV[2] + "</td><td>" + UDateV[3] + "</td><td>" + UDateV[4] + "</td><td>" + UDateV[5] +
                 "</td><td>" + UDateV[6] + "</td><td>" + UDateV[7] + "</td><td>" + UDateV[8] + "</td><td>" + UDateV[9] +
                 "</td></tr>";
+             stail = "<tr><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td>" +
+                UDateOS[0] + "</td><td>" + UDateOS[1] + "</td><td>" + UDateOS[2] + "</td><td>" + UDateOS[3] + "</td><td>" + UDateOS[4] + "</td><td>" + UDateOS[5] +
+                "</td><td>" + UDateOS[6] + "</td><td>" + UDateOS[7] + "</td><td>" + UDateOS[8] + "</td><td>" + UDateOS[9] +
+                "</td></tr>";
+
              s6 = "<br/><strong>Uses by Date</strong><table>" + shead;
              for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + (UDateCount[i] + UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
                  UDateCount[i] + "</td><td>" + UDateUses[i] + "</td><td>" +
@@ -294,7 +300,7 @@
                  (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
                  UDateCountV[i][0] + "</td><td>" + UDateCountV[i][1] + "</td><td>" + UDateCountV[i][2] + "</td><td>" + UDateCountV[i][3] + "</td><td>" + UDateCountV[i][4] + "</td><td>" + UDateCountV[i][5] +
                                  "</td><td>" + UDateCountV[i][6] + "</td><td>" + UDateCountV[i][7] + "</td><td>" + UDateCountV[i][8] + "</td><td>" + UDateCountV[i][9] + "</td></tr>";
-            s6 +=  shead + "</table>";
+            s6 +=  shead + stail + "</table>";
 
             document.getElementById("a").innerHTML = s1 + sos + sv + s2 + s3 + s5 + s6;
        }
