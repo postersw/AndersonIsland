@@ -33,8 +33,12 @@
         1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
         1.11 032017: Remove alert from IOS when the ticket app is not there.
              040117: Display 'DELAYED' in ferry time if alert message contains 'DELAY:'
+             040617: Switch Ticket launcher to hutchind.cordova.plugins.launcher that works for the iphone. 
+             040817: Get Alerts every minute.
+             041017: Change sunrise/sunset to hh:mm. 
+             041117: remove splash screen for android and hide mainpage during startup.
  * 
- *  copyright 2016, Bob Bedoll
+ *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -54,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.11.0404171212";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.12.0411173";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -131,9 +135,13 @@ var gDayofWeekNameL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "
 var gDayofWeekShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var scheduledate = ["5/1/2014"];
 
-
 var openHoursLastUpdate; // time of last update
-
+var gAlertCounter = 0;
+var gAlertTime = 0; // saved value in sec
+var gFocusCounter = 0;
+var gFocusTime = 0; // saved value in sec
+var gResumeCounter = 0;
+var gResumeTime = 0;// saved value in sec
 
 
 // tides
@@ -250,51 +258,6 @@ function GetTimeMS() {
     return d.getTime(); // milisec since 1970
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-// ValidFerryRun return true if a valid ferry time, else false.
-// the crazy special rules go here.
-// flag: *=always, H=holiday, 0-6=days of week, AFXY=special rules
-//  A=July 3, Christmas Eve, New Year's Eve Only if Monday-Friday
-//  F=every day except 1st and 3rd wednesdays of every month
-//  G=1st and 3rd Tue only
-//  X=Friday Only labor day-12/31, 0101-6/30,
-//  Y=Fridays only 7/1=labor day
-
-//function ValidFerryRun(flag) {
-//    if (flag.indexOf("*") > -1) return true; // good every day
-//    // holiday - use holiday schedule only.  Any run on a holiday must have * or H.
-//    if (holiday) {
-//        if (flag.indexOf("H") > -1) { // yes a valid run		 
-//            // the A rule:July 3, Christmas Eve, New Year's Eve AND Only if Monday-Friday
-//            if (flag.indexOf("A") > -1) { //	July 3, Christmas Eve, New Year's Eve Only if Monday-Friday		 +        else return false;
-//                if (!((gMonthDay == 1231) || (gMonthDay == 1224) || (gMonthDay == 703))) return false; // if not 1231,1224,or 703, its not valid		
-//                if (gDayofWeek >= 1 && gDayofWeek <= 5) return true; // if 1231, 1224, or 703 and M-F, its good
-//                return false;
-//            } else return true;  // holiday		
-//        } else return false;
-//    }
-
-
-//    if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
-//    // special cases F, skip 1st and 3rd wednesday of every month
-//    if (flag.indexOf("F") > -1) {
-//        if (gDayofWeek != 3) return true;  // if not wednesday, accept it
-//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-//        if (week != 0 && week != 2) return true; // if not 1st or 3rd wednesday, accept it
-//    }
-//    if (flag.indexOf("G") > -1) { //G 1 & 3rd Tue only
-//        if (gDayofWeek != 2) return false;  // if not tuesday reject it
-//        week = Math.floor((gDayofMonth - 1) / 7);  // week: 0,1,2,3
-//        if (week == 0 || week == 2) return true; // if  1st or 3rd Tue, accept it
-//    }
-//    if (flag.indexOf("X") > -1) {  // Friday Only labor day-12/31, 0101-6/30,
-//        if ((gDayofWeek == 5) && ((gMonthDay >= laborday) || (gMonthDay <= 630))) return true;
-//    }
-//    if (flag.indexOf("Y") > -1) {  // Fridays only 7/1=labor day
-//        if ((gDayofWeek == 5) && (gMonthDay >= 701) && (gMonthDay <= laborday)) return true;
-//    }
-//    return false; // not a valid run;
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // ValidFerryRun return true if a valid ferry time, else false.
@@ -773,17 +736,17 @@ function DisplayAlertInfo() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// getAlertInfo - without jQuery- gets the alert info from the server every 12 minutes via php and save it in 
+// getAlertInfo - without jQuery- gets the alert info from the server every minute via php and save it in 
 //      alerttext and alertdetail and ...
 //  Entry   'alerthide' = true to hide the alert in 'alerttext'
 //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
 //          'burnbanalert' = burn ban alert info
 //          'tanneralert' = tanner alert info
 function getAlertInfo() {
-    var alerttimeout = 480; // alert timeout in sec 8 minutes
-    var timestamp = Date.now() / 1000; // time in sec
-    var t = localStorage.getItem("alerttime");
-    if (t != null && (timestamp - t) < alerttimeout) return; // gets alert async every 8 min.
+    //var alerttimeout = 480; // alert timeout in sec 8 minutes
+    var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
+    //var timestamp = Date.now() / 1000; // time in sec
+    if ((Date.now() - gAlertTime) < alerttimeout) return; // gets alert async every min.
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
     MarkOffline(false);
@@ -805,8 +768,9 @@ function getAlertInfo() {
 
 function HandleAlertReply(r) {
     MarkOffline(false);
-    var timestamp = Date.now() / 1000; // time in sec
-    localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+    gAlertTime = Date.now(); // time in ms
+    //localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
+    gAlertCounter++; // count the alert reply
     var s = parseCache(r, "", "FERRY", "FERRYEND");
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
@@ -1195,8 +1159,8 @@ function HandleCurrentWeatherReply(r) {
     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
         r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
             ", " + rain + " in. rain" +
-        "<br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString() +
-        "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString() + "</span>";
+        "<br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'}) +
+        "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'}) + "</span>";
 
     localStorage.setItem("currentweatherlong", currentlong);
 } // end of function
@@ -1578,7 +1542,7 @@ function timerUp() {
 
     // everything you want to do every minute. These all go against localStorage strings, so no query
     InitializeDates(0);
-    gLastUpdatems = gTimeStampms;
+    gLastUpdatems = Date.now();
     gUpdateCounter++;
     document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
 
@@ -1630,21 +1594,25 @@ function timerUp() {
     // forecast every 4 hours
     getForecast(); // gets weather async every 4 hour. Timer is in routine.
 
-    // alerts every 12 minutes
-    getAlertInfo();
+    // alerts every minute
+    getAlertInfo(); // alerts every minute. Timer is in routine.
 
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // focus and blur events
+// focus: if > 60 sec since last update, call timerUp();
 function focusEvent() {
+    gFocusCounter++;
+    gFocusTime = Date.now();
     if (gMyTimer == null) {  // if timer is off
         gMyTimer = setInterval("timerUp()", 60000);  // restart timeout in milliseconds. currently 60 seconds
         timerUp(); // restart the timer if needed
     } else {
-        var d = new Date();
-        if ((d.getTime() - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
+        //var d = new Date();
+        //if ((d.getTime() - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
+        if ((gFocusTime - gLastUpdatems) > 60000) timerUp(); // if > 60 secs
     }
 }
 
@@ -1658,7 +1626,10 @@ function blurEvent() {
 function onPause() {
 }
 
+//  resume: handle as a focus event.
 function onResume() {
+    gResumeCounter++;
+    gResumeTime = Date.now();
     focusEvent();
 }
 
@@ -1689,19 +1660,22 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Reload cached data - calls all the ajax calls to get the data and recache it in localStorage.
+//  Forces reload of: Daily cache
+//                  Alerts, weather forecast, current weather
 //
-function ReloadCachedData() {
+function
+    ReloadCachedData() {
     //alert("reload cached data");
     InitializeDates(0);
     GetDailyCache();  // no limit
     //GetComingEvents();// merged into GetDailyCache on 6/6/16
-    localStorage.removeItem("alerttime");
+    gAlertTime = 0; // force alert reload
     getAlertInfo();
     //localStorage.removeItem("tidesloadedmmdd"); // force tides
     //getTideData();// no limitmerged into GetDailyCache on 6/6/16
@@ -1709,13 +1683,15 @@ function ReloadCachedData() {
     getForecast();// limited to every 120 min
     localStorage.removeItem("currentweathertime"); // force weather reload at start of new day
     getCurrentWeather();// limited to every 20 min
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
 }
 
+//  ReloadCachedDataButton - called only when user manually asks to reload the data
 var gReloadCachedDataButtonInProgress = false;
 function ReloadCachedDataButton() {
     if (gMenuOpen) CloseMenu();  // close the menu            if (gMenuOpen) CloseMenu();  // close the men
     gReloadCachedDataButtonInProgress = true;
+
     ReloadCachedData();
 
 }
@@ -1723,15 +1699,30 @@ function ReloadCachedDataButton() {
 //////////////////////////////////////////////////////////////////////////////////////
 // DisplayLoadTimes() displays time data loaded
 function DisplayLoadTimes() {
-    document.getElementById("reloadtime").innerHTML = "App started " + gAppStartedDate +
-        ", update counter: " + gUpdateCounter +
+    document.getElementById("reloadtime").innerHTML = "<br/>Stats:<br/>App started " + gAppStartedDate +
+        ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-        ", Tides:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit:" + ((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago" +
-        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") + 
-        "<br/>Forecast:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("forecasttime"))) / 60) + " min ago, " +
-        "CurrentWeather:" + Math.ceil(((gTimeStampms / 1000) - Number(localStorage.getItem("currentweathertime"))) / 60) + " min ago ";
+        ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
+        ", PBotsInit:" + (isPhoneGap()? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
+        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
+        "<br/>Forecast:" + DispElapsedMin("forecasttime") + 
+        ", CurrentWeather:" + DispElapsedMin("currentweathertime") +
+        "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
+        "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
+        ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0);
 
+}
+
+//  DispElapsedSec = calculate  & display elapsed time between now and the passed in time
+//  oldtime = saved millisec (ms) value 
+function DispElapsedSec(oldtime) {
+    if (oldtime == 0) return "";
+    return ((Date.now() - oldtime)/1000).toFixed(0) + " sec ago";
+}
+//  DispElapsedMin = calculate  & display elapsed time between now and the time stored in the tag
+//  localstoragetag = local storage saved seconds value 
+function DispElapsedMin(localstoragetag) {
+    return ((Date.now()/1000 - Number(localStorage.getItem(localstoragetag))) / 60).toFixed(0) + " min ago";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1820,23 +1811,45 @@ function ShowFerryLocation() {
 function StartTicketApp() {
     if (isPhoneGap()) {
         if (isAndroid()) {
-            // Android
-            var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
-            var sApp = startApp.set({ "package": pkg});
-            sApp.start(function () { /* success */
-            }, function (error) { /* fail */
+            // ANDROID: 
+            // Default handlers "com.hutchind.cordova.plugins.launcher"
+            var successCallback = function (data) {
+            };
+            var errorCallback = function (errMsg) {
                 var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
                 window.open(link, '_system');
-            });
+            };
+            var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
+            window.plugins.launcher.launch({packageName: pkg }, successCallback, errorCallback);
+
+            ////  com.lampa.startapp
+            //var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
+            //var sApp = startApp.set({ "package": pkg});
+            //sApp.start(function () { /* success */
+            //}, function (error) { /* fail */
+            //    var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
+            //    window.open(link, '_system');
+            //});
         } else {
-            // IOS
-            var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
-            var sApp = startApp.set(pkg);
-            sApp.start(function () { /* success */
-            }, function (error) { /* fail */
+            // IOS:
+            // Default handlers "com.hutchind.cordova.plugins.launcher"
+            var successCallback = function (data) {
+            };
+            var errorCallback = function (errMsg) {
                 var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
                 window.open(link, '_system');
-            });
+            }
+            var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
+            window.plugins.launcher.launch({ uri: pkg }, successCallback, errorCallback);
+
+            //  com.lampa.startapp
+            //var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
+            //var sApp = startApp.set(pkg);
+            //sApp.start(function () { /* success */
+            //}, function (error) { /* fail */
+            //    var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
+            //    window.open(link, '_system');
+            //});
         }
     } else {
         // WEB
@@ -3422,12 +3435,6 @@ function StartApp() {
         ShowCachedData();
     } else gForceCacheReload = true;
 
-    // show Alert and Weather immediately.
-    localStorage.removeItem("alerttime"); // force immediate reload of alert info
-    getAlertInfo(); // always get alert info every 10 minutes (time check is in routine)
-    getCurrentWeather(); // gets weather async every 20 min.
-    getForecast(); // updates forecast every 2 hrs
-
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
@@ -3444,9 +3451,19 @@ function StartApp() {
 
     if (gForceCacheReload) {
         document.getElementById("reloadreason").innerHTML = reloadreason;
-        ReloadCachedData();
+        ReloadCachedData();  // reload daily cache, alerts (always), weather (always)
+    } else {
+        // show Alert and Weather immediately.
+        gAlertTime = 0; // force immediate reload of alert info
+        getAlertInfo(); // always get alert info 
+        getCurrentWeather(); // gets weather async every 20 min.
+        getForecast(); // updates forecast every 2 hrs
+
     }
     
+    Show("mainpage");  // now display the main page
+    Show("vermsg"); // display the version
+
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
     window.addEventListener("focus", focusEvent);
@@ -3454,10 +3471,8 @@ function StartApp() {
     document.addEventListener("backbutton", backKeyDown, true);
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
-    DisplayLoadTimes();
+    //DisplayLoadTimes();
+
+
+
 }
-
-//</script>
-
-
-

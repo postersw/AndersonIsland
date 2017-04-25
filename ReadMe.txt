@@ -60,6 +60,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/19/17. Ver 1.10.0314172342 Android version # 2224, released through Google Play @2300. (662 installs).
 03/19/17. Branch Ver111 created. All IOS icons moves to www/res/icon/ios/. 
 03/23/17. Ver 1.11.032317 to Web.  Remove '0 rain' from WEATHER line.
+04/10/17. Ver 1.11.0410171 to IOS App Store. Fixes IOS icons for iphone 5 & 6. Fixes Launch Ticket app for iphone.
+		  Gets alerts every minute. 
+04/13/17. Ver 1.12.0411173 to Android Google Play. Version#2225.  Removes splash screen for startup speedup.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:

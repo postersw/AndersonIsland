@@ -24,7 +24,7 @@
     1.9.031017:  Added Ferry ticket link.
     1.10.031417: Made ferry ticket link narrower for smaller screens.
 	
-    Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
+    Copyright (c) 2016-2017 Robert Bedoll, Poster Software LLC.
 
     Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
 
@@ -43,7 +43,7 @@
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <!-- removed user-scalable=no, maximum-scale=1 -->
-    <meta name="viewport" content="initial-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" /> <!--device-dpi" />-->
+    <meta name="viewport" content="initial-scale=1, width=device-width,height=device-height,target-densitydpi=medium-dpi,user-scalable=no" /> <!--device-dpi" />-->
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>AIA - Anderson Island Assistant</title>
@@ -103,7 +103,7 @@
       <div style="margin-top:40px"> <!-- scrollable area -->
       <div id="ipfix2" style="width:100%;font-size:small;display:none">&nbsp</div>  <!-- for iphone header --> 
    <!-- --------------------------------------------------------------------------------------------------- -->   
-     <div id="mainpage"  style="display:block">
+     <div id="mainpage"  style="display:none">
         <span id="topline" style="font-size:small;margin-top:0px;margin-bottom:0px;margin-left:6px;">Tap an entry for more information.</span>
         <!--App message-->
         <div id='androidapp' style="display:none;background-color:lightgray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');" >
@@ -123,7 +123,7 @@
  <table align="center" style="width:100%;padding:0;border-collapse:collapse";>
         <tr id='ferryrow' style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
             <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
-            <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;">Next : </td>
+            <td id="ferrytimes" style="font-size:small;margin-top:4px;margin-bottom:4px;"> </td>
         </tr>
 
         <tr style="background-color:azure;" >
@@ -135,30 +135,21 @@
                         <td style="text-align:center" onclick="StartTicketApp()">TICKETS</td>
                     </tr>
                 </table>
-
-
-<!--
-                <span onclick="ShowFerryWebCam()">&nbsp&nbsp  WEBCAM&nbsp</span>
-                <span style="font-weight:normal;color:gray"">|</span>
-                <span onclick="ShowFerryLocation()">&nbspLOCATION&nbsp</span>
-                <span style="font-weight:normal;color:gray"">|</span>
-                <span onclick="StartTicketApp()">&nbspTICKETS</span>  -->
-
-              </td>
+            </td>
         </tr>
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
             <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px">
 
             TIDES </td>
-            <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px">Next tides:</td>
+            <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px"> </td>
          </tr>
 
         <tr style="background-color:honeydew"  onclick="ShowWeatherPage();"> 
             <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px">
             WEATHER </td>
             <td style="font-size:small;margin-top:4px;margin-bottom:0px">
-                <span id="weather" >Current weather:</span><br />
+                <span id="weather" ><br />Current weather:</span><br />
                 <span id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </span>
             </td> 
 
@@ -167,29 +158,28 @@
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('events');">
             <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
             EVENTS </td>
-            <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;">Next Event:</td>
+            <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
         </tr>
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('activity');">
             <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
             ACTIVITY </td>
-            <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;">Next Activity:</td>
+            <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
         </tr>
 
      <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
             <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px">OPEN<br /> HOURS</td>
-             <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px">
-            </td>
+             <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px"> </td>
          </tr>
      
         <tr style="background-color:lightyellow"  onclick="ShowBurnBan();"> 
             <td style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
             BURNBAN </td>
-            <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.</td>
+            <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.<br /></td>
          </tr>
                 
         <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">  
             <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">TANNER</td>
-            <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.</td>
+            <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.<br /></td>
         </tr>
              <tr style="background-color:#ccffcc"  onclick="ShowParks()"> 
             <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
@@ -238,13 +228,7 @@
         <button style="width:40%;" onclick="ShowFerry();">Web Site</button>
         <p id="ferrymessage"> </p>
         <table id='ferrytable' style="border:thin solid black;border-collapse:collapse;padding-left:10px">
-            <!--
-            <tr style="background-color:black;color:white">
-                <td>Steilacoom</td>
-                <td>| Anderson Island&nbsp</td>
-                <td>| Ketron&nbsp</td>
-            </tr>
-            -->
+            
         </table>
         <hr />
         <p id="schdate"></p>
@@ -273,16 +257,7 @@
 <!-- COMING EVENTS ------------------------------------------------------------------------------------------>
 
    <div id="comingeventspage" style="display:none">
-        <!--<h1 id="comingeventsH1" style="display:none">
-            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
-            COMING EVENTS
-           <button style="background-color:blue;color:white;float:right" onclick="ShowOtherCalendars();">MORE</button>
-        </h1>
-        <h1 id="comingactivitiesH1" style="display:none">
-            <button style="background-color:blue;color:white;float:left" onclick="ShowMainPage();">&larr;BACK</button>
-            COMING ACTIVITIES
-            <button style="background-color:blue;color:white;float:right" onclick="ShowOtherCalendars();">MORE</button>
-        </h1> -->
+        
         <div style="margin:10px;padding-top:10px">
         <div id="othercalendars" style="display:none">
             <p>CALENDARS:<br />
@@ -602,16 +577,17 @@
        
 </div>
 </div>
-<!-- debugging times ----------------------------------------------------------------------------------->
+<!-- version message ----------------------------------------------------------------------------------->
 
-        <div id="offlinemsg" style="display:none;color:magenta;margin-top:2px;margin-bottom:2px;margin-left:6px;">No network connection. </div>
+   <div id="offlinemsg" style="display:none;color:magenta;margin-top:2px;margin-bottom:2px;margin-left:6px;">No network connection. </div>
 
-         <p> &nbsp  Updates every minute.&nbsp  
+   <div id="vermsg" style="display:none">
+               <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
-        <span id="versionnumber" style="font-size:x-small">  &nbsp  &nbsp   AIA Ver: 1.9.030917	</span>
-        <span style="font-size:x-small"> [032617]</span>
-
+        <span id="versionnumber" style="font-size:x-small"> &nbsp &nbsp AIA Ver: 1.9.030917	</span>
+        <span style="font-size:x-small"> [0411173]</span>
         </p>
+    </div>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
 
 <div id="modaldialog" style="display:none;position:fixed;z-index:1;padding-top:20px;left:0;top:0;

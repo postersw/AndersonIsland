@@ -5,10 +5,10 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.11.0404170931"
+        version   = "1.12.0411173"
         versionCode="2225" 
-        android:versionName="1.11.040417"> 
-        <!-- versionCode 2225 for 1.11 3/20/17-->
+        android:versionName="1.12.0411173"> 
+        <!-- versionCode 2225 for 1.12 4/11/17.  1.11 3/20/17-->
         <!-- versionCode 2224 for 1.10 3/14/17-->
         <!-- versionCode 2223 for 1.9 3/10/17-->
         <!-- versionCode=2220 on 10/13/16 1.7. Used by Android to trigger an upgrade. -->
@@ -37,7 +37,8 @@
     <!-- <preference name="SplashScreen"               value="Default.png" />-->
     <!-- <preference name="SplashScreenDelay"          value="3000" />-->
     <preference name="SplashMaintainAspectRatio"  value="true" />
-    <preference name="ShowSplashScreenSpinner" value="true" />
+  <!--<preference name="ShowSplashScreenSpinner" value="true" />  DEBUG TEST-->
+    <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
     <preference name="target-device"              value="universal" />      <!-- all: possible values handset, tablet, or universal -->
     <preference name="fullscreen"                 value="false" />           <!-- all: hides the status bar at the top of the screen -->
@@ -47,7 +48,7 @@
     <preference name="ios-statusbarstyle"         value="black-opaque" />   <!-- ios: black-translucent will appear black because the PhoneGap webview doesn't go beneath the status bar -->
     <preference name="detect-data-types"          value="true" />           <!-- ios: controls whether data types (such as phone no. and dates) are automatically turned into links by the system -->
     <preference name="exit-on-suspend"            value="false" />          <!-- ios: if set to true, app will terminate when home button is pressed -->
-    <preference name="show-splash-screen-spinner" value="true" />           <!-- ios: if set to false, the spinner won't appear on the splash screen during app loading -->
+  <!--<preference name="show-splash-screen-spinner" value="true" />          ios: if set to false, the spinner won't appear on the splash screen during app loading -->
     <preference name="auto-hide-splash-screen"    value="true" />           <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
     <preference name="disable-cursor"             value="false" />          <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
     <preference name="android-minSdkVersion"      value="14" />              <!-- android: MIN SDK version supported on the target device. MAX version is blank by default. -->
@@ -57,6 +58,13 @@
   <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
     <string>For copying events to your personal calendar</string>
   </config-file>
+  <!-- Allow launch of ferry ticket app-->
+  <config-file platform="ios" parent="LSApplicationQueriesSchemes" mode="replace">
+  <array>
+    <string>ttpapps.pcf</string>
+  </array>
+  </config-file>
+  
     <!--
         Define a specific version of PhoneGap to build into your app.
         <preference name="phonegap-version"       value="3.5.0" />
@@ -66,11 +74,11 @@
 
     <!-- Core plugins -->
     <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
-  <!--<gap:plugin name="org.apache.cordova.camera" />-->
+    <!--<gap:plugin name="org.apache.cordova.camera" />-->
     <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
-     <!--<gap:plugin name="org.apache.cordova.console" />-->
+    <!--<gap:plugin name="org.apache.cordova.console" />-->
     <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-    <plugin name="cordova-plugin-device"  source="npm"/>
+    <plugin name="cordova-plugin-device"  source="npm"/> 
     <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
     <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
     <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
@@ -78,22 +86,20 @@
     <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
     <!--<gap:plugin name="org.apache.cordova.geolocation" />-->
     <!--<gap:plugin name="org.apache.cordova.globalization" />-->
-  <!--<gap:plugin name="org.apache.cordova.inappbrowser" />-->  10/13/16. Removed the inapp browser to build on ios.
     <plugin name="cordova-plugin-inappbrowser" source="npm"/>
-  <!--<gap:plugin name="org.apache.cordova.media" />-->
+    <!--<gap:plugin name="org.apache.cordova.media" />-->
     <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-    <plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> <!-- ANDROID ONLY 10/14/16-->
+    <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 	  <plugin name="pushbots-cordova-plugin" source="npm"/>
-    <plugin name="cordova-plugin-calendar" source="npm"/>  
-    <plugin name="com.lampa.startapp" source="npm"/>  
+    <plugin name="cordova-plugin-calendar" source="npm"/>
+    <!--<plugin name="com.lampa.startapp" platform="android" source="npm"/>  Works on Android. Does not work for IOS10. -->
+    <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>
 
     <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> pick up android bugfix-->
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
-    <!--
-        <gap:plugin name="com.phonegap.plugins.barcodescanner" />
-    -->
+    <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
   
 
     <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
@@ -201,8 +207,7 @@
         <allow-intent href="market:*" />
     </platform>
     <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
+      <allow-navigation href="ttpapps.pcf://" />
     </platform>
 
 
