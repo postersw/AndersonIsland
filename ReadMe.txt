@@ -63,6 +63,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 04/10/17. Ver 1.11.0410171 to IOS App Store. Fixes IOS icons for iphone 5 & 6. Fixes Launch Ticket app for iphone.
 		  Gets alerts every minute. 
 04/13/17. Ver 1.12.0411173 to Android Google Play. Version#2225.  Removes splash screen for startup speedup.
+05/14/17. Ver 1.13 branch Ver113 created.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -74,8 +75,11 @@ GIT CREATE NEW BRANCH
 		Select 'master' in the Branch dropdown.   
 		Select the Branch dropdown again, and fill in the name of the new branch. Then select Create.
 		Then go to  Visual Studio on local machine and create a new local branch from this branch: 
-			Branches screen. Right click on AndersonIsland (master) and select Create New Local Branch.
-		    Enter local name (Verxxx) and from: origin/verxxx.   Check 'Checkout branch' and 'Track remote branch'. Click on 'Create Branch'.
+			Select Branches menu in VS. Select Master.  
+			Go to Sync screen.  sync.
+			Go back to Branches screen.  Under remotes/origin, the new branch (Vernnn) should be visible.
+			Double click remotes/origin->the new branch.  
+			This will create a new local branch of the same name and check it out and set it to track the remote.
 	2a. Alternative to #2: Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
