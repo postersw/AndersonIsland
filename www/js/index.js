@@ -58,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.12.0411173";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05150015";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -143,6 +143,9 @@ var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
 var gResumeTime = 0;// saved value in sec
 
+// ferry time switches
+var gFerryShowIn = 1; // show (in nnm) on 1st time
+var gFerryShow3 = 0; // show 3 times
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -842,11 +845,18 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1])) {
-            if (RawTimeDiff(gTimehhmm, ferrytimes[i]) < 13) {
-                ft = ft + "<span style='color:red'>" + ShortTime(ferrytimes[i]) + "</span>";
-            } else {
-                ft = ft + ShortTime(ferrytimes[i]);
+            ft = ft + ShortTime(ferrytimes[i]);
+            // insert remaining time
+            if (nruns == 0 && gFerryShowIn) {
+                var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
+                if (rtd < 15) ft = ft + "<span style='font-weight:normal;color:red'> (in " + rtd + "m)</span>";
+                else if (rtd < 100) ft = ft + "<span style='font-weight:normal'> (in " + rtd + "m)</span>";
             }
+            //if (RawTimeDiff(gTimehhmm, ferrytimes[i]) < 13) {
+            //    ft = ft + "<span style='color:red'>" + ShortTime(ferrytimes[i]) + "</span>";
+            //} else {
+            //    ft = ft + ShortTime(ferrytimes[i]);
+            //}
             if (ferrytimeK != "") { // add ketron time for this run
                 if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
                     ketron = true;
