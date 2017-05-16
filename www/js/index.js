@@ -58,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05152300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05160940";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -340,6 +340,14 @@ function timeDiff(hhmm1, hhmm2) {
     var diffm;
     diffm = RawTimeDiff(hhmm1, hhmm2);
     return Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
+}
+
+// timeDiffhm - returns formatted time difference as nnh nnm, e.g. 1h 3m
+function timeDiffhm(hhmm1, hhmm2) {
+    var diffm;
+    diffm = RawTimeDiff(hhmm1, hhmm2);
+    if (diffm < 60) return diffm + "m";
+    return Math.floor(diffm / 60) + "h " + (diffm % 60) + "m";
 }
 ////////////////////////////////////////////////////////////////////////////////////
 // RawTimeDiff returns the time difference in minutes; hhmm2 - hhmm1
@@ -888,7 +896,7 @@ function WriteNextFerryTimes() {
 
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;'><td style='padding:0px;margin:0;'>Steilacoom: </td>" +
      FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    var a = "<tr style='font-weight:bold;color:blue;'><td style='padding:2px;margin:0;'>Anderson: </td>" +
+    var a = "<tr style='font-weight:bold;color:blue;'><td style='padding:1px;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
 }
@@ -916,8 +924,9 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
-                if (rtd < 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + rtd + "m)</span>";
-                else if (rtd < 100) ft = ft + "<span style='font-weight:normal'> (" + rtd + "m)</span>";
+                var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
+                if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";
+                else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
             //ft = ft + "</td>";
             //if (RawTimeDiff(gTimehhmm, ferrytimes[i]) < 13) {
@@ -932,7 +941,6 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
                 } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
             }
             ft = ft + "&nbsp&nbsp</td>";
-            ketront = ketront + "&nbsp&nbsp</td>";
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
 
@@ -941,9 +949,9 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
     if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA);
-    //if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
+
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:gray'><td style='padding:2px;margin:0;'>Ketron:</td>" + ketront;
+    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:gray'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
     return ft;
 }
 
@@ -960,8 +968,9 @@ function FindNextSingleFerryTime(ferrytimes) {
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1])) {
             var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
-            if (rtd < 13) return ShortTime(ferrytimes[i]) + "(in <span style='color:red'>" + rtd  + " min)</span>";
-            else return ShortTime(ferrytimes[i]) + "(in " + rtd  + " min)";
+            var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
+            if (rtd < 13) return ShortTime(ferrytimes[i]) + "<span style='color:red'> (in " + ftd + ")</span>";
+            else return ShortTime(ferrytimes[i]) + " (in " + ftd  + ")";
         }
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
@@ -1316,10 +1325,10 @@ function ShowNextTides() {
                 document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
             }
             nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
-                 " (in " + timeDiff(gTimehhmm, tidehhmm) + ")<br/>";
+                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
-            nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(gTimehhmm, tidehhmm) + ")";
+            nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
@@ -2941,7 +2950,7 @@ function ShowTideDataPage(periods, showcurrent) {
                 //currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
                 if (periods[i].type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
                 else currentTide = "Incoming since: ";
-                currentTide += ShortTime(tidehhmm) + " (for " + timeDiff(tidehhmm, gTimehhmm) + ")";
+                currentTide += ShortTime(tidehhmm) + " (for " + timeDiffhm(tidehhmm, gTimehhmm) + ")";
                 oldtideheight = Number(periods[i].heightFT);
                 oldtidetime = tidehhmm;
                 oldtide = 0;
@@ -2958,7 +2967,7 @@ function ShowTideDataPage(periods, showcurrent) {
                         "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(gMonthDay) +
                         "&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
-                    currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(gTimehhmm, tidehhmm) + ")";
+                    currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
                     nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
                 }
             } else if (oldtide == 1) {  // save next tide
