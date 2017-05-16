@@ -58,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05150015";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05151700";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -527,6 +527,35 @@ function NotifyColor(onoff) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+//  Ferry Schedule Main Page Settings
+
+//  FerryShowInOn/Off set the gFerryShowIn switch to control the countdown to arrival time
+//  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" (absent=1, '0'=0, kinda backwards)
+function FerryShowInOn() {
+    gFerryShowIn = 1; // turn on show flag
+    localStorage.removeItem("ferryshowin"); // NOTE: 1 is actually the absence of this label, because it is the default case
+    WriteNextFerryTimes();
+}
+function FerryShowInOff() {
+    gFerryShowIn = 0; // turn on show flag
+    localStorage.setItem("ferryshowin", 0);
+    WriteNextFerryTimes();
+}
+
+//  FerryShow3On/Off set the gFerry3 switch to control the countdown to arrival time
+//  Exit: sets gFerryShow3 (1 or 0) and local storage "ferryshow3 ("1" or "0")
+function FerryShow3On() {
+    gFerryShow3 = 1; // turn on show flag
+    localStorage.setItem("ferryshow3", 1);
+    WriteNextFerryTimes();
+}
+function FerryShow3Off() {
+    gFerryShow3 = 0; // turn on show flag
+    localStorage.removeItem("ferryshow3");
+    WriteNextFerryTimes();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 // Determine whether the file loaded from PhoneGap or the web
 //  exit    true if phonegap, otherwise undefined. So test for true only.
 function isPhoneGap() {
@@ -863,7 +892,8 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
                     ketront = ketront + ShortTime(ferrytimeK[i]);
                 } else ketront = ketront + " ------- ";
             }
-            if (nruns > 0) break;  // show 2 runs
+            if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
+            if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
             ft = ft + ",&nbsp&nbsp ";
             ketront = ketront + ",&nbsp&nbsp ";
             nruns++;
@@ -3436,6 +3466,10 @@ function StartApp() {
         else NotifyColor(0);
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
+    // Ferry schedule settings
+    if (LSget("ferryshowin") == "0") gFerryShowIn = 0;
+    if (LSget("ferryshow3") == "1") gFerryShow3 = 1;
+
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
@@ -3444,6 +3478,7 @@ function StartApp() {
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
+
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
