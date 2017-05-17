@@ -948,7 +948,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         };
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
-    if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA);
+    if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA, nruns);
 
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
     if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:gray'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
@@ -979,16 +979,23 @@ function FindNextSingleFerryTime(ferrytimes) {
 
 //  FindNextFerryTimeTomorrow - finds the 1st run on the NEXT day
 //  Entry   SA = S or A
+//          nruns = 0 if table time column 1
 //  Exit    returns string with 1st valid run for tomorrow
-function FindNextFerryTimeTomorrow(SA) {
+function FindNextFerryTimeTomorrow(SA, nruns) {
     var i;
+    var Timehhmm = gTimehhmm; // save current time
     InitializeDates(1);   // tomorrow
     var ferrytimes = UseFerryTime(SA); // get the ferry time for tomorrow
     for (i = 0; i < ferrytimes.length; i = i + 2) {
         if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
     }
+    var ft = "<td style='color:gray;font-weight:normal;padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
+    // insert remaining time. 
+    if (nruns == 0 && gFerryShowIn) {
+        ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
+    }
     InitializeDates(0); // reset to today
-    if (i < ferrytimes.length) return "<td style='color:gray;font-weight:norma;padding:0;margin:0;''>" + ShortTime(ferrytimes[i]) + "</td>";
+    if (i < ferrytimes.length) return ft + "</td>";
 }
 
 
