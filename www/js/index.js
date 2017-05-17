@@ -58,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05150015";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05160940";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -341,6 +341,14 @@ function timeDiff(hhmm1, hhmm2) {
     diffm = RawTimeDiff(hhmm1, hhmm2);
     return Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
 }
+
+// timeDiffhm - returns formatted time difference as nnh nnm, e.g. 1h 3m
+function timeDiffhm(hhmm1, hhmm2) {
+    var diffm;
+    diffm = RawTimeDiff(hhmm1, hhmm2);
+    if (diffm < 60) return diffm + "m";
+    return Math.floor(diffm / 60) + "h " + (diffm % 60) + "m";
+}
 ////////////////////////////////////////////////////////////////////////////////////
 // RawTimeDiff returns the time difference in minutes; hhmm2 - hhmm1
 function RawTimeDiff(hhmm1, hhmm2) {
@@ -524,6 +532,35 @@ function NotifyColor(onoff) {
         document.getElementById('notifyon').setAttribute("style", "color:gray");
         document.getElementById('notifyoff').setAttribute("style", "color:white")
     }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//  Ferry Schedule Main Page Settings
+
+//  FerryShowInOn/Off set the gFerryShowIn switch to control the countdown to arrival time
+//  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" (absent=1, '0'=0, kinda backwards)
+function FerryShowInOn() {
+    gFerryShowIn = 1; // turn on show flag
+    localStorage.removeItem("ferryshowin"); // NOTE: 1 is actually the absence of this label, because it is the default case
+    WriteNextFerryTimes();
+}
+function FerryShowInOff() {
+    gFerryShowIn = 0; // turn on show flag
+    localStorage.setItem("ferryshowin", 0);
+    WriteNextFerryTimes();
+}
+
+//  FerryShow3On/Off set the gFerry3 switch to control the countdown to arrival time
+//  Exit: sets gFerryShow3 (1 or 0) and local storage "ferryshow3 ("1" or "0")
+function FerryShow3On() {
+    gFerryShow3 = 1; // turn on show flag
+    localStorage.setItem("ferryshow3", 1);
+    WriteNextFerryTimes();
+}
+function FerryShow3Off() {
+    gFerryShow3 = 0; // turn on show flag
+    localStorage.removeItem("ferryshow3");
+    WriteNextFerryTimes();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -827,6 +864,44 @@ function CloseMenu() {
     gMenuOpen = false;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// WriteNextFerryTimes Finds the next ferry times and puts them into the Dom for the FRONT PAGE
+//
+function WriteNextFerryTimes() {
+    // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
+    // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
+    //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
+    //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
+    // at this point, i = the next valid ferry run
+
+    var str;
+    var v = "";
+    // check for a DELAYED: or DELAYED nn MIN: and extract the string
+    var s = localStorage.getItem('alerttext');
+    if (!IsEmpty(s)) {
+        var i = s.indexOf("DELAY");
+        if (i > 0) {
+            var j = s.indexOf(":", i);
+            if (j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+        }
+    }
+
+    //if (holiday) v = v + "Hoilday<br/>"
+    //v = v + "<span style='font-weight:bold'>Steilacoom: " + 
+    //     FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
+    //var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
+    //         FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
+    //document.getElementById("ferrytimes").innerHTML = v + a;
+
+    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;'><td style='padding:0px;margin:0;'>Steilacoom: </td>" +
+     FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
+    var a = "<tr style='font-weight:bold;color:blue;'><td style='padding:1px;margin:0;'>Anderson: </td>" +
+             FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
+    document.getElementById("ferrytimes").innerHTML = v + a;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // return the next ferry time as a string. 
 //      entry ferrytimes is the array of times and days (see ferrytimeA)
@@ -845,13 +920,15 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1])) {
-            ft = ft + ShortTime(ferrytimes[i]);
+            ft = ft + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
-                if (rtd < 15) ft = ft + "<span style='font-weight:normal;color:red'> (in " + rtd + "m)</span>";
-                else if (rtd < 100) ft = ft + "<span style='font-weight:normal'> (in " + rtd + "m)</span>";
+                var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
+                if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";
+                else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
+            //ft = ft + "</td>";
             //if (RawTimeDiff(gTimehhmm, ferrytimes[i]) < 13) {
             //    ft = ft + "<span style='color:red'>" + ShortTime(ferrytimes[i]) + "</span>";
             //} else {
@@ -860,21 +937,21 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
             if (ferrytimeK != "") { // add ketron time for this run
                 if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
                     ketron = true;
-                    ketront = ketront + ShortTime(ferrytimeK[i]);
-                } else ketront = ketront + " ------- ";
+                    ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i]) + "</td>";
+                } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
             }
-            if (nruns > 0) break;  // show 2 runs
-            ft = ft + ",&nbsp&nbsp ";
-            ketront = ketront + ",&nbsp&nbsp ";
+            ft = ft + "&nbsp&nbsp</td>";
+            if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
+            if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
+
             nruns++;
         };
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
     if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA);
- 
-    //if (ShowTimeDiff) ft = ft + " (in " + timeDiff(gTimehhmm, ferrytimes[i]) + ")";
+
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-    if ((ferrytimeK != null) && ketron) ft = ft + "<br><span style='font-weight:bold;color:gray'>Ketron:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp " + ketront + "</span>";
+    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:gray'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
     return ft;
 }
 
@@ -891,8 +968,9 @@ function FindNextSingleFerryTime(ferrytimes) {
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1])) {
             var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
-            if (rtd < 13) return ShortTime(ferrytimes[i]) + "(in <span style='color:red'>" + rtd  + " min)</span>";
-            else return ShortTime(ferrytimes[i]) + "(in " + rtd  + " min)";
+            var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
+            if (rtd < 13) return ShortTime(ferrytimes[i]) + "<span style='color:red'> (in " + ftd + ")</span>";
+            else return ShortTime(ferrytimes[i]) + " (in " + ftd  + ")";
         }
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
@@ -910,37 +988,7 @@ function FindNextFerryTimeTomorrow(SA) {
         if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
     }
     InitializeDates(0); // reset to today
-    if (i < ferrytimes.length) return "<span style='font-weight:normal'>" + ShortTime(ferrytimes[i]) + " tomorrow</span>";
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////
-// Finds the next ferry times and puts them into the Dom for the FRONT PAGE
-function WriteNextFerryTimes() {
-    // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
-    // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
-    //var ferrytimeS = [545, "H123456A", 645, "*", 800, "*", 900, "*", 1000, "F", 1200, "*", 1410, "*", 1510, "*", 1610, "*", 1710, "*", 1830, "*", 1930, "*", 2040, "4560H", 2200, "X6H", 2300, "Y"];
-    //var ferrytimeA = [615, "H123456A", 730, "*", 830, "*", 930, "*", 1030, "F", 1230, "*", 1440, "*", 1540, "*", 1640, "*", 1740, "*", 1900, "*", 2000, "*", 2110, "4560H", 2230, "X6H", 2330, "Y"];
-    // at this point, i = the next valid ferry run
-
-    var str;
-    var v = "";
-    // check for a DELAYED: or DELAYED nn MIN: and extract the string
-    var s = localStorage.getItem('alerttext');
-    if(!IsEmpty(s)) {
-        var i = s.indexOf("DELAY");
-        if(i > 0) {
-            var j = s.indexOf(":", i);
-            if(j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
-        }
-    }
-
-    //if (holiday) v = v + "Hoilday<br/>"
-    v = v + "<span style='font-weight:bold'>Steilacoom: " + 
-         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
-    var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
-             FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
-    document.getElementById("ferrytimes").innerHTML = v + a;
+    if (i < ferrytimes.length) return "<td style='color:gray;font-weight:norma;padding:0;margin:0;''>" + ShortTime(ferrytimes[i]) + "</td>";
 }
 
 
@@ -1277,10 +1325,10 @@ function ShowNextTides() {
                 document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
             }
             nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
-                 " (in " + timeDiff(gTimehhmm, tidehhmm) + ")<br/>";
+                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
-            nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(gTimehhmm, tidehhmm) + ")";
+            nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
@@ -2902,7 +2950,7 @@ function ShowTideDataPage(periods, showcurrent) {
                 //currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
                 if (periods[i].type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
                 else currentTide = "Incoming since: ";
-                currentTide += ShortTime(tidehhmm) + " (for " + timeDiff(tidehhmm, gTimehhmm) + ")";
+                currentTide += ShortTime(tidehhmm) + " (for " + timeDiffhm(tidehhmm, gTimehhmm) + ")";
                 oldtideheight = Number(periods[i].heightFT);
                 oldtidetime = tidehhmm;
                 oldtide = 0;
@@ -2919,7 +2967,7 @@ function ShowTideDataPage(periods, showcurrent) {
                         "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(gMonthDay) +
                         "&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
-                    currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiff(gTimehhmm, tidehhmm) + ")";
+                    currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
                     nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
                 }
             } else if (oldtide == 1) {  // save next tide
@@ -3436,6 +3484,10 @@ function StartApp() {
         else NotifyColor(0);
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
+    // Ferry schedule settings
+    if (LSget("ferryshowin") == "0") gFerryShowIn = 0;
+    if (LSget("ferryshow3") == "1") gFerryShow3 = 1;
+
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
@@ -3444,6 +3496,7 @@ function StartApp() {
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
+
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
