@@ -58,7 +58,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05160940";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05172300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -977,25 +977,32 @@ function FindNextSingleFerryTime(ferrytimes) {
     return "tomorrow";
 }
 
-//  FindNextFerryTimeTomorrow - finds the 1st run on the NEXT day
+//  FindNextFerryTimeTomorrow - finds the 1st runs on the NEXT day
 //  Entry   SA = S or A
 //          nruns = 0 if table time column 1
 //  Exit    returns string with 1st valid run for tomorrow
 function FindNextFerryTimeTomorrow(SA, nruns) {
-    var i;
+    var i = 0;
+    var ft = "";
     var Timehhmm = gTimehhmm; // save current time
     InitializeDates(1);   // tomorrow
     var ferrytimes = UseFerryTime(SA); // get the ferry time for tomorrow
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (ValidFerryRun(ferrytimes[i + 1])) break; // break out on valid time
-    }
-    var ft = "<td style='color:gray;font-weight:normal;padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
-    // insert remaining time. 
-    if (nruns == 0 && gFerryShowIn) {
-        ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
-    }
+        if (ValidFerryRun(ferrytimes[i + 1])) {
+            ft = ft + "<td style='color:gray;font-weight:normal;padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
+            // insert remaining time
+            if (nruns == 0 && gFerryShowIn) {
+                ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
+            }
+            ft = ft + "&nbsp&nbsp</td>";
+            if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
+            if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
+            nruns++;
+        }
+   } 
+
     InitializeDates(0); // reset to today
-    if (i < ferrytimes.length) return ft + "</td>";
+    if (i < ferrytimes.length) return ft 
 }
 
 
