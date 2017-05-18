@@ -3341,6 +3341,7 @@ function generateWeatherForecastPage() {
     var row1;
     // roll through the reply in jason.list[i]
     var table = document.getElementById("forecasttable");
+    gTableToClear = "forecasttable";
     // don't clear the table so it is there in case we don't have network coverage for a new forecast
     clearTable(table);
     var fdate = new Date();
