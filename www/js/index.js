@@ -143,9 +143,16 @@ var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
 var gResumeTime = 0;// saved value in sec
 
+// Location
+gLatitude = 0.0; // NS
+gLongitude = 0.0; // EW
+gLocationOnAI = true;
+
 // ferry time switches
 var gFerryShowIn = 1; // show (in nnm) on 1st time
 var gFerryShow3 = 0; // show 3 times
+var gFerryOnAI = 1; //higholight AI schedule if user is on AI
+
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -378,6 +385,29 @@ function Leading0(num) {
     else return "0" + Number(num);
 }
 
+////////////////////////////////////// Geo Location ////////////////////////////////////
+//  GeoLocation
+function getGeoLocation() {
+    navigator.geolocation.getCurrentPosition
+    (onGeoSuccess, onGeoError, { enableHighAccuracy: true });
+}
+// Success callback.
+var onGeoSuccess = function (position) {
+    gLatitude = position.coords.latitude;  // NS
+    gLongitude = position.coords.longitude; // EW
+    edgeW = -122.7417; edgeE = -122.6733; // Anderson Island Bounding Box
+    edgeN = 47.1872; edgeS = 47.1241;
+    var locationOnAI = ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS));
+    if (locationOnAI != gLocationOnAI) { // if location changed
+        gLocationOnAI = locationOnAI;
+        WriteNextFerryTimes(); // redraw schedule to highlight proper row
+    }
+}
+// Error callback
+var onGeoError = function (error) {
+    gLatitude = 0.0;
+    gLongitude = 0.0;
+}
 
 //////////////////////////////////// TIDE STUFF /////////////////////////////////////////
 
