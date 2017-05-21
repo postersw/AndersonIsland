@@ -151,7 +151,7 @@ gLocationOnAI = true;
 // ferry time switches
 var gFerryShowIn = 1; // show (in nnm) on 1st time
 var gFerryShow3 = 0; // show 3 times
-var gFerryOnAI = 1; //higholight AI schedule if user is on AI
+var gFerryHighlight = 1; // highlight ferry AI or Steilacoom depending on user location
 
 
 // tides
@@ -593,6 +593,19 @@ function FerryShow3Off() {
     WriteNextFerryTimes();
 }
 
+//  FerryHighlightOn/Off set the gFerryHighlight switch to control the highlighting of the shedule rows based on location (AI or Steilacoom)
+//  Exit: sets gFerryHighlight (1 or 0) and local storage "ferryhighlight ("1" or "0")
+function FerryHighlightOn() {
+    gFerryHighlight = 1; // turn on show flag
+    localStorage.setItem("ferryhighlight", 1);
+    WriteNextFerryTimes();
+}
+function FerryHighlightOff() {
+    gFerryHighlight = 0; // turn on show flag
+    localStorage.removeItem("ferryhighlight");
+    WriteNextFerryTimes();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Determine whether the file loaded from PhoneGap or the web
 //  exit    true if phonegap, otherwise undefined. So test for true only.
@@ -923,10 +936,14 @@ function WriteNextFerryTimes() {
     //var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
     //         FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
     //document.getElementById("ferrytimes").innerHTML = v + a;
-
-    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;'><td style='padding:0px;margin:0;'>Steilacoom: </td>" +
+    var SteilHighlight = ""; var AIHighlight = "";
+    if (gFerryHighlight == 1 && gLatitude > 0) {
+        if (gLocationOnAI) AIHighLight = "background-color:lightyellow";
+        else SteilHighlight = "background-color:lightyellow";
+    }
+    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" & SteilHighlight & "'><td style='padding:0px;margin:0;'>Steilacoom: </td>" +
      FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    var a = "<tr style='font-weight:bold;color:blue;'><td style='padding:1px;margin:0;'>Anderson: </td>" +
+    var a = "<tr style='font-weight:bold;color:blue;" & AIHighlight & "'><td style='padding:1px;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
 }
@@ -3532,6 +3549,9 @@ function StartApp() {
     // Ferry schedule settings
     if (LSget("ferryshowin") == "0") gFerryShowIn = 0;
     if (LSget("ferryshow3") == "1") gFerryShow3 = 1;
+    if (LSget("ferryhighlight") == "1") gFerryHighlight = 1;
+    //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
+    if (gFerryHighlight) getGeoLocation(); // debug
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
@@ -3541,7 +3561,6 @@ function StartApp() {
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
-
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";

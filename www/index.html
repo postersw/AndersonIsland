@@ -23,6 +23,7 @@
             0705: Fishing Link.
     1.9.031017:  Added Ferry ticket link.
     1.10.031417: Made ferry ticket link narrower for smaller screens.
+    1.13.0519: Ferry schedule: 3/line, time till, table, highlight by location.
 	
     Copyright (c) 2016-2017 Robert Bedoll, Poster Software LLC.
 
@@ -616,11 +617,15 @@
                 </td></tr>
             <tr class="menu"> <td id="ferry3times" class="menu" > Ferry Times:<br />
                 <span onclick="FerryShow3Off()">&nbsp&nbsp 2&nbsp&nbsp</span>
-                <span onclick="FerryShow3On()">&nbsp&nbsp 3</span>
+                <span onclick="FerryShow3On()">&nbsp&nbsp 3</span> &nbsp&nbsp/line
+                </td></tr>
+            <tr class="menu"> <td  class="menu" > Ferry Highlight:<br />
+                <span onclick="FerryHighlightOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
+                <span onclick="FerryHighlightOff()">&nbsp&nbsp OFF</span>
                 </td></tr>
             <tr class="menu"> 
                 <td class="menu" >
-                    <a style="text-decoration:none;color:white" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a>
+                <a style="text-decoration:none;color:white" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a>
                 </td></tr>
             <tr class="menu"> <td class="menu" onclick="ShowAboutPage()">About</td></tr>
             <!--<tr class="menu"> <td class="menu" onclick="backKeyDown()">Exit</td></tr> Doesnt work on IOS or PC -->
