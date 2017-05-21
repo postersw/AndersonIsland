@@ -37,6 +37,7 @@
              040817: Get Alerts every minute.
              041017: Change sunrise/sunset to hh:mm. 
              041117: remove splash screen for android and hide mainpage during startup.
+        1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -58,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05172300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05211000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1833,7 +1834,8 @@ function DisplayLoadTimes() {
         "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
         "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
         ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0) +
-        "<br/>Long:" + gLongitude + ",Lat:" + gLatitude + ",OnAI:" + gLocationOnAI;
+        "<br/>Long:" + gLongitude + ",Lat:" + gLatitude + ",OnAI:" + gLocationOnAI +
+        "<br/>ScreenWidth:" + window.screen.width;
 
 }
 
