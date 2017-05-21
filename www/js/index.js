@@ -143,16 +143,15 @@ var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
 var gResumeTime = 0;// saved value in sec
 
-// Location
+// Location set by gelocation for phone only
 gLatitude = 0.0; // NS
 gLongitude = 0.0; // EW
 gLocationOnAI = true;
 
-// ferry time switches
+// ferry time switches default
 var gFerryShowIn = 1; // show (in nnm) on 1st time
 var gFerryShow3 = 0; // show 3 times
 var gFerryHighlight = 1; // highlight ferry AI or Steilacoom depending on user location
-
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -570,15 +569,15 @@ function NotifyColor(onoff) {
 //  Ferry Schedule Main Page Settings
 
 //  FerryShowInOn/Off set the gFerryShowIn switch to control the countdown to arrival time
-//  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" (absent=1, '0'=0, kinda backwards)
+//  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" 
 function FerryShowInOn() {
     gFerryShowIn = 1; // turn on show flag
-    localStorage.removeItem("ferryshowin"); // NOTE: 1 is actually the absence of this label, because it is the default case
+    localStorage.setItem("ferryshowin", "1");; // NOTE: 1 is actually the absence of this label, because it is the default case
     WriteNextFerryTimes();
 }
 function FerryShowInOff() {
     gFerryShowIn = 0; // turn on show flag
-    localStorage.setItem("ferryshowin", 0);
+    localStorage.setItem("ferryshowin", "0");
     WriteNextFerryTimes();
 }
 
@@ -586,12 +585,12 @@ function FerryShowInOff() {
 //  Exit: sets gFerryShow3 (1 or 0) and local storage "ferryshow3 ("1" or "0")
 function FerryShow3On() {
     gFerryShow3 = 1; // turn on show flag
-    localStorage.setItem("ferryshow3", 1);
+    localStorage.setItem("ferryshow3", "1");
     WriteNextFerryTimes();
 }
 function FerryShow3Off() {
     gFerryShow3 = 0; // turn on show flag
-    localStorage.removeItem("ferryshow3");
+    localStorage.setItem("ferryshow3", "0");
     WriteNextFerryTimes();
 }
 
@@ -599,12 +598,12 @@ function FerryShow3Off() {
 //  Exit: sets gFerryHighlight (1 or 0) and local storage "ferryhighlight ("1" or "0")
 function FerryHighlightOn() {
     gFerryHighlight = 1; // turn on show flag
-    localStorage.setItem("ferryhighlight", 1);
+    localStorage.setItem("ferryhighlight", "1");
     WriteNextFerryTimes();
 }
 function FerryHighlightOff() {
     gFerryHighlight = 0; // turn on show flag
-    localStorage.removeItem("ferryhighlight");
+    localStorage.setItem("ferryhighlight", "0");
     WriteNextFerryTimes();
 }
 
@@ -1705,6 +1704,9 @@ function timerUp() {
     if ((dailycacheloaded == null) || (Number(dailycacheloaded) != gMonthDay)) {
         ReloadCachedData();
     }
+
+    // check location for change every minute 
+    if (gFerryHighlight && isPhoneGap()) getGeoLocation();
 
     // get tides once/day
     //getTideData();  moved to getDailyCache
@@ -3550,9 +3552,13 @@ function StartApp() {
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
     // Ferry schedule settings
-    if (LSget("ferryshowin") == "0") gFerryShowIn = 0;
-    if (LSget("ferryshow3") == "1") gFerryShow3 = 1;
-    if (LSget("ferryhighlight") == "1") gFerryHighlight = 1;
+    if (window.screen.width >= 360) gFerryShow3 = 1;  // default to 3 ferry schedules if >360 pixels
+    var s = localStorage.getItem("ferryshow3");
+    if (s != null) gFerryShow3 = Number(s);
+    s = localStorage.getItem("ferryshowin");
+    if (s != null) gFerryShowIn = Number(s);
+    s = localStorage.getItem("ferryhighlight");
+    if (s != null) gFerryHighlight = Number(s);
     if (gFerryHighlight && isPhoneGap()) getGeoLocation();
     //if (gFerryHighlight) getGeoLocation(); // debug
 
