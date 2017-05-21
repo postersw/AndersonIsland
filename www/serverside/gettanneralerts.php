@@ -43,6 +43,7 @@
             //$s2d = str_replace (">", "&gt", $s2d);
             //echo ("i = $i:' $s1 '<br/>");
             //echo (" s2:' $s2d '<br/>");
+        if($s1 == "p") $result = $result . "<p>";
         $result = $result . $s2;
         if($s1 == "/div") break;  // quit at the first /div
     }
@@ -54,7 +55,11 @@
     //if($i > 0) {
     //    $r = substr($r, $i);  // get the update
     //}
-    if (strlen($r) > 137) $r = substr($r, 0, 137) . "...";
+    // break $r into paragraphs
+    $P = explode("<p>", $r); 
+    // use the last paragraph
+    $r = $P[count($P)-1];
+    if (strlen($r) > 137) $r = substr($r, 0, 300) . "...";
 
     // write it to the file
     $old = file_get_contents($tanneroutagefile);
