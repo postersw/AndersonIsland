@@ -354,6 +354,7 @@ function timeDiffhm(hhmm1, hhmm2) {
     var diffm;
     diffm = RawTimeDiff(hhmm1, hhmm2);
     if (diffm < 60) return diffm + "m";
+    if ((diffm % 60) == 0) return Math.floor(diffm / 60) + "h";
     return Math.floor(diffm / 60) + "h" + (diffm % 60) + "m";
 }
 ////////////////////////////////////////////////////////////////////////////////////
