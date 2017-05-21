@@ -392,13 +392,15 @@ function getGeoLocation() {
     (onGeoSuccess, onGeoError, { enableHighAccuracy: true });
 }
 // Success callback.
+//  Exit: sets gLatitude, gLongitude, gLocationOnAI
+//        Redraws ferry times if location has changed
 var onGeoSuccess = function (position) {
     gLatitude = position.coords.latitude;  // NS
     gLongitude = position.coords.longitude; // EW
     edgeW = -122.7417; edgeE = -122.6733; // Anderson Island Bounding Box
     edgeN = 47.1872; edgeS = 47.1241;
     var locationOnAI = ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS));
-    if (locationOnAI != gLocationOnAI) { // if location changed
+    if (isPhoneGap() && (locationOnAI != gLocationOnAI)) { // if location changed
         gLocationOnAI = locationOnAI;
         WriteNextFerryTimes(); // redraw schedule to highlight proper row
     }
@@ -1828,7 +1830,8 @@ function DisplayLoadTimes() {
         ", CurrentWeather:" + DispElapsedMin("currentweathertime") +
         "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
         "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
-        ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0);
+        ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0) +
+        "<br/>Long:" + gLongitude + ",Lat:" + gLatitude + ",OnAI:" + gLocationOnAI;
 
 }
 
@@ -3550,8 +3553,8 @@ function StartApp() {
     if (LSget("ferryshowin") == "0") gFerryShowIn = 0;
     if (LSget("ferryshow3") == "1") gFerryShow3 = 1;
     if (LSget("ferryhighlight") == "1") gFerryHighlight = 1;
-    //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
-    if (gFerryHighlight) getGeoLocation(); // debug
+    if (gFerryHighlight && isPhoneGap()) getGeoLocation();
+    //if (gFerryHighlight) getGeoLocation(); // debug
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
