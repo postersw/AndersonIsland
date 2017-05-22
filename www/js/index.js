@@ -147,7 +147,9 @@ var gResumeTime = 0;// saved value in sec
 // Location set by gelocation for phone only
 gLatitude = 0.0; // NS
 gLongitude = 0.0; // EW
-gLocationOnAI = true;
+gLocationOnAI = 99;
+gLocationTime = 0; // time of last location update
+
 
 // ferry time switches default
 var gFerryShowIn = 1; // show (in nnm) on 1st time
@@ -389,6 +391,8 @@ function Leading0(num) {
 ////////////////////////////////////// Geo Location ////////////////////////////////////
 //  GeoLocation
 function getGeoLocation() {
+    if ((gTimeStampms - gLocationTime) < 30000) return; // update every 30 sec at most
+    gLocationTime = gTimeStampms;
     navigator.geolocation.getCurrentPosition
     (onGeoSuccess, onGeoError, { enableHighAccuracy: true });
 }
@@ -398,8 +402,8 @@ function getGeoLocation() {
 var onGeoSuccess = function (position) {
     gLatitude = position.coords.latitude;  // NS
     gLongitude = position.coords.longitude; // EW
-    edgeW = -122.7417; edgeE = -122.6733; // Anderson Island Bounding Box
-    edgeN = 47.1872; edgeS = 47.1241;
+    edgeW = -122.7464; edgeE = -122.6613; // Anderson Island Bounding Box from Google map
+    edgeN = 47.1899; edgeS = 47.1228;
     var locationOnAI = ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS));
     if (isPhoneGap() && (locationOnAI != gLocationOnAI)) { // if location changed
         gLocationOnAI = locationOnAI;
