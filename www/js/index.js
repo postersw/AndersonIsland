@@ -948,9 +948,9 @@ function WriteNextFerryTimes() {
         if (gLocationOnAI) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
         else SteilHighlight = "background-color:#ffff80";
     }
-    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px;margin:0;'>Steilacoom: </td>" +
+    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
      FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px;margin:0;'>Anderson: </td>" +
+    var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
 }
@@ -974,7 +974,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1])) {
-            ft = ft + "<td style='padding:1px;margin:0;'>" + ShortTime(ferrytimes[i]);
+            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
