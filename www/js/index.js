@@ -941,8 +941,8 @@ function WriteNextFerryTimes() {
     //document.getElementById("ferrytimes").innerHTML = v + a;
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1 && gLatitude > 0) {
-        if (gLocationOnAI) AIHighlight = "background-color:lightyellow";
-        else SteilHighlight = "background-color:lightyellow";
+        if (gLocationOnAI) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
+        else SteilHighlight = "background-color:#ffff80";
     }
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px;margin:0;'>Steilacoom: </td>" +
      FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
