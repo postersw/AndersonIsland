@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05211000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05220815";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -941,10 +941,10 @@ function WriteNextFerryTimes() {
     //document.getElementById("ferrytimes").innerHTML = v + a;
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1 && gLatitude > 0) {
-        if (gLocationOnAI) AIHighLight = "background-color:lightyellow";
+        if (gLocationOnAI) AIHighlight = "background-color:lightyellow";
         else SteilHighlight = "background-color:lightyellow";
     }
-    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:0px;margin:0;'>Steilacoom: </td>" +
+    v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px;margin:0;'>Steilacoom: </td>" +
      FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
@@ -970,7 +970,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1])) {
-            ft = ft + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
+            ft = ft + "<td style='padding:1px;margin:0;'>" + ShortTime(ferrytimes[i]);
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
@@ -1041,9 +1041,9 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
         if (ValidFerryRun(ferrytimes[i + 1])) {
             ft = ft + "<td style='color:gray;font-weight:normal;padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
             // insert remaining time
-            if (nruns == 0 && gFerryShowIn) {
-                ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
-            }
+            //if (nruns == 0 && gFerryShowIn) {
+            //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
+            //}
             ft = ft + "&nbsp&nbsp</td>";
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
