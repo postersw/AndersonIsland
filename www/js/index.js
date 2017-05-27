@@ -147,7 +147,7 @@ var gResumeTime = 0;// saved value in sec
 // Location set by gelocation for phone only
 gLatitude = 0.0; // NS
 gLongitude = 0.0; // EW
-gLocationOnAI = 99;
+gLocationOnAI = 99; // 99 = don't highlight (unknown). 0=Steilacoom, 1=Anderson Island
 gLocationTime = 0; // time of last location update
 
 
@@ -397,24 +397,35 @@ function getGeoLocation() {
     (onGeoSuccess, onGeoError, { enableHighAccuracy: true });
 }
 // Success callback.
-//  Exit: sets gLatitude, gLongitude, gLocationOnAI
+//  Exit: sets gLatitude, gLongitude, 
+//        gLocationOnAI = 0 for Steilacoom, 1 for AI.  Saved as storage
 //        Redraws ferry times if location has changed
 var onGeoSuccess = function (position) {
     gLatitude = position.coords.latitude;  // NS
     gLongitude = position.coords.longitude; // EW
     edgeW = -122.7464; edgeE = -122.6613; // Anderson Island Bounding Box from Google map
     edgeN = 47.1899; edgeS = 47.1228;
-    var locationOnAI = ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS));
-    if (isPhoneGap() && (locationOnAI != gLocationOnAI)) { // if location changed
-        gLocationOnAI = locationOnAI;
-        WriteNextFerryTimes(); // redraw schedule to highlight proper row
-    }
+    var locationOnAI = 0; // steilacoom
+    if ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS)) locationOnAI = 1;
+    UpdateLocation(locationOnAI);
 }
-// Error callback
+
+// Error callback. Sets gLocationOnAI = 99.
 var onGeoError = function (error) {
     gLatitude = 0.0;
     gLongitude = 0.0;
+    UpdateLocation(99);
 }
+
+//  UpdateLocation - updates gLocationOnAI and rewrites page 1 ferry times
+function UpdateLocation(locationOnAI) {
+    if (isPhoneGap() && (locationOnAI != gLocationOnAI)) { // if location changed
+        gLocationOnAI = locationOnAI;
+        localStorage.setItem("glocationonai", gLocationOnAI.toFixed(0));
+        WriteNextFerryTimes(); // redraw schedule to highlight proper row
+    }
+}
+
 
 //////////////////////////////////// TIDE STUFF /////////////////////////////////////////
 
@@ -944,9 +955,9 @@ function WriteNextFerryTimes() {
     //         FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
     //document.getElementById("ferrytimes").innerHTML = v + a;
     var SteilHighlight = ""; var AIHighlight = "";
-    if (gFerryHighlight == 1 && gLatitude > 0) {
-        if (gLocationOnAI) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
-        else SteilHighlight = "background-color:#ffff80";
+    if (gFerryHighlight == 1) {     // && gLatitude > 0) {
+        if (gLocationOnAI==1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
+        else if (gLocationOnAI == 0) SteilHighlight = "background-color:#ffff80";
     }
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
      FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
@@ -1770,6 +1781,7 @@ function backKeyDown() {
 
 //////////////////////////////////////////////////////////////////////////////////
 // show all cached data, i.e. all data in localStorage.
+//  Shows: Ferry Times, Tides, Alerts, Open Hours, events, activities, forecast, current weather
 // 
 function ShowCachedData() {
     WriteNextFerryTimes();  // show cached ferry schedule
@@ -1782,7 +1794,6 @@ function ShowCachedData() {
     //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
     var s = localStorage.getItem("message");
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
-
 
     var s = localStorage.getItem("forecast");
     if (s != null) document.getElementById("forecast").innerHTML = s;
@@ -3558,7 +3569,7 @@ function StartApp() {
         else NotifyColor(0);
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
-    // Ferry schedule settings
+    // Restore Ferry schedule switches used by ShowFerryTimes
     if (window.screen.width >= 360) gFerryShow3 = 1;  // default to 3 ferry schedules if >360 pixels
     var s = localStorage.getItem("ferryshow3");
     if (s != null) gFerryShow3 = Number(s);
@@ -3566,7 +3577,9 @@ function StartApp() {
     if (s != null) gFerryShowIn = Number(s);
     s = localStorage.getItem("ferryhighlight");
     if (s != null) gFerryHighlight = Number(s);
-    if (gFerryHighlight && isPhoneGap()) getGeoLocation();
+    s = localStorage.getItem("glocationonai");  // restore last 'on ai' setting
+    if (s != null) gLocationOnAI = Number(s);
+    //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
     //if (gFerryHighlight) getGeoLocation(); // debug
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
@@ -3577,6 +3590,10 @@ function StartApp() {
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
+
+    // show the page
+    Show("mainpage");  // now display the main page
+    Show("vermsg"); // display the version
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
@@ -3604,8 +3621,10 @@ function StartApp() {
 
     }
     
-    Show("mainpage");  // now display the main page
-    Show("vermsg"); // display the version
+
+
+    // do stuff AFTER we have displayed the main page
+    if (gFerryHighlight && isPhoneGap()) getGeoLocation();
 
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
