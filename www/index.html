@@ -24,6 +24,7 @@
     1.9.031017:  Added Ferry ticket link.
     1.10.031417: Made ferry ticket link narrower for smaller screens.
     1.13.0519: Ferry schedule: 3/line, time till, table, highlight by location.
+               Make menu smaller
 	
     Copyright (c) 2016-2017 Robert Bedoll, Poster Software LLC.
 
@@ -81,7 +82,7 @@
             background-color: blue; color: white;
         }
     /* menu */
-    td.menu {font-size:18px;font-weight:bold;color:white;padding:12px}
+    td.menu {font-size:14px;font-weight:bold;color:white;padding:12px}
     tr.menu {border:none;border-bottom:thin solid white}
 
         .auto-style1 {
@@ -598,7 +599,7 @@
                <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
         <span id="versionnumber" style="font-size:x-small"> &nbsp &nbsp AIA Ver: 1.9.030917	</span>
-        <span style="font-size:x-small"> [0411173]</span>
+        <span style="font-size:x-small"> [0523171]</span>
         </p>
     </div>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
@@ -619,19 +620,19 @@
     <table style="width:100%;border-collapse:collapse;border-style:none">
             <tr class="menu"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr class="menu"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
-            <tr class="menu"> <td id="notifyswitch" class="menu" > Notifications:<br />
+            <tr class="menu"> <td id="notifyswitch" class="menu" > Notifications:
                 <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF</span>
                 </td></tr>
-            <tr class="menu"> <td class="menu" > Ferry '(in nn)':<br />
+            <tr class="menu"> <td class="menu" > Ferry Countdown:
                 <span onclick="FerryShowInOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span onclick="FerryShowInOff()">&nbsp&nbsp OFF</span>
                 </td></tr>
-            <tr class="menu"> <td id="ferry3times" class="menu" > Ferry Times:<br />
+            <tr class="menu"> <td id="ferry3times" class="menu" > Ferry Times:
                 <span onclick="FerryShow3Off()">&nbsp&nbsp 2&nbsp&nbsp</span>
                 <span onclick="FerryShow3On()">&nbsp&nbsp 3</span> &nbsp&nbsp/line
                 </td></tr>
-            <tr class="menu"> <td  class="menu" > Ferry Highlight:<br />
+            <tr class="menu"> <td  class="menu" > Ferry Highlight:
                 <span onclick="FerryHighlightOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
                 <span onclick="FerryHighlightOff()">&nbsp&nbsp OFF</span>
                 </td></tr>

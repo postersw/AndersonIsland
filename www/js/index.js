@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05220815";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05272316";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -913,7 +913,7 @@ function OpenMenu() {
         ShowMainPage();
         return;
     }
-    document.getElementById("sidemenu").style.width = "150px";
+    document.getElementById("sidemenu").style.width = "80%";
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
     gMenuOpen = true;
 }
