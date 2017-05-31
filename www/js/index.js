@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05272316";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05302300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -913,6 +913,10 @@ function OpenMenu() {
         ShowMainPage();
         return;
     }
+    document.getElementById("tm1").style.display = "table-row";
+    document.getElementById("tm2").style.display = "table-row";
+    document.getElementById("tm3").style.display = "table-row";
+    document.getElementById("tm4").style.display = "table-row";
     document.getElementById("sidemenu").style.width = "80%";
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
     gMenuOpen = true;
@@ -923,6 +927,17 @@ function CloseMenu() {
     document.getElementById("sidemenu").style.width = "0";
     //document.getElementByID("mainpage").onclick = null;
     gMenuOpen = false;
+}
+// Open Ferry Menu
+function OpenFerryMenu() {
+    ShowMainPage();
+    // hide the non-ferry stuff
+    document.getElementById("tm1").style.display = "none";
+    document.getElementById("tm2").style.display = "none";
+    document.getElementById("tm3").style.display = "none";
+    document.getElementById("tm4").style.display = "none";
+    document.getElementById("sidemenu").style.width = "80%";
+    gMenuOpen = true;
 }
 
 
@@ -2003,6 +2018,10 @@ function StartTicketApp() {
 /////////////////////////////////////////////////////////////////////////////////////////
 // Loads the next ferry times into the global 'table' as a row for each run. 
 // ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
+//  Entry: table = table to add to
+//         ferrytimesS, A, K = array of ferry times for Steilacoom, AI, and Ketron
+//         global gYYmmdd = date
+//  Exit: builds table of run times. Note: cell id = YYmmddhhmmX where X=S/A/K
 function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
@@ -2024,6 +2043,8 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
             row1col1.style.border = "thin solid black";
             if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
+            row1col1.id = gYYmmdd.toFixed(0) + ferrytimesS[i].toFixed(0) + "S"; // id = yymmddhhmmS
+            row1col1.onclick = function () { ferryclick(this.id) };
 
             // Anderson Island;
             row1col2 = row1.insertCell(1);
@@ -2032,6 +2053,8 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             else row1col2.style.color = "darkblue";
             row1col2.style.border = "thin solid black";
             if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
+            row1col2.id = gYYmmdd.toFixed(0) + ferrytimesA[i].toFixed(0) + "A"; // id = yymmddhhmmA
+            row1col2.onclick = function () { ferryclick(this.id) };
 
             // Ketron
             var row1col3 = row1.insertCell(2);
@@ -2041,7 +2064,9 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
                     if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
                     else row1col3.style.color = "brown";
                     row1col3.style.border = "thin solid black";
-                    if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor =amcolor;
+                    if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
+                    row1col3.id = gYYmmdd.toFixed(0) + ferrytimesK[i].toFixed(0) + "K"; // id = yymmddhhmmS
+                    row1col3.onclick = function () { ferryclick(this.id) };
                 }
             }
             // make the next run bold
@@ -2063,6 +2088,38 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
         }
     }
     return;
+}
+
+///////////////////////////////////////////
+//  ferryclick - Add ferry time and date to calendar
+//  tc = cell id: date (yymmdd) time (hhmm) S/A/K as a string. 
+function ferryclick(tc) {
+    if (!isPhoneGap()) return; // if not phone, return
+    var y = Number(tc.substring(0, 2)) + 2000; // year
+    var m = Number(tc.substring(2, 4)) - 1; // month
+    var d = Number(tc.substring(4, 6)); // day
+    var h = Number(tc.substring(6, 8)); // hr
+    var m = Number(tc.substring(8, 10)); // min
+    var el = ""; to = "";
+    switch (tc.substr(10, 1)) {
+        case "S": el = "Steilacoom"; to = "Anderson Island"; break;
+        case "A": el = "Anderson Island"; to = "Steilacoom"; break;
+        case "K": el = "Ketron"; to = "Steilacoom"; break;
+    }
+    if (confirm("Add ferry run to " + to + " at " + h + ":" + m + " on " + m + "/" + d + " to your calendar?\n(Your phone will remind you 30 minutes before departure)") != true) return;
+
+    var startDate = new Date(y, m, d, h, m, 0, 0); // beware: month 0 = january, 11 = december
+    m = m + 30; // allow for 30 minute sailing
+    if (m >= 60) {
+        m = m - 60;
+        h = h + 1;
+    }
+    var endDate = new Date(y, m, d, h, m, 0, 0);
+    // add to calendar
+    var success = function (message) { };
+    var error = function (message) { alert("Unable to add to calendar."); };
+    window.plugins.calendar.createEventInteractively("Ferry to " + to, el, "", startDate, endDate, success, error);
+    //alert(as);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
