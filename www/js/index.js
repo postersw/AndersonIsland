@@ -2096,7 +2096,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
 function ferryclick(tc) {
     if (!isPhoneGap()) return; // if not phone, return
     var y = Number(tc.substring(0, 2)) + 2000; // year
-    var m = Number(tc.substring(2, 4)) - 1; // month
+    var M = Number(tc.substring(2, 4)) - 1; // month
     var d = Number(tc.substring(4, 6)); // day
     var h = Number(tc.substring(6, 8)); // hr
     var m = Number(tc.substring(8, 10)); // min
@@ -2106,15 +2106,15 @@ function ferryclick(tc) {
         case "A": el = "Anderson Island"; to = "Steilacoom"; break;
         case "K": el = "Ketron"; to = "Steilacoom"; break;
     }
-    if (confirm("Add ferry run to " + to + " at " + h + ":" + m + " on " + m + "/" + d + " to your calendar?\n(Your phone will remind you 30 minutes before departure)") != true) return;
+    if (confirm("Add ferry run from " + el + " at " + h + ":" + Leading0(m) + " on " + M + "/" + d + " to your calendar?\n(Your phone will remind you 30 minutes before departure)") != true) return;
 
-    var startDate = new Date(y, m, d, h, m, 0, 0); // beware: month 0 = january, 11 = december
+    var startDate = new Date(y, M, d, h, m, 0, 0); // beware: month 0 = january, 11 = december
     m = m + 30; // allow for 30 minute sailing
     if (m >= 60) {
         m = m - 60;
         h = h + 1;
     }
-    var endDate = new Date(y, m, d, h, m, 0, 0);
+    var endDate = new Date(y, M, d, h, m, 0, 0);
     // add to calendar
     var success = function (message) { };
     var error = function (message) { alert("Unable to add to calendar."); };
