@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05312100";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05312116";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1313,8 +1313,8 @@ function HandleCurrentWeatherReply(r) {
         r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
             ", " + rain + " in. rain<br/>" + 
             "<span style='font-weight:normal'>Pressure " + r.main.pressure + " hPa, Visibility " + (Number(r.visibility) / 1609).toFixed(0) + " mi" +
-            "<br/><span style='font-size:small'>(Weather from " + DateWeather.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'}) + ")</span>" + 
-        "</span><br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString('en-us', { hour: '2-digit', minute: '2-digit' }) +
+            "<br/><span style='font-size:small'>(Weather from " + DateWeather.toLocaleTimeString('en-us', { hour: '2-digit', minute: '2-digit' }) + ")</span></span>" +
+        "<br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString('en-us', { hour: '2-digit', minute: '2-digit' }) +
         "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString('en-us', { hour: '2-digit', minute: '2-digit' }) + "</span>";
 
 
