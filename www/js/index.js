@@ -84,9 +84,11 @@ var app = {
             // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
             var pbtime = Number(LSget("pushbotstime"));
             var timems = GetTimeMS();
+            pbtime = 0; ////////// BOB DEBUG
             if ((pbtime == 0) || ((timems - pbtime) > (72 * 3600000))) {
                 window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
                 localStorage.setItem("pushbotstime", timems.toFixed(0));
+                window.plugins.PushbotsPlugin.setAlias("Bob"); ////////// BOB DEBUG
             }
             window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }
