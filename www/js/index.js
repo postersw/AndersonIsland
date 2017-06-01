@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.05302300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.05312000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1306,13 +1306,16 @@ function HandleCurrentWeatherReply(r) {
     // detailed string for weather detail page
     gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
     gDateSunset = new Date(Number(r.sys.sunset) * 1000);
+    var DateWeather = new Date(Number(r.sys.dt)*1000); //Date of weather observation
     localStorage.setItem("sunrise", gDateSunrise.getTime()); // save
     localStorage.setItem("sunset", gDateSunset.getTime()); // save
     var currentlong = icon + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "&degF, " +
         r.main.humidity + "% RH<br/>Wind " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph " +
-            ", " + rain + " in. rain" +
+            ", " + rain + " in. rain<br/>Pressure " + r.main.pressure + " hPa, Visibility " + (Number(r.visibility)/1609).toFixed(0) + " mi" +
         "<br/><span style='color:green'>Sunrise: " + gDateSunrise.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'}) +
-        "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'}) + "</span>";
+        "</span><span style='color:black'> | </span><span style='color:orangered'>Sunset: " + gDateSunset.toLocaleTimeString('en-us', { hour: '2-digit', minute: '2-digit' }) + "</span>" +
+        "<span style='font-weight:normal;font-size:x-small'>(Weather from " + DateWeather.toLocaleTimeString('en-us', {hour: '2-digit', minute: '2-digit'}) + ")</span>";
+
 
     localStorage.setItem("currentweatherlong", currentlong);
 } // end of function
