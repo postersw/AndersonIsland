@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.13.05211000"
+        version   = "1.13.06012200"
         versionCode="2226" 
-        android:versionName="1.13.05211000"> 
+        android:versionName="1.13.06012200"> 
         <!-- versionCode 2226 for 1.13 5/17/17 -->
         <!-- versionCode 2225 for 1.12 4/11/17.  1.11 3/20/17-->
         <!-- versionCode 2224 for 1.10 3/14/17-->
@@ -97,7 +97,7 @@
     <!--<plugin name="com.lampa.startapp" platform="android" source="npm"/>  Works on Android. Does not work for IOS10. -->
     <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>
 
-    <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> pick up android bugfix-->
+    <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> replaced by npm version-->
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
     <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
@@ -147,7 +147,12 @@
 
     <icon src="icon1024.png"                     width="1024" height="1024" />  <!-- App Store -->
   </platform>
-
+  
+  <platform name="android">  <!-- icons for the pushbots notifications-->
+    <icon src="www/res/icon/android/ic_pushbots_licon.png"   qualifier="xxxhdpi" width="256" height="256" /> <!-- pushbots notify big icon goes in res/drawable-xxxhdpi--> 
+    <icon src="www/res/icon/android/ic_stat_pushbots_sicon.png"   qualifier="xxxhdpi" width="16" height="16" /> <!-- pushbots notify big icon goes in res/drawable-xxxhdpi-->   
+  </platform>
+  
     <icon src="www/res/icon/webos/icon-64.png"          gap:platform="webos" />
     <icon src="www/res/icon/windows-phone/icon-48.png"  gap:platform="winphone" />
     <icon src="www/res/icon/windows-phone/icon-173-tile.png" gap:platform="winphone"   gap:role="background" />
