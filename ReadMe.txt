@@ -63,7 +63,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 04/10/17. Ver 1.11.0410171 to IOS App Store. Fixes IOS icons for iphone 5 & 6. Fixes Launch Ticket app for iphone.
 		  Gets alerts every minute. 
 04/13/17. Ver 1.12.0411173 to Android Google Play. Version#2225.  Removes splash screen for startup speedup.
-05/14/17. Ver 1.13 branch Ver113 created.
+05/14/17. Ver 1.13 branch Ver113 created.  Add 3 ferry times/line, ferry countdown, highlight ferry time row by location using location services.
+		  Add android notification icon for pushbots.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
