@@ -443,3 +443,21 @@ CRON PHP JOBS:
 	Switch to project AIAPHP.  This uses the files in the 'serverside' directory, so it is still under GIT control.
 	Use F5 to debug a file using the local php and phptools. (you must set the file to the startup file).
 	Only works on my laptop.
+
+
+---------------------------------------------------------------------------------------
+ICONS ETC 6/3/17.
+Android notification icons for use by Pushbots:
+To generate the android small icon:
+https://romannurik.github.io/AndroidAssetStudio/icons-notification.html#source.type=clipart&source.clipart=directions_boat&source.space.trim=1&source.space.pad=0&name=ic_stat_pushbots_sicon
+Note that the small icon must have only 2 colors: white, and transparant. It must be called ic_stat_pushbots_sicon.png.
+Then copy them into www/locales/android/drawable-xxxx.  Phonegap Build  will then copy them into res/drawable-xxxx.
+For the large icon, it can be 256x256, colored. It must be called ic_pushbots_licon.png.
+
+PGB has added beta support for Android localization files which also will put files into the Android res/ directory. 
+To add, create directory locales/android/ in the root of your PGB application zip / repo, and place your localization files there. 
+The contents will be copied into the Android res/ directory, and any nested sub-directory structures will persist. 
+Here's an example of how these files will be compiled into your APK:
+	<www.zip>/locales/android/values-fr/strings.xml --> <android_apk>/res/values-fr/strings.xml
+	<www.zip>/locales/android/xml/custom.xml        --> <android_apk>/res/xml/custom.xml
+Existing directories will be merged, but at this time any individual files you include will overwrite their target if it exist
