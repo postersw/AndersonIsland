@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.06032400";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.06042200";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -154,9 +154,9 @@ gLocationTime = 0; // time of last location update
 
 
 // ferry time switches default
-var gFerryShowIn = 1; // show (in nnm) on 1st time
-var gFerryShow3 = 0; // show 3 times
-var gFerryHighlight = 1; // highlight ferry AI or Steilacoom depending on user location
+var gFerryShowIn = 1; // show (in nnm) on 1st time. Set from "gferryshowin".
+var gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
+var gFerryHighlight = 0; // highlight ferry AI or Steilacoom depending on user location. Set from "ferryhighlight"
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -3603,6 +3603,38 @@ function ShowHelpPage() {
 
 //</script>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  FerryInitialize - set switches and ask user for geolocate permission.
+//  Note: "ferryhighlight" controls highlighting and is also the 1st time flag for geolocation.
+//      if user declines location permission, ferryhighlight is set to 0.
+//  Exit:   Sets gFerryShow3, gFerryShowIn, gFerryHight, gLocationOnAI
+function FerryInitialize() {
+    if (window.screen.width >= 360) gFerryShow3 = 1;  // default to 3 ferry schedules if >360 pixels
+    var s = localStorage.getItem("ferryshow3");
+    if (s != null) gFerryShow3 = Number(s);
+    s = localStorage.getItem("ferryshowin");
+    if (s != null) gFerryShowIn = Number(s);
+
+    // The first time, ask user if they want to allow highlighting. use "ferryhighlight" to remember this.
+    if (isPhoneGap()) {
+        s = localStorage.getItem("ferryhighlight");
+        if (s == null) { // first time - ask user
+            if (confirm("Anderson Island Assistant can use your current location to automatically highlight the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) gFerryHighlight = 1;
+            else gFerryHighlight = 0;
+            localStorage.setItem("ferryhighlight", gFerryHighlight);
+        } else {
+            gFerryHighlight = Number(s);
+        }
+    }
+    // if highlight is on, restore the previous setting
+    if (gFerryHighlight) {
+        s = localStorage.getItem("glocationonai");  // restore last 'on ai' setting
+        if (s != null) gLocationOnAI = Number(s);
+    }
+    //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
+    //if (gFerryHighlight) getGeoLocation(); // debug
+}
+
 //<!-- MAIN ---------------------------------->
 //<script type="text/javascript">
 //======================================================================================================
@@ -3630,7 +3662,6 @@ function StartApp() {
     InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
     UpdateAvailable(); // point user to google play only if a new version is available
 
-
     //  pushbots - set the notify switch. hide it for web.
     if (isPhoneGap()) {
         if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
@@ -3638,17 +3669,7 @@ function StartApp() {
     } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
 
     // Restore Ferry schedule switches used by ShowFerryTimes
-    if (window.screen.width >= 360) gFerryShow3 = 1;  // default to 3 ferry schedules if >360 pixels
-    var s = localStorage.getItem("ferryshow3");
-    if (s != null) gFerryShow3 = Number(s);
-    s = localStorage.getItem("ferryshowin");
-    if (s != null) gFerryShowIn = Number(s);
-    s = localStorage.getItem("ferryhighlight");
-    if (s != null) gFerryHighlight = Number(s);
-    s = localStorage.getItem("glocationonai");  // restore last 'on ai' setting
-    if (s != null) gLocationOnAI = Number(s);
-    //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
-    //if (gFerryHighlight) getGeoLocation(); // debug
+    FerryInitialize();
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
@@ -3689,8 +3710,6 @@ function StartApp() {
 
     }
     
-
-
     // do stuff AFTER we have displayed the main page
     if (gFerryHighlight && isPhoneGap()) getGeoLocation();
 
