@@ -156,7 +156,7 @@ gLocationTime = 0; // time of last location update
 // ferry time switches default
 var gFerryShowIn = 1; // show (in nnm) on 1st time. Set from "gferryshowin".
 var gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
-var gFerryHighlight = 1; // highlight ferry AI or Steilacoom depending on user location. Set from "ferryhighlight"
+var gFerryHighlight = 0; // highlight ferry AI or Steilacoom depending on user location. Set from "ferryhighlight"
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -3639,9 +3639,9 @@ function FerryInitialize() {
     //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
     //if (gFerryHighlight) getGeoLocation(); // debug
 }
-// delayed ask of permission
+// delayed ask of permission, to prevent a timeout in the initial startup.
 function FerryAskPermission() {
-    if (confirm("Anderson Island Assistant can use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) {
+    if (confirm("Anderson Island Assistant wants to use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) {
         gFerryHighlight = 1;
         getGeoLocation();
     }
@@ -3725,20 +3725,9 @@ function StartApp() {
     }
     
     // do stuff AFTER we have displayed the main page
-    // The first time, ask user if they want to allow highlighting. use "ferryhighlight" to remember this.
-    //if (isPhoneGap()) {
-    //    s = localStorage.getItem("ferryhighlight");
-    //    if (s == null) { // first time - ask user
-    //        if (confirm("Anderson Island Assistant can use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) gFerryHighlight = 1;
-    //        else gFerryHighlight = 0;
-    //        localStorage.setItem("ferryhighlight", gFerryHighlight);
-    //    } else {
-    //        gFerryHighlight = Number(s);
-    //    }
-    //}
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
-        if (s == null) setInterval("FerryAskPermission()", 1000);
+        if (s == null) setTimeout("FerryAskPermission()", 1000); // the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
     }
 
