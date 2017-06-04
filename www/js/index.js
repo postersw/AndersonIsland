@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.06012300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.06032400";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -396,7 +396,7 @@ function getGeoLocation() {
     if ((gTimeStampms - gLocationTime) < 30000) return; // update every 30 sec at most
     gLocationTime = gTimeStampms;
     navigator.geolocation.getCurrentPosition
-    (onGeoSuccess, onGeoError, { enableHighAccuracy: true });
+    (onGeoSuccess, onGeoError, { enableHighAccuracy: true, timeout: 5000});
 }
 // Success callback.
 //  Exit: sets gLatitude, gLongitude, 
@@ -2117,7 +2117,7 @@ function ferryclick(tc) {
         case "A": el = "Anderson Island"; to = "Steilacoom"; break;
         case "K": el = "Ketron"; to = "Steilacoom"; break;
     }
-    if (confirm("Add ferry run from " + el + " at " + FormatTime(tc.substring(6,10)) + " on " + M + "/" + d + " to your calendar?\n(Your phone will remind you 30 minutes before departure)") != true) return;
+    if (confirm("Add ferry run from " + el + " at " + FormatTime(tc.substring(6,10)) + " on " + M + "/" + d + " to your calendar?\n(Your phone will remind you before departure)") != true) return;
     M = M - 1;
     var startDate = new Date(y, M, d, h, m, 0, 0); // beware: month 0 = january, 11 = december
     m = m + 30; // allow for 30 minute sailing
