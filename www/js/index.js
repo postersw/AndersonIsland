@@ -618,10 +618,12 @@ function FerryShow3Off() {
 function FerryHighlightOn() {
     gFerryHighlight = 1; // turn on show flag
     localStorage.setItem("ferryhighlight", "1");
+    gLocationTime = 0;
+    if(isPhoneGap()) getGeoLocation();
     WriteNextFerryTimes();
 }
 function FerryHighlightOff() {
-    gFerryHighlight = 0; // turn on show flag
+    gFerryHighlight = 0; // turn off show flag
     localStorage.setItem("ferryhighlight", "0");
     WriteNextFerryTimes();
 }
@@ -3637,6 +3639,15 @@ function FerryInitialize() {
     //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
     //if (gFerryHighlight) getGeoLocation(); // debug
 }
+// delayed ask of permission
+function FerryAskPermission() {
+    if (confirm("Anderson Island Assistant can use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) {
+        gFerryHighlight = 1;
+        getGeoLocation();
+    }
+    else gFerryHighlight = 0;
+    localStorage.setItem("ferryhighlight", gFerryHighlight);
+}
 
 //<!-- MAIN ---------------------------------->
 //<script type="text/javascript">
@@ -3715,17 +3726,21 @@ function StartApp() {
     
     // do stuff AFTER we have displayed the main page
     // The first time, ask user if they want to allow highlighting. use "ferryhighlight" to remember this.
+    //if (isPhoneGap()) {
+    //    s = localStorage.getItem("ferryhighlight");
+    //    if (s == null) { // first time - ask user
+    //        if (confirm("Anderson Island Assistant can use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) gFerryHighlight = 1;
+    //        else gFerryHighlight = 0;
+    //        localStorage.setItem("ferryhighlight", gFerryHighlight);
+    //    } else {
+    //        gFerryHighlight = Number(s);
+    //    }
+    //}
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
-        if (s == null) { // first time - ask user
-            if (confirm("Anderson Island Assistant can use your current location to automatically highlight the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) gFerryHighlight = 1;
-            else gFerryHighlight = 0;
-            localStorage.setItem("ferryhighlight", gFerryHighlight);
-        } else {
-            gFerryHighlight = Number(s);
-        }
+        if (s == null) setInterval("FerryAskPermission()", 1000);
+        else if (gFerryHighlight) getGeoLocation();
     }
-    if (gFerryHighlight && isPhoneGap()) getGeoLocation();
 
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
