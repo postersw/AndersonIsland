@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.06041750";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.06042315";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -137,6 +137,10 @@ var gDayofWeekName = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "F
 var gDayofWeekNameL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 var gDayofWeekShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var scheduledate = ["5/1/2014"];
+
+var gisPhoneGap; // true if phonegap
+var gisAndroid; // true if android
+var gisMobile; // true if mobile (even if a browser)
 
 var openHoursLastUpdate; // time of last update
 var gAlertCounter = 0;
@@ -632,20 +636,30 @@ function FerryHighlightOff() {
 // Determine whether the file loaded from PhoneGap or the web
 //  exit    true if phonegap, otherwise undefined. So test for true only.
 function isPhoneGap() {
-    var test = /^file:\/{3}[^\/]/i.test(window.location.href)
-    && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
-    return test;
-    //(window.cordova || window.PhoneGap || window.phonegap) this returned undefined. 
+    //var test = /^file:\/{3}[^\/]/i.test(window.location.href)
+    //&& /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    return gisPhoneGap;
 }
 function isAndroid() {
-    return ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
+    //return ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
+    //(navigator.userAgent.toLowerCase().indexOf('android') > -1));
+    return gisAndroid;
+}
+//isMobile - returns true if a Mobile browser (even if not PhoneGap), else false.  INDEPENDENT OF PHONEGAP.
+function isMobile() {
+    return gisMobile;
+    //return /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+}
+
+//isMobile - Initialize the switches gisMobile, gisPhoneGap, gisAndroid
+function initializeMobile(){
+    gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    gisPhoneGap = /^file:\/{3}[^\/]/i.test(window.location.href)
+    && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    gisAndroid = ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
     (navigator.userAgent.toLowerCase().indexOf('android') > -1));
 }
 
-//isMobile - returns true if a Mobile browser (even if not PhoneGap), else false.  INDEPENDENT OF PHONEGAP.
-function isMobile() {
-    return /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //  DeviceInfo - returns device info as a string: 
@@ -3620,24 +3634,10 @@ function FerryInitialize() {
     s = localStorage.getItem("ferryhighlight");
     if (s != null) gFerryHighlight = Number(s);
 
-    // The first time, ask user if they want to allow highlighting. use "ferryhighlight" to remember this.
-    //if (isPhoneGap()) {
-    //    s = localStorage.getItem("ferryhighlight");
-    //    if (s == null) { // first time - ask user
-    //        if (confirm("Anderson Island Assistant can use your current location to automatically highlight the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) gFerryHighlight = 1;
-    //        else gFerryHighlight = 0;
-    //        localStorage.setItem("ferryhighlight", gFerryHighlight);
-    //    } else {
-    //        gFerryHighlight = Number(s);
-    //    }
-    //}
-    // if highlight is on, restore the previous setting
     if (gFerryHighlight) {
         s = localStorage.getItem("glocationonai");  // restore last 'on ai' setting
         if (s != null) gLocationOnAI = Number(s);
     }
-    //if (gFerryHighlight && isPhoneGap()) getGeoLocation();
-    //if (gFerryHighlight) getGeoLocation(); // debug
 }
 // delayed ask of permission, to prevent a timeout in the initial startup.
 //function FerryAskPermission() {
@@ -3667,6 +3667,7 @@ function LocationPrevent() {
 //
 function StartApp() {
     app.initialize();
+    initializeMobile(); // set flags
     FixiPhoneHeader();
     document.getElementById("versionnumber").innerHTML = "&nbsp&nbsp AIA Ver: " + gVer; // version stamp on footer
     gMyVer = gVer.substr(0, 4); //n.nn
