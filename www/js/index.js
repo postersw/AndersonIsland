@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.06042240";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.06041750";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -3640,13 +3640,23 @@ function FerryInitialize() {
     //if (gFerryHighlight) getGeoLocation(); // debug
 }
 // delayed ask of permission, to prevent a timeout in the initial startup.
-function FerryAskPermission() {
-    if (confirm("Anderson Island Assistant wants to use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) {
-        gFerryHighlight = 1;
-        getGeoLocation();
-    }
-    else gFerryHighlight = 0;
-    localStorage.setItem("ferryhighlight", gFerryHighlight);
+//function FerryAskPermission() {
+//    if (confirm("Anderson Island Assistant wants to use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.\nClick 'OK' to allow this.\nClick 'CANCEL' to prevent this.")) {
+//        gFerryHighlight = 1;
+//        getGeoLocation();
+//    }
+//    else gFerryHighlight = 0;
+//    localStorage.setItem("ferryhighlight", gFerryHighlight);
+function LocationAllow() {
+    gFerryHighlight = 1;
+    localStorage.setItem("ferryhighlight", "1");
+    getGeoLocation();
+    document.getElementById("locationdialog").style.width = "0";
+}
+function LocationPrevent() {
+    gFerryHighlight = 0;
+    localStorage.setItem("ferryhighlight", "0");
+    document.getElementById("locationdialog").style.width = "0";
 }
 
 //<!-- MAIN ---------------------------------->
@@ -3725,9 +3735,14 @@ function StartApp() {
     }
     
     // do stuff AFTER we have displayed the main page
+    //if (isPhoneGap()) {
+    //    s = localStorage.getItem("ferryhighlight");
+    //    if (s == null) setTimeout("FerryAskPermission()", 1000); // the 1st time, ask user for permission
+    //    else if (gFerryHighlight) getGeoLocation();
+    //}
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
-        if (s == null) setTimeout("FerryAskPermission()", 1000); // the 1st time, ask user for permission
+        if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
     }
 
@@ -3739,7 +3754,5 @@ function StartApp() {
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
     //DisplayLoadTimes();
-
-
 
 }
