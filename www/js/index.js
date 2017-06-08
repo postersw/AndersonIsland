@@ -2220,13 +2220,15 @@ function InsertStAI(table) {
     row1col1 = row1.insertCell(0);
     row1col1.style.border.width = 1;
     row1col1.style.border = "thin solid black";
-    row1col1.style.backgroundColor = "lightblue";
+    if (gFerryHighlight == 1 && gLocationOnAI == 0) row1col1.style.backgroundColor = "#ffff80";
+    else row1col1.style.backgroundColor = "lightblue";
     row1col1.style.color = "black";
     row1col1.innerHTML = "&nbsp Steilacoom &nbsp";
     row1col1 = row1.insertCell(1);
     row1col1.style.border.width = 1;
     row1col1.style.border = "thin solid black";
-    row1col1.style.backgroundColor = "lightblue";
+    if (gFerryHighlight == 1 && gLocationOnAI == 1) row1col1.style.backgroundColor = "#ffff80";
+    else row1col1.style.backgroundColor = "lightblue";
     row1col1.style.color = "darkblue";
     row1col1.innerHTML = "&nbsp  Anderson Is &nbsp";
     row1col1 = row1.insertCell(2);
