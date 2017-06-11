@@ -59,7 +59,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.06081300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.13.06111000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -3184,6 +3184,7 @@ function TideClick(id) {
     if (i > (gPeriods.length - 2)) i = gPeriods.length - 2;
     showingtidei = i;
     gUserTideSelection = true;
+    window.scroll(0, 0);  // force scroll to top
     GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
         gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
     var h = Number(gPeriods[i].dateTimeISO.substring(11, 13)); // tide hour
@@ -3627,7 +3628,7 @@ function ShowHelpPage() {
 //      if user declines location permission, ferryhighlight is set to 0.
 //  Exit:   Sets gFerryShow3, gFerryShowIn, gFerryHight, gLocationOnAI
 function FerryInitialize() {
-    if (window.screen.width >= 360) gFerryShow3 = 1;  // default to 3 ferry schedules if >360 pixels
+    if (window.screen.width >= 500) gFerryShow3 = 1;  // default to 3 ferry schedules if >360 pixels
     var s = localStorage.getItem("ferryshow3");
     if (s != null) gFerryShow3 = Number(s);
     s = localStorage.getItem("ferryshowin");
