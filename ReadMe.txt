@@ -65,6 +65,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 04/13/17. Ver 1.12.0411173 to Android Google Play. Version#2225.  Removes splash screen for startup speedup.
 05/14/17. Ver 1.13 branch Ver113 created.  Add 3 ferry times/line, ferry countdown, highlight ferry time row by location using location services.
 		  Add android notification icon for pushbots.
+06/12/17. Ver 1.13 uploaded to Google Play. Ver#2226. 
+06/15/17. Ver 1.14 (on branch Ver113) Uploaded to Google Play. ver#2227. Fixed Android launch icon problem in 1.13. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
