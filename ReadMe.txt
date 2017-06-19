@@ -67,6 +67,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 		  Add android notification icon for pushbots.
 06/12/17. Ver 1.13 uploaded to Google Play. Ver#2226. 
 06/15/17. Ver 1.14 (on branch Ver113) Uploaded to Google Play. ver#2227. Fixed Android launch icon problem in 1.13. 
+06/18/17. Ver 1.15 (for IOS).
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
