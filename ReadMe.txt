@@ -65,7 +65,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 04/13/17. Ver 1.12.0411173 to Android Google Play. Version#2225.  Removes splash screen for startup speedup.
 05/14/17. Ver 1.13 branch Ver113 created.  Add 3 ferry times/line, ferry countdown, highlight ferry time row by location using location services.
 		  Add android notification icon for pushbots.
-06/12/17. Ver 1.13.06111100 (2226) released through Google Play. 
+06/12/17. Ver 1.13 uploaded to Google Play. Ver#2226. 
+06/15/17. Ver 1.14 (on branch Ver113) Uploaded to Google Play. ver#2227. Fixed Android launch icon problem in 1.13. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -130,8 +131,8 @@ DEBUG CHECKOUT:
 ANDROID GOOGLE PLAY STORE
 	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
-		1.9 (2223) on 3/11/17. 1.12 (2225) on 4/13/17.  1.13 (2226) on 6/12/17.
-	2. Click on Anderson Island Assistant.  Click on Create Release. Click on "APK".   Click on "Upload new APK to Production";
+		1.9 (2223) on 3/11/17. 
+	2. Click on Anderson Island Assistant.  Click on "APK".   Click on "Upload new APK to Production";
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
 

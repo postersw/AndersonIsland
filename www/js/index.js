@@ -38,6 +38,7 @@
              041017: Change sunrise/sunset to hh:mm. 
              041117: remove splash screen for android and hide mainpage during startup.
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
+        1.14 0614:   Fix Android launch icon.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -59,7 +60,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.13.06111000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.14.06142220";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
