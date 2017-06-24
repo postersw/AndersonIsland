@@ -38,7 +38,8 @@
              041017: Change sunrise/sunset to hh:mm. 
              041117: remove splash screen for android and hide mainpage during startup.
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
-        1.14 0614:   Fix Android launch icon.
+        1.14 0614:   Fix Android launch icon. Released to Google play store. NOTE released to IOS.
+        1.15 0623:   IOS Version.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -60,7 +61,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.14.06142220";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.15.06232300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -582,24 +583,30 @@ function NotifyOff() {
 function NotifyColor(onoff) {
     if (onoff == 1) {
         document.getElementById('notifyon').setAttribute("style", "color:white");
-        document.getElementById('notifyoff').setAttribute("style", "color:gray")
+        document.getElementById('notifyoff').setAttribute("style", "color:gray");
     } else {
         document.getElementById('notifyon').setAttribute("style", "color:gray");
-        document.getElementById('notifyoff').setAttribute("style", "color:white")
+        document.getElementById('notifyoff').setAttribute("style", "color:white");
     }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //  Ferry Schedule Main Page Settings
 
 //  FerryShowInOn/Off set the gFerryShowIn switch to control the countdown to arrival time
 //  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" 
+
 function FerryShowInOn() {
+    //document.getElementById("ferrycdon").setAttribute("checked", "checked");
+    //document.getElementById("ferrycdoff").setAttribute("checked", "");
     gFerryShowIn = 1; // turn on show flag
     localStorage.setItem("ferryshowin", "1");; // NOTE: 1 is actually the absence of this label, because it is the default case
     WriteNextFerryTimes();
 }
 function FerryShowInOff() {
+    //document.getElementById("ferrycdon").setAttribute("checked", "");
+    //document.getElementById("ferrycdoff").setAttribute("checked", "checked");
     gFerryShowIn = 0; // turn on show flag
     localStorage.setItem("ferryshowin", "0");
     WriteNextFerryTimes();
@@ -616,6 +623,11 @@ function FerryShow3Off() {
     gFerryShow3 = 0; // turn on show flag
     localStorage.setItem("ferryshow3", "0");
     WriteNextFerryTimes();
+}
+
+function MenuSetup() {
+    if (gFerryShowIn==1) document.getElementById("ferrycdon").checked = true;
+    else document.getElementById("ferrycdoff").checked = true;;
 }
 
 //  FerryHighlightOn/Off set the gFerryHighlight switch to control the highlighting of the shedule rows based on location (AI or Steilacoom)
@@ -3759,5 +3771,7 @@ function StartApp() {
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
     //DisplayLoadTimes();
+
+    MenuSetup(); // setup the menu switches
 
 }

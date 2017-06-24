@@ -25,6 +25,7 @@
     1.10.031417: Made ferry ticket link narrower for smaller screens.
     1.13.0519: Ferry schedule: 3/line, time till, table, highlight by location.
                Make menu smaller
+    1.15:0623: IOS version. Add sliders to menu.
 	
     Copyright (c) 2016-2017 Robert Bedoll, Poster Software LLC.
 
@@ -88,6 +89,57 @@
         .auto-style1 {
             height: 32px;
         }
+
+    /* MENU TOGGLE SWITCH - the box around the slider. From w3schools.com */
+        .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    /* Hide default HTML checkbox */
+    .switch input {display:none;}
+    /* The slider */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+    .slider.round:before {
+      border-radius: 50%;
+    }
 
     </style>
 
@@ -634,8 +686,10 @@
                 <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF</span>
                 </td></tr>
             <tr class="menu"> <td class="menu" > Ferry Departure Countdown:
-                <span onclick="FerryShowInOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
-                <span onclick="FerryShowInOff()">&nbsp&nbsp OFF</span>
+                  <input type="radio" name="ferrycd" id="ferrycdon" checked onclick="FerryShowInOn()"> ON &nbsp&nbsp&nbsp
+                  <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowInOff()"> OFF
+                <!--<span onclick="FerryShowInOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
+                <span onclick="FerryShowInOff()">&nbsp&nbsp OFF</span> -->
                 </td></tr>
             <tr class="menu"> <td id="ferry3times" class="menu" > Ferry Times/row:
                 <span onclick="FerryShow3Off()">&nbsp&nbsp 2&nbsp&nbsp</span>
