@@ -682,22 +682,20 @@
             <tr class="menu" id="tm1"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr class="menu" id="tm2"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
             <tr class="menu" id="tm3"> <td id="notifyswitch" class="menu" > Notifications:
-                <span id="notifyon" onclick="NotifyOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
-                <span id="notifyoff" onclick="NotifyOff()">&nbsp&nbsp OFF</span>
+                <input type="radio" name="notifyon" id="notifymon" onclick="NotifyOn()"><span id="notifymont"> ON &nbsp&nbsp&nbsp</span>
+                <input type="radio" name="notifyon" id="notifymoff" onclick="NotifyOff()"><span id="notifymofft"> OFF</span> 
                 </td></tr>
             <tr class="menu"> <td class="menu" > Ferry Departure Countdown:
-                  <input type="radio" name="ferrycd" id="ferrycdon" checked onclick="FerryShowInOn()"> ON &nbsp&nbsp&nbsp
-                  <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowInOff()"> OFF
-                <!--<span onclick="FerryShowInOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
-                <span onclick="FerryShowInOff()">&nbsp&nbsp OFF</span> -->
+                  <input type="radio" name="ferrycd" id="ferrycdon" onclick="FerryShowCDOn()"><span id="ferrycdont"> ON &nbsp&nbsp&nbsp</span>
+                  <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowCDOff()"><span id="ferrycdofft"> OFF</span> 
                 </td></tr>
             <tr class="menu"> <td id="ferry3times" class="menu" > Ferry Times/row:
-                <span onclick="FerryShow3Off()">&nbsp&nbsp 2&nbsp&nbsp</span>
-                <span onclick="FerryShow3On()">&nbsp&nbsp 3</span>
+                <input type="radio" name="ferry3t" id="ferry2t" onclick="FerryShow3Off()"><span id="ferry2tt"> 2 &nbsp&nbsp&nbsp</span>
+                <input type="radio" name="ferry3t" id="ferry3t" onclick="FerryShow3On()"><span id="ferry3tt"> 3</span> 
                 </td></tr>
             <tr class="menu"> <td  class="menu" > Ferry Highlight by Location:
-                <span onclick="FerryHighlightOn()">&nbsp&nbsp  ON&nbsp&nbsp</span>
-                <span onclick="FerryHighlightOff()">&nbsp&nbsp OFF</span>
+                <input type="radio" name="ferryhl" id="ferryhlon"  onclick="FerryHighlightOn()"><span id="ferryhlont"> ON &nbsp&nbsp&nbsp</span>
+                <input type="radio" name="ferryhl" id="ferryhloff" onclick="FerryHighlightOff()"><span id="ferryhlofft"> OFF</span> 
                 </td></tr>
             <tr class="menu" id="tm4"> <td class="menu" onclick="ShowAboutPage()">About</td></tr>
             <!--<tr class="menu"> <td class="menu" onclick="backKeyDown()">Exit</td></tr> Doesnt work on IOS or PC -->
