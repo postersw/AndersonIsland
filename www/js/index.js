@@ -61,7 +61,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.15.06232300";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.15.06251020";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -567,7 +567,7 @@ function NotifyOn() {
     localStorage.removeItem('notifyoff');
     if (isPhoneGap()) {
         window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-        NotifyColor("lime", "white");
+        MenuSet("notifyont", "lime", "notifyofft", "white");
     }
 }
 function NotifyOff() {
@@ -575,14 +575,8 @@ function NotifyOff() {
     localStorage.setItem('notifyoff', 'OFF');
     if (isPhoneGap()) {
         window.plugins.PushbotsPlugin.unregister();
-        NotifyColor("white", "red");
+        MenuSet("notifyont", "white", "notifyofft", "red");
     }
-}
-//  Set the color of the notify on/off button.  
-//      onoff = 1 for on, 0 for off.
-function NotifyColor(on, off) {
-        document.getElementById('notifyont').style.color = on;
-        document.getElementById('notifyofft').style.color = off;
 }
 
 
@@ -593,83 +587,38 @@ function NotifyColor(on, off) {
 //  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" 
 
 function FerryShowCDOn() {
-    FerryCD("lime", "white");
+    MenuSet("ferrycdont", "lime", "ferrycdofft", "white");
     gFerryShowIn = 1; // turn on show flag
     localStorage.setItem("ferryshowin", "1");; // NOTE: 1 is actually the absence of this label, because it is the default case
     WriteNextFerryTimes();
 }
 function FerryShowCDOff() {
-    FerryCD("white", "red");
+    MenuSet("ferrycdont", "white", "ferrycdofft", "red");
     gFerryShowIn = 0; // turn on show flag
     localStorage.setItem("ferryshowin", "0");
     WriteNextFerryTimes();
 }
-function FerryCD(on, off) {
-    document.getElementById("ferrycdont").style.color = on;
-    document.getElementById("ferrycdofft").style.color = off;
-}
+
 
 //  FerryShow3On/Off set the gFerry3 switch to control the countdown to arrival time
 //  Exit: sets gFerryShow3 (1 or 0) and local storage "ferryshow3 ("1" or "0")
 function FerryShow3On() {
-    Ferry3T("white", "lime");
+    MenuSet("ferry2tt", "white", "ferry3tt", "lime");
     gFerryShow3 = 1; // turn on show flag
     localStorage.setItem("ferryshow3", "1");
     WriteNextFerryTimes();
 }
 function FerryShow3Off() {
-    Ferry3T("lime", "white");
+    MenuSet("ferry2tt", "lime", "ferry3tt", "white");
     gFerryShow3 = 0; // turn off show flag
     localStorage.setItem("ferryshow3", "0");
     WriteNextFerryTimes();
-}
-function Ferry3T(on, off) {
-    document.getElementById("ferry2tt").style.color = on;
-    document.getElementById("ferry3tt").style.color = off;
-}
-
-////////////////////////////////////////////////////////////////////////
-// MenuSetup - setup the initial menu settings
-function MenuSetup() {
-    // ferry countdown
-    if (gFerryShowIn == 1) {
-        FerryCD("lime", "white");
-        document.getElementById("ferrycdon").checked = true;
-    } else {
-        FerryCD("white", "red");
-        document.getElementById("ferrycdoff").checked = true;
-    }
-    // ferry highlight
-    if (gFerryHighlight == 1) {
-        FerryHL("lime", "white");
-        document.getElementById("ferryhlon").checked = true;
-    } else {
-        FerryHL("white", "red");
-        document.getElementById("ferryhloff").checked = true;
-    }
-    // 2/3 times/row
-    if (gFerryShow3 == 0) {
-        Ferry3T("lime", "white");
-        document.getElementById("ferry2t").checked = true;
-    } else {
-        Ferry3T("white", "lime");
-        document.getElementById("ferry3t").checked = true;
-    }
-    // notify
-    if (localStorage.setItem('notifyoff') != "OFF") {
-        NotifyColor("lime", "white")
-        document.getElementById("notifyon").checked = true;
-    } else {
-        NotifyColor("white", "red");
-        document.getElementById("notifyoff").checked = true;
-    }
-
 }
 
 //  FerryHighlightOn/Off set the gFerryHighlight switch to control the highlighting of the shedule rows based on location (AI or Steilacoom)
 //  Exit: sets gFerryHighlight (1 or 0) and local storage "ferryhighlight ("1" or "0")
 function FerryHighlightOn() {
-    FerryHL("lime", "white");
+    MenuSet("ferryhlont", "lime", "ferryhlofft", "white");
     gFerryHighlight = 1; // turn on show flag
     localStorage.setItem("ferryhighlight", "1");
     gLocationTime = 0;
@@ -677,14 +626,38 @@ function FerryHighlightOn() {
     WriteNextFerryTimes();
 }
 function FerryHighlightOff() {
-    FerryHL("white", "red");
+    MenuSet("ferryhlon", "white", "ferryhlofft", "red");
     gFerryHighlight = 0; // turn off show flag
     localStorage.setItem("ferryhighlight", "0");
     WriteNextFerryTimes();
 }
-function FerryHL(on, off) {
-    document.getElementById("ferryhlont").style.color = on;
-    document.getElementById("ferryhlofft").style.color = off;
+
+////////////////////////////////////////////////////////////////////////
+// MenuSetup - setup the initial menu settings based on g values.
+function MenuSetup() {
+    // ferry countdown
+    if (gFerryShowIn == 1) MenuSet("ferrycdont", "lime", "ferrycdofft", "white", "ferrycdon");
+    else MenuSet("ferrycdont", "white", "ferrycdofft", "red", "ferrycdoff");
+    // ferry highlight
+    if (gFerryHighlight == 1) MenuSet("ferryhlont", "lime", "ferryhlofft", "white", "ferryhlon");
+    else MenuSet("ferryhlon", "white", "ferryhlofft", "red", "ferryhloff");
+    // 2/3 times/row
+    if (gFerryShow3 == 0) MenuSet("ferry2tt", "lime", "ferry3tt", "white", "ferry2t");
+    else MenuSet("ferry2tt", "white", "ferry3tt", "lime", "ferry3t");
+    // notify
+    if (localStorage.setItem('notifyoff') != "OFF") MenuSet("notifyont", "lime", "notifyofft", "white", "notifyon");
+    else MenuSet("notifyont", "white", "notifyofft", "red", "notifyoff");
+}
+
+// MenuSet - set color and optionally check menu radio button
+//  Entry:  Set color c1 on element e1
+//          Set color c2 on element e2
+//          check element checkme if specified
+function MenuSet(e1, c1, e2, c2, checkme) {
+    document.getElementById(e1).style.color = c1;
+    document.getElementById(e2).style.color = c2;
+    if (checkme == undefined) return; // note that == checks for null or undefined
+    document.getElementById(checkme).checked = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
