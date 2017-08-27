@@ -966,7 +966,7 @@ function OpenMenu() {
     document.getElementById("tm2").style.display = "table-row";
     document.getElementById("tm3").style.display = "table-row";
     document.getElementById("tm4").style.display = "table-row";
-    document.getElementById("sidemenu").style.width = "80%";
+    document.getElementById("sidemenu").style.width = "92%";
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
     gMenuOpen = true;
 }
@@ -985,7 +985,7 @@ function OpenFerryMenu() {
     document.getElementById("tm2").style.display = "none";
     document.getElementById("tm3").style.display = "none";
     document.getElementById("tm4").style.display = "none";
-    document.getElementById("sidemenu").style.width = "80%";
+    document.getElementById("sidemenu").style.width = "92%";
     gMenuOpen = true;
 }
 
