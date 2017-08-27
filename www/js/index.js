@@ -3765,7 +3765,7 @@ function StartApp() {
         getForecast(); // updates forecast every 2 hrs
 
     }
-    
+ return;///////////////////////////////////////////////////// DEBUG
     // do stuff AFTER we have displayed the main page
     //if (isPhoneGap()) {
     //    s = localStorage.getItem("ferryhighlight");
