@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.15.08270930"
+        version   = "1.15.08271030"
         versionCode="2228" 
-        android:versionName="1.15.08270930"> 
+        android:versionName="1.15.08271030"> 
         <!-- versionCode 2228 for 1.15 8/28/17 -->
         <!-- versionCode 2227 for 1.14 6/14/17 -->      
         <!-- versionCode 2226 for 1.13 5/17/17 -->
