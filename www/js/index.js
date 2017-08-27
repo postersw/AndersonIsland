@@ -61,7 +61,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.15.08271100";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.15.08271130";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -626,7 +626,7 @@ function FerryHighlightOn() {
     WriteNextFerryTimes();
 }
 function FerryHighlightOff() {
-    MenuSet("ferryhlon", "white", "ferryhlofft", "red");
+    MenuSet("ferryhlont", "white", "ferryhlofft", "red");
     gFerryHighlight = 0; // turn off show flag
     localStorage.setItem("ferryhighlight", "0");
     WriteNextFerryTimes();
@@ -640,7 +640,7 @@ function MenuSetup() {
     else MenuSet("ferrycdont", "white", "ferrycdofft", "red", "ferrycdoff");
     // ferry highlight
     if (gFerryHighlight == 1) MenuSet("ferryhlont", "lime", "ferryhlofft", "white", "ferryhlon");
-    else MenuSet("ferryhlon", "white", "ferryhlofft", "red", "ferryhloff");
+    else MenuSet("ferryhlont", "white", "ferryhlofft", "red", "ferryhloff");
     // 2/3 times/row
     if (gFerryShow3 == 0) MenuSet("ferry2tt", "lime", "ferry3tt", "white", "ferry2t");
     else MenuSet("ferry2tt", "white", "ferry3tt", "lime", "ferry3t");
@@ -966,7 +966,7 @@ function OpenMenu() {
     document.getElementById("tm2").style.display = "table-row";
     document.getElementById("tm3").style.display = "table-row";
     document.getElementById("tm4").style.display = "table-row";
-    document.getElementById("sidemenu").style.width = "92%";
+    document.getElementById("sidemenu").style.width = "85%";
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
     gMenuOpen = true;
 }
@@ -985,7 +985,7 @@ function OpenFerryMenu() {
     document.getElementById("tm2").style.display = "none";
     document.getElementById("tm3").style.display = "none";
     document.getElementById("tm4").style.display = "none";
-    document.getElementById("sidemenu").style.width = "92%";
+    document.getElementById("sidemenu").style.width = "85%";
     gMenuOpen = true;
 }
 
