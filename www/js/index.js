@@ -61,7 +61,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.15.08271000";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.15.08271030";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -644,9 +644,12 @@ function MenuSetup() {
     // 2/3 times/row
     if (gFerryShow3 == 0) MenuSet("ferry2tt", "lime", "ferry3tt", "white", "ferry2t");
     else MenuSet("ferry2tt", "white", "ferry3tt", "lime", "ferry3t");
-    // notify
-    if (localStorage.setItem('notifyoff') != "OFF") MenuSet("notifyont", "lime", "notifyofft", "white", "notifyon");
-    else MenuSet("notifyont", "white", "notifyofft", "red", "notifyoff");
+    // notify.   pushbots - set the notify switch. hide it for web.
+    if (isPhoneGap()) {
+        if (localStorage.setItem('notifyoff') != "OFF") MenuSet("notifyont", "lime", "notifyofft", "white", "notifyon");
+        else MenuSet("notifyont", "white", "notifyofft", "red", "notifyoff");
+    } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
+
 }
 
 // MenuSet - set color and optionally check menu radio button
@@ -3718,12 +3721,6 @@ function StartApp() {
     InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
     UpdateAvailable(); // point user to google play only if a new version is available
 
-    //  pushbots - set the notify switch. hide it for web.
-    if (isPhoneGap()) {
-        if (localStorage.getItem("notifyoff") == null) NotifyColor(1);// set that notify on/off flag
-        else NotifyColor(0);
-    } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
-
     // Restore Ferry schedule switches used by ShowFerryTimes
     FerryInitialize();
 
@@ -3765,7 +3762,7 @@ function StartApp() {
         getForecast(); // updates forecast every 2 hrs
 
     }
- return;///////////////////////////////////////////////////// DEBUG
+
     // do stuff AFTER we have displayed the main page
     //if (isPhoneGap()) {
     //    s = localStorage.getItem("ferryhighlight");
