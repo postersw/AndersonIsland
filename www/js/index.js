@@ -61,7 +61,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.15.08271030";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.15.08271100";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -567,7 +567,7 @@ function NotifyOn() {
     localStorage.removeItem('notifyoff');
     if (isPhoneGap()) {
         window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-        MenuSet("notifyont", "lime", "notifyofft", "white");
+        MenuSet("notifymont", "lime", "notifymofft", "white");
     }
 }
 function NotifyOff() {
@@ -575,7 +575,7 @@ function NotifyOff() {
     localStorage.setItem('notifyoff', 'OFF');
     if (isPhoneGap()) {
         window.plugins.PushbotsPlugin.unregister();
-        MenuSet("notifyont", "white", "notifyofft", "red");
+        MenuSet("notifymont", "white", "notifymofft", "red");
     }
 }
 
@@ -646,9 +646,9 @@ function MenuSetup() {
     else MenuSet("ferry2tt", "white", "ferry3tt", "lime", "ferry3t");
     // notify.   pushbots - set the notify switch. hide it for web.
     if (isPhoneGap()) {
-        if (localStorage.setItem('notifyoff') != "OFF") MenuSet("notifyont", "lime", "notifyofft", "white", "notifyon");
-        else MenuSet("notifyont", "white", "notifyofft", "red", "notifyoff");
-    } else document.getElementById("notifyswitch").setAttribute('style', 'display:none;');
+        if (LSget('notifyoff') != "OFF") MenuSet("notifymont", "lime", "notifymofft", "white", "notifymon");
+        else MenuSet("notifymont", "white", "notifymofft", "red", "notifymoff");
+    } else Hide("notifyswitch");
 
 }
 
