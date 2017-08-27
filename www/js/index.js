@@ -38,8 +38,8 @@
              041017: Change sunrise/sunset to hh:mm. 
              041117: remove splash screen for android and hide mainpage during startup.
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
-        1.14 0614:   Fix Android launch icon. Released to Google play store. NOTE released to IOS.
-        1.15 0623:   IOS Version.
+        1.14 0614:   Fix Android launch icon. Released to Google play store. NOT released to IOS.
+        1.15 0623:   IOS Version. Show selected options on the menu screen.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
