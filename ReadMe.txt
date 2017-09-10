@@ -68,6 +68,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 06/12/17. Ver 1.13 uploaded to Google Play. Ver#2226. 
 06/15/17. Ver 1.14 (on branch Ver113) Uploaded to Google Play. ver#2227. Fixed Android launch icon problem in 1.13. 
 06/18/17. Ver 1.15 (for IOS).
+09/09/17. Ver 1.15.08271130 Uploaded to Apple App Store.   (No changed since 6/18).
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -183,14 +184,14 @@ IOS DEBUG/BUILD
 	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
 	   on phonegap build, select the 'AIADistributionPush' key.  This enables push notifications. Then build.
 	1. download the ipa file to your desktop.
-	2. log in to developer.apple.com.  Click on iTunes Connect. log in.  robertbedoll@gmail.com  pw=2...E
+	2. log in to developer.apple.com.  Click on iTunes Connect. log in.  robertbedoll@gmail.com  pw=DD1
 	3. select MyApps, then Anderson Island Assistant, 
 	4. Create a new version.  The AIA version (like 1.3, 1.4, ...) should match the version in the comfig.xml of the app.
 	5. You will get a new page. fill out the what's new.
-	6. Start "Application Loader".   select Deliver Your App and click on 'Choose'.  
+	6. Start "Application Loader 3.6".   select Deliver Your App and click on 'Choose'.  
 	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
 	8. Wait until you get the email that says "Version x of Anderson Island Assistant has finished processing".
-	9. Go back to the itunes connect my app page. under the build section of the web page, select the version you just uploaded.
+	9. Go back to the itunes connect my app page. under the Build section of the web page, select the version you just uploaded.
 	   If your new version is not there, click on another choice and then back onto your version (1.x Prepare for Submission) to refresh the 
 	   page. Then your new version should show up.
 	9. Click SAVE and SUBMIT FOR REVIEW.
