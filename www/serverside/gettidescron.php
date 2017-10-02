@@ -13,23 +13,8 @@
 //  rfb. 6/4/16. 6/6/16.
 //  rfb. 10/1/17. Call NOAA instead of Aeris because Aeris is no longer free.  But format the return to look like Aeris.
 //
-    //$link = "http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+8days";
     $file = "tidedata.txt";
     chdir("/home/postersw/public_html");  // move to web root
-    //$str = file_get_contents($link);
-    //if($str == "") file_get_contents($link);  // try is 2nd time if 1st one fails
-    //if($str == "") {  // if no data
-    //    echo("tide cron run: NO AERIS DATA !!!");
-    //    //return 0;
-    //}
-    // check for success
-    //$j = strpos($str, '"success":true');
-    //if($j < 0) {  // if not success
-    //    echo("tide cron run: ERROR !!!\n $str");
-        //return 0;
-    //}
-    // write to data file
-    //file_put_contents($file, $str);  // save the data
 
     // code for NOAA
 
@@ -58,10 +43,10 @@
         return 0;
     }
     // write to data file
-    echo $str; // debug
+    //echo $str; // debug
 
     $strout = reformatdata($str);  // reformat
-    echo $strout;// debug
+
     file_put_contents($file, $strout);  // save the data
 
     echo("NOAA tide cron run successful:\n $strout");
@@ -82,7 +67,7 @@
     function reformatdata($reply) {
         $jreply = json_decode($reply);  // decode the json reply
         //var_dump($jreply);
-        echo count($jreply->predictions) . " items. <br/>";
+        //echo count($jreply->predictions) . " items. <br/>";
 
         // if an error
         if (count($jreply->predictions) == 0) {
@@ -102,4 +87,22 @@
 
         return $str;
     }
+
+//////////////////////////////////////////////////////////////////////////////////
+// OLD AERIS CODE.  DEACTIVATED 10/1/17.
+//$link = "http://api.aerisapi.com/tides/9446705?client_id=pSIYiKH6lq4YzlsNY54y0&client_secret=vMb1vxvyo7Z96DSn7niwxVymzOxPN6qiEEdBk7vS&from=-15hours&to=+8days";
+//$str = file_get_contents($link);
+//if($str == "") file_get_contents($link);  // try is 2nd time if 1st one fails
+//if($str == "") {  // if no data
+//    echo("tide cron run: NO AERIS DATA !!!");
+//    //return 0;
+//}
+// check for success
+//$j = strpos($str, '"success":true');
+//if($j < 0) {  // if not success
+//    echo("tide cron run: ERROR !!!\n $str");
+//return 0;
+//}
+// write to data file
+//file_put_contents($file, $str);  // save the data
 ?>
