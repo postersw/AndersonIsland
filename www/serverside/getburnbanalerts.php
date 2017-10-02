@@ -33,10 +33,11 @@
     if($bb == "") Bailout("bb=null");
     // make it green if no burnban; else red with the text value
     if($bb == "No Ban") $bb = '<span style="color:green">No Ban</span>';
-    else $bb = '<span style="color:red;font-weight:bold">' . $bb . '</span>';
+    elseif($bb == "Stage 1") $bb = '<span style="color:darkorange">Stage 1 Burn Ban</span>';
+    else $bb = '<span style="color:red;font-weight:bold">' . $bb . ' Burn Ban</span>';
 
     // write it
-    $airqual = "Peninsula air quality: " . $bb;
+    $airqual = "Air quality: " . $bb;
 
     // fire department. read pierce county page and find COUNTY-WIDE BURN BAN.
     //      then find Lifted or Effective.  Otherwise issue an error.
