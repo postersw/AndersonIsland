@@ -9,6 +9,8 @@
 //          All text outside of <> and before the closing </div is picked up
 //      <blah>
 //      </div
+//  CRON: */6 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
+//  DISABLED 11/13/17. Tanner no longer updates the andersonisland page.   Need a new automated solution.
 //
     $tanneroutagelink = "http://www.tannerelectric.coop/andersonisland";
     $tanneroutagefile = "tanneroutage.txt";
@@ -56,7 +58,7 @@
     //    $r = substr($r, $i);  // get the update
     //}
     // break $r into paragraphs
-    $P = explode("<p>", $r); 
+    $P = explode("<p>", $r);
     // use the last paragraph
     $r = $P[count($P)-1];
     if (strlen($r) > 137) $r = substr($r, 0, 300) . "...";
