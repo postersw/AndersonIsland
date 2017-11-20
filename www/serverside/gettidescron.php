@@ -49,7 +49,7 @@
 
     file_put_contents($file, $strout);  // save the data
 
-    echo("NOAA tide cron run successful:\n $strout");
+    //DEBUG. echo("NOAA tide cron run successful:\n $strout");
     return 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////
