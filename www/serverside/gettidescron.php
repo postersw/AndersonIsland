@@ -24,7 +24,7 @@
     $m = date ("m", $ts); // month with leading zero
     $d = date("d", $ts); // day with leading zero
     $link = $link . "&begin_date=" . date("Ymd%20H:i", $ts) . "&range=200";
-    echo $link; //debug
+    //echo $link; //debug
     //return 0;///////////////////////////////////////////////////////////
 
     for ($x = 0; $x <= 10; $x++) {
@@ -47,8 +47,11 @@
 
     $strout = reformatdata($str);  // reformat
 
-    file_put_contents($file, $strout);  // save the data
-
+    $j = file_put_contents($file, $strout);  // save the data
+    if($j <= 0) {  // if not success
+        echo("tide cron run: file_put_contents ERROR !!!\n $j $strout");
+        return 0;
+    }
     //DEBUG. echo("NOAA tide cron run successful:\n $strout");
     return 0;
 
