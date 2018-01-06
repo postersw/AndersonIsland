@@ -106,6 +106,11 @@ WEB DEBUG/BUILD
 	Upload to anderson-island.org using godaddy.com file interface.
 	Debug using chrome, F12. All features should work except pushbots.
 
+WEB LOCAL DEBUG
+	Move files to C:\inetpub\wwwroot
+	Open http://localhost
+	Use Developer tools to debug.
+
 ANDROID DEBUG/BUILD
 	Build on PhoneGap build.  Then download the apk using the bar code scanner to open the download web page.
 	Alernatively run PhoneGap build on the phone and click on the apk icon to download it.

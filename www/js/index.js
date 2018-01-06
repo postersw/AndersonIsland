@@ -40,6 +40,7 @@
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
         1.14 0614:   Fix Android launch icon. Released to Google play store. NOT released to IOS.
         1.15 0623:   IOS Version. Show selected options on the menu screen.
+        1.16 010518. Fix thanksgiving date calc.  Test. test.a
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -61,7 +62,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.15.08271130";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.010518";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -201,32 +202,54 @@ function InitializeDates(dateincr) {
     gYYmmdd = gMonthDay + (gYear-2000)*10000; // yymmdd
     gWeekofMonth = Math.floor((gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
     // build holidays once only
-    if (dateincr == 0 && laborday == 0) {
-        // laborday // first monday in sept.  we need to compute this dyanmically
-        var dlabordate, dlabor;
-        dlabordate = new Date(gYear, 8, 1); // earlies possible date
-        dlabor = dlabordate.getDay();
-        if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
-        else if (dlabor == 0) laborday = 902;  // monday = 1... Sat=6
-        else laborday = 901;
-        // memorial day last monday in may
-        var dmemdate, memdate;
-        dmemdate = new Date(gYear, 4, 25); // earliest possible date memorial day
-        memday = dmemdate.getDay();
-        if (memday > 1) memorialday = 525 + 8 - memday;  // monday = 1... Sat=6
-        else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
-        else memorialday = 525;
-        // thanksgiving
-        var dthanksdate, dthanks;
-        dthanksdate = new Date(gYear, 10, 24);// earliest possible 4th thursday (4) in november
-        dthanks = dthanksdate.getDay();
-        if (dthanks < 5) thanksgiving = 1124 + 4 - dthanks;
-        else if (dthanks == 5) thanksgiving = 1130;
-        else thanksgiving = 1129;
-    }
+    if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
     // compute holidays
     holiday = IsHoliday(gMonthDay);
+}
 
+//////////////////////////////////////////////////////////////////////////////////////
+//  BuildHolidays - calculate laborday, memorial day, thanksgiving.  rev 1/5/18.
+//  entry: year = year.   
+//  exit: sets laborday, memorialday, thansgiving to mmdd.
+function BuildHoliday(year) {
+    // laborday // first monday in sept.  we need to compute this dyanmically
+    var dlabordate, dlabor;
+    dlabordate = new Date(year, 8, 1); // earlies possible date
+    dlabor = dlabordate.getDay();
+    if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
+    else if (dlabor == 0) laborday = 902;  // monday = 1... Sat=6
+    else laborday = 901;
+    // memorial day last monday in may
+    var dmemdate, memdate;
+    dmemdate = new Date(year, 4, 25); // earliest possible date memorial day
+    memday = dmemdate.getDay();
+    if (memday > 1) memorialday = 525 + 8 - memday;  // monday = 1... Sat=6
+    else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
+    else memorialday = 525;
+    // thanksgiving calculation.  Fixed on 01/05/18.
+    // thanksgiving = 11/22 – 11/28
+    var dthanksdate, dthanks;
+    dthanksdate = new Date(year, 10, 1);// 1st day of nov
+    dowthanks = dthanksdate.getDay(); // 0 – 6, thur=4
+    if (dowthanks <= 4) thanksgiving = 1126 - dowthanks;//  4 = 22,3=23,2=24,1=25,0=26
+    else thanksgiving = 1133 - dowthanks;;//  5 ->1128,  6->11/27
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// tests for correct calculation of holidays.  Only used for debugging.
+function BuildHolidayTest() {
+    var testy = [2018, 2019, 2020, 2021, 2022, 2023,2024];
+    var testm = [528, 527,525,531,530,529,527];
+    var testl = [903, 902,907,906,905,904,902];
+    var testt = [1122, 1128, 1126, 1125,1124,1123,1128];
+    var i;
+    for (i = 0; i < 4; i++) {
+        BuildHoliday(testy[i]);
+        if (memorialday != testm[i]) alert(String(testy[i]) + String(memorialday));
+        if (laborday != testl[i]) alert(String(testy[i])+ String(laborday));
+        if (thanksgiving != testt[i]) alert(String(testy[i])+ String(thanksgiving));
+    }
+    alert("test done");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
