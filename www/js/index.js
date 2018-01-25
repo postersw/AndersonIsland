@@ -40,7 +40,7 @@
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
         1.14 0614:   Fix Android launch icon. Released to Google play store. NOT released to IOS.
         1.15 0623:   IOS Version. Show selected options on the menu screen.
-        1.16 010518. Fix thanksgiving date calc.  Test. test.a
+        1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -62,7 +62,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.16.010518";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.012418.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1541,10 +1541,11 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
-        // if Today
+        // if Today: bold time. if current, make time green.
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
-            datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            if (Number(aCE[1]) <= gTimehhmm) datefmt += " <span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            else datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
             nEvents = 99; // ensure only today
             DisplayDate = aCEyymmdd;
             continue;
