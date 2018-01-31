@@ -26,8 +26,9 @@
     1.13.0519: Ferry schedule: 3/line, time till, table, highlight by location.
                Make menu smaller
     1.15:0623: IOS version. Add sliders to menu.
+    1.16:012218: Add main page rows in daily cache.
 	
-    Copyright (c) 2016-2017 Robert Bedoll, Poster Software LLC.
+    Copyright (c) 2016-2018 Robert Bedoll, Poster Software LLC.
 
     Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
 
@@ -174,7 +175,7 @@
             <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
         </div>
 
- <table align="center" style="width:100%;padding:0;border-collapse:collapse";>
+ <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse";>
         <tr id='ferryrow' style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
             <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
             <td id="ferrytimes" style="font-size:small;margin-top:0px;margin-bottom:0px;"> </td>
@@ -261,12 +262,14 @@
             <td style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
              EMERGENCY CONTACTS</td>
          </tr>
+         <tr id="maintablerows"></tr>   
 
          <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">Help</tr>
-        <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
+
+         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                 <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
          <!-- <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr> -->
-            
+
     </table>
     </div>
     </div>
@@ -473,7 +476,7 @@
 
          <div style="width:100%;background-color:darkgray;padding:10px">LEGAL AND LICENSING</div>
         <p style="margin:10px">This app and data are provided with no guarantees, conditions or warranties, and the correctness, accuracy, or reliability of its data is not guaranteed.</p>
-          <p style="font-size:small;margin:10px">Anderson Island Assistant" Copyright (c) 2016 Robert Bedoll, Poster Software LLC.
+          <p style="font-size:small;margin:10px">Anderson Island Assistant" Copyright (c) 2016-2018 Robert Bedoll, Poster Software LLC.
           <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.<br />
           Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. <br />
        Weather data provided by <a href="www.openweathermap.com">OpenWeatherMap.com.</a>  <br />

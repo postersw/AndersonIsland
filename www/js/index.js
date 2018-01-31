@@ -40,7 +40,7 @@
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
         1.14 0614:   Fix Android launch icon. Released to Google play store. NOT released to IOS.
         1.15 0623:   IOS Version. Show selected options on the menu screen.
-        1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events.
+        1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events. Add MAINTABLEROWS.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -62,7 +62,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.16.012418.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.013118.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1684,7 +1684,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // ferry schedule
-
+    parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
@@ -1706,7 +1706,7 @@ function ParseDailyCache(data) {
 
     if (gReloadCachedDataButtonInProgress) {
         gReloadCachedDataButtonInProgress = false;
-        alert("Data has been reloaded.");
+        alert("Data successfully reloaded.");
     }
 }
 
@@ -1892,7 +1892,9 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-    //DisplayLoadTimes();
+    
+    s = localStorage.getItem("maintablerows"); // additional main page rows
+    if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
 }
 
