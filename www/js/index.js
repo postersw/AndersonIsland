@@ -41,6 +41,7 @@
         1.14 0614:   Fix Android launch icon. Released to Google play store. NOT released to IOS.
         1.15 0623:   IOS Version. Show selected options on the menu screen.
         1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events. Add MAINTABLEROWS.
+             020218. Change tide display on main page to a table.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -62,7 +63,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.16.013118.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.020218.5";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1451,8 +1452,8 @@ function HandleForecastAReply(jsondata) {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
-// License as of 2/8/16 is for 750 hits/day for free.
+// get tide data using NOAA web site and returning a json structure in the aeris format.
+// Original AERIS call changed to get NOAA data on the server, but still return an AERIS format.
 //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
 //  exit: gForceCacheReload = true to reload tide data.  
 //          html populated.
@@ -1488,17 +1489,23 @@ function ShowNextTides() {
         } else if (oldtide != 1) {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
-                nextTides = "Incoming. Now ";
+                //nextTides = "Incoming. Now ";
+                nextTides = "Incoming";
                 document.getElementById("tidestitle").innerHTML = "TIDE &uarr;";
             } else {
                 nextTides = "Outgoing. Now ";
+                nextTides = "Outgoing.";
                 document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
             }
-            nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
-                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
+            //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
+            //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
+            var tdx = "<td style='padding:1px 0 1px 0;margin:0'>";
+            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "Now</td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
+                "<tr>" + tdx + ShortTime(tidehhmm) + " &nbsp</td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
-            nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
+            //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
+            nextTides += "<tr>" + tdx + ShortTime(tidehhmm) + "&nbsp </td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
