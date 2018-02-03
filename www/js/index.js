@@ -1490,11 +1490,11 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 //nextTides = "Incoming. Now ";
-                nextTides = "Incoming &uarr;";
+                nextTides = "Incoming";
                 document.getElementById("tidestitle").innerHTML = "TIDE &uarr;";
             } else {
                 //nextTides = "Outgoing. Now ";
-                nextTides = "Outgoing &darr;";
+                nextTides = "Outgoing";
                 document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
             }
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
