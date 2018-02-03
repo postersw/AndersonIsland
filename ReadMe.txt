@@ -471,3 +471,8 @@ Here's an example of how these files will be compiled into your APK:
 	<www.zip>/locales/android/values-fr/strings.xml --> <android_apk>/res/values-fr/strings.xml
 	<www.zip>/locales/android/xml/custom.xml        --> <android_apk>/res/xml/custom.xml
 Existing directories will be merged, but at this time any individual files you include will overwrite their target if it exist
+
+-----------------------------------------------------------------------------------------------------
+iPhone 10.
+Display changes:
+https://blog.phonegap.com/displaying-a-phonegap-app-correctly-on-the-iphone-x-c4a85664c493

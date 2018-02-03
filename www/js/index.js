@@ -63,7 +63,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.16.020318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.020318.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1490,16 +1490,16 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 //nextTides = "Incoming. Now ";
-                nextTides = "Incoming";
+                nextTides = "Incoming &uarr;";
                 document.getElementById("tidestitle").innerHTML = "TIDE &uarr;";
             } else {
-                nextTides = "Outgoing. Now ";
-                nextTides = "Outgoing.";
+                //nextTides = "Outgoing. Now ";
+                nextTides = "Outgoing &darr;";
                 document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
             }
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
-            var tdx = "<td style='padding:1px 0 1px 0;margin:0'>";
+            var tdx = "<td style='padding:0;margin:0'>";
             nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "Now:</td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
                 "<tr>" + tdx + ShortTime(tidehhmm) + ":&nbsp</td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
             oldtide = 1;
