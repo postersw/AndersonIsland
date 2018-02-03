@@ -63,7 +63,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.16.020218.5";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.020318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1500,12 +1500,12 @@ function ShowNextTides() {
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             var tdx = "<td style='padding:1px 0 1px 0;margin:0'>";
-            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "Now</td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
-                "<tr>" + tdx + ShortTime(tidehhmm) + " &nbsp</td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
+            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "Now:</td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
+                "<tr>" + tdx + ShortTime(tidehhmm) + ":&nbsp</td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
-            nextTides += "<tr>" + tdx + ShortTime(tidehhmm) + "&nbsp </td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
+            nextTides += "<tr>" + tdx + ShortTime(tidehhmm) + ":&nbsp</td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
