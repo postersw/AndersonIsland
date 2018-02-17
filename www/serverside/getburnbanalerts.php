@@ -8,9 +8,11 @@
 //      Rev 6/4/16.
 //  Fire department: looks for string "COUNTY WIDE BURN BAN", and then "Lifted" or "Effective".
 //      Rev 9/28/16.
+//  Fire department: look for "Current Fire Safety Burn Ban Status". Then for "NO BURN BAN". 
+//      Rev 2/16/18.
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
-    $firebblink = "http://www.co.pierce.wa.us/index.aspx?NID=982";
+    $firebblink = "http://www.co.pierce.wa.us/982/Burn-Bans";
     $burnbanfile = "burnban.txt";
     chdir("/home/postersw/public_html");  // move to web root
     $str = file_get_contents($burnbanlink);
@@ -39,21 +41,23 @@
     // write it
     $airqual = "Air quality: " . $bb;
 
-    // fire department. read pierce county page and find COUNTY-WIDE BURN BAN.
-    //      then find Lifted or Effective.  Otherwise issue an error.
+// Fire Department. read pierce county page and find "Current Fire Safety Burn Ban Status".
+// then find NO BURN BAN, or something else which is undefined as of 2/16/18.  Otherwise issue an error.
 
     $fire = file_get_contents($firebblink); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
     if($fire == "") $fire = file_get_contents($firebblink); //1 retry
     //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
     //$fire = strip_tags($firew);  // remove the tags
     //echo $fire; echo "<br/>";
-    $cwbb = "COUNTY-WIDE BURN BAN";
+    //$cwbb = "COUNTY-WIDE BURN BAN";
+    $cwbb = "Current Fire Safety Burn Ban Status";
     $i = stripos($fire, $cwbb);
-    if($i == 0) Bailout("could not find $cwbb");
-    $lifted = stripos($fire, "Lifted", $i);
-    $effective = stripos($fire, "Effective", $i);
-    if($lifted > 0) $firebb = '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:green;">No Outdoor Burn Ban</a>';
-    elseif($effective> 0) $firebb =  '<a href="http://www.co.pierce.wa.us/index.aspx?NID=982"style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>';
+    if($i == 0) Bailout("Could not find \"$cwbb\"");
+    $lifted = stripos($fire, "NO BURN BAN", $i);
+    //$effective = stripos($fire, "Effective", $i);
+    $effective = 1; // until we get an example
+    if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
+    elseif($effective> 0) $firebb =  $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
     else Bailout("County Burn Ban not = Lifted or Effective. Revise the script.");
 
     // write to file
