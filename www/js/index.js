@@ -1481,8 +1481,8 @@ function ShowNextTides() {
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         var tidehhmm = ((h) * 100) + (mi);
-        if (thisperiod.type == 'h') hilow = ' &uarr;&uarr; High';
-        else hilow = '&darr;&darr; Low';
+        if (thisperiod.type == 'h') hilow = 'High';
+        else hilow = 'Low';
         // if tide is past, color row gray
         if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
             oldtide = 0;
