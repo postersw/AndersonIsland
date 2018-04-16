@@ -69,6 +69,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 06/15/17. Ver 1.14 (on branch Ver113) Uploaded to Google Play. ver#2227. Fixed Android launch icon problem in 1.13. 
 06/18/17. Ver 1.15 (for IOS).
 09/09/17. Ver 1.15.08271130 Uploaded to Apple App Store.   (No changed since 6/18).
+01/06/18. Ver 1.16 (branch Ver116) created.  
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:

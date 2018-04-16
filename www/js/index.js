@@ -42,6 +42,7 @@
         1.15 0623:   IOS Version. Show selected options on the menu screen.
         1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events. Add MAINTABLEROWS.
              020218. Change tide display on main page to a table.
+             041518. Add arrows to tide display. 
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -63,7 +64,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.16.020318.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.16.041518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1480,8 +1481,8 @@ function ShowNextTides() {
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         var tidehhmm = ((h) * 100) + (mi);
-        if (thisperiod.type == 'h') hilow = 'High';
-        else hilow = 'Low';
+        if (thisperiod.type == 'h') hilow = ' &uarr;&uarr; High';
+        else hilow = '&darr;&darr; Low';
         // if tide is past, color row gray
         if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
             oldtide = 0;
@@ -1490,11 +1491,13 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 //nextTides = "Incoming. Now ";
-                nextTides = "Incoming";
+                //nextTides = "Incoming";
+                nextTides = "&uarr; Incoming";
                 document.getElementById("tidestitle").innerHTML = "TIDE &uarr;";
             } else {
                 //nextTides = "Outgoing. Now ";
-                nextTides = "Outgoing";
+                //nextTides = "Outgoing";
+                nextTides = "&darr; Outgoing";
                 document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
             }
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
