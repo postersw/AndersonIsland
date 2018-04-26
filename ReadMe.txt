@@ -71,6 +71,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 09/09/17. Ver 1.15.08271130 Uploaded to Apple App Store.   (No changed since 6/18).
 01/06/18. Ver 1.16 (branch Ver116) created.  
 04/17/18. Ver 1.16.0416 uploaded to Google Play ver#2229. MinAPI set to 15 FOR Pushbots (was 14). Minor enhancements to the 'tide' display and the 'options' menu.  Correct calculation of date for 'thanksgiving'.
+04/25/18. Ver 1.17 Branch Ver117 created.  Only change is config.xml cli set to cli-7.1.0
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
