@@ -179,6 +179,15 @@
     <splash src="www/res/screen/ios/SS750x1334.png" width="750" height="1334" />
     <splash src="www/res/screen/ios/SS1242x2208.png" width="1242" height="2208" />
   </platform>
+  
+  <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
+  <platform name="android">
+    <resource-file src="locales/android/drawable-xxhdpi/ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4" />
+    <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4" />
+    <resource-file src="locales/android/drawable-xxxhdpi/ic_pushbots_licon.png" target="res/drawable-xxxhdpi" />
+    <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi" />
+  </platform>
+  
   <!--
     <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
     <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />

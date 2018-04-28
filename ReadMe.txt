@@ -523,6 +523,7 @@ Note that the small icon must have only 2 colors: white, and transparant. It mus
 Then copy them into www/locales/android/drawable-xxxx.  Phonegap Build  will then copy them into res/drawable-xxxx.
 For the large icon, it can be 256x256, colored. It must be called ic_pushbots_licon.png.
 
+The following no longer works in cli 7.1.0 as of 4/28/18. Use <resource-file ....> instead.
 PGB has added beta support for Android localization files which also will put files into the Android res/ directory. 
 To add, create directory locales/android/ in the root of your PGB application zip / repo, and place your localization files there. 
 The contents will be copied into the Android res/ directory, and any nested sub-directory structures will persist. 
@@ -531,6 +532,12 @@ Here's an example of how these files will be compiled into your APK:
 	<www.zip>/locales/android/xml/custom.xml        --> <android_apk>/res/xml/custom.xml
 Existing directories will be merged, but at this time any individual files you include will overwrite their target if it exist
 
+From Pushbots: https://www.pushbots.help/customize-your-notifications/notification-icons-android
+Large icons should be called ic.pushbots.licon.png in res/drawable-xxxhdpi, sized 256x256.  It will always show are largeIcon.
+Small icon should be called ic_stat_pushbots_sicon.png, white & transaparant, in res/drawable-xxxhdpi
+
+config.xml for Cordova: https://cordova.apache.org/docs/en/latest/config_ref/index.html#resource-file
+<resource-file src="FooPluginStrings.xml" target="res/values/FooPluginStrings.xml" />
 -----------------------------------------------------------------------------------------------------
 iPhone 10.
 Display changes:
