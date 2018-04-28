@@ -186,8 +186,8 @@
     <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_pushbots_licon.png" target="res/drawable-xxxhdpi" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi" />
-    <resource-file src="ic_pushbots_licon.png" target="res/drawable-hdpi-v4" />
-    <resource-file src="ic_stat_pushbots_sicon.png" target="res/drawable-hdpi-v4" />
+    <resource-file src="ic_pushbots_licon.png" target="res/drawable-hdpi-v4/ic_pushbots_licon.png" />
+    <resource-file src="ic_stat_pushbots_sicon.png" target="res/drawable-hdpi-v4/ic_stat_pushbots_sicon.png" />
   </platform>
   
   <!--
