@@ -5,9 +5,9 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.17.0428184"
+        version   = "1.17.0428185"
         android-versionCode="2230" 
-        android:versionName="1.17.0428184">
+        android:versionName="1.17.0428185">
         <!-- versionCode 2230 for 1.17 4/25/18 -->
         <!-- versionCode 2229 for 1.16 2/3/18 -->
         <!-- versionCode 2228 for 1.15 8/28/17 -->
@@ -74,7 +74,7 @@
         Define a specific version of PhoneGap to build into your app.
         <preference name="phonegap-version"       value="3.5.0" />    -->
         <preference name="phonegap-version" value="cli-7.1.0" />
-        <preference name='pgb-builder-version' value='1' /> <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
+        <preference name='pgb-builder-version' value='2' /> <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
 
     <!-- Plugins -->
 
@@ -186,6 +186,8 @@
     <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_pushbots_licon.png" target="res/drawable-xxxhdpi" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi" />
+    <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi" />
+    <resource-file src="ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi" />
   </platform>
   
   <!--
