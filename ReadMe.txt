@@ -71,7 +71,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 09/09/17. Ver 1.15.08271130 Uploaded to Apple App Store.   (No changed since 6/18).
 01/06/18. Ver 1.16 (branch Ver116) created.  
 04/17/18. Ver 1.16.0416 uploaded to Google Play ver#2229. MinAPI set to 15 FOR Pushbots (was 14). Minor enhancements to the 'tide' display and the 'options' menu.  Correct calculation of date for 'thanksgiving'.
-04/25/18. Ver 1.17 Branch Ver117 created.  Only change is config.xml cli set to cli-7.1.0
+04/25/18. Ver 1.17 Branch Ver117 created.  Only change is config.xml cli set to phonegab build cli-7.1.0. Also added <resource-file...> for pushbots icons.
+05/01/18. Ver 1.17.04281810. Min sdk 15, target 26. Cli 7.1.0. ver 2230. Rollout from beta to production on 5/1 12:23pm. Fixes crashes in android 8 pushbots because I hadn't built with android api 26.  Seems to work ok on pushbots.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -142,9 +143,11 @@ ANDROID GOOGLE PLAY STORE
 	1. Log into play.google.com/apps/publish -> developer console;  robertbedoll@gmail.com
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
 		1.9 (2223) on 3/11/17. 
-	2. Click on Anderson Island Assistant.  Click on "APK".   Click on "Upload new APK to Production";
+	2. Click on Anderson Island Assistant.  Click on "APK".   
+	3. BETA TEST. Click on "Manage Beta version" and create a new open beta version. Send out email links to testers;
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
+	5. After the beta has been run a while, click on Manage Beta and then Promote to Production. No need to upload a new production ver.
 
 ------------------------------------------------------------------------------------------------------------
 IOS DEBUG/BUILD 
@@ -515,22 +518,15 @@ CRON PHP JOBS:
 
 
 ---------------------------------------------------------------------------------------
-ICONS ETC 6/3/17.
+PUSHBOTS ICONS ETC 6/3/17 rev 5/1/18 for 1.17.
 Android notification icons for use by Pushbots:
 To generate the android small icon:
 https://romannurik.github.io/AndroidAssetStudio/icons-notification.html#source.type=clipart&source.clipart=directions_boat&source.space.trim=1&source.space.pad=0&name=ic_stat_pushbots_sicon
 Note that the small icon must have only 2 colors: white, and transparant. It must be called ic_stat_pushbots_sicon.png.
-Then copy them into www/locales/android/drawable-xxxx.  Phonegap Build  will then copy them into res/drawable-xxxx.
 For the large icon, it can be 256x256, colored. It must be called ic_pushbots_licon.png.
-
-The following no longer works in cli 7.1.0 as of 4/28/18. Use <resource-file ....> instead.
-PGB has added beta support for Android localization files which also will put files into the Android res/ directory. 
-To add, create directory locales/android/ in the root of your PGB application zip / repo, and place your localization files there. 
-The contents will be copied into the Android res/ directory, and any nested sub-directory structures will persist. 
-Here's an example of how these files will be compiled into your APK:
-	<www.zip>/locales/android/values-fr/strings.xml --> <android_apk>/res/values-fr/strings.xml
-	<www.zip>/locales/android/xml/custom.xml        --> <android_apk>/res/xml/custom.xml
-Existing directories will be merged, but at this time any individual files you include will overwrite their target if it exist
+Revised 5/1/18: wherever you put these files doesn't matter, but you must use the <resource-file...> directive in config.xml to copy them
+into the res/drawable.... folders.
+You MUST use the <resource-file src=source file, target="res/drawable-..../filename"> in config.xml.
 
 From Pushbots: https://www.pushbots.help/customize-your-notifications/notification-icons-android
 Large icons should be called ic.pushbots.licon.png in res/drawable-xxxhdpi, sized 256x256.  It will always show are largeIcon.
