@@ -44,6 +44,7 @@
              020218. Change tide display on main page to a table.
              041518. Add arrows to tide display. 
         1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes.
+        1.18 051318. Error handling for data errors.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -65,7 +66,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.17.042818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.18.051518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -309,10 +310,12 @@ function GetTimeMS() {
 // ValidFerryRun return true if a valid ferry time, else false.
 //  alternate to having the rules special cased
 // flag: *=always, 0-6=days of week, (xxxx) = eval rules in javascript
+// ferrytime: ferry run time, used only for error message
 //  eval rules are javascript, returning true for a valid run, else false
 //    can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
+//    e.g. ((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123))
 
-function ValidFerryRun(flag) {
+function ValidFerryRun(flag, ferrytime) {
     if (flag == undefined || flag == "") return false;
     if (flag.indexOf("*") > -1) return true; // good every day
     if (flag.substr(0, 1) != "(") {
@@ -321,7 +324,13 @@ function ValidFerryRun(flag) {
     }
 
     // (eval rules ).
-    var t = eval(flag);
+    try {
+        var t = eval(flag);
+    } catch(err) {
+        var msg = "Invalid Ferry Eval Rule for " + ferrytime + "\n" + flag + "\n" + err.message;
+        alert(msg);
+        t = false;
+    }
     return t;
 }
 
@@ -947,7 +956,7 @@ function HandleAlertReply(r) {
     gAlertTime = Date.now(); // time in ms
     //localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
     gAlertCounter++; // count the alert reply
-    var s = parseCache(r, "", "FERRY", "FERRYEND");
+    var s = parseCacheOptional(r, "", "FERRY", "FERRYEND");
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
@@ -1074,7 +1083,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     for (i = 0; i < ferrytimes.length; i = i + 2) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
-        if (ValidFerryRun(ferrytimes[i + 1])) {
+        if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
@@ -1090,7 +1099,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
             //    ft = ft + ShortTime(ferrytimes[i]);
             //}
             if (ferrytimeK != "") { // add ketron time for this run
-                if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1]))) {
+                if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1], ferrytimeK[i]))) {
                     ketron = true;
                     ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i]) + "</td>";
                 } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
@@ -1121,7 +1130,7 @@ function FindNextSingleFerryTime(ferrytimes) {
     for (i = 0; i < ferrytimes.length; i = i + 2) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
-        if (ValidFerryRun(ferrytimes[i + 1])) {
+        if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
             var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
             if (rtd < 13) return ShortTime(ferrytimes[i]) + "<span style='color:red'> (in " + ftd + ")</span>";
@@ -1143,7 +1152,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
     InitializeDates(1);   // tomorrow
     var ferrytimes = UseFerryTime(SA); // get the ferry time for tomorrow
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (ValidFerryRun(ferrytimes[i + 1])) {
+        if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='color:gray;font-weight:normal;padding:0;margin:0;'>" + ShortTime(ferrytimes[i]);
             // insert remaining time
             //if (nruns == 0 && gFerryShowIn) {
@@ -1602,7 +1611,9 @@ function GetDailyCache() {
 
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
         "&P=" + LSget("pagehits").substr(0, 30));
- 
+    //var myurl = FixURL("getdailycachetest.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
+    //   "&P=" + LSget("pagehits").substr(0, 30));
+
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -1654,8 +1665,9 @@ function ParseDailyCache(data) {
     //parseCache(data, "morehours", "MOREHOURS", "MHEND");
     parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
     parseCache(data, "links", "LINKS", "LINKSEND");
-    s = parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
-    if (s != "") OpenHours = JSON.parse(s);  // parse it
+    parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
+    ParseOpenHours();
+    //if (s != "") OpenHours = JSON.parse(s);  // parse it
     // new ferry schedule 
     //parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
     //parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
@@ -1713,6 +1725,8 @@ function ParseDailyCache(data) {
         localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
         localStorage.setItem("tidesloadedmmdd", gMonthDay);
         ShowNextTides();
+    } else {
+        alert("ERROR: Can't decode tide data");
     }
 
     if (gReloadCachedDataButtonInProgress) {
@@ -1727,7 +1741,33 @@ function ParseDailyCache(data) {
 //  localstoragename = name of local storage item, "" to not store it
 //  startstr = starting string, endstr = ending string. can be "\n"
 //  exit    returns the string. "" if no string.
+// Modified 5/15/18 to always check for <startstr>\n and return error if not found.
 function parseCache(data, localstoragename, startstr, endstr) {
+    //var s = data.indexOf(startstr);
+    var s = data.indexOf(startstr + "\n");  //This should work more reliably but i'm afraid of the \n on nonwindows
+    //if (s < 0) return "";
+    if (s < 0) {
+        alert("ERROR in DailyCache startstr: Cant find " + startstr);
+        return "";
+    }
+    var e = data.indexOf(endstr, s + startstr.length + 1);
+    //if (e < 0) return "";
+    if (e < 0) {
+        alert("ERROR in DailyCache endstr: Cant find " + endstr);
+        return "";
+    }
+    var str = data.substring(s + startstr.length + 1, e);
+    if (localstoragename != "") localStorage.setItem(localstoragename, str);
+    return str;
+}
+
+/////////////////////////////
+// parseCacheOptional - returns the optional string from the daily cache
+//  data is in the form:  <startstr>\n data <endstr>
+//  localstoragename = name of local storage item, "" to not store it
+//  startstr = starting string, endstr = ending string. can be "\n"
+//  exit    returns the string. "" if no string.
+function parseCacheOptional(data, localstoragename, startstr, endstr) {
     var s = data.indexOf(startstr);
     if (s < 0) return "";
     var e = data.indexOf(endstr, s + startstr.length + 1);
@@ -1740,7 +1780,7 @@ function parseCache(data, localstoragename, startstr, endstr) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  parseCacheRemove - identical to parseCache but removes the local storage item if it is not present in the data
 function parseCacheRemove(data, localstoragename, startstr, endstr) {
-    var s = parseCache(data, localstoragename, startstr, endstr);
+    var s = parseCacheOptional(data, localstoragename, startstr, endstr);
     if (s == "") localStorage.removeItem(localstoragename);
     return s;
 }
@@ -2123,7 +2163,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
         if ((gTimehhmm >= (ferrytimesS[i] + extrat)) && (gTimehhmm >= (ferrytimesA[i] + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         //if ((gTimehhmm >= (Number(ferrytimesS[i]) + extrat)) && (gTimehhmm >= (Number(ferrytimesA[i]) + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
-        if (ValidFerryRun(ferrytimesS[i + 1])) {
+        if (ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i])) {
             // Steelacoom
             var row1, row1col1, row1col2;
             row1 = table.insertRow(-1);
@@ -2149,7 +2189,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             // Ketron
             var row1col3 = row1.insertCell(2);
             if (ferrytimesK[i] != 0) {
-                if (ValidFerryRun(ferrytimesK[i + 1])) {
+                if (ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i])) {
                     row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
                     if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
                     else row1col3.style.color = "brown";
@@ -2516,7 +2556,7 @@ function ParseOpenHours() {
         try {
             OpenHours = JSON.parse(s);  // parse it  
         } catch (e) {
-            alert(e);
+            alert("Error in OPEN HOURS data: " + e);
             gForceCacheReload = true;
         }
     } else gForceCacheReload = true;
@@ -3097,7 +3137,11 @@ function TidesDataPage() {
     gUserTideSelection = false;
     var json = localStorage.getItem("jsontides");
     if (IsEmpty(json)) return;
-    gPeriods = JSON.parse(json);
+    try {
+        gPeriods = JSON.parse(json);
+    } catch (err) {
+        alert("ERROR parsing Tides data: " + err.message + "\n" + json)
+    }
     if (gPeriods == null) return;
     var i = ShowTideDataPage(gPeriods, true);
     showingtidei = i;
