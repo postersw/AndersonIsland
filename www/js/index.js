@@ -2995,14 +2995,19 @@ function DisplayComingMonth(CE) {
         row = table.insertRow(-1);
         //row.style.border = "thin solid blue";
         // day rows with date
+        var yymm = (gYear - 2000) * 100 + gMonth;
         for (i = 0; i < 7; i++) {
             // cell with date
             col = rowN.insertCell(i);
-            if ((yymmdd % 100) == 1) {
-                col.innerHTML = formatDate(yymmdd); // use month on 1st day
-                col.style.fontWeight = 'bold';
+            //if ((yymmdd % 100) == 1) {
+            //    col.innerHTML = formatDate(yymmdd); // use month on 1st day
+            //    col.style.fontWeight = 'bold';
+            //}
+            if (Math.floor(yymmdd / 100) != yymm) { // if not this month
+                col.innerHTML = formatDate(yymmdd); // use month 
+                //col.style.fontWeight = 'bold';
             }
-            else col.innerHTML = (yymmdd % 100).toFixed(0);
+            else col.innerHTML = (yymmdd % 100).toFixed(0); // this month: show day only
             col.style.color = "darkblue";
             if (yymmdd == gYYmmdd) col.style.backgroundColor = "yellow";
             else col.style.backgroundColor = "azure";
