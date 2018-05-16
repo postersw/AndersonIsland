@@ -66,7 +66,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.18.051518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.18.051518.4";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -1366,18 +1366,25 @@ function getCurrentWeather() {
     var myurl = GetLink("currentweatherlink", 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (xhttp.readyState == 4 && xhttp.status == 200) HandleCurrentWeatherReply(JSON.parse(xhttp.responseText));
+        if (xhttp.readyState == 4 && xhttp.status == 200) HandleCurrentWeatherReply(xhttp.responseText);
     }
     xhttp.open("GET", myurl, true);
     xhttp.send();
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //  HandleCurrentWeatherReply - decode the json response from OpenWeatherMap
-//  entry r = OBJECT of weather reply
-function HandleCurrentWeatherReply(r) {
+//  entry responseText = json encoded response text weather reply
+//
+function HandleCurrentWeatherReply(responseText) {
     var rain;
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("currentweathertime", timestamp); // save the cache time 
+    try{
+        var r = JSON.parse(responseText);
+    } catch (err) {
+        alert("Error: cannot parse current weather reply: " + err.message + "\n" + responseText);
+        return;
+    }
 
     // create short string for front page
     var icon = "<img src='img/" + r.weather[0].icon + ".png' width=30 height=30>";
@@ -1481,7 +1488,12 @@ function ShowNextTides() {
         return;
     }
 
-    var periods = JSON.parse(json); // parse it
+    try{
+        var periods = JSON.parse(json); // parse it
+    } catch (err) {
+        document.getElementById("tides").innerHTML = "Error in tide data.<br/>" + err.message;
+        return;
+    }
     // roll through the reply in jason.response.periods[i]
     var i;
     for (i = 0; i < periods.length; i++) {
@@ -1719,15 +1731,16 @@ function ParseDailyCache(data) {
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
 
-    // tides (added 6/6/16)
-    var json = JSON.parse(parseCache(data, "", "TIDES", "TIDESEND"));
-    if (json.success == true) {
-        localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
-        localStorage.setItem("tidesloadedmmdd", gMonthDay);
-        ShowNextTides();
-    } else {
-        alert("ERROR: Can't decode tide data");
+    // tides (added 6/6/16);
+    s = parseCache(data, "", "TIDES", "TIDESEND");
+    try{
+        var json = JSON.parse(s);
+    } catch (err) {
+        alert("ERROR: Can't decode tide data: " + err.message + "\n" + s);
     }
+    localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
+    localStorage.setItem("tidesloadedmmdd", gMonthDay);
+    ShowNextTides();
 
     if (gReloadCachedDataButtonInProgress) {
         gReloadCachedDataButtonInProgress = false;
@@ -3522,10 +3535,10 @@ function GetDateFromUser() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// getCustomTideData get tide data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+// getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
+// This is used to get custom tide data from NOAA, via my web site.
 // used only for custom date queries, not for normal tides.
-// License as of 2/8/16 is for 750 hits/day for free.
-//  fromdate = optional starting date for the tides
+//  fromdate =  starting date for the tides
 //  data is used to display tide data. It is not stored.
 function getCustomTideData(fromdate) {
     //$("#tideButton").hide();  // hide the user button
@@ -3544,7 +3557,11 @@ function getCustomTideData(fromdate) {
 }
 
 function HandleCustomTidesReply(reply) {
-    var json = JSON.parse(reply);
+    try {
+        var json = JSON.parse(reply);
+    } catch (err) {
+        document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + err.message;
+    }
     if (json.success == true) {
         gPeriods = json.response.periods;
         ShowTideDataPage(gPeriods, false);
@@ -3603,7 +3620,12 @@ function ShowWeatherPage() {
 //
 function generateWeatherForecastPage() {
     if (localStorage.getItem("forecastjson") == null) return;
-    var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
+    try{
+        var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
+    } catch (err) {
+        document.getElementById("forecastpage").innerHTML = "Forecast data error: " + err.message;
+        return;
+    }
     if (json == null) return;
     //var r = json.list[0];
     //var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
