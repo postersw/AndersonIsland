@@ -3002,13 +3002,19 @@ function DisplayComingMonth(CE) {
     col = row.insertCell(5); col.innerHTML = "Fri"; col.style.width = "14%";
     col = row.insertCell(6); col.innerHTML = "Sat"; col.style.width = "14%";
 
+    // compute the number of weekly rows needed 
+    var ed = Number(CE[CE.length - 2].substr(2,2)); // get the month of the last row;
+    var numofweeks = ed - gMonth; // num of months
+    if (numofweeks < 0) numofweeks = numofweeks + 12; // allow for rollover. handles 1 year only. 
+    numofweeks = numofweeks * 4 + 4; // num of weeks needed
+    var yymm = (gYear - 2000) * 100 + gMonth; // this yymm;
+
     // build the month table with all rows and columns. Each day has an id of 'yymmdd9999'.
-    for (w = 1; w < 12; w++) {
+    for (w = 1; w <= numofweeks; w++) {
         var rowN = table.insertRow(-1);
         row = table.insertRow(-1);
         //row.style.border = "thin solid blue";
         // day rows with date
-        var yymm = (gYear - 2000) * 100 + gMonth;
         for (i = 0; i < 7; i++) {
             // cell with date
             col = rowN.insertCell(i);
