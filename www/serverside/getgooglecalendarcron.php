@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  getgooglecalendarcron - gets the coming events/activities from the google calendar
-//          for the next 2 months.
+//          for the next 6 months.
 //          called by cron every day at 11:50pm.
 //  Google calendar event format:
 //      Event name or summary:  [E|M|S|A|C|G|O];name   MUST USE ;
@@ -40,6 +40,7 @@
 //  02/4/2017 - revised to force ; as 2nd char of event
 //  03/31/2017 - fix to prevent illegal end dates like 0631
 //  10/02/2017 - fix for year rollover.  Also limit to 100 events and 100 activities.
+//  05/17/2018 - 6 month lookahead. Change event limit to 999 but leave activity limit at 100.
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -48,7 +49,7 @@ $d = date("d"); // day with leading zero
 $mds = $y . $m . $d; // mmdd
 $timemin = $y . "-" . $m . "-" . $d . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
 $ye = $y; // year end
-$me = $m + 3;
+$me = $m + 6; // changed 5/18/18 from 3 months to 6 months
 $de = $d;
 if($me > 12) {  // if year rollover
     $me = $m2 - 12;
@@ -57,10 +58,11 @@ if($me > 12) {  // if year rollover
 if($me == 2 && $de > 28) $de = 28;  // prevent illegal feb  date
 if(($me == 9 || $me == 4 || $me == 6 || $me = 11) && ($de > 30)) $de = 30; // prevent illegal end date
 $timemax = $ye . "-" . sprintf("%02d", $me) . "-" .  $de . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
+echo "Ver 051818.1033<br/>";
 echo "Events from $timemin to $timemax <br/>";
 
 $http = "https://www.googleapis.com/calendar/v3/calendars/orp3n7fmurrrdumicok4cbn5ds@group.calendar.google.com/events?singleEvents=True&key=AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0" .
-    "&orderBy=startTime&timeMin=$timemin&timeMax=$timemax";
+    "&maxResults=2000&orderBy=startTime&timeMin=$timemin&timeMax=$timemax";  // max results set to 2000 on 5/18/18
 $reply = file_get_contents($http);  // read the reply
 $jreply = json_decode($reply);  // decode the json reply
 //var_dump($jreply);
@@ -90,7 +92,7 @@ fwrite($fce, "ACTIVITIES\r\n");
 fwrite($fce, "0101;0000;0000;E;$y Happy New Year\r\n");  // write year
 echo "ACTIVITIES<br/>";
 echo "0101;0000;0000;E;$y Happy New Year<br/>";
-$n = fcopy("xACGO", $y);
+$n = fcopy("xACGO", $y); // NOTE: if you change "xACGO", see line 110.
 echo $n . " Activities.<br/>";
 fclose($fce);
 
@@ -106,6 +108,11 @@ exit;
 function fcopy($etype, $ys) {
     global $jreply, $fce;
     $n = 0;
+    if(strpos($etype, "A") > 0) {  // if Activities
+        $nlimit = 100; // limit to 100 activities
+    } else {
+        $nlimit = 999; // no limit on events
+    }
     foreach ($jreply->items as $event) {  // loop through each calendar item
         $k = substr($event->summary, 0, 1); // k=the key letter of the event
         if(strpos($etype, $k) > 0) {  // if desired event
@@ -119,7 +126,7 @@ function fcopy($etype, $ys) {
                 substr($event->end->dateTime,11,2) . substr($event->end->dateTime,14,2)  . ";" .
                 $k . ";" . substr($event->summary, 2) . ";" . $event->location . ";" . $event->description ;
             $n++;
-            if($n > 100) break;  // limit to 100 events and activities to prevent too much data on phone.  (10/1/17).
+            if($n > $nlimit) break;  // limit to 100 activities to prevent too much data on phone.  (5/18/18).
             // now write it to the file
             echo $r . "<br/>\r\n";
             fwrite($fce, $r . "\r\n");
