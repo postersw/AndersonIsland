@@ -174,11 +174,14 @@
                 p = p.replace("mm", "m"); 
                 var plen = p.length; // length 
                 if (plen > 20) plen = 20; 
-                PagesPerDay[plen] ++; // pages per visit 
-                PA = p.split(""); 
-                for (k = 0; k < PA.length; k++) {
-                    var np = PA[0].charCodeAt(0) - 97;
-                    if (np < 0) np = np + 97 - 30;
+                PagesPerDay[plen]++; // pages per visit 
+                //PA = p.split(""); 
+                for (k = 0; k < p.length; k++) {
+                    //var np = PA[0].charCodeAt(0) - 97;
+                    var np = p.charCodeAt(k) - 97;
+                    if (np < 0) {
+                        np = np + 97 - 48 + 26;
+                    }
                     Pages[np]++;
                 }
 
