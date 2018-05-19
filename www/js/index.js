@@ -66,7 +66,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.18.051518.4";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.18.051918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -145,6 +145,9 @@ var gDayofWeekNameL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "
 var gDayofWeekShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var scheduledate = ["5/1/2014"];
 
+// global variables (gXxxxxx). Since this entire app is one page and one program, these variables hold for the entire execution.
+
+
 var gisPhoneGap; // true if phonegap
 var gisAndroid; // true if android
 var gisMobile; // true if mobile (even if a browser)
@@ -172,6 +175,10 @@ var gFerryHighlight = 0; // highlight ferry AI or Steilacoom depending on user l
 // tides
 var nextTides; // string of next tides for the main page
 var tidesLastUpdate; // time of last update
+
+// weather counters
+var gWeatherForecastCount = 0; // number of weather forcast requests to debug API key exceeding 60 rpm
+var gWeatherCurrentCount = 0; // number of weather current requests to debug API key exceeding 60 rpm
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
@@ -1370,6 +1377,7 @@ function getCurrentWeather() {
     }
     xhttp.open("GET", myurl, true);
     xhttp.send();
+    gWeatherCurrentCount++;
 }
 //////////////////////////////////////////////////////////////////////////////////////
 //  HandleCurrentWeatherReply - decode the json response from OpenWeatherMap
@@ -1438,6 +1446,7 @@ function getForecast() {
     }
     xhttp.open("GET", myurl, true);
     xhttp.send();
+    gWeatherForecastCount++;
 }
 //////////////////////////////////////////////////////////////////////////////
 //  HandleForecastAReply - read the jason forecast from OpenWeatherMap
@@ -2003,8 +2012,8 @@ function DisplayLoadTimes() {
         ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + (isPhoneGap()? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
-        "<br/>Forecast:" + DispElapsedMin("forecasttime") + 
-        ", CurrentWeather:" + DispElapsedMin("currentweathertime") +
+        "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
+        ", CurrentWeather:" + DispElapsedMin("currentweathertime") + " #" + gWeatherCurrentCount.toFixed(0) +
         "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
         "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
         ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0) +
