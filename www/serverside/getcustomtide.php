@@ -14,10 +14,12 @@
 //  returned in local standard/daylight time.
 //
 //  rfb. 10/2/17.
+//      5/19/18.  This takes 30 seconds to run on anderson-island.org and I can't figure out why.
+//              It dies on postersw.com on Fatal error: Allowed memory size of 33554432 bytes exhausted (tried to allocate 33030099 bytes)
 
     // code for NOAA
-
-    $link = "https://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo";
+    //$log = "Time:  " . date("h:i:sa") . " START<br/>" . x;/////////////////////////////
+    $link = "http://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo";
 
     $d = $_GET["from"];  // start date
     if(!preg_match('/^\d\d?\/\d\d?\/20\d\d$/', $d)) {  // prevent bad things in the date.
@@ -26,13 +28,20 @@
     }
     $ts = strtotime($d);  // convert date string to a unix time stamp (seconds since 1970).
     $link = $link . "&begin_date=" . date("Ymd%20H:i", $ts) . "&range=72";
+    //$log .= $link . "<br/>"; /////////////////////////////////////////////////////////
     //echo $link ."<br/>"; //debug
 
+
     // read the data from NOAA. Try 10 times. Then give up.
-    for ($x = 0; $x <= 10; $x++) {
+    for ($i = 0; $i <= 10; $x++) {
         $str = "";
+        //$log .= "Time:  " . date("h:i:sa") . " #" . $i . "<br/>";////////////////////////
         $str = file_get_contents($link);
-        if($str != "") break;
+        if($str == FALSE) {
+        } else {
+            break;
+        }
+        //if($str != "") break;
     }
     if($str == "") {  // if no data
         echo("tide cron run: NO NOAA DATA after 10 tries!!!");
@@ -46,10 +55,13 @@
     }
     // write to data file
     //echo $str . "<br/>"; ///////// DEBUG/
-
+    //$log .= "Time:  " . date("h:i:sa") . " GOT TIDE<br/>" . x;/////////////////////////////
     $strout = reformatdata($str);  // reformat
+    //$log .= "Time:  " . date("h:i:sa") . " FORMATTED DATA<br/>";/////////////////////////////////
 
     echo $strout;  // return the data
+    //$log .= "Time:  " . date("h:i:sa") . " END<br/>" . x;/////////////////////////////
+    //echo $log;
     return 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////

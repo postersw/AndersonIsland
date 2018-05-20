@@ -44,7 +44,7 @@
              020218. Change tide display on main page to a table.
              041518. Add arrows to tide display. 
         1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes.
-        1.18 051318. Error handling for data errors.
+        1.18 051318. Error handling for data errors. Wait message for Custom Tide request.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -66,7 +66,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.18.051918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.18.052018.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -3556,6 +3556,17 @@ function GetDateFromUser() {
 //  fromdate =  starting date for the tides
 //  data is used to display tide data. It is not stored.
 function getCustomTideData(fromdate) {
+    // clear the old data display
+    document.getElementById("tidepagecurrent").innerHTML = "...Retrieving tide data for " + fromdate + "...";
+    var table = document.getElementById("tidestable");
+    gTableToClear = "tidestable";
+    clearTable(table);
+    // clear the graph
+    var canvas = document.getElementById("tidecanvas");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#A0D2FF";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     //$("#tideButton").hide();  // hide the user button
     //$.ajax({
     //url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
@@ -3576,6 +3587,7 @@ function HandleCustomTidesReply(reply) {
         var json = JSON.parse(reply);
     } catch (err) {
         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + err.message;
+        return;
     }
     if (json.success == true) {
         gPeriods = json.response.periods;
