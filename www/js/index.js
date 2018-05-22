@@ -66,7 +66,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.18.052018.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+var gVer = "1.18.052118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 var app = {
@@ -3545,16 +3545,36 @@ function GetDateFromUser() {
         alert("Invalid date. An example of a valid date is: 1/22");
         return;
     }
-    if (tda.length == 3) return tidedate;
-    else return tidedate + "/" + gYear;
+    m = Leading0(m);
+    d = Leading0(d);
+    var y = gYear;
+    // handle year as nn or 20nn
+    if (tda.length == 3) {
+        y = tda[2];
+        if (isNaN(tda[2])) {
+            alert("Invalid year.");
+            return;
+        }
+        y = Number(y); // make numeric
+        if (y < 2000) y += 2000;
+        if ((y < gYear) || (y - gYear > 4)) {
+            alert("Invalid year.");
+            return;
+        }
+    }
+    return Leading0(m) + "/" + Leading0(d) + "/" + y;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
 // This is used to get custom tide data from NOAA, via my web site.
 // used only for custom date queries, not for normal tides.
-//  fromdate =  starting date for the tides
+//  fromdate =  starting date for the tides as: mm/dd/yyyy
+//  gCustomTides = 0 for customtidelink or AERIS
+//                  1 for NOAA direct link
 //  data is used to display tide data. It is not stored.
+const gCustomTides = 1; // NOAA direct tide request
+
 function getCustomTideData(fromdate) {
     // clear the old data display
     document.getElementById("tidepagecurrent").innerHTML = "...Retrieving tide data for " + fromdate + "...";
@@ -3567,13 +3587,15 @@ function getCustomTideData(fromdate) {
     ctx.fillStyle = "#A0D2FF";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    //$("#tideButton").hide();  // hide the user button
-    //$.ajax({
-    //url: 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW&from=' + fromdate + '&to=+48hours',
-    //dataType: 'jsonp',
-    //success: function (json) {
-    var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
-    myurl = myurl + '&from=' + fromdate + '&to=+48hours';   
+    // build link
+    if (gCustomTides==1) { // NOAA direct
+        fromdate = fromdate.substr(6, 4) + fromdate.substr(0, 2) + fromdate.substr(3,2);  //  mm/dd/yyyy -> yyyymmdd
+        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
+            + fromdate + '%2000:00&range=72';
+    } else {  //customtidelink or AERIS
+        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
+        myurl = myurl + '&from=' + fromdate + '&to=+48hours';   
+    }
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCustomTidesReply(xhttp.responseText);
@@ -3589,18 +3611,51 @@ function HandleCustomTidesReply(reply) {
         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + err.message;
         return;
     }
-    if (json.success == true) {
+    if (gCustomTides == 1) {
+        // Convert NOAA Direct Reply -> AERIS format
+        gPeriods = NOAAtoAERIS(json);
+    } else {
+        // AERIS FORMATTED REPLY
         gPeriods = json.response.periods;
-        ShowTideDataPage(gPeriods, false);
-        TideClick(2);
-        //GraphTideData(gPeriods[1].heightFT, gPeriods[2].heightFT, gPeriods[3].heightFT,
-        //    gPeriods[1].dateTimeISO, gPeriods[2].dateTimeISO, gPeriods[3].dateTimeISO, false);
     }
-    else {
-        document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + json.error.description;
-        //alert('Could not retrieve tide information: ' + json.error.description);
-    }
+    // AERIS FORMATTED REPLY
+    ShowTideDataPage(gPeriods, false);
+    TideClick(2);
+    return;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//  NOAAtoAERIS - converts NOAA tides object to AERIS tides object
+//  entry   json = json object based on noaa reply
+//            { "predictions" : [ {"t":"2018-06-01 02:22", "v":"7.106", "type":"L"},...
+//  exit    returns an array of AERISPeriod objects for gPeriods: 
+//              dateTimeISO "2018-05-20T23:25:00-07:00" string
+//              heightFT 14.0  number
+//              type "h" or l   string
+function NOAAtoAERIS(json) {
+    var periods = []; //Array of Aeris Periods
+    var i; var t; var d; var h;
+    for(i=0; i<json.predictions.length; i++) {
+        d = json.predictions[i].t.substr(0, 10) + "T" + json.predictions[i].t.substr(11, 16) + ":00-07:00";
+        t = json.predictions[i].type.toLowerCase();  // type -> type
+        h = Number(json.predictions[i].v).toFixed(1);  // v -> heightFT
+        periods[i] = {dateTimeISO: d, heightFT: h, type: t };  // new object
+        //        periods[i] = new AERISPeriod(d, h, t);
+
+    }
+    return periods;
+}
+
+// AERISPeriod - construct tide period objects in the original AERIS format, which is what the code understands.
+//              dateTimeISO "2018-05-20T23:25:00-07:00" string
+//              heightFT 14.0  number
+//              type "h" or l   string
+//function AERISPeriod(dateTimeISO, heightFT, type) {
+//    this.dateTimeISO = dateTimeISO;
+//    this.heightFT = heightFT;
+//    this.type = type;
+//}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 // ShowNOAA - query NOAA for the tide page
