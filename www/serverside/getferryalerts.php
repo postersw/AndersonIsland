@@ -12,6 +12,8 @@
 //      7/02/16. Reformatted date as "Jul 02, 4:45p"
 //      8/17/16. Added 'Default Message' to be displayed if there is no alert.
 //      4/02/17. Add "DELAYED:" or "DELAYED nn MIN: " for late, behind, or delayed. This is displayed by the app.
+//      5/24/18. Add call to OneSignal to send the alerts. I'll eventually remove Pushbots.
+//
 //  Sample RSS feed:
 //<rss version="2.0">
 //<channel>
@@ -127,6 +129,11 @@ logalertlast("wrote to alert file");
 
 // now send alert using Pushbots and Google Cloud Messaging
 PushANotification(  $alerthr . $alertmin . $alertam . " " . $delay . $title );
+
+// send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
+$msgtitle = "FERRY ALERT";
+if($delay != "") $msgtitle = "FERRY " . $delay;
+PushOSNotification($msgtitle, $alerthr . $alertmin . $alertam . " " . $title);
 exit(0);
 
 /////////////////////////////////////////////////////////////////
@@ -183,6 +190,42 @@ function PushANotification($note) {
     echo($res['status']);
     echo($res['code']);
     echo($res['data']);
+}
+
+/////////////////////////////////////////////////////////
+//  PushOneSignalNotification. 5/25/18
+//  Entry   title = message title
+//          msg = the message
+//  Users curl library.
+//  https://documentation.onesignal.com/reference#create-notification
+//
+function PushOSNotification($title, $msg) {
+    $fields = array(
+        'app_id' => "a0619723-d045-48d3-880c-6028f8cc6006",
+        'included_segments' => array('Active Users'),
+        'headings' => array("en" => $title),
+        'contents' => array("en" => $msg),
+        'ttl' => 4*3600
+    );
+    $fields = json_encode($fields);
+    print("\nJSON sent:\n");
+    print($fields);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+    // "Authorization: Basic YOUR_REST_API_KEY (from the OneSignal web site for my app).
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+                                               'Authorization: Basic YWQyZmE5OGUtNGY0MC00OTAyLWEyOTYtMTUyZjVjZjEyNzA0'));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+    print($response);
+    return $response;
 }
 
 ?>
