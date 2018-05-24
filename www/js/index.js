@@ -43,8 +43,9 @@
         1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events. Add MAINTABLEROWS.
              020218. Change tide display on main page to a table.
              041518. Add arrows to tide display. 
-        1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes.
-        1.18 051318. Error handling for data errors. Wait message for Custom Tide request.
+        1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes. ANDROID play store only.
+        1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
+        1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -66,8 +67,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-var gVer = "1.18.052118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.19.052318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
+
+const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
 var app = {
     // Application Constructor
@@ -91,13 +94,22 @@ var app = {
             // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
             var pbtime = Number(LSget("pushbotstime"));
             var timems = GetTimeMS();
-            //pbtime = 0; ////////// BOB DEBUG
+            pbtime = 0; ////////// BOB DEBUG
             if ((pbtime == 0) || ((timems - pbtime) > (72 * 3600000))) {
-                window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                switch(gNotification) {
+                    case 1: // pushbots
+                        window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                        window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+                        break;
+                    case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
+                        window.plugins.OneSignal
+                            .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
+                            .endInit();
+                        break;
+                }
                 localStorage.setItem("pushbotstime", timems.toFixed(0));
                 //window.plugins.PushbotsPlugin.setAlias("Bob"); ////////// BOB DEBUG
             }
-            window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }
         app.receivedEvent('deviceready');
     },
@@ -608,16 +620,33 @@ function UpdateApp() {
 function NotifyOn() {
     localStorage.removeItem('notifyoff');
     if (isPhoneGap()) {
-        window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
         MenuSet("notifymont", "lime", "notifymofft", "white");
+        localStorage.setItem("pushbotstime", 0);  // force full initialize on next app restart
+        switch (gNotification) {
+            case 1:  // pushbots
+                window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                break;
+            case 2:  // one signal.  Only works if we have initialized the app
+                window.plugins.OneSignal.setSubscription(true);
+                break;
+        }
     }
 }
 function NotifyOff() {
     MarkPage("4");
     localStorage.setItem('notifyoff', 'OFF');
     if (isPhoneGap()) {
-        window.plugins.PushbotsPlugin.unregister();
         MenuSet("notifymont", "white", "notifymofft", "red");
+        localStorage.setItem("pushbotstime", 0); // force full initialize on next app restart
+        switch (gNotification) {
+            case 1:  // pushbots
+                window.plugins.PushbotsPlugin.unregister();
+                break;
+            case 2:  // one signal
+                window.plugins.OneSignal.setSubscription(false);
+                break;
+        }
+
     }
 }
 
@@ -976,7 +1005,7 @@ function HandleAlertReply(r) {
 //  entry r = the alert text, "" if none
 function SaveFerryAlert(r) {
     if (r == "") {  // if the alert is gone, clear it
-        if (isPhoneGap()) {  // if the alert has disappeared, clear the badge
+        if (isPhoneGap() && (gNotification==1)) {  // if the alert has disappeared, clear the badge
             var a = localStorage.getItem('alerttext');
             if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
         }

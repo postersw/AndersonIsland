@@ -73,8 +73,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 04/17/18. Ver 1.16.0416 uploaded to Google Play ver#2229. MinAPI set to 15 FOR Pushbots (was 14). Minor enhancements to the 'tide' display and the 'options' menu.  Correct calculation of date for 'thanksgiving'.
 04/25/18. Ver 1.17 Branch Ver117 created.  Only change is config.xml cli set to phonegab build cli-7.1.0. Also added <resource-file...> for pushbots icons.
 05/01/18. Ver 1.17.04281810. Min sdk 15, target 26. Cli 7.1.0. ver 2230. Rollout from beta to production on 5/1 12:23pm. Fixes crashes in android 8 pushbots because I hadn't built with android api 26.  Seems to work ok on pushbots.
-05/13/18. Ver 1.18.  Branch Ver118 created. Web only.
+05/13/18. Ver 1.18.  Branch Ver118 created. Web only. CustomTides: call NOAA diretly. Show Month calendar.
 05/18/18. Note: script changes were made on branch Ver117 and branch Ver118. Branch Ver117 merged back to Master to pick up script changes only.
+05/23/18. Ver 1.19. Branch V119 created.  Move from Pushbots to OneSignal for Notifications.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:

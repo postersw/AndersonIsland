@@ -98,13 +98,14 @@
     <!--<gap:plugin name="org.apache.cordova.network-information" />-->
     <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
     <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-	  <plugin name="pushbots-cordova-plugin" source="npm"/>
-   <!-- <plugin name="cordova-plugin-calendar" source="npm" /> this gets ver 5 which requires api ver 23 of android-->
-  <plugin name="buildfire-cordova-plugin-calendar" source="npm"/>
-  <!--<plugin name="com.lampa.startapp" platform="android" source="npm"/>  Works on Android. Does not work for IOS10. -->
+
+    <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />  <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
+    <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
+  
+    <!-- <plugin name="cordova-plugin-calendar" source="npm" /> this gets ver 5 which requires api ver 23 of android-->
+    <plugin name="buildfire-cordova-plugin-calendar" source="npm"/>
     <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>
 
-    <!--<plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" source="git" /> replaced by npm version-->
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
     <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
