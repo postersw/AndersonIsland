@@ -295,6 +295,28 @@ HOW TO Create new Development/Production Certificate:
 		Select Accounts -> Edit Account -> Signing keys.
 		Click on Add key, create a new key with the .P12 file just created and the .mobileprovision file just create.
 		Set the password to the password 'dd' you created above.
+
+Someone else's notes: RENEW CERT USING XCODE
+		STEPS TO RENEW
+
+1) login to itunes connect provisioning portal https://developer.apple.com/ios/manage/provisioningprofiles/viewDistributionProfiles.action
+2) Click on certificates
+3) Request New Certificate
+4) Upload file CertificateSigningRequest.certSigningRequest from desktop folder. (if you had saved one from last time) For more info check this link
+5) Hit submit
+6) Launch your Xcode program
+7) Click on Device
+8) Click on Provisioning Profiles
+9) Select your expired certificate and hit the renew button on the top.
+10) Wait 2-5 minutes
+11) Go back to https://developer.apple.com/ios/manage/provisioningprofiles and there should be a new distribution certificate
+11a) Go to provisioning on the iTunes web and edit --> modify all your provisioning profiles and hit submit. Just modify any device or check box on them.
+11b) After a few seconds your profiles will be renewed. (Hit refresh button on your browser)
+12) download both development and distribution certificates. (no need to download provisioning certificates)
+13) Save them in a new folder on desktop and double click on the dev and distribution certificates
+14) This launches keychain. Delete old / expired keychains
+15) Go back to Xcode under Provisioning Profiles and hit the Refresh button at the bottom
+16) All should be working and nothing should be out to date or expired
 ------------------------------------------------------------------------------------------------------------------------
 APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Expires every March.
 

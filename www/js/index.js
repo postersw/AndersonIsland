@@ -67,7 +67,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.19.052318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.19.052518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -2311,7 +2311,9 @@ function ferryclick(tc) {
 //////////////////////////////////////////////////////////////////////////////////
 // ScheduleByDate - ask for date and then run schedule
 function ScheduleByDate() {
-    var userdate = GetDateFromUser();
+    GetDateFromUser(ScheduleByDateCallback);
+}
+function ScheduleByDateCallback(userdate) {
     if (userdate == "") return;
     DisplayFerrySchedule(userdate);
 }
@@ -3309,7 +3311,8 @@ function ShowTideDataPage(periods, showcurrent) {
                     var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(gMonthDay) +
-                        "&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
+                         "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" + currentTide;
+                        //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
                     currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
                     nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
@@ -3367,7 +3370,7 @@ function TideClick(id) {
     if (gPeriods[i].heightFT < gPeriods[i - 1].heightFT) hilo = "Low tide: ";
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
       gPeriods[i].dateTimeISO.substring(5, 7) + "/" + gPeriods[i].dateTimeISO.substring(8, 10) +
-      "&nbsp&nbsp&nbsp<span style='background-color:silver;' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" +
+      "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" + 
       hilo + gPeriods[i].heightFT + " ft. at " + ShortTime(tidehhmm);
 }
 
@@ -3548,51 +3551,78 @@ function tHours(tISO) {
 //
 function ShowCustom() {
     InitializeDates(0);
-    var tidedate = GetDateFromUser();
+    GetDateFromUser(ShowCustomCallback);
+}
+function ShowCustomCallback(tidedate){
     if (tidedate == "") return;
     gUserTideSelection = true;
     MarkPage("1");
     getCustomTideData(tidedate);
+}
 
+//////////////////////////////////////////////////////////////////
+// GetDateFromUser (callback function on success or failure)
+//  exit    returns mm/dd/yyyy or ""
+var gDateCallback;  // date callback function
+function GetDateFromUser(callback) {
+    gDateCallback = callback;
+    Show("getdatediv");
+    document.getElementById("getdate").focus();
+    return;
+}
+// GetDateOK - OK button from the date control
+function GetDateOK() {
+    Hide("getdatediv");
+    var date = document.getElementById("getdate").value;  // get date as yyyy/mm/dd
+    if (date != "") {
+        date = date.substr(5, 2) + "/" + date.substr(8, 2) + "/" + date.substr(0, 4);
+    }
+    gDateCallback(date);  // return mm/dd/yyyy
+}
+// GetDateCancel - Cancel button from the date control
+function GetDateCancel() {
+    Hide("getdatediv");
+    gDateCallback(""); // return null
 }
 
 ///////////////////////////////////////////////////////////////////
 // GetDateFromUser - asks user for date and returns as mm/dd/yy
 //  return mm/dd/yy or ""
-function GetDateFromUser() {
-    var tidedate = prompt("Please enter the date as mm/dd or mm/dd/yyyy", gMonth + "/" + gDayofMonth);
-    if (tidedate == null) return "";
-    // validate the date
-    var tda = tidedate.split("/");
-    if (tda.length != 2 && tda.length != 3) {
-        alert("Invalid date. An example of a valid date is: 1/22");
-        return "";
-    }
-    var m = Number(tda[0]); // month
-    var d = Number(tda[1]);  // day
-    if (isNaN(m) || isNaN(d) || (m < 1) || (m > 12) || (d < 1) || (d > 31)) {
-        alert("Invalid date. An example of a valid date is: 1/22");
-        return;
-    }
-    m = Leading0(m);
-    d = Leading0(d);
-    var y = gYear;
-    // handle year as nn or 20nn
-    if (tda.length == 3) {
-        y = tda[2];
-        if (isNaN(tda[2])) {
-            alert("Invalid year.");
-            return;
-        }
-        y = Number(y); // make numeric
-        if (y < 2000) y += 2000;
-        if ((y < gYear) || (y - gYear > 4)) {
-            alert("Invalid year.");
-            return;
-        }
-    }
-    return Leading0(m) + "/" + Leading0(d) + "/" + y;
-}
+//function GetDateFromUser() {
+
+//    var tidedate = prompt("Please enter the date as mm/dd or mm/dd/yyyy", gMonth + "/" + gDayofMonth);
+//    if (tidedate == null) return "";
+//    // validate the date
+//    var tda = tidedate.split("/");
+//    if (tda.length != 2 && tda.length != 3) {
+//        alert("Invalid date. An example of a valid date is: 1/22");
+//        return "";
+//    }
+//    var m = Number(tda[0]); // month
+//    var d = Number(tda[1]);  // day
+//    if (isNaN(m) || isNaN(d) || (m < 1) || (m > 12) || (d < 1) || (d > 31)) {
+//        alert("Invalid date. An example of a valid date is: 1/22");
+//        return;
+//    }
+//    m = Leading0(m);
+//    d = Leading0(d);
+//    var y = gYear;
+//    // handle year as nn or 20nn
+//    if (tda.length == 3) {
+//        y = tda[2];
+//        if (isNaN(tda[2])) {
+//            alert("Invalid year.");
+//            return;
+//        }
+//        y = Number(y); // make numeric
+//        if (y < 2000) y += 2000;
+//        if ((y < gYear) || (y - gYear > 4)) {
+//            alert("Invalid year.");
+//            return;
+//        }
+//    }
+//    return Leading0(m) + "/" + Leading0(d) + "/" + y;
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
