@@ -19,7 +19,7 @@
 
     // code for NOAA
     //$log = "Time:  " . date("h:i:sa") . " START<br/>" . x;/////////////////////////////
-    $link = "http://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo";
+    $link = "https://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo";
 
     $d = $_GET["from"];  // start date
     if(!preg_match('/^\d\d?\/\d\d?\/20\d\d$/', $d)) {  // prevent bad things in the date.
@@ -31,18 +31,20 @@
     //$log .= $link . "<br/>"; /////////////////////////////////////////////////////////
     //echo $link ."<br/>"; //debug
 
+    $str = GetNOAAData($link);
 
     // read the data from NOAA. Try 10 times. Then give up.
-    for ($i = 0; $i <= 10; $x++) {
-        $str = "";
-        //$log .= "Time:  " . date("h:i:sa") . " #" . $i . "<br/>";////////////////////////
-        $str = file_get_contents($link);
-        if($str == FALSE) {
-        } else {
-            break;
-        }
-        //if($str != "") break;
-    }
+    ////for ($i = 0; $i <= 10; $x++) {
+    ////    $str = "";
+    ////    //$log .= "Time:  " . date("h:i:sa") . " #" . $i . "<br/>";////////////////////////
+    ////    $str = file_get_contents($link);
+    ////    if($str == FALSE) {
+    ////    } else {
+    ////        break;
+    ////    }
+    ////    //if($str != "") break;
+    ////}
+
     if($str == "") {  // if no data
         echo("tide cron run: NO NOAA DATA after 10 tries!!!");
         return 0;
@@ -100,4 +102,22 @@
         return $str;
     }
 
+    //////////////////////////////////////////////////////////////
+    //  GetNOAAData - use CURL to read NOAA data instead of GetFileContents
+    //  entry   link = url get request
+    //  exit    returns the data as a string
+    function GetNOAAData($link) {
+        //print("send curl request:" . $link ."<br/>");
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$link);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        //curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        //curl_setopt($ch, CURLOPT_POST, FALSE);
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        //print("curl response: " . $response);
+        return $response;
+    }
 ?>
