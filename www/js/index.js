@@ -2804,7 +2804,7 @@ function tabletext(tc) {
     var nc = 0;
     var d = tc.substr(0, 6);  // yymmdd part of id
     var t = tc.substr(6, 4); // hhhmm part of id. could be hh99 or 9999
-    var as = "Tap entry to add to your ";
+    var as = "Tap button to add to your ";
     if (!isPhoneGap()) as += "Google ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
     var CE = GetEvents().split("\n");
@@ -2817,11 +2817,11 @@ function tabletext(tc) {
         if ((t == aCE[1]) || (t == '9999') || (t == t99)) {
             nc++;
             // create table entry. id = the numeric index into the CE array
-            as += "<tr id='" + iCE.toFixed() + "' onclick='AddToCal(this.id)'><td style='border:thin solid black'><strong>" +
+            as += "<tr id='" + iCE.toFixed() + "'><td style='border:thin solid black'><strong>" +
                 formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ":</strong> " +
                  aCE[4] + " at " + aCE[5] + "<br/>Sponsor: " + aCE[6] + "<br/>";
             if (aCE.length >= 8) as += aCE[7] + "<br>";
-            as += "</td></tr>";
+            as += "<button onclick='AddToCal(" + iCE.toFixed() + ")'>Add to Calendar</button></td></tr>";
         }
 
     }
