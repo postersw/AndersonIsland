@@ -67,7 +67,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.19.052518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.19.052718.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -2810,6 +2810,9 @@ function tabletext(tc) {
     var CE = GetEvents().split("\n");
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE] == "") continue; // skip blank lines
+        CE[iCE] = CE[iCE].replace("&lt;", "<"); // remove html special <
+        CE[iCE] = CE[iCE].replace("&gt;", ">"); // remove html special >
+        CE[iCE] = CE[iCE].replace("&amp;", "&"); // remove html special &
         var aCE = CE[iCE].split(';');  // split the string
         if (d < aCE[0]) break;
         if (d != aCE[0]) continue;
@@ -2819,8 +2822,9 @@ function tabletext(tc) {
             // create table entry. id = the numeric index into the CE array
             as += "<tr id='" + iCE.toFixed() + "'><td style='border:thin solid black'><strong>" +
                 formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ":</strong> " +
-                 aCE[4] + " at " + aCE[5] + "<br/>Sponsor: " + aCE[6] + "<br/>";
-            if (aCE.length >= 8) as += aCE[7] + "<br>";
+                 aCE[4] + " at " + aCE[5] + "<br/>Sponsor: " + CreateLink(aCE[6]) + "<br/>";
+            // to include a link: must start with http and be at the end of the element and not have ' or "
+            if (aCE.length >= 8) as += CreateLink(aCE[7]) + "<br>";
             as += "<button onclick='AddToCal(" + iCE.toFixed() + ")'>Add to Calendar</button></td></tr>";
         }
 
@@ -2829,6 +2833,29 @@ function tabletext(tc) {
     as += "</table>";
     Dialog(as, "Schedule Detail");
     //alert(as);
+}
+
+///////////////////////////////////////////////////////////////////////////
+//  CreateLink - changes an http string into a hyperlink <a href='http...xxxx'/> string
+//  Entry   string with http in it
+//  Exit    string with hyperlink
+function CreateLink(s) {
+    if (s.indexOf("<a") > 0) return s;  // don't touch if it has an a already
+    var i = s.indexOf("http");
+    if (i > 0) {
+        //s = s.replace("http", "<a href='http");
+        //s += "' target='_blank'>Tap for More Info</a>";
+        var j = s.indexOf(" ", i);  // trailing space after the hyperlink
+        if (j > 0) {
+            var lk = s.substring(i, j);
+            s = s.substr(0, i) + lk.link(lk) + s.substr(j);
+        } else {
+            var lk = s.substr(i);
+            s = s.substr(0, i) + lk.link(lk);
+        }
+        s = s.replace(">http", ',target="_blank">http');  // target a different 
+    }
+    return s;
 }
 
 ////////////////////////////////////////////////////////
