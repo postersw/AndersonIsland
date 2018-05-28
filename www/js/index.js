@@ -2720,9 +2720,9 @@ function DisplayComingEventsList(CE) {
     col = row.insertCell(3); col.innerHTML = "Location";
 
     // calculate end month day. 6 for events, 1 for activities.
-    var endyymmdd;
-    if (localStorage.getItem("eventtype") == "events") endyymmdd = BumpyymmddByMonths(gYYmmdd, 6);
-    else endyymmdd = BumpyymmddByMonths(gYYmmdd, 1);
+    //var endyymmdd;
+    //if (localStorage.getItem("eventtype") == "events") endyymmdd = BumpyymmddByMonths(gYYmmdd, 6);
+    //else endyymmdd = BumpyymmddByMonths(gYYmmdd, 1);
     var thisweek = GetWeekofYear(gMonthDay); // this week #
 
     // roll through the CE array.  Dates are yymmdd
@@ -2735,7 +2735,7 @@ function DisplayComingEventsList(CE) {
             // ALTERNATE on the fly year addition
             // if(CE[iCE].substr(0,15) == "0101;0000;0000;") CEyear = Number(aCE[4]);
             // CEyymmdd = CEYear*10000;
-        if (CEyymmdd > endyymmdd) return; // past end date (one month)
+        //if (CEyymmdd > endyymmdd) return; // past end date (one month)  list the entire table now
         if (CEyymmdd < gYYmmdd) continue; // if before today
         if ((CEyymmdd == gYYmmdd) && (Number(aCE[2]) < (gTimehhmm + 10))) continue; // end time not reached.
         // found it
@@ -3079,6 +3079,7 @@ function DisplayComingMonth(CE) {
             col = row.insertCell(i);
             col.innerHTML = "&nbsp";
             col.style.border = "thin solid lightblue";
+            col.style.verticalAlign = "top";
             col.id = yymmdd.toFixed(0) + '9999';  // id = yymmdd9999
             col.onclick = function () { tabletext(this.id) }
             if (yymmdd == gYYmmdd) col.style.backgroundColor = "lightyellow";  // make today yellow
