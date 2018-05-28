@@ -1705,24 +1705,17 @@ function ParseDailyCache(data) {
     }
 
     localStorage.setItem("dailycacheloaded", gMonthDay); // remember date time
-    //parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
-    //parseCache(data, "ferrytimesa", "FERRYTIMESA", "\n");
-    //parseCache(data, "ferrytimesk", "FERRYTIMESK", "\n");
+
     parseCache(data, "ferrytimess", "FERRYTS", "\n");
     parseCache(data, "ferrytimesa", "FERRYTA", "\n");
     parseCache(data, "ferrytimesk", "FERRYTK", "\n");
 
-    //parseCache(data, "openhours", "OPENHOURS", "OPENHOURSEND");  obsolete in ver 1.5 5/2016.
-    //parseCache(data, "morehours", "MOREHOURS", "MHEND");
     parseCache(data, "emergency", "EMERGENCY", "EMERGENCYEND");
     parseCache(data, "links", "LINKS", "LINKSEND");
     parseCache(data, "openhoursjson", "OPENHOURSJSON", "OPENHOURSJSONEND");
     ParseOpenHours();
     //if (s != "") OpenHours = JSON.parse(s);  // parse it
     // new ferry schedule 
-    //parseCache(data, "ferrytimess2", "FERRYTIMESS2", "\n");
-    //parseCache(data, "ferrytimesa2", "FERRYTIMESA2", "\n");
-    //parseCache(data, "ferrytimesk2", "FERRYTIMESK2", "\n");
     parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
     parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
     parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
@@ -2844,8 +2837,6 @@ function CreateLink(s) {
     if (s.indexOf("<a") > 0) return s;  // don't touch if it has an a already
     var i = s.indexOf("http");
     if (i > 0) {
-        //s = s.replace("http", "<a href='http");
-        //s += "' target='_blank'>Tap for More Info</a>";
         var j = s.indexOf(" ", i);  // trailing space after the hyperlink
         if (j > 0) {
             var lk = s.substring(i, j);
