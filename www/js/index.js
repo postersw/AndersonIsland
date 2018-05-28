@@ -67,7 +67,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.19.052718.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.19.052818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -3064,24 +3064,17 @@ function DisplayComingMonth(CE) {
     col = row.insertCell(4); col.innerHTML = "Thur"; col.style.width = "14%";//
     col = row.insertCell(5); col.innerHTML = "Fri"; col.style.width = "14%";
     col = row.insertCell(6); col.innerHTML = "Sat"; col.style.width = "14%";
-
-    // compute the number of weekly rows needed 
-    var enddate = (Number(CE[CE.length - 2].substr(2, 2)) * 100) + Number(CE[CE.length - 2].substr(0, 2));
-    var numofweeks = Math.floor((DateDiff(enddate, gMonthDay) + 7)/7); // num of weeks
+    var numofweeks = 99;
 
     // build the month table with all rows and columns. Each day has an id of 'yymmdd9999'.
-    for (w = 1; w <= numofweeks; w++) {
+    for (w = 1; w <= numofweeks; w++) { // loop for each week
         var rowN = table.insertRow(-1);
         row = table.insertRow(-1);
-        //row.style.border = "thin solid blue";
-        // day rows with date
+
+        // loop for the 7 days in a week.   day rows with date
         for (i = 0; i < 7; i++) {
             // cell with date
             col = rowN.insertCell(i);
-            //if ((yymmdd % 100) == 1) {
-            //    col.innerHTML = formatDate(yymmdd); // use month on 1st day
-            //    col.style.fontWeight = 'bold';
-            //}
             if (Math.floor(yymmdd / 100) != yymm) { // if not this month
                 col.innerHTML = formatDate(yymmdd); // use month 
                 //col.style.fontWeight = 'bold';
@@ -3098,31 +3091,30 @@ function DisplayComingMonth(CE) {
             col.id = yymmdd.toFixed(0) + '9999';  // id = yymmdd9999
             col.onclick = function () { tabletext(this.id) }
             if (yymmdd == gYYmmdd) col.style.backgroundColor = "lightyellow";  // make today yellow
+ 
+            // add elements
+            var e = "";
+            for (; iCE < CE.length; iCE++) {
+                if (CE[iCE] == "") continue; // skip blank lines
+                aCE = CE[iCE].split(';');  // split the string
+                //  advance schedule date to today
+                var dateCE = Number(aCE[0]); // yymmdd
+                if (dateCE > yymmdd) break; // if past today, exit
+                if (dateCE < yymmdd) continue; // if before today, continue
+                if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
+                // add to entry 
+                e += "<span style=color:" + eventcolor(aCE[3]) + "><strong>" + VeryShortTime(aCE[1]) + "</strong> " +
+                      aCE[4] + "</span><br/>";// add time 
+            } // end for
+            if (e != "") col.innerHTML = e ;
+            if (iCE >= CE.length) numofweeks = 0;  // stop week loop
             yymmdd = Bumpyymmdd(yymmdd, 1); // quick bump of yymmdd//
         }
     }
 
-    var endyymmdd = yymmdd;
-    // roll through the CE array for the month days
-    for (iCE = 0; iCE < CE.length; iCE++) {
-        if (CE[iCE] == "") continue; // skip blank lines
-        aCE = CE[iCE].split(';');  // split the string
-        //  advance schedule date to today
-        var dateCE = Number(aCE[0]); // yymmdd
-        if (dateCE > endyymmdd) break; // past end of mothb
-        if (dateCE < startyymmdd) continue; // if before start of month
-        if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
-
-        // add to entry using the id to find it in the DOM
-        var e;
-        e = "<span style=color:" + eventcolor(aCE[3]) + "><strong>" + VeryShortTime(aCE[1]) + "</strong> " +
-              aCE[4] + "</span>";// add time 
-        var id = aCE[0] + "9999"; // id=yymmdd9999
-        var c = document.getElementById(id);
-        c.innerHTML += e + "<br/>";
-    } // end for
 } // end function
 
+///////////////////////////////////////////////////////////////////////////////////
 // eventcolor - return the color for an event, based on the key (M, S, E, A, C, G)
 //  exit: color value
 function eventcolor(key) {
