@@ -304,15 +304,16 @@ function GetWeekofYear(mmdd) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 // DateDiff - return difference in days between 2 dates in our funky mmdd format (0101 - 1231)
-//  e.g. DateDiff(0122, 0102) = 20.  Handles rollover for a single year only.
+//  DateDiff(newer, older)  e.g. DateDiff(0122, 0102) = 20.  Handles rollover for a single year only.
+//  Entry   mmdd1 = Newer month/day (Bigger), mmdd2 = Older month/day (Smaller)
+var gDayspermonth = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]; // cumulative days in year
 function DateDiff(mmdd1, mmdd2) {
-    var dayspermonth = [0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365]; // cumulative days in year
     if (mmdd1 == mmdd2) return 0;
     var m1 = Math.floor(mmdd1 / 100);
     var m2 = Math.floor(mmdd2 / 100);
     var d1 = mmdd1 % 100;
     var d2 = mmdd2 % 100;
-    var r = dayspermonth[m1] + d1 - dayspermonth[m2] - d2;
+    var r = gDayspermonth[m1] + d1 - gDayspermonth[m2] - d2;
     if (r < 0) r += 365;
     return r;
 }
@@ -3042,15 +3043,10 @@ function DisplayComingMonth(CE) {
 
     if (CE == null) return;
     CE = CE.split("\n");  // break it up into rows
-
+    if((CE.length) < 2) return; // not enough data
     var startyymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek); // back up to beginning of month
-    //if (year % 4 == 0) gDaysInMonth[2] = 29; // leap year
-    // compute starting date
-    //var dd = dayofmonth - gDayofWeek; // starting dayy of the month
-    //var mm = month;
-    //if (dd <= 0) { mm--; dd = gDaysInMonth[mm] + dd; } // if we had to back of
-    //var startmmdd = mm * 100 + dd;
     var yymmdd = startyymmdd;
+    var yymm = (gYear - 2000) * 100 + gMonth;
 
     // build table
     clearTable(table);
@@ -3070,11 +3066,8 @@ function DisplayComingMonth(CE) {
     col = row.insertCell(6); col.innerHTML = "Sat"; col.style.width = "14%";
 
     // compute the number of weekly rows needed 
-    var ed = Number(CE[CE.length - 2].substr(2,2)); // get the month of the last row;
-    var numofweeks = ed - gMonth; // num of months
-    if (numofweeks < 0) numofweeks = numofweeks + 12; // allow for rollover. handles 1 year only. 
-    numofweeks = numofweeks * 4 + 4; // num of weeks needed
-    var yymm = (gYear - 2000) * 100 + gMonth; // this yymm;
+    var enddate = (Number(CE[CE.length - 2].substr(2, 2)) * 100) + Number(CE[CE.length - 2].substr(0, 2));
+    var numofweeks = Math.floor((DateDiff(enddate, gMonthDay) + 7)/7); // num of weeks
 
     // build the month table with all rows and columns. Each day has an id of 'yymmdd9999'.
     for (w = 1; w <= numofweeks; w++) {
