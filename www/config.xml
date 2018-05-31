@@ -76,7 +76,7 @@
         Define a specific version of PhoneGap to build into your app.
         <preference name="phonegap-version"       value="3.5.0" />    -->
         <preference name="phonegap-version" value="cli-7.1.0" />
-        <preference name='pgb-builder-version' value='1' /> <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
+        <preference name='pgb-builder-version' value='2' /> <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
 
     <!-- Plugins -->
 
