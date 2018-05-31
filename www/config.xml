@@ -72,9 +72,7 @@
   </array>
   </config-file>
   
-    <!--
-        Define a specific version of PhoneGap to build into your app.
-        <preference name="phonegap-version"       value="3.5.0" />    -->
+    <!--Define a specific version of PhoneGap to build into your app. -->
         <preference name="phonegap-version" value="cli-7.1.0" />
         <preference name='pgb-builder-version' value='2' /> <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
 
@@ -119,13 +117,6 @@
     <icon src="icon.png"   /> 
     <!-- Define app icon for each platform. -->
   
-  <!--
-    <icon src="www/res/icon/android/icon-36-ldpi.png"   gap:platform="android"    gap:qualifier="ldpi" />
-    <icon src="www/res/icon/android/icon-48-mdpi.png"   gap:platform="android"    gap:qualifier="mdpi" />
-    <icon src="www/res/icon/android/icon-72-hdpi.png"   gap:platform="android"    gap:qualifier="hdpi" />
-    <icon src="www/res/icon/android/icon-96-xhdpi.png"  gap:platform="android"    gap:qualifier="xhdpi" />
-    -->
-  
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
             76x76 2xipad1xipad 83.5 2xipad-->
   <platform name="ios">
@@ -167,12 +158,7 @@
 
     <splash src="Default.png"                             platform="android" />
     <splash src="Default.png"                             platform="ios" />
-  <!--  android paths removed for cli 7.1 because they come up not found. 4/25/18
-    <splash src="www/res/screen/android/screen.png"       platform="android" density="port-ldpi" />
-    <splash src="www/res/screen/android/screen.png"       platform="android" density="port-mdpi" />
-    <splash src="www/res/screen/android/screen.png"       platform="android" density="port-hdpi" />
-    <splash src="www/res/screen/android/screen.png"       platform="android" density="port-xhdpi" />
- --> 
+
   <platform name="ios">
     <splash scr="www/res/screen/ios/SS320x480.png"   width="320" height="480" />
     <splash src="www/res/screen/ios/SS640x1136.png"  width="640" height="1136"/>
@@ -201,16 +187,7 @@
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
   </platform>
-  
-  <!--
-    <gap:splash src="www/res/screen/blackberry/screen-225.png"              gap:platform="blackberry" />
-    <gap:splash src="www/res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
-    <gap:splash src="www/res/screen/ios/screen-iphone-portrait-2x.png"      gap:platform="ios"     width="640" height="960" />
-    <gap:splash src="www/res/screen/ios/screen-iphone-portrait-568h-2x.png" gap:platform="ios"     width="640" height="1136" />
-    <gap:splash src="www/res/screen/ios/screen-ipad-portrait.png"           gap:platform="ios"     width="768" height="1024" />
-    <gap:splash src="www/res/screen/ios/screen-ipad-landscape.png"          gap:platform="ios"     width="1024" height="768" />
-    <gap:splash src="www/res/screen/windows-phone/screen-portrait.jpg"      gap:platform="winphone" />
-    -->
+
     <!--
         Define access to external domains.
 
