@@ -67,7 +67,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.19.052818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.19.053118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -1615,28 +1615,20 @@ function DisplayNextEvents(CE) {
         // if Today: bold time. if current, make time green.
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(aCE[1]) <= gTimehhmm) datefmt += " <span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            else datefmt += " <strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
+            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
             nEvents = 99; // ensure only today
             DisplayDate = aCEyymmdd;
             continue;
         }
-        // if Tomorrow or another day show the 1st 3 events
-        // put date in
-        //if (aCEyymmdd != DisplayDate) {
-        //    if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong>";
-        //    else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCE[0])] + "</strong>";  // fails on month chagne
-        //    else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong>";
-        //}
-        //datefmt += " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
-
+        // if not today, display date
         if (aCEyymmdd != DisplayDate) {
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
             else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
             else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
         }
-        //datefmt += "<span style='margin-left:10px;'>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "</span><br/>";
-        datefmt += VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
+        // display event
+        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         if (nEvents >= 3) break; // exit after 3 events that are not today
