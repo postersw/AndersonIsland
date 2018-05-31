@@ -214,9 +214,16 @@ IOS DEBUG/BUILD
 
 -----------------------------------------------------------------------------------------------------------------------
 
-IOS CERTIFICATES
+IOS CERTIFICATES  updated 5/31/18.
+Certificates last 3 years. Provisioning profiles last 1 year. 
 HISTORY
 These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
+5/31/18 Development Cert and Prod cert and Provisioning Profiles for org.anderson-island.andersonislandassistant
+	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
+	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
+	P12 files exported using the new dev and distribution certs.
+	Original AndersonIslandDevPush expired 4/4/18. org.anderson-island.andersonislandassistant.
+
 3/12/17 Development Certificate (because original one expired)
 	AndersonIslandDevPush.mobileprovision (profile)  Uploaded to build.phonegap.com
 	posterswdev.p12  (cert in P12 format)		 Uploaded to build.phonegap.com
@@ -248,12 +255,15 @@ HOW TO Create new Development/Production Certificate:
 		PRODUCTION: click on 'App Store and Ad Hoc'.
  	Back to the Mac. 
 		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
-		To create a CSR file, follow the instructions below to create one using Keychain Access.
-		In the Applications folder on your Mac, open the Utilities folder and launch Keychain Access.
+		NOTE: I can use the existing CSR files for dev and prod that I created on 3/17.
+		
+		Create A CSR (I should not need to do the following:) : 
+		 To create a CSR file, follow the instructions below to create one using Keychain Access.
+		 In the Applications folder on your Mac, open the Utilities folder and launch Keychain Access.
 	     KEYCHAIN ACCESS:
-		Within the Keychain Access drop down menu, select 
+		 Within the Keychain Access drop down menu, select 
 			Keychain Access > Certificate Assistant > Request a Certificate from a Certificate Authority.
-		In the Certificate Information window, enter the following information:
+		 In the Certificate Information window, enter the following information:
 			In the User Email Address field, enter your email address. 'support@postersw.com'
 			In the Common Name field, create a name for your private key (posterswdev/prodkey.)p
 			The CA Email Address field should be left empty.
@@ -262,21 +272,22 @@ HOW TO Create new Development/Production Certificate:
 			I used the file names posterswdev and posterswprod.certSigningRequest
 	Back to Safari.
 		developer.apple.com:
-		Upload the CSR file (from above): xxxx.certSigningRequest.
+		Upload the CSR file (from above): xxxx.certSigningRequest.  Note that I can always use 
+		  the original posterswdev.certSigningRequest or posterswprod.certSigningRequest from 3/17.
 		Now your certificate is done.
 		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
 	Back to the Mac.
 		Then double click the .cer file to install in Keychain Access.
 		It now shows up in Keychain Access- Certificates as
 			 'iPhone Developer Robert Bedoll' or iPhone Distribution: Robert Bedoll.
-	     KEYCHAIN ACCESS:
-		select Keys, and the key just added (posterswdev).  Select the PRIVATE key.
+	    KEYCHAIN ACCESS:
+		select Certificates (not Keys), and the certificate just added (iPhone Developer or iPhone Distribution).  
 		right click on Export.  Select the P12 File Format.
-		Set the file name to posterswdev or posterswprod.
-		click Save.  It will prompt for the new password. Create the pw='dd', enter it and click OK.
-		You'll be aked for the Login PW. Use the MacinCloud pw, 'pwd29837'.
-		You will now have a posterswdev.p12 or posterswprod.p12 file.
-		NOTE: posterswprod is really the iOS Distribution key.
+		Set the file name to AIADevmmyy or AIAProdmmyy  (was posterswdev or posterswprod.)
+		click Save.  It will prompt for the new password. Create the pw='dd', enter it twice and click OK.
+		You'll be asked for the Login PW. Use the MacinCloud pw, 'pwd29837' and click on 'Allow'.
+		You will now have a AIADevmmyy.p12 or AIAProdmmyy.p12 file (was posterswdev.p12 or posterswprod.p12 file.)
+
 	Backk to Safari.
 		developer.apple.com:
 		Now select correct Provisioning Profile: AIADistributionPush or AndersonIslandDevPush. 
@@ -293,7 +304,7 @@ HOW TO Create new Development/Production Certificate:
 		BUILD.PHONEGAP.COM
 		Log in to build.phonegap.com.  support@postersw.com 
 		Select Accounts -> Edit Account -> Signing keys.
-		Click on Add key, create a new key with the .P12 file just created and the .mobileprovision file just create.
+		Click on Add key, create a new key with the .P12 file just created and the .mobileprovision file just created.
 		Set the password to the password 'dd' you created above.
 
 Someone else's notes: RENEW CERT USING XCODE
