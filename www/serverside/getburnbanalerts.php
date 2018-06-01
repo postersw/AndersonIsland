@@ -50,15 +50,19 @@
     //$fire = strip_tags($firew);  // remove the tags
     //echo $fire; echo "<br/>";
     //$cwbb = "COUNTY-WIDE BURN BAN";
-    $cwbb = "Current Fire Safety Burn Ban Status";
-    $i = stripos($fire, $cwbb);
-    if($i == 0) Bailout("Could not find \"$cwbb\"");
-    $lifted = stripos($fire, "NO BURN BAN", $i);
-    //$effective = stripos($fire, "Effective", $i);
-    $effective = 1; // until we get an example
-    if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
-    elseif($effective> 0) $firebb =  $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
-    else Bailout("County Burn Ban not = Lifted or Effective. Revise the script.");
+    //$cwbb = "Current Fire Safety Burn Ban Status";
+    //$i = stripos($fire, $cwbb);
+    //if($i == 0) Bailout("Could not find \"$cwbb\"");
+    //$lifted = stripos($fire, "NO BURN BAN", $i);
+    ////$effective = stripos($fire, "Effective", $i);
+    //$effective = 1; // until we get an example
+    //if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
+    //elseif($effective> 0) $firebb =  $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
+    //else Bailout("County Burn Ban not = Lifted or Effective. Revise the script.");
+
+    // temoorary awful solution as of 6/1/18
+    $firebb = "Unknown";
+    if(stripos($fire, "Document?documentID=69831")> 100) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
 
     // write to file
     $msg = $airqual . "<br/>Fire Safety: " . $firebb;

@@ -1,7 +1,7 @@
 <?php
 // ONE SIGNAL 5/24/18.  FREE SERVICE WITH NO LIMITS
-$title = "FERRY DELAYED 20 MIN";
-$msg = "the ferry will be 20 minutes late. OneSignal Test.";
+$title = "TEST MESSAGE";
+$msg = "This is a test of OneSignal messaging. Please ignore.";
 
 PushOSNotification($title, $msg);
 return;

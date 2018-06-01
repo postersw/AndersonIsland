@@ -75,7 +75,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 05/01/18. Ver 1.17.04281810. Min sdk 15, target 26. Cli 7.1.0. ver 2230. Rollout from beta to production on 5/1 12:23pm. Fixes crashes in android 8 pushbots because I hadn't built with android api 26.  Seems to work ok on pushbots.
 05/13/18. Ver 1.18.  Branch Ver118 created. Web only. CustomTides: call NOAA diretly. Show Month calendar.
 05/18/18. Note: script changes were made on branch Ver117 and branch Ver118. Branch Ver117 merged back to Master to pick up script changes only.
-05/23/18. Ver 1.19. Branch V119 created.  Move from Pushbots to OneSignal for Notifications.
+05/23/18. Ver 1.19. Branch V119 created.  Move from Pushbots to OneSignal for Notifications. minor formatting enhancements. 
+                    Improve month event display and support hyperlinks. Direct NOAA call for other tides. Use HTML5 date picker.
+05/31/18. Ver 1.19 Google Play Store # 2232 Beta.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -218,12 +220,12 @@ IOS CERTIFICATES  updated 5/31/18.
 Certificates last 3 years. Provisioning profiles last 1 year. 
 HISTORY
 These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
-5/31/18 Development Cert and Prod cert and Provisioning Profiles for org.anderson-island.andersonislandassistant
+5/31/18 New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
 	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
 	P12 files exported using the new dev and distribution certs.
 	Original AndersonIslandDevPush expired 4/4/18. org.anderson-island.andersonislandassistant.
-
+5/31/18 New Prod APN (Apple Push Notification) cert and P12 file. used by OneSignal.
 3/12/17 Development Certificate (because original one expired)
 	AndersonIslandDevPush.mobileprovision (profile)  Uploaded to build.phonegap.com
 	posterswdev.p12  (cert in P12 format)		 Uploaded to build.phonegap.com
@@ -249,7 +251,7 @@ HOW TO Create new Development/Production Certificate:
 	Open Mac.
 		Open Safari. 
 	From Safari:
-		Log in to developer.apple.com. 
+		Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
 		Go to Certificate.  
 		Click on '+' to create a new certificate.  Select 'iOS App Development'. Click on Continue.
 		PRODUCTION: click on 'App Store and Ad Hoc'.
@@ -307,45 +309,28 @@ HOW TO Create new Development/Production Certificate:
 		Click on Add key, create a new key with the .P12 file just created and the .mobileprovision file just created.
 		Set the password to the password 'dd' you created above.
 
-Someone else's notes: RENEW CERT USING XCODE
-		STEPS TO RENEW
 
-1) login to itunes connect provisioning portal https://developer.apple.com/ios/manage/provisioningprofiles/viewDistributionProfiles.action
-2) Click on certificates
-3) Request New Certificate
-4) Upload file CertificateSigningRequest.certSigningRequest from desktop folder. (if you had saved one from last time) For more info check this link
-5) Hit submit
-6) Launch your Xcode program
-7) Click on Device
-8) Click on Provisioning Profiles
-9) Select your expired certificate and hit the renew button on the top.
-10) Wait 2-5 minutes
-11) Go back to https://developer.apple.com/ios/manage/provisioningprofiles and there should be a new distribution certificate
-11a) Go to provisioning on the iTunes web and edit --> modify all your provisioning profiles and hit submit. Just modify any device or check box on them.
-11b) After a few seconds your profiles will be renewed. (Hit refresh button on your browser)
-12) download both development and distribution certificates. (no need to download provisioning certificates)
-13) Save them in a new folder on desktop and double click on the dev and distribution certificates
-14) This launches keychain. Delete old / expired keychains
-15) Go back to Xcode under Provisioning Profiles and hit the Refresh button at the bottom
-16) All should be working and nothing should be out to date or expired
 ------------------------------------------------------------------------------------------------------------------------
 APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Expires every March.
+
+See the instructions For OneSignal 5/31/18 which use the existing certSigningRequest.
 
 1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
 3. Click 'App IDs', then select the expiring id which is org.andersonisland.andersonislandassistant.
 4. Click Edit and Scroll to 'Push Notifications' section and click on 'Create Certificate...'.
 5. https://www.pushbots.help/install-pushbots-in-your-app-or-website/ios/the-apple-part-certificate-and-provisioning-profile
-Follow instructions to generate P12 file.
-6. Open Applications -> Utilities -> Keychain Access.
-7. Within KeychainAccess dropdown menu which is at the very top of the main screen, 
+Steps 6-9 ARE NOT NECESSARY for renewal. Usse the existing AIAAPN2018.certSigningRequest file.
+  6. Open Applications -> Utilities -> Keychain Access.
+  7. Within KeychainAccess dropdown menu which is at the very top of the main screen, 
 		select Keychain Access->Certificate Assistant->Request a Certificate from a Certificate Authorit
-8. In the Certificate Info window, enter: my email address(robertbedoll@gmail.com), a name for the private key (AIAAPN20xx to indicate the year).
+  8. In the Certificate Info window, enter: my email address(robertbedoll@gmail.com), a name for the private key (AIAAPN20xx to indicate the year).
    Leave the CA email address empty. 
    In the "Request Is"  group, select the Saved to Disk option.
    Click Continue within Keychain Access to complete the CSR generating process.
-9. Save as AIAAPN20xx.certSigningRequest to the desktop.
-10. Choose the AIAAPN20xx.certSigningRequest file just generated. Click Continue.
+  9. Save as AIAAPN20xx.certSigningRequest to the desktop.
+
+10. Choose the existing AIAAPN20xx.certSigningRequest file just generated. Click Continue.
 11.Download the file just generated by clicking the Download button.
 12.Bring up finder and go to Downloads.  You will see the file as aps_development-x.cer.
 13.Double click on the cer file just created.  This installs it in Keychain under 'My Certificates'.
@@ -368,6 +353,15 @@ TESTING:
 
 I have never bothered to Revoke old certificate, and it seems to work fine.
 
+For OneSignal 5/31/18
+1. I selected App->AndersonIslandAssistant->edit.
+2. Under Push Notifications-Distribution certificate I selected Create New Certificate
+3. I used the existing AIAAPN2018.certSigningRequest instead of creating a new one. This one is used by pushbots dev cert.
+4. I uploaded it, and then created a new certificate.
+5. I downloaded the new cert and named it apsPushProd0518.cer. Apple name is:Apple Push Services:org.anderson-island.andersonislandassistant, type: ApplePushServices, exp 6/30/19.
+6. I double clicked on it which installed it in KeyChainAccess under MyCertificates.
+7. I immediately right clicked on that certificate in KeychainAccess and exported it to a P12 file I called APNProd0518.p12
+8. I emailed it to me. then I uploaded it to OneSignal.
 ---------------------------------------------------------------------------------------------------------------------
 APN Apple Push Notification CERTIFICATES from Bryan Musial 1/2015.
 
