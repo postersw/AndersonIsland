@@ -481,7 +481,7 @@
              FTS = FTS + ferrytimeS[i].toFixed() + ";" + ferrytimeS[i + 1] + ";";
              FTK = FTK + ferrytimeK[i].toFixed() + ";" + ferrytimeK[i + 1] + ";";
          }
-         document.getElementById("editrule").value = FTS + "\n" + FTA + "\n" + FTK + "\n";
+         document.getElementById("editrule").value = FTS.substr(0, FTS.length - 1) + "\n" + FTA.substr(0, FTA.length - 1) + "\n" + FTK.substr(0, FTK.length - 1) + "\n";
          alert("saved " + ferrytimeA.length.toFixed() + " rows to the edit box.");
      }
 
