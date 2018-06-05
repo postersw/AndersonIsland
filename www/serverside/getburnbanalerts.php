@@ -42,7 +42,7 @@
     $airqual = "Air quality: " . $bb;
 
 // Fire Department. read pierce county page and find "Current Fire Safety Burn Ban Status".
-// then find NO BURN BAN, or something else which is undefined as of 2/16/18.  Otherwise issue an error.
+// then find the alt image tages: FIRE SAFETY - NO BURN BAN or FIRE SAFETY - BURN BAN. Not the best solution. 6/6/18.
 
     $fire = file_get_contents($firebblink); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
     if($fire == "") $fire = file_get_contents($firebblink); //1 retry
@@ -50,19 +50,19 @@
     //$fire = strip_tags($firew);  // remove the tags
     //echo $fire; echo "<br/>";
     //$cwbb = "COUNTY-WIDE BURN BAN";
-    //$cwbb = "Current Fire Safety Burn Ban Status";
-    //$i = stripos($fire, $cwbb);
-    //if($i == 0) Bailout("Could not find \"$cwbb\"");
+    $cwbb = "Current Fire Safety Burn Ban Status";
+    $i = stripos($fire, $cwbb);
+    if($i == 0) Bailout("Could not find \"$cwbb\"");
+    //$iaq = stripos($file, "Current Air Quality Burn Ban Status", $i);
     //$lifted = stripos($fire, "NO BURN BAN", $i);
-    ////$effective = stripos($fire, "Effective", $i);
-    //$effective = 1; // until we get an example
-    //if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
-    //elseif($effective> 0) $firebb =  $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
-    //else Bailout("County Burn Ban not = Lifted or Effective. Revise the script.");
-
-    // temoorary awful solution as of 6/1/18
-    $firebb = "Unknown";
-    if(stripos($fire, "Document?documentID=69831")> 100) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
+    $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
+    $effective = stripos($fire, "FIRE SAFETY - BURN BAN", $i);
+    if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
+    elseif($effective> 0) $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
+    else {
+        $firebb = "<a href=\"$firebblink\" >Unknown</a>";
+        echo "Could not file burn ban status on $firebblink. Revise getburnbanalerts.php.";
+    }
 
     // write to file
     $msg = $airqual . "<br/>Fire Safety: " . $firebb;
