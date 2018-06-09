@@ -67,6 +67,21 @@
       <Platform>Windows Phone (Universal)</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="www\aimapx.9.png" />
+    <Content Include="www\config.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="www\favicon-16x16.ico" />
+    <Content Include="www\favicon-32x32.ico" />
+    <Content Include="www\favicon-96x96.ico" />
+    <Content Include="www\favicon.ico" />
+    <Content Include="www\icon.png" />
+    <Content Include="www\ic_pushbots_licon.png" />
+    <Content Include="www\ic_stat_pushbots_sicon.png" />
+    <Content Include="www\index.html" />
+    <Content Include="www\screen.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>7c734777-73b0-4c5e-94c0-6dab3cf14b1d</ProjectGuid>
   </PropertyGroup>

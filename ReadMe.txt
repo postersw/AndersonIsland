@@ -598,3 +598,6 @@ config.xml for Cordova: https://cordova.apache.org/docs/en/latest/config_ref/ind
 iPhone 10.
 Display changes:
 https://blog.phonegap.com/displaying-a-phonegap-app-correctly-on-the-iphone-x-c4a85664c493
+
+---------------------
+test of push for 1.19
