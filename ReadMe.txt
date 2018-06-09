@@ -77,7 +77,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 05/18/18. Note: script changes were made on branch Ver117 and branch Ver118. Branch Ver117 merged back to Master to pick up script changes only.
 05/23/18. Ver 1.19. Branch V119 created.  Move from Pushbots to OneSignal for Notifications. minor formatting enhancements. 
                     Improve month event display and support hyperlinks. Direct NOAA call for other tides. Use HTML5 date picker.
-05/31/18. Ver 1.19 Google Play Store # 2232 Beta.
+05/31/18. Ver 1.19.053118 Google Play Store # 2232 Beta.
+06/07/18. Ver 1.19.053118 Google Play Store ver 2232 promoted to Production. Final Android change.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
