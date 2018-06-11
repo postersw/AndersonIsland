@@ -37,9 +37,9 @@
         var nudate = 0; // index into udate
         var UDate = ["2016-01-01"];
         var UDateCountV = new Array();
-        UDateCountV[0] = [0, 0, 0, 0, 0, 0,0,0,0,0];
-        var UDateV = ["1.3.", "1.6.", "1.07", "1.08", "1.09", "1.10", "1.11", "1.12", "1.13", "1.14"];
-        var UDateOS = ["1.3.", "1.6.", "IOS", "And", "And", "Both", "IOS", "And", "1.13", "1.14"];
+        UDateCountV[0] = [0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0];
+        var UDateV = ["1.3.", "1.6.", "1.07", "1.08", "1.09", "1.10", "1.11", "1.12", "1.13", "1.14","1.15","1.16","1.17","1.18","1.19","1.20"];
+        var UDateOS = ["1.3.", "1.6.", "IOS", "And", "And", "Both", "IOS", "And", "1.13", "1.14","1.15","1.16","1.17","1.18","1.19","1.20"];
         var UDateCount = [0]; // uses/date
         var UDateUses = [0]; // total uses/date (main page views per date)
         var UDateOldCount = [0]; // Old uses/date
@@ -105,7 +105,7 @@
                     UDateOldCount[nudate] = 1;
                     UDateCount[nudate] = 0;
                     UDateUses[nudate] = 1; // count the views as 1 for the old version
-                    UDateCountV[nudate] = [1, 0, 0, 0, 0, 0,0,0,0,0]; // clear enw entry
+                    UDateCountV[nudate] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];; // clear enw entry
                 } else { // go backwards to find the date
                     for (i = nudate; i >= 0; i--) {
                         if (UDate[i] == rowdate) {
@@ -214,7 +214,7 @@
 
                 var veri = 0; // index of version into UDateCountV and UDateV
                 var subver = W[1].substr(2, 4); // 1.07, e.g.
-                for (veri = 0; veri < 10; veri++) if (subver == UDateV[veri]) break;
+                for (veri = 0; veri < UDateV.length; veri++) if (subver == UDateV[veri]) break;
 
                 if (nn == 0) nn = 1;
                 if (isNaN(nn)) alert(W[3]);
@@ -226,7 +226,7 @@
                     nudate++;
                     UDate[nudate] = rowdate;
                     UDateCount[nudate] = 1;
-                    UDateCountV[nudate] = [0, 0, 0, 0, 0, 0,0,0,0,0];
+                    UDateCountV[nudate] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     UDateCountV[nudate][veri] = 1;
                     UDateUses[nudate] = nn; // main page visits
                     UDateOldCount[nudate] = 0;
@@ -287,23 +287,27 @@
 
            // use by date
              
-             shead =  "<tr><td>Date</td><td>Total</td><td>Old</td><td>New</td><td>MainPageViews</td><td>Old%</td><td>New%</td><td>" +
-                UDateV[0] + "</td><td>" + UDateV[1] + "</td><td>" + UDateV[2] + "</td><td>" + UDateV[3] + "</td><td>" + UDateV[4] + "</td><td>" + UDateV[5] +
-                "</td><td>" + UDateV[6] + "</td><td>" + UDateV[7] + "</td><td>" + UDateV[8] + "</td><td>" + UDateV[9] +
-                "</td></tr>";
-             stail = "<tr><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td>" +
-                UDateOS[0] + "</td><td>" + UDateOS[1] + "</td><td>" + UDateOS[2] + "</td><td>" + UDateOS[3] + "</td><td>" + UDateOS[4] + "</td><td>" + UDateOS[5] +
-                "</td><td>" + UDateOS[6] + "</td><td>" + UDateOS[7] + "</td><td>" + UDateOS[8] + "</td><td>" + UDateOS[9] +
-                "</td></tr>";
+           shead = "<tr><td>Date</td><td>Total</td><td>Old</td><td>New</td><td>MainPageViews</td><td>Old%</td><td>New%</td>";
+           stail = "<tr><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td>";
+           for (i = 0; i < UDateV.length; i++) {
+               shead += "<td>" + UDateV[i] + "</td>";
+               stail += "<td>" + UDateOS[i] + "</td>";
+           }
+           shead += "</tr>";
+           stail += "</tr>";
 
-             s6 = "<br/><strong>Uses by Date</strong><table>" + shead;
-             for (i = 0; i <= nudate; i++) s6 += "<tr><td>" + UDate[i] + "</td><td>" + (UDateCount[i] + UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
-                 UDateCount[i] + "</td><td>" + UDateUses[i] + "</td><td>" +
-                 (UDateOldCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
-                 (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
-                 UDateCountV[i][0] + "</td><td>" + UDateCountV[i][1] + "</td><td>" + UDateCountV[i][2] + "</td><td>" + UDateCountV[i][3] + "</td><td>" + UDateCountV[i][4] + "</td><td>" + UDateCountV[i][5] +
-                                 "</td><td>" + UDateCountV[i][6] + "</td><td>" + UDateCountV[i][7] + "</td><td>" + UDateCountV[i][8] + "</td><td>" + UDateCountV[i][9] + "</td></tr>";
-            s6 +=  shead + stail + "</table>";
+           s6 = "<br/><strong>Uses by Date</strong><table>" + shead;
+           for (i = 0; i <= nudate; i++) {
+               s6 += "<tr><td>" + UDate[i] + "</td><td>" + (UDateCount[i] + UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
+                   UDateCount[i] + "</td><td>" + UDateUses[i] + "</td><td>" +
+                   (UDateOldCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
+                   (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td>";
+               for (j = 0; j < UDateV.length; j++) {
+                   s6 += "<td>" + UDateCountV[i][j] + "</td>";
+               }
+               s6 += "</tr>";
+           }
+           s6 +=  shead + stail + "</table>";
 
             document.getElementById("a").innerHTML = s1 + sos + sv + s2 + s3 + s5 + s6;
        }
