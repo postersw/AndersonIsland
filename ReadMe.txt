@@ -604,3 +604,4 @@ https://blog.phonegap.com/displaying-a-phonegap-app-correctly-on-the-iphone-x-c4
 
 ---------------------
 test of push for 1.19
+Test of push 6/16.
