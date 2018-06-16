@@ -79,6 +79,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
                     Improve month event display and support hyperlinks. Direct NOAA call for other tides. Use HTML5 date picker.
 05/31/18. Ver 1.19.053118 Google Play Store # 2232 Beta.
 06/07/18. Ver 1.19.053118 Google Play Store ver 2232 promoted to Production. Final Android change.
+06/16/18. Ver 1.19.053118 Uploaded to itunes as ver 1.19.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -206,7 +207,8 @@ IOS DEBUG/BUILD
 	4. Create a new version.  The AIA version (like 1.3, 1.4, ...) should match the version in the comfig.xml of the app.
 	5. You will get a new page. fill out the what's new.
 	6. Start "Application Loader 3.6".   select Deliver Your App and click on 'Choose'.  
-	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
+	7. Select your xxx.ipa binary.  The process takes at least 2 minutes but no further interaction should be needed other than
+	   clicking on 'next' or 'ok'.   Once the ipa has been uploaded, you can log out of the mac.
 	8. Wait until you get the email that says "Version x of Anderson Island Assistant has finished processing".
 	9. Go back to the itunes connect my app page. under the Build section of the web page, select the version you just uploaded.
 	   If your new version is not there, click on another choice and then back onto your version (1.x Prepare for Submission) to refresh the 
