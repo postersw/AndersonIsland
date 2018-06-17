@@ -79,6 +79,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
                     Improve month event display and support hyperlinks. Direct NOAA call for other tides. Use HTML5 date picker.
 05/31/18. Ver 1.19.053118 Google Play Store # 2232 Beta.
 06/07/18. Ver 1.19.053118 Google Play Store ver 2232 promoted to Production. Final Android change.
+06/16/18. Ver 1.19.053118 Uploaded to itunes as ver 1.19.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -158,7 +159,7 @@ ANDROID GOOGLE PLAY STORE
 ------------------------------------------------------------------------------------------------------------
 IOS DEBUG/BUILD 
 	DEBUG
-	 in pg build, select the IOS 'AIADevPush040317' certificate (pw=dd). then build.  Then download to the device.
+	 in pg build, select the IOS 'AIADevMMDD' certificate (pw=dd). then build.  Then download to the device.
 	This is done by going to build.phonegap.com on the phone in safari, and clicking on the ipa icon.
 	This works on the registered devices in developer.apple.com. Currently Sue's iPad and Ester's iPhone 5.
 
@@ -173,17 +174,17 @@ IOS DEBUG/BUILD
 		select the dev p12 key, and the new Provisioning Profile from the provisioning profile just downloaded. Upload them.
 
 	DEPLOYMENT
-	 click the 'AIADistributionPush' certificate.  enter key pw=dd. Then build.  
+	click the 'AIAProd<mmdd>' certificate.  enter key pw=dd. Then build.  
 	The resulting ipa must be uploaded using the virtual mac.  This ipa can NOT be run directly on mom's phone or ipad.
-	Start the virtual mac.  Go to the apple dev site.  
-	See Separate file: IOS_Certificates_HowTo.txt.
+	Start the virtual mac.  SEE THE INSTRUCTIONS BELOW: iTunes Install
+
 	NOTE: my app id is org.anderson-island.andersonislandassistant, and Push Notifications are enabled. 
 	My app has 2 Provisioning Profiles, and each profile has a certificate (which has a P12 file): 
 		1. AndersonIslandDevPush, whose certificate is is called Robert Bedoll, type iOS Development (expires 3/12/18 as of 3/12/17).
 		2. AIADistributionPush, whose certificate is called ?, type iOS Distribution. Expired 3/10/17
 
 		Note that there is an APN certificate called org.anderson-island.andersonislandassistant which is type 
-		  'APNs Development iOS) which is the APN cert to be used by Pushbots to send messages to the app. Is is 
+		  'APNs Development iOS which is the Apple Push Notifications cert to be used by Pushbots/OneSignal to send messages to the app. Is is 
 		  separate fromn the Development Certificate, and is not referenced by the app. But it is specific for my app's id.
 	
 	ICON sizes: Note that you need lots of icons of exact size.  To resize the icons, just use Paint and the resize button.
@@ -196,7 +197,7 @@ IOS DEBUG/BUILD
 
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
-	iTunes install:
+	iTunes Install:
 	0. Windows Accessories -> Remote Desktop Connection -> LA051.macincloud.com:6000.
 	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
 	   on phonegap build, select the 'AIADistributionPush' key.  This enables push notifications. Then build.
@@ -206,7 +207,8 @@ IOS DEBUG/BUILD
 	4. Create a new version.  The AIA version (like 1.3, 1.4, ...) should match the version in the comfig.xml of the app.
 	5. You will get a new page. fill out the what's new.
 	6. Start "Application Loader 3.6".   select Deliver Your App and click on 'Choose'.  
-	7. Select your xxx.ipa binary.  The process takes a while but no further interaction should be needed other than clicking on 'next' or 'ok'
+	7. Select your xxx.ipa binary.  The process takes at least 2 minutes but no further interaction should be needed other than
+	   clicking on 'next' or 'ok'.   Once the ipa has been uploaded, you can log out of the mac.
 	8. Wait until you get the email that says "Version x of Anderson Island Assistant has finished processing".
 	9. Go back to the itunes connect my app page. under the Build section of the web page, select the version you just uploaded.
 	   If your new version is not there, click on another choice and then back onto your version (1.x Prepare for Submission) to refresh the 
@@ -602,3 +604,4 @@ https://blog.phonegap.com/displaying-a-phonegap-app-correctly-on-the-iphone-x-c4
 
 ---------------------
 test of push for 1.19
+Test of push 6/16.

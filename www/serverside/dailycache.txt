@@ -1,0 +1,253 @@
+DAILYCACHE
+FERRYTIMESS
+445,12345,545,123456H,645,*,800,*,900,*,1000,HF,1200,*,1230,50,1350,50,1420,*,1450,50,1520,*,1550,50,1620,*,1650,50,1730,*,1800,50,1840,*,1940,*,2040,*,2200,X6H,2300,Y;
+FERRYTIMESA
+515,12345,615,123456H,730,*,830,*,930,*,1030,HF,1230,*,1300,50,1420,50,1450,*,1520,50,1550,*,1620,50,1650,*,1730,50,1800,*,1840,50,1910,*,2010,*,2110,*,2230,X6H,2330,Y;
+FERRYTIMESK
+0,,0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,0,,0,,0,,0,,0,,0,,0,,1935,*,0,,0,,2250,X6H,2350,Y;
+FERRYTIMESS2
+445,12345,545,123456H,645,*,800,*,900,*,1000,HF,1200,*,1420,*,1520,*,1620,*,1730,*,1840,*,1940,*,2040,*,2200,X6H,2300,Y
+FERRYTIMESA2
+515,12345,615,123456H,730,*,830,*,930,*,1030,HF,1230,*,1450,*,1550,*,1650,*,1800,*,1910,*,2010,*,2110,*,2230,X6H,2330,Y;
+FERRYTIMESK2
+0,,0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,0,,1935,*,0,,0,,2250,X6H,2350,Y;
+FERRYDATE2
+09/05/2017
+FERRYMESSAGE
+No 7:40p/8:10p run on 1st/3rd Tuesday of each month. Two boat service on Fri,Sun begins 6/29.
+FERRYMESSAGEEND
+OPENHOURS
+Store (253-884-4001),0800-2000,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,http://www.andersonislandgeneralstore.com
+Cafe (253-884-1300),0800-1500,0630-2000,0630-1500,0630-1500,0630-1500,0630-2000,0800-2000,http://www.andersonislandcafe.com
+Restaurant (253-884-3344),0900-2000,,,1600-2000,1600-2100,1600-2100,0900-2100,http://rivieracommunityclub.com/amenities/restaurant
+Post Office (253-884-4001),,1100-1500,1100-1500,1100-1500,1100-1500,1100-1500,1100-1500,http://www.hourspostoffice.com/USPS+Post+Office+Anderson+Island/98303/Anderson+Island/40629
+Dump (253-884-4072),1000-1800,1000-1800,,,,,,https://www.co.pierce.wa.us/index.aspx?NID=1541
+OPENHOURSEND
+EMERGENCY
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:911"> All emergencies: 911</a> </td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-798-4333"> Crisis Line: 253-798-4333</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-884-4040"> Fire Department: 253-884-4040</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-884-4057"> Fire Department Fax: 253-884-4057</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-970-5403"> Island Volunteer Patrol: 253-970-5403</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-9800"> Pierce County Sheriff: 1-800-562-9800</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-253-798-4721"> Pierce County Sheriff Non-Emergency: 253-798-4721</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-732-6985">  Poison Center: 1-800-732-6985</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-5632"> Red Tide:1-800-562-5632</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-884-4808">  Riviera Disaster Hot Line: 253-884-4808</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-472-0208">Tanner Electric: 1-800-472-0208</a></td></tr>
+EMERGENCYEND
+MOREHOURS
+Museum Store (253-884-2135),1200-1600,,,,,,1200-1600,http://www.andersonislandhs.com
+MHEND
+LINKS
+<span id='island'>
+<strong>ISLAND:</strong>
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/AIASounder.html', '_system');">AIA: AI Association & Island Sounder Newsletter</button><br />
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org', '_system');">AICAB: AI Citizens Advisory Board</button><br />
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://post265.org', '_system');">American Legion Post 265</button><br />
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/churches.html', '_system');">Churches (on AI)</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org', '_system');">Community Club (AICC)</button><br />   
+<button style="width:100%;padding:6px" onclick="window.open('http://www.steilacoom.k12.wa.us/Domain/13', '_system');">Elementary School</button><br />  
+<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/362537050519207', '_system');">Facebook: AI Buy and Sell</button>
+<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/797030787077525', '_system');">Facebook: AI Community</button><br />
+<button  style="width:45%;padding:6px" onclick="window.open('http://www.co.pierce.wa.us/index.aspx?NID=1793', '_system');">FERRY</button> &nbsp
+<button  style="width:45%;padding:6px" onclick="window.open('https://tickets.piercecountywa.org/', '_system');">Buy Tickets</button> <br/>
+<button style="width:100%;padding:6px" onclick="window.open('http://www.pcfd27.com', '_system');">Fire and Rescue (PC Fire District 27)</button><br />   
+<button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org', '_system');">Historical Society (AIHS)</button><br />                 
+<button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org', '_system');">Island Patrol</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://www.marinetraffic.com/en/ais/home/centerx:-122.743/centery:47.1558/zoom:12', '_system');">Marine Traffic Tracking</button><br /> 
+<button style="width:100%;padding:6px" onclick="window.open('http://www.hobolink.com/p/de3ae8d02aff87b5523cf8b2e7491441', '_system');">Oro Bay Weather</button><br />          
+<button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org', '_system');">Parks</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://rivieracommunityclub.com', '_system');">Riviera</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandgeneralstore.com', '_system');">Store</button><br />
+<button style="width:45%;padding:6px" onclick="window.open('http://www.tannerelectric.coop', '_system');">Tanner Electric</button>
+<button style="width:45%;padding:6px" onclick="window.open('http://tanner.coopwebbuilder2.com/content/report-outage', '_system');">Report Outage</button>
+<button style="width:100%;padding:6px" onclick="window.open('http://www.anderson-island.org/transportationservices.html', '_system');">Transportation Services</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://www.anderson-island.org/volunteers.html', '_system');">Volunteer Opportunities</button><br />
+<hr/>
+</span>
+<span id='fishing'>
+<strong>MARINE AREA 13 (S Puget Sound):</strong><img src="img/01d.png" onload="window.scroll(0,0);" /><br/>
+<span style="font-size:small;color:blue"><strong>FISHING:</strong><br/>
+&nbsp SALMON: OPEN Year-round. Chinook: min. 22", Other: no min. Daily limit 2. Release Coho & wild Chinook. <br/>
+&nbsp TROUT: Year-round Catch-and-release except up to 2 hatchery STEELHEAD may be retained.<br/>
+&nbsp STURGEON: Year-round Catch-and-release.<br/>
+&nbsp MACKEREL: Year-round No min. size. No daily limit.<br/>
+&nbsp BOTTOMFISH: OPEN year round. Limit 15. <br/>
+&nbsp LINGCOD: 5/1-6/15 daily limit 1.
+&nbsp ROCKFISH: Closed.<br/>
+<button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/publications/01914/2017-18_marine.pdf', '_system');">WDFW Area 13 Fishing Rules </button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/regulations/', '_system');">Fishing Regulations/Seasons (WDFW)</button>
+<button style="width:100%;padding:6px" onclick="window.open('https://fortress.wa.gov/dfw/erules/efishrules/rules_saltwater_marine_area.j?body_of_water_id=307', '_system');">Emergency Fishing Rules: Marine Area 13</button><br/>
+<br/>
+<span style="font-size:small;color:blue"><strong>CRABBING: </strong>Marine Area 13 Closed - no reopen date.</span><br>
+<button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/crab/21/', '_system');">Crab Fishing Season: Marine Area 13</button><br/>
+<br/>
+<span style="font-size:small;color:blue"><strong>CLAMs and OYSTERS: </strong>Open  but check 'red tide' status below.</span><br>
+<button style="width:100%;padding:6px" onclick="window.open('https://fortress.wa.gov/doh/eh/maps/biotoxin/biotoxin.html?Bidn=280100', '_system');">Red Tide Map - AI Closed Beaches(WA DOH)</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://www.doh.wa.gov/ehp/sf/biotoxin.htm', '_system');">Red Tide Status (WA DOH)</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/', '_system');">Shellfish (WDFW)</button>
+<button style="width:100%;padding:6px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/MapArea/13/', '_system')">Public Clam and Oyster Beaches - MAP</button>
+<div style="margin-left:8px">
+<button style="padding:2px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/280100/', '_system')">Amsterdam Bay</button>
+<button style="padding:2px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/280140/', '_system')">DNR-8 East Side of AI</button>
+<button style="padding:2px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/280510/', '_system')">Eagle Island State Park</button>
+<button style="padding:2px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/280190/', '_system')">Eagle Island: South</button>
+<button style="padding:2px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/280120/', '_system')">Oro Bay: South</button>
+<button style="padding:2px" onclick="window.open('http://wdfw.wa.gov/fishing/shellfish/beaches/280130/', '_system')">Oro Bay: West</button>
+</div>
+</span>
+LINKSEND
+OPENHOURSJSON
+[{
+    "Name": "Store", "Phone": "253-884-4001", "Desc": "Groceries, Deli, Hardware, Gas, Tool Rental",
+    "Href": "http://www.andersonislandgeneralstore.com",
+    "Addr": "10202 Eckenstam Johnson Rd",
+    "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 1001, "To": 430, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
+           { "From": 501, "To": 930, "H": [800, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] }],
+    "Closed": [1225]
+},{
+    "Name": "Cafe", "Phone": "253-884-1300", "Desc": "Coffee, breads, lunch and dinner",
+    "Href": "http://www.andersonislandcafe.com",
+    "Addr": "10006 Eckenstam Johnson Rd",
+    "Map": "https://www.google.com/maps?q=Island+Coffee+Shoppe,+10006+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 214, "To": 214, "H":  [800, 1500, 630, 2000, 630, 1500, 630, 2000, 630, 1500, 630, 2000, 800, 2000] },
+           { "From": 101, "To": 531, "H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630, 1500, 630, 2000, 800, 2000] },
+           { "From": 601, "To": 901, "H": [800, 2000, 630, 2000, 630, 1500, 630, 1500, 630, 1500, 630, 2000, 800, 2000] },
+           { "From": 901, "To": 1119, "H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630, 1500, 630, 2000, 800, 2000] },
+           { "From": 1120, "To": 1126, "H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 700,1100, 630, 2000, 800, 2000] },
+           { "From": 1127, "To": 1231, "H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630,1500, 630, 2000, 800, 2000]}],
+    "Closed": [1225]
+},{
+    "Name": "Restaurant", "Phone": "253-884-3344", "Desc": "Riviera Lakeshore Restaurant",
+    "Href": "http://rivieracommunityclub.com/amenities/restaurant",
+    "Addr": "11019 Country Club Dr",
+    "Map": "https://www.google.com/maps?q=Riviera+Lakeshore+Restaurant,+11019+Country+Club+Dr,+Anderson+Island,+WA",
+    "Sc": [{"From": 1131, "To": 1131, "H":[0,0,0,0,1600,2000,0,0,0,0,0,0,0,0] },
+	{ "From": 526, "To": 1015, "H":[900,2100,1100,2100,1100,2100,1100,2100,1100,2100,1100,2200,900,2200] },
+        { "From": 1016, "To": 525, "H":[900, 2000, 1600, 2000, 0, 0, 1600, 2000, 1600, 2000, 1100, 2100, 900, 2100] }],
+    "Closed": [1225]
+},{
+    "Name": "AIHS/Farm Gift Shop", "Phone": "253-884-2135", "Desc": "AIHS Museum and gift shop located at the Johnson Farm",
+    "Href": "http://www.andersonislandhs.org",
+    "Addr": "9306 Otso Point Rd",
+    "Map": "https://maps.google.com/maps?q=9306+Otso+Point+Road,+Anderson+Island,+WA",
+    "Sc": [{ "From": 401, "To": 931, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600] },
+	   { "From": 1001, "To": 1119, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] },
+	   { "From": 1120, "To": 1126, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600, 1000, 1600] },
+	   { "From": 1127, "To": 1223, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] }],
+    "Closed": [1225]
+},{
+    "Name": "Dump/Recycling", "Phone": "253-847-7555", "Desc": "Pierce County Recycle Transfer Station",
+    "Href": "http://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Addr": "9607 Steffensen Rd",
+    "Map": "https://www.google.com/maps?q=Pierce+County+Recycling,+9607+Steffense+Rd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 1001, "To": 331, "H": [1000, 1400, 1300, 1700, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { "From": 401, "To": 930, "H":[1000, 1800, 1000, 1800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }],
+    "Closed": [1124, 1225, 101]
+},{
+    "Name": "Fire and Rescue (PCFD27)", "Phone": "253-884-4040", "Desc": "Anderson Island Fire and Rescue (PC Fire District 27)",
+    "Href": "http://www.pcfd27.com/",
+    "Addr": "12207 Lake Josephine Blvd",
+    "Map": "https://maps.google.com/maps?q=Pierce+County+Fire+District+27,+12207+Lake+Josephine+Blvd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 800, 1600, 800, 1600, 800, 1600, 800, 1600, 800, 1600, 0, 0] }],
+    "Closed": [1225]
+},{
+    "Name": "Fitness Center", "Phone": "253-884-9261", "Desc": "Anderson Island 24-hour Fitness Center in Old Schoolhouse. Call Wendy for information on membership, equipment, and classes.",
+    "Href": "",
+    "Addr": "10833 Eckenstam Johnson Rd",
+    "Map": "https://maps.google.com/maps/place/+10833+Eckenstam+Johnson+Rd,+Anderson+Island,+WA+98303",
+    "Sc": [{ "From": 101, "To": 1231, "H":[1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359]}],
+    "Closed": [1225]
+},{
+    "Name": "Garbage Weekly Wednesday Pickup", "Phone": "253-414-0345", "Desc": "Weekly Curbside Garbage Pickup by LeMay",
+    "Href": "http://lemaypiercecountyrefuse.com/residential.aspx",
+    "Addr": "",
+    "Map": "",
+    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 800, 1600, 0, 0, 0, 0, 0, 0] }],
+    "Closed": [1124, 1225]
+},{
+     "Name": "Golf Course and Shop (Riviera)", "Phone": "253-884-9634", "Desc": "Riviera golf course and pro shop",
+    "Href": "http://rivieracommunityclub.com/amenities/golf-course",
+    "Addr": "11019 Country Club Dr",
+    "Map": "",
+    "Sc": [{"From": 501, "To": 925, "H":[ 830, 1600, 830, 1600, 830, 1600, 800, 1600, 830, 1600, 800, 1700, 800, 1700]},
+	{"From": 926, "To": 430, "H":[900, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600, 900, 1600]}],
+    "Closed": [425,426,427,912,913,914]
+},{
+    "Name": "Library (Pierce County)", "Phone": "", "Desc": "Weekly Pierce Country Library",
+    "Href": "http://www.piercecountylibrary.org",
+    "Addr": "Community Center Clubhouse",
+    "Map": "",
+    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 1100, 1500, 0, 0, 0, 0, 0, 0] }],
+    "Closed": [1124, 1225]
+},{
+    "Name": "Post Office", "Phone": "253-884-4001", "Desc": "USPS Post Office in General Store",
+    "Href": "http://www.hourspostoffice.com/USPS+Post+Office+Anderson+Island/98303/Anderson+Island/40629",
+    "Addr": "10202 Eckenstam Johnson Rd",
+    "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
+    "Sc": [{"From": 101, "To": 1231, "H": [0, 0, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500],
+        "H2":[0, 0, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 0, 0]}],
+    "Closed": [101, 115, 219, 528, 704, 903, 1008, 1112, 1122, 1225]
+},{
+    "Name": "Recycle alternate-week Thursday Pickup", "Phone": "253-414-0345", "Desc": "Alternate Week Curbside Recycle Pickup by LeMay",
+    "Href": "http://lemaypiercecountyrefuse.com/residential.aspx",
+    "Addr": "",
+    "Map": "",
+    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 0, 0, 800, 1600, 0, 0, 0, 0] }],
+    "Closed": [504,518,601,615,629,713,727,810,824,907,921,1005,1019,1102,1116,1130,1214,1228]
+},{
+    "Name": "Riviera Office", "Phone": "253-884-4093", "Desc": "Riviera Business Office",
+    "Href": "http://rivieracommunityclub.com",
+    "Addr": "11019 Country Club Dr",
+    "Map": "",
+    "Sc": [{"From": 522, "To": 925, "H":[0,0, 900, 1700, 900, 1700, 900, 1700, 900, 1700, 900, 1700, 900, 1400]},
+	{"From": 926, "To": 521, "H":[0,0, 900, 1700, 900, 1700, 900, 1700, 900, 1700, 900, 1700, 0,0]}],
+    "Closed": [1225]
+}]
+OPENHOURSJSONEND
+TANNEROUTAGELINK
+https://tannerelectric.ebill.coop/woViewer/mapviewer.html?config=Outage+Web+Map
+BURNBANLINK
+http://wc.pscleanair.org/burnban411/
+TIDEDATALINK
+tidedata.txt
+CUSTOMTIDELINK
+http://www.anderson-island.org/getcustomtide.php?
+FERRYLOCATIONLINK
+https://matterhornago.co.pierce.wa.us/ferrystatus/
+FERRYSCHEDULELINK
+http://www.co.pierce.wa.us/index.aspx?NID=2200
+ANDROIDVER
+1.17
+IOSVER
+1.15
+FERRYTS
+445;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123));545;123456;645;*;800;*;900;*;930;(InList(gMonthDay,memorialday,laborday));1000;(gMonthDay!=705)&&((gMonthDay==704)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1030;(InList(gMonthDay,memorialday,laborday));1130;(InList(gMonthDay,memorialday,laborday));1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1730;*;1800;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||InList(gMonthDay,memorialday-3,laborday));1840;*;1940;((gMonthDay==703)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2040;*;2200;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday)))||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225));2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday));
+FERRYTA
+515;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123));615;123456;730;*;830;*;930;*;1000;(InList(gMonthDay,memorialday,laborday));1030;(gMonthDay!=705)&&((gMonthDay==704)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1100;(InList(gMonthDay,memorialday,laborday));1200;(InList(gMonthDay,memorialday,laborday));1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1650;*;1730;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1800;*;1840;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||InList(gMonthDay,memorialday-3,laborday));1910;*;2010;((gMonthDay==703)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2110;*;2230;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225));2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday));
+FERRYTK
+0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3));0;;0;;1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225));2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday));
+FERRYTS2
+445;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123)); 545;123456; 645;*; 800;*; 900;*; 930;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1000;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1030;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1130;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday))); 1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1730;*;1800;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1840;*;1940;*;2040;*; 2200;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225)); 2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+FERRYTA2
+515;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123)); 615;123456; 730;*; 830;*; 930;*; 1000;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1030;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1100;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1650;*;1730;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1800;*;1840;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1910;*;2010;*;2110;*; 2230;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225)); 2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+FERRYTK2
+0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3)); 0;; 0;; 1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225)); 2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+FERRYD2
+01/01/2099
+
+LOCATIONS
+            <strong>LOCATIONS</strong><br />
+            <span style="font-weight:bold">&nbsp AICC: </span><a href="https://www.google.com/maps/place/11319+Yoman+Rd,+Anderson+Island,+WA+98303/@47.176412,-122.651711,12z/data=!4m5!3m4!1s0x5491a86cc02efe9d:0x49d9213aae5ece4f!8m2!3d47.173838!4d-122.689996?hl=en">AI Community Club, 11319 Yoman Rd</a><br />
+            <span style="font-weight:bold">&nbsp Farm: </span><a href="https://www.google.com/maps?ll=47.176375,-122.652291&z=12&t=m&hl=en&gl=US&mapclient=embed&q=9306+Otso+Point+Rd+Anderson+Island,+WA+98303">AI Historical Society, Johnson Farm, 9306 Otso Point Road</a><br />
+            <span style="font-weight:bold">&nbsp LSR-Farm: </span>Louis Scholl room, Chicken Coop #2 at the AIHS Johnson Farm.<br/>
+            <span style="font-weight:bold">&nbsp AB-Farm: </span>Archival Building at the AIHS Johnson Farm.<br/>
+            <span style="font-weight:bold">&nbsp MSR-Riv: </span><a href="http://goo.gl/maps/5OB4A">Martha Smith Room, Riviera Community Club, 11016 Country Club Dr.</a><br />
+            <span style="font-weight:bold">&nbsp Restaurant: </span><a href="https://www.google.com/maps/place/Riviera+Lakeshore+Restaurant/@47.157078,-122.685269,17z/data=!4m5!3m4!1s0x0:0x808b26de46e35fd6!8m2!3d47.156709!4d-122.685437?hl=en">Riviera Lakeshore Restaurant, 11019 Country Club Dr.</a><br />
+LOCATIONSEND
+MAINTABLEROWS
+<tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px;background-color:#fff4b3" colspan="2" onclick="window.open('http://www.anderson-island.org/volunteers.html', '_system');">Volunteering</tr>
+MAINTABLEEND
+// 5/3/18
