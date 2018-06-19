@@ -17,113 +17,151 @@
         body {
             font-family: 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
         }
-        td {border-style: solid; border-width: thin;border-color: lightgray;
+
+        td {
+            border-style: solid;
+            border-width: thin;
+            border-color: lightgray;
             padding: 6px;
         }
 
         .red {
             color: #FF0000;
         }
-
     </style>
 </head>
 <body>
-<h1>PARKS</h1>
+    <h1>PARKS</h1>
 
     <p style="font-size:small">
         Parks on Anderson Island are maintained by The Anderson Island Park District, the Anderson Island Historical Society and the Riviera.
-    All parks are open from 7 a.m. to 10:30 p.m. year-round unless otherwise posted. <br />
-        Click an entry for more information.
-        </p>
-    <img src="MapWithParksNames.jpg" style="float:left;"  usemap="#parkmap"/>
-<map name="parkmap" >
-<area  alt="" title="Jane Cammon"  shape="rect" coords="282,255,355,383" style="outline:none;" target="_blank" href="janecammon.html"   />
-<area  alt="" title="AIHS Farm" shape="rect" coords="321,178,417,256" style="outline:none;" target="_blank" href="http://www.anderson-island.org/hs/farm.html"    />
-<area  alt="" title="Andys Wildlife park"  shape="rect" coords="246,471,393,633" style="outline:none;" target="_blank" href="andywildlife.html"   />
-<area  alt="" title="Andys Marine"  shape="rect" coords="74,562,242,697" style="outline:none;" target="_blank" href="andymarine.html"   />
-<area  alt="" title="Jacobs point" shape="rect" coords="381,593,514,750" style="outline:none;" target="_blank" href="jacobspoint.html"  />
-<area  alt="" title="Swimming Hole"  shape="rect" coords="521,249,595,305" style="outline:none;" target="_blank" href="swimminghole.html"   />
-<area  alt="" title="School House"  shape="rect" coords="360,410,413,466" style="outline:none;" target="_blank" href="schoolhouse.html"   />
-<area  alt="" title="Tom White" shape="rect" coords="409,410,473,466" style="outline:none;" target="_blank" href="tomwhite.html"   />
-<area  alt="" title="Montalvo" shape="rect" coords="226,218,276,278" style="outline:none;" target="_blank" href="montalvo.html"   />
-<area  alt="" title="golf"  shape="rect" coords="499,376,579,483" style="outline:none;" target="_blank" href="golf.html"    />
-</map>
-<table style="border-style:solid;border-collapse:collapse;">
+        All parks are open from 7 a.m. to 10:30 p.m. year-round unless otherwise posted. <br />
+        Tap an entry for more information.
+    </p>
+    <img src="MapWithParksNames.jpg" style="float:left;" usemap="#parkmap" />
+    <map id="map" name="parkmap">
+        <area alt="" title="Jane Cammon" shape="rect" coords="282,255,355,383" style="outline:none;" target="_blank" href="janecammon.html" />
+        <area alt="" title="AIHS Farm" shape="rect" coords="321,178,417,256" style="outline:none;" target="_blank" href="http://www.anderson-island.org/hs/farm.html" />
+        <area alt="" title="Andys Wildlife park" shape="rect" coords="246,471,393,633" style="outline:none;" target="_blank" href="andywildlife.html" />
+        <area alt="" title="Andys Marine" shape="rect" coords="74,562,242,697" style="outline:none;" target="_blank" href="andymarine.html" />
+        <area alt="" title="Jacobs point" shape="rect" coords="381,593,514,750" style="outline:none;" target="_blank" href="jacobspoint.html" />
+        <area alt="" title="Swimming Hole" shape="rect" coords="521,249,595,305" style="outline:none;" target="_blank" href="swimminghole.html" />
+        <area alt="" title="School House" shape="rect" coords="360,410,413,466" style="outline:none;" target="_blank" href="schoolhouse.html" />
+        <area alt="" title="Tom White" shape="rect" coords="409,410,473,466" style="outline:none;" target="_blank" href="tomwhite.html" />
+        <area alt="" title="Montalvo" shape="rect" coords="226,218,276,278" style="outline:none;" target="_blank" href="montalvo.html" />
+        <area alt="" title="golf" shape="rect" coords="499,376,579,483" style="outline:none;" target="_blank" href="golf.html" />
+    </map>
+    Tap an entry for more info and detailed maps.
+    <table style="border-style:solid;border-collapse:collapse;">
         <tr><td><strong><em>Parks Department:</em></strong></td></tr>
-      <tr  onclick="window.open('http://www.anderson-island.org/parks/swimminghole.html')">
-          <td ><strong><span class="red">A</span> - Ol' Swimming Hole/ Lowell Johnson Park </strong><br />
-            2 swimming areas and sandy beach on Lake Florence. Floating Dock and slide.
-            Volleyball court. Picnic area.<br />
-            </td></tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/swimminghole.html')">
+            <td>
+                <strong><span class="red">A</span> - Ol' Swimming Hole/ Lowell Johnson Park </strong><br />
+                2 swimming areas and sandy beach on Lake Florence. Floating Dock and slide.
+                Volleyball court. Picnic area.<br />
+            </td>
+        </tr>
         <tr onclick="window.open('http://www.anderson-island.org/parks/andymarine.html')">
-            <td><strong><span class="red">B</span> - Andy's Marine Park</strong><br />
-            81 acres. 3/4 mile public beach and tidal inlet.  1 mile trail (through woods) to the beach.
-            (Some steep parts.) <br />
-            </td></tr>
+            <td>
+                <strong><span class="red">B</span> - Andy's Marine Park</strong><br />
+                81 acres. 3/4 mile public beach and tidal inlet.  1 mile trail (through woods) to the beach.
+                (Some steep parts.) <br />
+            </td>
+        </tr>
         <tr onclick="window.open('http://www.anderson-island.org/parks/andywildlife.html')">
-            <td><strong><span class="red">C</span> - Andy's Wildlife Park</strong><br />
-            180 acres wedlands, tidal estuary, and forest. 2 mile nature trail loop. 
-            Best in summer due to wet conditions. <br />
-            Facilities: Restroom and picnic area at trailhead. <br />
+            <td>
+                <strong><span class="red">C</span> - Andy's Wildlife Park</strong><br />
+                180 acres wedlands, tidal estuary, and forest. 2 mile nature trail loop.
+                Best in summer due to wet conditions. <br />
+                Facilities: Restroom and picnic area at trailhead. <br />
 
-            </td></tr>
+            </td>
+        </tr>
         <tr onclick="window.open('http://www.anderson-island.org/parks/janecammon.html')">
-            <td><strong><span class="red">D</span> - Jane Cammon Park</strong><br />
-            40 acres. Includes Elementary School, ballfield (J), covered play area, play equipment, 
-            and the Jane Cammon Walking and Bicycle Trail (2 miles flat and dry).<br />
+            <td>
+                <strong><span class="red">D</span> - Jane Cammon Park</strong><br />
+                40 acres. Includes Elementary School, ballfield (J), covered play area, play equipment,
+                and the Jane Cammon Walking and Bicycle Trail (2 miles flat and dry).<br />
 
-            </td></tr>
+            </td>
+        </tr>
         <tr onclick="window.open('http://www.anderson-island.org/parks/jacobspoint.html')">
-            <td><strong><span class="red">L</span> - Jacob's Point Park</strong><br />
-            82 acres of woods, wetlands, and beach.  Historically a pioneer farm.
-            1.4 mile (each way) trail. Composting toilet near trail end.
+            <td>
+                <strong><span class="red">L</span> - Jacob's Point Park</strong><br />
+                82 acres of woods, wetlands, and beach.  Historically a pioneer farm.
+                1.4 mile (each way) trail. Composting toilet near trail end.
 
-            </td></tr>
+            </td>
+        </tr>
         <tr onclick="window.open('http://www.anderson-island.org/parks/schoolhouse.html')">
-            <td><strong><span class="red">E</span> - The Old School House</strong><br />
-            Historic one-room schoolhouse and tennis/pickleball/basketball court.
-            The schoolhouse serves as a fitness center run by Wendy Field 884-9261.<br />
-            Facilities: portable restroom. <br />
+            <td>
+                <strong><span class="red">E</span> - The Old School House</strong><br />
+                Historic one-room schoolhouse and tennis/pickleball/basketball court.
+                The schoolhouse serves as a fitness center run by Wendy Field 884-9261.<br />
+                Facilities: portable restroom. <br />
 
-            </td></tr>
-        <tr  onclick="window.open('http://www.anderson-island.org/parks/tomwhite.html')">
-            <td><strong><span class="red">F</span> - Tom White Park (Schoolhouse creek)</strong><br />
-            5 acres. Wooded area with hiking trail and a salmon creek.<br />
-            </td></tr>
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/tomwhite.html')">
+            <td>
+                <strong><span class="red">F</span> - Tom White Park (Schoolhouse creek)</strong><br />
+                5 acres. Wooded area with hiking trail and a salmon creek.<br />
+            </td>
+        </tr>
 
         <tr><td><strong><span class="red">J</span> - Russ Cammon Ball Field.</strong></td></tr>
 
-       <tr onclick="window.open('http://www.anderson-island.org/parks/montalvo.html')">
-           <td><strong><span class="red">G</span> - Montalvo Park</strong> <br />
-            5 acres. Wooded with an open area and picnic table. Trail connects to Jane Cammon park.<br />
-            </td></tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/montalvo.html')">
+            <td>
+                <strong><span class="red">G</span> - Montalvo Park</strong> <br />
+                5 acres. Wooded with an open area and picnic table. Trail connects to Jane Cammon park.<br />
+            </td>
+        </tr>
 
         <tr><td><em>UNDEVELOPED:</em></td></tr>
 
-        <tr><td><span class="red">H</span> - St. Anne's Woods (UNDEVELOPED, No Access)<br />
-            </td></tr>
+        <tr>
+            <td>
+                <span class="red">H</span> - St. Anne's Woods (UNDEVELOPED, No Access)<br />
+            </td>
+        </tr>
 
         <tr><td>Tom's Park (UNDEVELOPED)</td></tr>
 
         <tr><td></td></tr>
 
         <tr onclick="window.open('http://www.anderson-island.org/hs/farm.html')">
-            <td><strong><em>Anderson Island Historical Society</em><br />
-            <span class="red">K</span> -
-            Johnson Farm and Museum</strong><br />
-            Historical island farm with a nature trail, museum, gift shop.
+            <td>
+                <strong>
+                    <em>Anderson Island Historical Society</em><br />
+                    <span class="red">K</span> -
+                    Johnson Farm and Museum
+                </strong><br />
+                Historical island farm with a nature trail, museum, gift shop.
 
-            </td></tr>
+            </td>
+        </tr>
         <tr><td></td></tr>
-        <tr><td><strong><em>Riviera Parks</em></strong><br />
-            For Riviera residents and their guests.
-            </td></tr>
-        <tr><td><strong><span class="red">1</span> - Golf Course</strong><br />
-            9-hole golf course.
-            </td></tr>
+        <tr>
+            <td>
+                <strong><em>Riviera Parks</em></strong><br />
+                For Riviera residents and their guests.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong><span class="red">1</span> - Golf Course</strong><br />
+                9-hole golf course.
+            </td>
+        </tr>
         <tr><td><strong><span class="red">2</span> - Jim Ray Park</strong></td></tr>
         <tr><td><strong><span class="red">3</span> - Interlaken Park</strong></td></tr>
         <tr><td><strong><span class="red">4</span> - Golf Course Driving Range</strong></td></tr>
     </table>
 </body>
+
 </html>
+<script type="text/javascript" src="imageMapResizer.min.js"></script>
+<script type="text/javascript">
+    imageMapResize();
+</script>
