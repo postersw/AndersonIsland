@@ -37,9 +37,10 @@
         var nudate = 0; // index into udate
         var UDate = ["2016-01-01"];
         var UDateCountV = new Array();
-        UDateCountV[0] = [0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0,0];
-        var UDateV = ["1.3.", "1.6.", "1.07", "1.08", "1.09", "1.10", "1.11", "1.12", "1.13", "1.14","1.15","1.16","1.17","1.18","1.19","1.20"];
-        var UDateOS = ["1.3.", "1.6.", "IOS", "And", "And", "Both", "IOS", "And", "1.13", "1.14","1.15","1.16","1.17","1.18","1.19","1.20"];
+        UDateCountV[0] = [0];
+        //UDateCountV[0][0] =[0];
+        var UDateV = [0];//"1.3.", "1.6.", "1.07", "1.08", "1.09", "1.10", "1.11", "1.12", "1.13", "1.14","1.15","1.16","1.17","1.18","1.19A","1.19I", "1.19X"];
+        //var UDateOS = ["1.3.", "1.6.", "IOS", "And", "And", "Both", "IOS", "And", "1.13", "1.14","1.15","1.16","1.17","1.18","And","IOS", "PC"];
         var UDateCount = [0]; // uses/date
         var UDateUses = [0]; // total uses/date (main page views per date)
         var UDateOldCount = [0]; // Old uses/date
@@ -50,9 +51,13 @@
         var VerFirstDate = ["", ""]; // first date the version was used
         var VerLastDate = ["", ""]; // last date the version was used
 
-        ReadOldStatsFile();
-        //ReadStatsFile(); // ReadStats 
-        
+        //ReadOldStatsFile();
+        ReadStatsFile(); // ReadStats 
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Read Stats File - retrieves the stats file dailycachelog from the web site and then analyzes it via callback
+        //
         function ReadStatsFile() {
             var d = Date();
             var myurl = 'http://www.anderson-island.org/dailycachelog.txt?' + Date.now();
@@ -64,6 +69,9 @@
             xhttp.open("GET", myurl, true); xhttp.send();
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Read OLD Stats File Feb-Nov 2016 - retrieves the old stats file comingeventslog from the web site and then analyzes it via callback
+        //
         function ReadOldStatsFile() {
             var myurl = 'http://www.anderson-island.org/comingeventslog.txt';
             var xhttp = new XMLHttpRequest();
@@ -74,6 +82,8 @@
             xhttp.open("GET", myurl, true); xhttp.send();
         }
 
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Analyze Old stats file 
         // Entry s = entire file in one long string 
         // sample entry: 2016-03-08T22:43:06+00:00CE access from 184.21.245.107
@@ -105,7 +115,7 @@
                     UDateOldCount[nudate] = 1;
                     UDateCount[nudate] = 0;
                     UDateUses[nudate] = 1; // count the views as 1 for the old version
-                    UDateCountV[nudate] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];; // clear enw entry
+                    UDateCountV[nudate] = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];; // clear enw entry
                 } else { // go backwards to find the date
                     for (i = nudate; i >= 0; i--) {
                         if (UDate[i] == rowdate) {
@@ -123,6 +133,7 @@
             //PrintOldStats();
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Analyze file 
         // Entry s = entire file in one long string 
         // sample entry: 2016-06-13T22:58:02+00:00, V=1.6.0610.1700, K=PG-IOS, N=1, P=wat, I=63.142.206.30 
@@ -158,6 +169,9 @@
                     //VerLastDate[i] = rowdate;
                     nOS++;
                 }
+                var OSL = "X";
+                if (W[2] == "K=PG-And") OSL = "A";
+                else if(W[2] == "K=PG-IOS") OSL = "I";
                 
 
                 // count N (uses) 
@@ -214,7 +228,12 @@
 
                 var veri = 0; // index of version into UDateCountV and UDateV
                 var subver = W[1].substr(2, 4); // 1.07, e.g.
+                subver = subver + OSL; // 1.19A or I or X
                 for (veri = 0; veri < UDateV.length; veri++) if (subver == UDateV[veri]) break;
+                // add it if not found
+                if (veri >= UDateV.length) {
+                    UDateV[veri] = subver;
+                }
 
                 if (nn == 0) nn = 1;
                 if (isNaN(nn)) alert(W[3]);
@@ -226,7 +245,9 @@
                     nudate++;
                     UDate[nudate] = rowdate;
                     UDateCount[nudate] = 1;
-                    UDateCountV[nudate] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    UDateCountV[nudate] = new Array(UDateV.length);
+                    for (i = 0; i < UDateV.length; i++) UDateCountV[nudate][i] = 0;
+                    //UDateCountV[nudate] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     UDateCountV[nudate][veri] = 1;
                     UDateUses[nudate] = nn; // main page visits
                     UDateOldCount[nudate] = 0;
@@ -245,8 +266,9 @@
             PrintStats();
         }
 
-        ////////////////////////// 
-        // PrintStats // 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // PrintStats  - print the stats arrays
+        //
        function PrintStats() {
            var s1 = "Old Total=" + oldrows + "<br/> New Total=" + ROWtot + "<br/>Start: " + starttime + ",  End: " + endtime + ", Days: " + nudate + "<br/>" +
                "Unique IPs: " + nip + "<br/>";
@@ -291,14 +313,14 @@
            stail = "<tr><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td><td> </td>";
            for (i = 0; i < UDateV.length; i++) {
                shead += "<td>" + UDateV[i] + "</td>";
-               stail += "<td>" + UDateOS[i] + "</td>";
+               //stail += "<td>" + UDateOS[i] + "</td>";
            }
            shead += "</tr>";
            stail += "</tr>";
 
            s6 = "<br/><strong>Uses by Date</strong><table>" + shead;
            for (i = 0; i <= nudate; i++) {
-               s6 += "<tr><td>" + UDate[i] + "</td><td>" + (UDateCount[i] + UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
+               s6 += "<tr><td>" + UDate[i].replace(/\-/g, "/") + "</td><td>" + (UDateCount[i] + UDateOldCount[i]) + "</td><td>" + UDateOldCount[i] + "</td><td>" +
                    UDateCount[i] + "</td><td>" + UDateUses[i] + "</td><td>" +
                    (UDateOldCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
                    (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td>";
@@ -310,8 +332,9 @@
            s6 +=  shead + stail + "</table>";
 
             document.getElementById("a").innerHTML = s1 + sos + sv + s2 + s3 + s5 + s6;
-       }
-    /////////////////////////////////////////////////////////////////////
+        }
+
+        /////////////////////////////////////////////////////////////////////
         // sort n, A, B, C     
         //  n = number of elements
         //  A = array to sort
@@ -329,20 +352,6 @@
            }
 
        }
-
-       //function SortPages() {
-       //    var i = 0, j = 0;
-       //    var nt = 0; var t = "";
-       //    for (i = 0; i < 34; i++) {
-       //        for (j = i; j < 35; j++) {
-       //            if (Pages[i] < Pages[j]) {
-       //                nt = Pages[i]; Pages[i] = Pages[j]; Pages[j] = nt;
-       //                t = pname[i]; pname[i] = pname[j]; pname[j] = t;
-       //            }
-       //        }
-       //    }
-
-       //}
 
         </script>
      </body > 

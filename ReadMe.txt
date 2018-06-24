@@ -80,9 +80,16 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 05/31/18. Ver 1.19.053118 Google Play Store # 2232 Beta.
 06/07/18. Ver 1.19.053118 Google Play Store ver 2232 promoted to Production. Final Android change.
 06/16/18. Ver 1.19.053118 Uploaded to itunes as ver 1.19.
+06/21/18. Ver 1.20 Branch Ver120 created. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
+	   Method A: PULL request on Github (recommended)
+	    1. Start Github.  Select the active code branch (eg Ver118 )
+		2. Click Create Pull request.
+		3. On the Pull request screen, make sure the request is going from Vernnn -> Master.   Then Create the pull request.
+		4. Merge the pull request directly on Github.
+	   Method B: Merge to master locally, then push.
 		1. Select 'Branches" Menu
 		2. Switch Current branch to Master: Screen "Branches". Select 'master'.
 		3. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
