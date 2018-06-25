@@ -3207,10 +3207,7 @@ function TidesDataPage() {
     showingtidei = i;
     //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
     //    gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, true);
-    GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
-      gPeriods[i + 2].heightFT, gPeriods[i + 3].heightFT, gPeriods[i + 4].heightFT, gPeriods[i + 5].heightFT,
-      gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO,
-      gPeriods[i + 2].dateTimeISO, gPeriods[i + 3].dateTimeISO, gPeriods[i + 4].dateTimeISO, gPeriods[i + 5].dateTimeISO, true);
+    GraphTideData(i, true);
 
 }
 
@@ -3365,10 +3362,7 @@ function TideClick(id) {
     window.scroll(0, 0);  // force scroll to top
     //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
     //    gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
-    GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
-      gPeriods[i + 2].heightFT, gPeriods[i + 3].heightFT, gPeriods[i + 4].heightFT, gPeriods[i + 5].heightFT,
-      gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO,
-      gPeriods[i + 2].dateTimeISO, gPeriods[i + 3].dateTimeISO, gPeriods[i + 4].dateTimeISO, gPeriods[i + 5].dateTimeISO, false);
+    GraphTideData(i, false);
     var h = Number(gPeriods[i].dateTimeISO.substring(11, 13)); // tide hour
     var tidehhmm = (h * 100) + Number(gPeriods[i].dateTimeISO.substring(14, 16));
     var hilo = "HIGH tide: ";
@@ -3392,7 +3386,7 @@ function ShowTidePrevious() {
 //         t1, t2, t3, t4t,t5t,t6t, t7t = corresponding times in dateTimeISO text format: 2016-05-15T19:55:00-07:00
 //         NOTE: current tide must be between t1 and t2
 //  modified 6/29/18 to draw on a 720px wide canvas and show 7 tide points (6 curves)
-function GraphTideData(tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t, t1t, t2t, t3t, t4t,t5t,t6t, t7t, showtoday) {
+function GraphTideData(ix, showtoday) {
     var i;
     var canvas = document.getElementById("tidecanvas");
     var axes = {}, ctx = canvas.getContext("2d");
@@ -3403,9 +3397,13 @@ function GraphTideData(tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t, t
     // convert tides to numbers
     var tide1, tide2, tide3;
     var tide4, tide5, tide6, tide7;
-    tide1 = Number(tide1t); tide2 = Number(tide2t); tide3 = Number(tide3t);
-    tide4 = Number(tide4t); tide5 = Number(tide5t); tide6 = Number(tide6t);
-    tide7 = Number(tide7t);
+    tide1 = Number(gPeriods[ix - 1].heightFT);
+    tide2 = Number(gPeriods[ix].heightFT);
+    tide3 = Number(gPeriods[ix + 1].heightFT);
+    tide4 = Number(gPeriods[ix + 2].heightFT);
+    tide5 = Number(gPeriods[ix + 3].heightFT);
+    tide6 = Number(gPeriods[ix + 4].heightFT);
+    tide7 = Number(gPeriods[ix + 5].heightFT);
     // redo to include 4-6
     var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3;
     if (tide4 < LB) LB = tide4; if (tide5 < LB) LB = tide5; if (tide6 < LB) LB = tide6;
@@ -3418,6 +3416,13 @@ function GraphTideData(tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t, t
     var pixelsfoot = h / (UB - LB);  // pixels per foot
 
     // convert time to numbers as fp hours from 0 to 48.
+    var t1t = gPeriods[ix - 1].dateTimeISO;
+    var t2t = gPeriods[ix].dateTimeISO;
+    var t3t = gPeriods[ix + 1].dateTimeISO;
+    var t4t = gPeriods[ix + 2].dateTimeISO;
+    var t5t = gPeriods[ix + 3].dateTimeISO;
+    var t6t = gPeriods[ix + 4].dateTimeISO;
+    var t7t = gPeriods[ix + 5].dateTimeISO;
     var t1hhmm = Number(t1t.substring(11, 13)) * 100 + Number(t1t.substring(14, 16));
     var t2hhmm = Number(t2t.substring(11, 13)) * 100 + Number(t2t.substring(14, 16));
     var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
@@ -3441,10 +3446,15 @@ function GraphTideData(tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t, t
     var sunsetfp = gDateSunset.getHours() + gDateSunset.getMinutes() / 60;
     // from 0 to 24
     ctx.fillStyle = "#B0E2FF"; //"#B8EAFF"; //"#C0F2FF";  // snrise times
-    if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
-    else ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - sunrisefp) * pixelshour, h);
+    //if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
+    //else ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - sunrisefp) * pixelshour, h);
+    ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - sunrisefp) * pixelshour, h);
+
     // from 24 to 48
-    ctx.fillRect((sunrisefp - tLB + 24) * pixelshour, 0, (sunsetfp - sunrisefp) * pixelshour, h);
+    var ss = (sunsetfp - sunrisefp) * pixelshour;
+    //if (sunsetfp + 24 > tUB) ss = w - (sunrisefp - tLB + 24) * pixelshour - 2;
+    ctx.fillRect((sunrisefp - tLB + 24) * pixelshour, 0, ss, h);
+    ctx.fillRect((sunrisefp - tLB + 48) * pixelshour, 0, ss, h);
 
     // draw y axis (tide feet)
     ctx.beginPath();
@@ -3479,7 +3489,10 @@ function GraphTideData(tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t, t
     ctx.strokeStyle = "#ffffff";
     // label the time
     for (i = tLB + 1; i < tUB; i++) {
-        hr = VeryShortTime(i < 24 ? i * 100 : (i - 24) * 100).substr(0, 2);
+        if (i < 24) hr = VeryShortTime(i * 100);
+        else if (i < 48) hr = VeryShortTime((i - 24) * 100);
+        else hr = VeryShortTime((i - 48) * 100);
+        hr = hr.substr(0, 2);
         if (hr == "no") hr = "12";
         // draw verticals for time every 4 hours
         if ((i % 4) == 0) {
@@ -3529,7 +3542,8 @@ function GraphTideData(tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t, t
 
     // label the date using the date for tide2 
     ctx.fillStyle = "#0000ff";
-    ctx.fillText(t2t.substring(5, 7) + "/" + t2t.substring(8, 10), w * 0.4, 14);
+    ctx.fillText(t3t.substring(5, 7) + "/" + t3t.substring(8, 10), w * 0.3, 14);
+    ctx.fillText(t6t.substring(5, 7) + "/" + t6t.substring(8, 10), w * 0.8, 14);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
