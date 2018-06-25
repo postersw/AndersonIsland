@@ -3414,47 +3414,11 @@ function GraphTideData(ix, showtoday) {
     UB = Math.floor(UB + 1.99); // upper bound
     var tLB = Math.floor(t[0] - 1); // time lower bound
     var tUB = Math.floor(t[7] + .99); // time upper bound
-
-    //var tide1, tide2, tide3;
-    //var tide4, tide5, tide6, tide7;
-    //tide1 = Number(gPeriods[ix - 1].heightFT);
-    //tide2 = Number(gPeriods[ix].heightFT);
-    //tide3 = Number(gPeriods[ix + 1].heightFT);
-    //tide4 = Number(gPeriods[ix + 2].heightFT);
-    //tide5 = Number(gPeriods[ix + 3].heightFT);
-    //tide6 = Number(gPeriods[ix + 4].heightFT);
-    //tide7 = Number(gPeriods[ix + 5].heightFT);
-    //tide8 = Number(gPeriods[ix + 6].heightFT);
-    //// redo to include 4-6
-    //var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3;
-    //if (tide4 < LB) LB = tide4; if (tide5 < LB) LB = tide5; if (tide6 < LB) LB = tide6;
-    //if (tide7 < LB) LB = tide7;
-    //LB = Math.floor(LB - .9); // lower bound
-    //var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3;
-    //if (tide4 > UB) UB = tide4; if (tide5 > UB) UB = tide5; if (tide6 > UB) UB = tide6;
-    //if (tide7 > UB) UB = tide7;
-    //B = Math.floor(UB + 1.99); // upper bound
     var pixelsfoot = h / (UB - LB);  // pixels per foot
 
     // convert time to numbers as fp hours from 0 to 48.
-    //var t1t = gPeriods[ix - 1].dateTimeISO;
-    //var t2t = gPeriods[ix].dateTimeISO;
-    //var t3t = gPeriods[ix + 1].dateTimeISO;
-    //var t4t = gPeriods[ix + 2].dateTimeISO;
-    //var t5t = gPeriods[ix + 3].dateTimeISO;
-    //var t6t = gPeriods[ix + 4].dateTimeISO;
-    //var t7t = gPeriods[ix + 5].dateTimeISO;
     var t1hhmm = Number(tt[0].substring(11, 13)) * 100 + Number(tt[0].substring(14, 16));
     var t2hhmm = Number(tt[1].substring(11, 13)) * 100 + Number(tt[1].substring(14, 16));
-    //var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
-    //var t4 = tHours(t4t); var t5 = tHours(t5t); var t6 = tHours(t6t);
-    //var t7 = tHours(t7t);
-    //if (t2 < t1) t2 += 24; if (t3 < t2) t3 += 24;
-    //if (t4 < t3) t4 += 24; if (t5 < t4) t5 += 24; if (t5 < t4) t5 += 24;
-    //if (t6 < t5) t6 += 24; if (t6 < t5) t6 += 24;
-    //if (t7 < t6) t7 += 24; if (t7 < t6) t7 += 24;
-    //var tLB = Math.floor(t1 - 1); // time lower bound
-    //var tUB = Math.floor(t7 + .99); // time upper bound
 
     var pixelshour = w / (tUB - tLB);
     var x0 = 0; // x offset to 0
@@ -3467,13 +3431,9 @@ function GraphTideData(ix, showtoday) {
     var sunsetfp = gDateSunset.getHours() + gDateSunset.getMinutes() / 60;
     // from 0 to 24
     ctx.fillStyle = "#B0E2FF"; //"#B8EAFF"; //"#C0F2FF";  // snrise times
-    //if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
-    //else ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - sunrisefp) * pixelshour, h);
-    ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - sunrisefp) * pixelshour, h);
 
-    // from 24 to 48
     var ss = (sunsetfp - sunrisefp) * pixelshour;
-    //if (sunsetfp + 24 > tUB) ss = w - (sunrisefp - tLB + 24) * pixelshour - 2;
+    ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, ss, h);
     ctx.fillRect((sunrisefp - tLB + 24) * pixelshour, 0, ss, h);
     ctx.fillRect((sunrisefp - tLB + 48) * pixelshour, 0, ss, h);
 
