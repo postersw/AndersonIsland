@@ -3395,45 +3395,66 @@ function GraphTideData(ix, showtoday) {
     ctx.textAlign = "start";
 
     // convert tides to numbers
-    var tide1, tide2, tide3;
-    var tide4, tide5, tide6, tide7;
-    tide1 = Number(gPeriods[ix - 1].heightFT);
-    tide2 = Number(gPeriods[ix].heightFT);
-    tide3 = Number(gPeriods[ix + 1].heightFT);
-    tide4 = Number(gPeriods[ix + 2].heightFT);
-    tide5 = Number(gPeriods[ix + 3].heightFT);
-    tide6 = Number(gPeriods[ix + 4].heightFT);
-    tide7 = Number(gPeriods[ix + 5].heightFT);
-    // redo to include 4-6
-    var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3;
-    if (tide4 < LB) LB = tide4; if (tide5 < LB) LB = tide5; if (tide6 < LB) LB = tide6;
-    if (tide7 < LB) LB = tide7;
+    var tideh = [7]; // tide height
+    var tt = [7]; // tide time string
+    var t = [7]; // tide time fp
+    var LB = 999; var UB = -999;
+    for (i = 0; i < 8; i++) {
+        tideh[i] = Number(gPeriods[ix - 1 + i].heightFT);
+        if (tideh[i] < LB) LB = tideh[i];
+        if (tideh[i] > UB) UB = tideh[i];
+        tt[i] = gPeriods[ix - 1 + i].dateTimeISO;
+        t[i] = tHours(tt[i]);
+        if (i > 0) {
+            if (t[i] < t[i - 1]) t[i] += 24;
+            if (t[i] < t[i - 1]) t[i] += 24;
+        }
+    }
     LB = Math.floor(LB - .9); // lower bound
-    var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3;
-    if (tide4 > UB) UB = tide4; if (tide5 > UB) UB = tide5; if (tide6 > UB) UB = tide6;
-    if (tide7 > UB) UB = tide7;
-    B = Math.floor(UB + 1.99); // upper bound
+    UB = Math.floor(UB + 1.99); // upper bound
+    var tLB = Math.floor(t[0] - 1); // time lower bound
+    var tUB = Math.floor(t[7] + .99); // time upper bound
+
+    //var tide1, tide2, tide3;
+    //var tide4, tide5, tide6, tide7;
+    //tide1 = Number(gPeriods[ix - 1].heightFT);
+    //tide2 = Number(gPeriods[ix].heightFT);
+    //tide3 = Number(gPeriods[ix + 1].heightFT);
+    //tide4 = Number(gPeriods[ix + 2].heightFT);
+    //tide5 = Number(gPeriods[ix + 3].heightFT);
+    //tide6 = Number(gPeriods[ix + 4].heightFT);
+    //tide7 = Number(gPeriods[ix + 5].heightFT);
+    //tide8 = Number(gPeriods[ix + 6].heightFT);
+    //// redo to include 4-6
+    //var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3;
+    //if (tide4 < LB) LB = tide4; if (tide5 < LB) LB = tide5; if (tide6 < LB) LB = tide6;
+    //if (tide7 < LB) LB = tide7;
+    //LB = Math.floor(LB - .9); // lower bound
+    //var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3;
+    //if (tide4 > UB) UB = tide4; if (tide5 > UB) UB = tide5; if (tide6 > UB) UB = tide6;
+    //if (tide7 > UB) UB = tide7;
+    //B = Math.floor(UB + 1.99); // upper bound
     var pixelsfoot = h / (UB - LB);  // pixels per foot
 
     // convert time to numbers as fp hours from 0 to 48.
-    var t1t = gPeriods[ix - 1].dateTimeISO;
-    var t2t = gPeriods[ix].dateTimeISO;
-    var t3t = gPeriods[ix + 1].dateTimeISO;
-    var t4t = gPeriods[ix + 2].dateTimeISO;
-    var t5t = gPeriods[ix + 3].dateTimeISO;
-    var t6t = gPeriods[ix + 4].dateTimeISO;
-    var t7t = gPeriods[ix + 5].dateTimeISO;
-    var t1hhmm = Number(t1t.substring(11, 13)) * 100 + Number(t1t.substring(14, 16));
-    var t2hhmm = Number(t2t.substring(11, 13)) * 100 + Number(t2t.substring(14, 16));
-    var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
-    var t4 = tHours(t4t); var t5 = tHours(t5t); var t6 = tHours(t6t);
-    var t7 = tHours(t7t);
-    if (t2 < t1) t2 += 24; if (t3 < t2) t3 += 24;
-    if (t4 < t3) t4 += 24; if (t5 < t4) t5 += 24; if (t5 < t4) t5 += 24;
-    if (t6 < t5) t6 += 24; if (t6 < t5) t6 += 24;
-    if (t7 < t6) t7 += 24; if (t7 < t6) t7 += 24;
-    var tLB = Math.floor(t1 - 1); // time lower bound
-    var tUB = Math.floor(t7 + .99); // time upper bound
+    //var t1t = gPeriods[ix - 1].dateTimeISO;
+    //var t2t = gPeriods[ix].dateTimeISO;
+    //var t3t = gPeriods[ix + 1].dateTimeISO;
+    //var t4t = gPeriods[ix + 2].dateTimeISO;
+    //var t5t = gPeriods[ix + 3].dateTimeISO;
+    //var t6t = gPeriods[ix + 4].dateTimeISO;
+    //var t7t = gPeriods[ix + 5].dateTimeISO;
+    var t1hhmm = Number(tt[0].substring(11, 13)) * 100 + Number(tt[0].substring(14, 16));
+    var t2hhmm = Number(tt[1].substring(11, 13)) * 100 + Number(tt[1].substring(14, 16));
+    //var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
+    //var t4 = tHours(t4t); var t5 = tHours(t5t); var t6 = tHours(t6t);
+    //var t7 = tHours(t7t);
+    //if (t2 < t1) t2 += 24; if (t3 < t2) t3 += 24;
+    //if (t4 < t3) t4 += 24; if (t5 < t4) t5 += 24; if (t5 < t4) t5 += 24;
+    //if (t6 < t5) t6 += 24; if (t6 < t5) t6 += 24;
+    //if (t7 < t6) t7 += 24; if (t7 < t6) t7 += 24;
+    //var tLB = Math.floor(t1 - 1); // time lower bound
+    //var tUB = Math.floor(t7 + .99); // time upper bound
 
     var pixelshour = w / (tUB - tLB);
     var x0 = 0; // x offset to 0
@@ -3508,19 +3529,15 @@ function GraphTideData(ix, showtoday) {
     }
 
     // draw the  sine waves
-    DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, LB);
-    DrawCurve(ctx, tide2, tide3, t2, t3, pixelsfoot, pixelshour, h, tLB, LB);
-    DrawCurve(ctx, tide3, tide4, t3, t4, pixelsfoot, pixelshour, h, tLB, LB); 
-    DrawCurve(ctx, tide4, tide5, t4, t5, pixelsfoot, pixelshour, h, tLB, LB);
-    DrawCurve(ctx, tide5, tide6, t5, t6, pixelsfoot, pixelshour, h, tLB, LB);
-    DrawCurve(ctx, tide6, tide7, t6, t7, pixelsfoot, pixelshour, h, tLB, LB);
+    for (i = 0; i < 7; i++) DrawCurve(ctx, tideh[i], tideh[i+1], t[i], t[i+1], pixelsfoot, pixelshour, h, tLB, LB);
+
 
     // draw vertical for t2 which is next high/low
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#A0A0A0";
     ctx.beginPath();
-    x = (t2 - tLB) * pixelshour;
-    ctx.moveTo(x, h - (tide2 - LB) * pixelsfoot); ctx.lineTo(x, h);
+    x = (t[1] - tLB) * pixelshour;
+    ctx.moveTo(x, h - (tideh[1] - LB) * pixelsfoot); ctx.lineTo(x, h);
     ctx.stroke();
 
     // draw vertical now for current time
@@ -3533,8 +3550,8 @@ function GraphTideData(ix, showtoday) {
         ctx.moveTo(now, 14); ctx.lineTo(now, h);
         ctx.stroke();
         // calculate and display current value
-        var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
-        tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
+        var up = "\u2191"; if (tideh[1] < tideh[0]) up = "\u2193";  // up down arrow
+        tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tideh[1], tideh[0]);
         ctx.fillStyle = "#ff0000";
         ctx.font = "16px Arial";
         ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now - pixelshour, 14);
@@ -3542,8 +3559,8 @@ function GraphTideData(ix, showtoday) {
 
     // label the date using the date for tide2 
     ctx.fillStyle = "#0000ff";
-    ctx.fillText(t3t.substring(5, 7) + "/" + t3t.substring(8, 10), w * 0.3, 14);
-    ctx.fillText(t6t.substring(5, 7) + "/" + t6t.substring(8, 10), w * 0.8, 14);
+    ctx.fillText(tt[2].substring(5, 7) + "/" + tt[2].substring(8, 10), w * 0.3, 14);
+    ctx.fillText(tt[6].substring(5, 7) + "/" + tt[6].substring(8, 10), w * 0.8, 14);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
