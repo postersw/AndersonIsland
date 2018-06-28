@@ -3,13 +3,15 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width">
+    <!--<meta name="viewport" content="initial-scale=1, width=device-width,height=device-height,target-densitydpi=medium-dpi,user-scalable=no" /> <!--device-dpi" />-->
+
     <title>Parks</title>
     <style>
         /*img { width: 50%; }  image maps don't work when rescaling*/
 
         @media only screen and (max-width: 768px) {
-            img {
+            img.resize {
                 width: 100%;
             }
         }
@@ -38,9 +40,10 @@
         All parks are open from 7 a.m. to 10:30 p.m. year-round unless otherwise posted. <br />
         Tap an entry for more information.
     </p>
-    <img src="MapWithParksNames.jpg" style="float:left;" usemap="#parkmap" />
+    <!--<img src="MapWithParksNames.jpg" class="resize" style="float:left;" usemap="#parkmap" />-->
+    <img id="mapimg" src="MapWithParksNames.jpg" width="100%" usemap="#parkmap" />
     <map id="map" name="parkmap">
-        <area alt="" title="Jane Cammon" shape="rect" coords="282,255,355,383" style="outline:none;" target="_blank" href="janecammon.html" />
+        <area alt="Jane Cammon" title="Jane Cammon" shape="rect" coords="282,255,355,383" style="outline:none;" target="_blank" href="janecammon.html" />
         <area alt="" title="AIHS Farm" shape="rect" coords="321,178,417,256" style="outline:none;" target="_blank" href="http://www.anderson-island.org/hs/farm.html" />
         <area alt="" title="Andys Wildlife park" shape="rect" coords="246,471,393,633" style="outline:none;" target="_blank" href="andywildlife.html" />
         <area alt="" title="Andys Marine" shape="rect" coords="74,562,242,697" style="outline:none;" target="_blank" href="andymarine.html" />
@@ -51,9 +54,8 @@
         <area alt="" title="Montalvo" shape="rect" coords="226,218,276,278" style="outline:none;" target="_blank" href="montalvo.html" />
         <area alt="" title="golf" shape="rect" coords="499,376,579,483" style="outline:none;" target="_blank" href="golf.html" />
     </map>
-    <br/>Tap an entry for more info and detailed maps.
     <table style="border-style:solid;border-collapse:collapse;">
-        <tr><td><strong><em>Parks Department:</em></strong></td></tr>
+        <tr><td><strong><em>Parks Department:</em></strong>Tap for more info & maps.</td></tr>
         <tr onclick="window.open('http://www.anderson-island.org/parks/swimminghole.html')">
             <td>
                 <strong><span class="red">A</span> - Ol' Swimming Hole/Lowell Johnson Park </strong>
@@ -205,10 +207,12 @@
             </td>
         </tr>
     </table>
+    6/26/18.2237
 </body>
 
 </html>
 <script type="text/javascript" src="imageMapResizer.min.js"></script>
 <script type="text/javascript">
-    imageMapResize();
+    imageMapResize();  //OLD CALL document.getElementById("mapimg")
+
 </script>
