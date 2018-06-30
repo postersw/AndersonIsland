@@ -67,7 +67,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.062318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.06291941.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -589,7 +589,9 @@ function ShowTannerOutage() {
 function ShowParks() {
     MarkPage("p");
     var link = GetLink("parkslink", 'http://www.anderson-island.org/parks/parks.html');
-    window.open(link, '_blank','EnableViewPortScale=yes' );
+    //window.open(link, '_blank', 'EnableViewPortScale=yes');
+    window.open(link, '_blank'); // no viewport scaling
+
 }
 
 function ShowNews() {
