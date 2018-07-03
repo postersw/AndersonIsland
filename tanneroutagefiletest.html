@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Tanner Outage File Test</title>
+</head>
+<body>
+<h1>Create Tanner Outage File</h1>
+    Simulate the POST of the xml outage file coming from Tanner coop.
+    <br/>This will send file xmltest.xml to the script 'tanneroutage.php'.
+    <form enctype="multipart/form-data"  action="www.anderson-island.org/tanneroutage.php" method="post">
+        <input type="hidden" name="MAX_FILE_SIZE" value="3000" />
+        <!-- Name of input element determines name in $_FILES array -->
+        <input name="xmltest.xml" type="file" />
+
+        <input type="submit" value="Send File" />
+    </form>
+</body>
+</html>
