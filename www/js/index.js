@@ -46,6 +46,7 @@
         1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes. ANDROID play store only.
         1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
+        1.20 070118. Horiz scroll of tide graph.  Display full day of events.
  * 
  *  copyright 2016-2017, Bob Bedoll
  * All Javascript removed from index.html
@@ -67,7 +68,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.06291941.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.07051639.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -1586,7 +1587,7 @@ function ShowNextTides() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' 
-//          local storage object on the main page.
+//          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
 //  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
 //  Exit    returns the information to display on the main screen
@@ -1614,26 +1615,28 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
-        // if Today: bold time. if current, make time green.
+        // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
             if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            nEvents = 99; // ensure only today
+            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + aCE[4] + " @ " + aCE[5] + "<br/>";
+            //nEvents = 99; // ensure only today
+            nEvents++;  // count it
             DisplayDate = aCEyymmdd;
             continue;
         }
         // if not today, display date
         if (aCEyymmdd != DisplayDate) {
+            if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
             else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
             else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
         }
-        // display event
+        // Not today: display at least 3 events. Always Display ALL events for a day. 
         datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
-        if (nEvents >= 3) break; // exit after 3 events that are not today
+        //if (nEvents >= 3) break; // only exit after full days
     }
     return datefmt; // end case
 }
