@@ -68,7 +68,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.07051639.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.07192343.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -2220,13 +2220,15 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
 
             // Anderson Island;
             row1col2 = row1.insertCell(1);
-            row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
-            if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
-            else row1col2.style.color = "darkblue";
-            row1col2.style.border = "thin solid black";
-            if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
-            row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
-            row1col2.onclick = function () { ferryclick(this.id) };
+            if ((ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i])) {
+                row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
+                if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
+                else row1col2.style.color = "darkblue";
+                row1col2.style.border = "thin solid black";
+                if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
+                row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
+                row1col2.onclick = function () { ferryclick(this.id) };
+            }
 
             // Ketron
             var row1col3 = row1.insertCell(2);
