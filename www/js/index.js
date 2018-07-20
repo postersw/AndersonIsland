@@ -68,7 +68,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.07192343.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.07200827.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
@@ -2199,49 +2199,58 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var ft;
     var amcolor = "#f0ffff";
     var extrat = 13; // extra time in display 12 minutes
-    var boldS = false, boldA = false, boldK = false; 
+    var boldS = false, boldA = false, boldK = false;
+    var validS = false, validA = false, validK = false; // true if runs are valid
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
         if ((gTimehhmm >= (ferrytimesS[i] + extrat)) && (gTimehhmm >= (ferrytimesA[i] + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         //if ((gTimehhmm >= (Number(ferrytimesS[i]) + extrat)) && (gTimehhmm >= (Number(ferrytimesA[i]) + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
-        if (ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i])) {
+        validS = (ferrytimesS[i] != 0) &&  ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
+        validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
+        validK = (ferrytimesK[i] != 0) && ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i]);
+        if (validS||validA||validK) {
             // Steelacoom
             var row1, row1col1, row1col2;
             row1 = table.insertRow(-1);
             row1col1 = row1.insertCell(0);
             row1col1.style.border.width = 1;
-            row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
-            if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
             row1col1.style.border = "thin solid black";
-            if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
-            row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
-            row1col1.onclick = function () { ferryclick(this.id) };
+            if (validS) {
+                row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
+                if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
+                if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
+                row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
+                row1col1.onclick = function () { ferryclick(this.id) };
+            } else {
+                row1col1.innerHTML = "&nbsp&nbsp"
+            }
 
             // Anderson Island;
             row1col2 = row1.insertCell(1);
-            if ((ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i])) {
+            row1col2.style.border = "thin solid black";
+            if (validA) {
                 row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
                 if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
                 else row1col2.style.color = "darkblue";
-                row1col2.style.border = "thin solid black";
                 if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
                 row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
                 row1col2.onclick = function () { ferryclick(this.id) };
+            } else {
+                row1col2.innerHTML = "&nbsp&nbsp";
             }
 
             // Ketron
             var row1col3 = row1.insertCell(2);
-            if (ferrytimesK[i] != 0) {
-                if (ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i])) {
-                    row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
-                    if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
-                    else row1col3.style.color = "brown";
-                    row1col3.style.border = "thin solid black";
-                    if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
-                    row1col3.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesK[i]) + "K"; // id = yymmddhhmmS
-                    row1col3.onclick = function () { ferryclick(this.id) };
-                }
+            row1col3.style.border = "thin solid black";
+            if (validK) {
+                row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
+                if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
+                else row1col3.style.color = "brown";
+                row1col3.style.border = "thin solid black";
+                if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
+                row1col3.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesK[i]) + "K"; // id = yymmddhhmmS
+                row1col3.onclick = function () { ferryclick(this.id) };
             }
             // make the next run bold
             if (row1.rowIndex <= 3) { // row 3 or 4 (index=2 or 3) is the next run
