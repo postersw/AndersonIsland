@@ -68,7 +68,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.072218.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.072218.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -105,7 +105,7 @@ var app = {
                     window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
                     break;
             }
-            localStorage.setItem("pushbotstime", timems.toFixed(0));
+            localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
         }
         app.receivedEvent('deviceready');
     },
