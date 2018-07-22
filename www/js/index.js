@@ -46,9 +46,9 @@
         1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes. ANDROID play store only.
         1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
-        1.20 070118. Horiz scroll of tide graph.  Display full day of events.
+        1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications.
  * 
- *  copyright 2016-2017, Bob Bedoll
+ *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -68,8 +68,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.07200827.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.072218.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
+const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -92,25 +93,19 @@ var app = {
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-            // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
-            var pbtime = Number(LSget("pushbotstime"));
-            var timems = GetTimeMS();
-            pbtime = 0; ////////// BOB DEBUG
-            if ((pbtime == 0) || ((timems - pbtime) > (72 * 3600000))) {
-                switch(gNotification) {
-                    case 1: // pushbots
-                        window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-                        window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-                        break;
-                    case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-                        window.plugins.OneSignal
-                            .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
-                            .endInit();
-                        break;
-                }
-                localStorage.setItem("pushbotstime", timems.toFixed(0));
-                //window.plugins.PushbotsPlugin.setAlias("Bob"); ////////// BOB DEBUG
+            switch(gNotification) {
+                case 1: // pushbots
+                    window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                    window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+                    break;
+                case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
+                    window.plugins.OneSignal
+                        .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
+                        .endInit();
+                    window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
+                    break;
             }
+            localStorage.setItem("pushbotstime", timems.toFixed(0));
         }
         app.receivedEvent('deviceready');
     },
