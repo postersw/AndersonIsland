@@ -46,7 +46,7 @@
         1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes. ANDROID play store only.
         1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
-        1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications.
+        1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -68,7 +68,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.072218.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.072318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1733,6 +1733,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
+    parseCacheRemove(data, "pierceferryticketlink", "PIERCEFERRYTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // ferry schedule
@@ -1742,7 +1743,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
     parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
@@ -2177,7 +2178,8 @@ function StartTicketApp() {
         }
     } else {
         // WEB
-        window.open('https://tickets.piercecountywa.org/', '_system');
+        var link = GetLink("pierceferryticketlink", 'https://www.pierceferrytickets.com');
+        window.open(link, '_system');
     }
 }
 
