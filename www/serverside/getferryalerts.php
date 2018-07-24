@@ -13,6 +13,7 @@
 //      8/17/16. Added 'Default Message' to be displayed if there is no alert.
 //      4/02/17. Add "DELAYED:" or "DELAYED nn MIN: " for late, behind, or delayed. This is displayed by the app.
 //      5/24/18. Add call to OneSignal to send the alerts. I'll eventually remove Pushbots.
+//      7/9/18. Modify pushbots call to not bump badge.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -102,7 +103,7 @@ $delay = "";
 if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancel") > 0) || (strpos($title, " delay") > 0) ) {
     $delay = "DELAYED: ";
     $matches = "";
-    if(preg_match('/\d\d (minutes|minuets) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+    if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
     else if(preg_match('/delayed \d\d minutes/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
@@ -185,6 +186,7 @@ function PushANotification($note) {
     // Notification Settings
     $pb->Alert($note);
     $pb->Platform(array("0","1"));  // android
+    $pb->Badge("0"); // DON'T BUMP BADGE 7/9/18
     // Push it !
     $res = $pb->Push();
     echo($res['status']);
@@ -198,6 +200,7 @@ function PushANotification($note) {
 //          msg = the message
 //  Users curl library.
 //  https://documentation.onesignal.com/reference#create-notification
+//  7/9/18: ios_badgeCount set to 0
 //
 function PushOSNotification($title, $msg) {
     $fields = array(
@@ -205,7 +208,9 @@ function PushOSNotification($title, $msg) {
         'included_segments' => array('Active Users'),
         'headings' => array("en" => $title),
         'contents' => array("en" => $msg),
-        'ttl' => 4*3600
+        'ttl' => 4*3600,
+        'ios_badgeType' => 'SetTo',
+        'ios_badgeCount' => 0
     );
     $fields = json_encode($fields);
     print("\nJSON sent:\n");

@@ -46,8 +46,9 @@
         1.17.042518. Upgrade config.xml to cli-7.1.0. to pick up fix for Android 8 and pushbots. No code changes. ANDROID play store only.
         1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
+        1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
  * 
- *  copyright 2016-2017, Bob Bedoll
+ *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -67,8 +68,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.19.053118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.20.072318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
+const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -91,25 +93,19 @@ var app = {
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-            // only initialize every 3 days to cut down on number of API calls, because we are limited to 10K/month
-            var pbtime = Number(LSget("pushbotstime"));
-            var timems = GetTimeMS();
-            pbtime = 0; ////////// BOB DEBUG
-            if ((pbtime == 0) || ((timems - pbtime) > (72 * 3600000))) {
-                switch(gNotification) {
-                    case 1: // pushbots
-                        window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-                        window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-                        break;
-                    case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-                        window.plugins.OneSignal
-                            .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
-                            .endInit();
-                        break;
-                }
-                localStorage.setItem("pushbotstime", timems.toFixed(0));
-                //window.plugins.PushbotsPlugin.setAlias("Bob"); ////////// BOB DEBUG
+            switch(gNotification) {
+                case 1: // pushbots
+                    window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                    window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+                    break;
+                case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
+                    window.plugins.OneSignal
+                        .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
+                        .endInit();
+                    window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
+                    break;
             }
+            localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
         }
         app.receivedEvent('deviceready');
     },
@@ -589,7 +585,9 @@ function ShowTannerOutage() {
 function ShowParks() {
     MarkPage("p");
     var link = GetLink("parkslink", 'http://www.anderson-island.org/parks/parks.html');
-    window.open(link, '_blank','EnableViewPortScale=yes' );
+    //window.open(link, '_blank', 'EnableViewPortScale=yes');
+    window.open(link, '_blank'); // no viewport scaling
+
 }
 
 function ShowNews() {
@@ -1584,7 +1582,7 @@ function ShowNextTides() {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' 
-//          local storage object on the main page.
+//          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
 //  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
 //  Exit    returns the information to display on the main screen
@@ -1612,26 +1610,28 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
-        // if Today: bold time. if current, make time green.
+        // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
             if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            nEvents = 99; // ensure only today
+            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + aCE[4] + " @ " + aCE[5] + "<br/>";
+            //nEvents = 99; // ensure only today
+            nEvents++;  // count it
             DisplayDate = aCEyymmdd;
             continue;
         }
         // if not today, display date
         if (aCEyymmdd != DisplayDate) {
+            if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
             else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
             else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
         }
-        // display event
+        // Not today: display at least 3 events. Always Display ALL events for a day. 
         datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
-        if (nEvents >= 3) break; // exit after 3 events that are not today
+        //if (nEvents >= 3) break; // only exit after full days
     }
     return datefmt; // end case
 }
@@ -1733,6 +1733,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
+    parseCacheRemove(data, "pierceferryticketlink", "PIERCEFERRYTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // ferry schedule
@@ -1742,7 +1743,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
     parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
@@ -2177,7 +2178,8 @@ function StartTicketApp() {
         }
     } else {
         // WEB
-        window.open('https://tickets.piercecountywa.org/', '_system');
+        var link = GetLink("pierceferryticketlink", 'https://www.pierceferrytickets.com');
+        window.open(link, '_system');
     }
 }
 
@@ -2194,47 +2196,58 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var ft;
     var amcolor = "#f0ffff";
     var extrat = 13; // extra time in display 12 minutes
-    var boldS = false, boldA = false, boldK = false; 
+    var boldS = false, boldA = false, boldK = false;
+    var validS = false, validA = false, validK = false; // true if runs are valid
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
         if ((gTimehhmm >= (ferrytimesS[i] + extrat)) && (gTimehhmm >= (ferrytimesA[i] + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         //if ((gTimehhmm >= (Number(ferrytimesS[i]) + extrat)) && (gTimehhmm >= (Number(ferrytimesA[i]) + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
-        if (ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i])) {
+        validS = (ferrytimesS[i] != 0) &&  ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
+        validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
+        validK = (ferrytimesK[i] != 0) && ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i]);
+        if (validS||validA||validK) {
             // Steelacoom
             var row1, row1col1, row1col2;
             row1 = table.insertRow(-1);
             row1col1 = row1.insertCell(0);
             row1col1.style.border.width = 1;
-            row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
-            if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
             row1col1.style.border = "thin solid black";
-            if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
-            row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
-            row1col1.onclick = function () { ferryclick(this.id) };
+            if (validS) {
+                row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
+                if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
+                if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
+                row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
+                row1col1.onclick = function () { ferryclick(this.id) };
+            } else {
+                row1col1.innerHTML = "&nbsp&nbsp"
+            }
 
             // Anderson Island;
             row1col2 = row1.insertCell(1);
-            row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
-            if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
-            else row1col2.style.color = "darkblue";
             row1col2.style.border = "thin solid black";
-            if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
-            row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
-            row1col2.onclick = function () { ferryclick(this.id) };
+            if (validA) {
+                row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
+                if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
+                else row1col2.style.color = "darkblue";
+                if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
+                row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
+                row1col2.onclick = function () { ferryclick(this.id) };
+            } else {
+                row1col2.innerHTML = "&nbsp&nbsp";
+            }
 
             // Ketron
             var row1col3 = row1.insertCell(2);
-            if (ferrytimesK[i] != 0) {
-                if (ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i])) {
-                    row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
-                    if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
-                    else row1col3.style.color = "brown";
-                    row1col3.style.border = "thin solid black";
-                    if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
-                    row1col3.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesK[i]) + "K"; // id = yymmddhhmmS
-                    row1col3.onclick = function () { ferryclick(this.id) };
-                }
+            row1col3.style.border = "thin solid black";
+            if (validK) {
+                row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
+                if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
+                else row1col3.style.color = "brown";
+                row1col3.style.border = "thin solid black";
+                if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
+                row1col3.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesK[i]) + "K"; // id = yymmddhhmmS
+                row1col3.onclick = function () { ferryclick(this.id) };
             }
             // make the next run bold
             if (row1.rowIndex <= 3) { // row 3 or 4 (index=2 or 3) is the next run
@@ -3205,8 +3218,10 @@ function TidesDataPage() {
     if (gPeriods == null) return;
     var i = ShowTideDataPage(gPeriods, true);
     showingtidei = i;
-    GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
-        gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, true);
+    //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
+    //    gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, true);
+    GraphTideData(i, true);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3354,12 +3369,13 @@ function ShowTideDataPage(periods, showcurrent) {
 function TideClick(id) {
     var i = Number(id);
     if (i == 0) i = 1;
-    if (i > (gPeriods.length - 2)) i = gPeriods.length - 2;
+    if (i > (gPeriods.length - 5)) i = gPeriods.length - 5;
     showingtidei = i;
     gUserTideSelection = true;
     window.scroll(0, 0);  // force scroll to top
-    GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
-        gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
+    //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
+    //    gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
+    GraphTideData(i, false);
     var h = Number(gPeriods[i].dateTimeISO.substring(11, 13)); // tide hour
     var tidehhmm = (h * 100) + Number(gPeriods[i].dateTimeISO.substring(14, 16));
     var hilo = "HIGH tide: ";
@@ -3379,10 +3395,11 @@ function ShowTidePrevious() {
 
 /////////////////////////////////////////////////////////////////////////
 //  GraphTideData
-//  Entry: tide1t, tide2t, tide3t = 3 tide points in feet, text (HLH or LHL)
-//         t1, t2, t3 = corresponding times in dateTimeISO text format: 2016-05-15T19:55:00-07:00
+//  Entry: tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t = successive tide points in feet, text (HLH or LHL)
+//         t1, t2, t3, t4t,t5t,t6t, t7t = corresponding times in dateTimeISO text format: 2016-05-15T19:55:00-07:00
 //         NOTE: current tide must be between t1 and t2
-function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
+//  modified 6/29/18 to draw on a 720px wide canvas and show 7 tide points (6 curves)
+function GraphTideData(ix, showtoday) {
     var i;
     var canvas = document.getElementById("tidecanvas");
     var axes = {}, ctx = canvas.getContext("2d");
@@ -3391,35 +3408,47 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
     ctx.textAlign = "start";
 
     // convert tides to numbers
-    var tide1, tide2, tide3;
-    tide1 = Number(tide1t); tide2 = Number(tide2t); tide3 = Number(tide3t);
-    var LB = tide1; if (tide2 < LB) LB = tide2; if (tide3 < LB) LB = tide3; LB = Math.floor(LB - .9); // lower bound
-    var UB = tide1; if (tide2 > UB) UB = tide2; if (tide3 > UB) UB = tide3; UB = Math.floor(UB + 1.99); // upper bound
+    var tideh = [7]; // tide height
+    var tt = [7]; // tide time string
+    var t = [7]; // tide time fp
+    var LB = 999; var UB = -999;
+    for (i = 0; i < 8; i++) {
+        tideh[i] = Number(gPeriods[ix - 1 + i].heightFT);
+        if (tideh[i] < LB) LB = tideh[i];
+        if (tideh[i] > UB) UB = tideh[i];
+        tt[i] = gPeriods[ix - 1 + i].dateTimeISO;
+        t[i] = tHours(tt[i]);
+        if (i > 0) {
+            if (t[i] < t[i - 1]) t[i] += 24;
+            if (t[i] < t[i - 1]) t[i] += 24;
+        }
+    }
+    LB = Math.floor(LB - .9); // lower bound
+    UB = Math.floor(UB + 1.99); // upper bound
+    var tLB = Math.floor(t[0] - 1); // time lower bound
+    var tUB = Math.floor(t[7] + .99); // time upper bound
     var pixelsfoot = h / (UB - LB);  // pixels per foot
 
     // convert time to numbers as fp hours from 0 to 48.
-    var t1hhmm = Number(t1t.substring(11, 13)) * 100 + Number(t1t.substring(14, 16));
-    var t2hhmm = Number(t2t.substring(11, 13)) * 100 + Number(t2t.substring(14, 16));
-    var t1 = tHours(t1t); var t2 = tHours(t2t); var t3 = tHours(t3t);
-    if (t2 < t1) t2 += 24; if (t3 < t2) t3 += 24;
-    var tLB = Math.floor(t1 - 1); // time lower bound
-    var tUB = Math.floor(t3 + .99); // time upper bound
+    var t1hhmm = Number(tt[0].substring(11, 13)) * 100 + Number(tt[0].substring(14, 16));
+    var t2hhmm = Number(tt[1].substring(11, 13)) * 100 + Number(tt[1].substring(14, 16));
 
     var pixelshour = w / (tUB - tLB);
     var x0 = 0; // x offset to 0
 
     // draw background
     ctx.fillStyle = "#A0D2FF";
-    ctx.fillRect(0, 0, w, h);
+    ctx.fillRect(0, 0, w, h);  // fill dark blue
     // do sunnrise lighter
     var sunrisefp = gDateSunrise.getHours() + gDateSunrise.getMinutes() / 60; // convert to floating pt
     var sunsetfp = gDateSunset.getHours() + gDateSunset.getMinutes() / 60;
     // from 0 to 24
     ctx.fillStyle = "#B0E2FF"; //"#B8EAFF"; //"#C0F2FF";  // snrise times
-    if (sunrisefp <= tLB) ctx.fillRect(0, 0, (sunsetfp - tLB) * pixelshour, h);
-    else ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, (sunsetfp - tLB) * pixelshour, h);
-    // from 24 to 48
-    ctx.fillRect((sunrisefp - tLB + 24) * pixelshour, 0, (sunsetfp - tLB + 24) * pixelshour, h);
+
+    var ss = (sunsetfp - sunrisefp) * pixelshour;
+    ctx.fillRect((sunrisefp - tLB) * pixelshour, 0, ss, h);
+    ctx.fillRect((sunrisefp - tLB + 24) * pixelshour, 0, ss, h);
+    ctx.fillRect((sunrisefp - tLB + 48) * pixelshour, 0, ss, h);
 
     // draw y axis (tide feet)
     ctx.beginPath();
@@ -3428,7 +3457,7 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
     ctx.stroke();
 
     // draw tide grid lines
-    ctx.strokeStyle = "#ffffff";
+    ctx.strokeStyle = "#000000"; // bottom  line black
     // label x axis. skip bottom number because the time is shown there.
     var y = h - pixelsfoot;
     ctx.font = "12px Arial";
@@ -3439,6 +3468,7 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
         ctx.stroke();
         ctx.fillText(i + " ft", x0, y);
         y -= pixelsfoot;  // bump to next one
+        ctx.strokeStyle = "#ffffff";
     }
 
     // Draw x axis (time)
@@ -3453,10 +3483,15 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
     ctx.strokeStyle = "#ffffff";
     // label the time
     for (i = tLB + 1; i < tUB; i++) {
-        hr = VeryShortTime(i < 24 ? i * 100 : (i - 24) * 100).substr(0, 2);
+        if (i < 24) hr = VeryShortTime(i * 100);
+        else if (i < 48) hr = VeryShortTime((i - 24) * 100);
+        else hr = VeryShortTime((i - 48) * 100);
+        hr = hr.substr(0, 2);
         if (hr == "no") hr = "12";
         // draw verticals for time every 4 hours
         if ((i % 4) == 0) {
+            if (i == 24 || i == 48) ctx.strokeStyle = "#000000"; // black at midnight
+            else ctx.strokeStyle = "#ffffff";
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, h);
@@ -3466,17 +3501,16 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
         x += pixelshour;  // bump to next one
     }
 
-    // draw the 2 sine waves
-    DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, LB);
-    DrawCurve(ctx, tide2, tide3, t2, t3, pixelsfoot, pixelshour, h, tLB, LB);
-    DrawCurve(ctx, tide3, tide2, t3, t3 + 6, pixelsfoot, pixelshour, h, tLB, LB); // fill out last hour with made up tide
+    // draw the  sine waves
+    for (i = 0; i < 7; i++) DrawCurve(ctx, tideh[i], tideh[i+1], t[i], t[i+1], pixelsfoot, pixelshour, h, tLB, LB);
+
 
     // draw vertical for t2 which is next high/low
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#A0A0A0";
     ctx.beginPath();
-    x = (t2 - tLB) * pixelshour;
-    ctx.moveTo(x, h - (tide2 - LB) * pixelsfoot); ctx.lineTo(x, h);
+    x = (t[1] - tLB) * pixelshour;
+    ctx.moveTo(x, h - (tideh[1] - LB) * pixelsfoot); ctx.lineTo(x, h);
     ctx.stroke();
 
     // draw vertical now for current time
@@ -3489,8 +3523,8 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
         ctx.moveTo(now, 14); ctx.lineTo(now, h);
         ctx.stroke();
         // calculate and display current value
-        var up = "\u2191"; if (tide2 < tide1) up = "\u2193";  // up down arrow
-        tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tide2, tide1);
+        var up = "\u2191"; if (tideh[1] < tideh[0]) up = "\u2193";  // up down arrow
+        tide = CalculateCurrentTideHeight(t2hhmm, t1hhmm, tideh[1], tideh[0]);
         ctx.fillStyle = "#ff0000";
         ctx.font = "16px Arial";
         ctx.fillText("@ " + tide.toFixed(1) + " ft " + up, now - pixelshour, 14);
@@ -3498,7 +3532,8 @@ function GraphTideData(tide1t, tide2t, tide3t, t1t, t2t, t3t, showtoday) {
 
     // label the date using the date for tide2 
     ctx.fillStyle = "#0000ff";
-    ctx.fillText(t2t.substring(5, 7) + "/" + t2t.substring(8, 10), w * 0.7, 14);
+    ctx.fillText(tt[2].substring(5, 7) + "/" + tt[2].substring(8, 10), w * 0.3, 14);
+    ctx.fillText(tt[6].substring(5, 7) + "/" + tt[6].substring(8, 10), w * 0.8, 14);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

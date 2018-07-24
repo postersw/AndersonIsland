@@ -325,7 +325,7 @@
                    (UDateOldCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td><td>" +
                    (UDateCount[i] / (UDateOldCount[i] + UDateCount[i]) * 100).toFixed(0) + "%</td>";
                for (j = 0; j < UDateV.length; j++) {
-                   s6 += "<td>" + UDateCountV[i][j] + "</td>";
+                   s6 += "<td>" + (typeof (UDateCountV[i][j]) == "undefined" ? " " : UDateCountV[i][j].toFixed()) + "</td>";
                }
                s6 += "</tr>";
            }
