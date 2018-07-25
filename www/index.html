@@ -41,7 +41,7 @@
     <meta name="description" content="Instant access to up-to-the-minute Anderson Island (WA) information (ferry, tides, weather, events,...)" />
     <meta name="keywords" content="Anderson Island, ferry" />
     <meta name="author" content="Robert Bedoll, Poster Software LLC" />
-    <meta property="og:title" content="Anderson Island Assistant"/>
+    <meta property="og:title" content="Anderson Island Assistant" />
     <meta property="og:description" content="Instant access to up-to-the-minute Anderson Island information (ferry, tides, weather, events,...)" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
@@ -51,14 +51,20 @@
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>AIA - Anderson Island Assistant</title>
+    <!--TEMPORARY GOOGLE ICONS FOR DEMO-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <style>
         button {
-            font-size: 14px; text-align: left;
+            font-size: 14px;
+            text-align: left;
         }
 
         .buttonback {
-            background-color: blue; border: none;  color: white;  float: left;
+            background-color: blue;
+            border: none;
+            color: white;
+            float: left;
         }
 
         p {
@@ -66,82 +72,117 @@
         }
 
         tr {
-            border-style: solid; border-width: thin; border-color: gray;
-            padding-top: 6px; padding-bottom: 6px;
+            border-style: solid;
+            border-width: thin;
+            border-color: gray;
+            padding-top: 6px;
+            padding-bottom: 6px;
         }
 
         td {
-            padding-top: 6px; padding-bottom: 6px;
+            padding-top: 6px;
+            padding-bottom: 6px;
         }
 
         li {
-            border-style: solid; border-width: thin;border-color: gray;
-            padding-top: 6px;padding-bottom: 6px; padding-left: 6px;
+            border-style: solid;
+            border-width: thin;
+            border-color: gray;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            padding-left: 6px;
         }
+
         h1 {
-            font-size: 18px; font-weight: normal; overflow: visible;
-            padding: 8px; padding-top: 12px; margin: 0px; text-align: center;
-            background-color: blue; color: white;
+            font-size: 18px;
+            font-weight: normal;
+            overflow: visible;
+            padding: 8px;
+            padding-top: 12px;
+            margin: 0px;
+            text-align: center;
+            background-color: blue;
+            color: white;
         }
-    /* menu */
-    td.menu {font-size:14px;font-weight:bold;color:white;padding:12px}
-    tr.menu {border:none;border-bottom:thin solid white}
+
+        i {
+            vertical-align:bottom;
+        }
+
+        /* menu */
+        td.menu {
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            padding: 12px
+        }
+
+        tr.menu {
+            border: none;
+            border-bottom: thin solid white
+        }
 
         .auto-style1 {
             height: 32px;
         }
 
-    /* MENU TOGGLE SWITCH - the box around the slider. From w3schools.com */
+        /* MENU TOGGLE SWITCH - the box around the slider. From w3schools.com */
         .switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-    }
-    /* Hide default HTML checkbox */
-    .switch input {display:none;}
-    /* The slider */
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
-    input:focus + .slider {
-      box-shadow: 0 0 1px #2196F3;
-    }
-    input:checked + .slider:before {
-      -webkit-transform: translateX(26px);
-      -ms-transform: translateX(26px);
-      transform: translateX(26px);
-    }
-    /* Rounded sliders */
-    .slider.round {
-      border-radius: 34px;
-    }
-    .slider.round:before {
-      border-radius: 50%;
-    }
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+            /* Hide default HTML checkbox */
+            .switch input {
+                display: none;
+            }
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
 
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+            .slider.round:before {
+                border-radius: 50%;
+            }
     </style>
 
 
@@ -177,7 +218,8 @@
 
  <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse";>
         <tr id='ferryrow' style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
-            <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">FERRY </td>
+            <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">
+                <i class="material-icons">directions_boat</i> Ferry </td>
             <td id="ferrytimes" style="font-size:small;margin-top:0px;margin-bottom:0px;"> </td>
         </tr>
 
@@ -185,24 +227,32 @@
             <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;padding-top:2px;padding-bottom:2px" colspan="2"> 
                 <table align="center" style="width:100%;padding:0;border-collapse:collapse;border:0px";>
                     <tr style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;border:0px"> 
-                        <td style="text-align:center;" onclick="ShowFerryWebCam()">&nbspWEBCAM</td> 
-                        <td style="text-align:center;border-right:1px solid lightgray;border-left:1px solid lightgray" onclick="ShowFerryLocation()">LOCATION</td>
-                        <td style="text-align:center" onclick="StartTicketApp()">TICKETS</td>
+                        <td style="text-align:center;" onclick="ShowFerryWebCam()">
+                            <i class="material-icons">videocam</i>&nbspCamera
+                        </td> 
+                        <td style="text-align:center;border-right:1px solid lightgray;border-left:1px solid lightgray" onclick="ShowFerryLocation()">
+                            <i class="material-icons" >pin_drop</i>Location
+                        </td>
+                        <td style="text-align:center" onclick="StartTicketApp()">
+                            <i class="material-icons" >local_offer</i>Tickets</td>
                     </tr>
                 </table>
             </td>
         </tr>
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
-            <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px">
-
-            TIDES </td>
+             <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px">
+                 <i class="material-icons">wrap_text</i>
+                 Tides
+             </td>
             <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px"> </td>
          </tr>
 
         <tr style="background-color:honeydew"  onclick="ShowWeatherPage();"> 
             <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px">
-            WEATHER </td>
+                <i class="material-icons">cloud</i>
+                Weather
+            </td>
             <td style="font-size:small;margin-top:4px;margin-bottom:0px">
                 <span id="weather" ><br />Current weather:</span><br />
                 <span id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </span>
@@ -212,63 +262,88 @@
 
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('events');">
             <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
-            EVENTS </td>
+            <i class="material-icons" >event</i>
+            Events </td>
             <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
         </tr>
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('activity');">
             <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
-            ACTIVITY </td>
+                <i class="material-icons" >directions_run</i>
+                Activity
+            </td>
             <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
         </tr>
 
      <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
-            <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px">OPEN<br /> HOURS</td>
+         <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px">
+             <i class="material-icons">schedule</i> Open<br />&nbsp&nbsp&nbsp&nbsp;Hours
+         </td>
              <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px"> </td>
          </tr>
      
         <tr style="background-color:lightyellow"  onclick="ShowBurnBan();"> 
             <td style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
-            BURNBAN </td>
+                <i class="material-icons">whatshot</i>
+                Burnban
+            </td>
             <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.<br /></td>
          </tr>
                 
         <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">  
-            <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">TANNER</td>
+            <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">
+                <i class="material-icons">flash_on</i> Tanner
+            </td>
             <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.<br /></td>
         </tr>
              <tr style="background-color:#ccffcc"  onclick="ShowParks()"> 
-            <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
-            PARKS </td>
+                 <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
+                     <i class="material-icons">nature_people</i>
+                     Parks
+                 </td>
          </tr>
          <tr style="background-color:#cce4ff;" onclick="ShowLinksPage('fishing', 'island');">
-             <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">FISHING / SHELLFISH
+             <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">
+                 <i class="material-icons">file_download</i> Fishing / Shellfish
              </td>            
          </tr>
         <tr style="background-color:#f0f0f5;" onclick="ShowNews()")>  
             <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
-             NEWS</td>
+                <i class="material-icons">textsms</i>
+                News
+            </td>
          </tr>
      
           <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
-            <td style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
-            MAP </td>  
+              <td style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
+                  <i class="material-icons">map</i>
+                  Map
+              </td>  
          </tr>
 
          <tr style="background-color:azure;" onclick="ShowLinksPage('island', 'fishing');">
-             <td style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">ISLAND INFORMATION LINKS
+             <td style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">
+                 <i class="material-icons">link</i> Island Information Links
              </td>            
          </tr>
               <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">  
-            <td style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
-             EMERGENCY CONTACTS</td>
+                  <td style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
+                      <i class="material-icons">phone</i>
+                      Emergency Contacts
+                  </td>
          </tr>
          <tr id="maintablerows"></tr>   
 
-         <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">Help</tr>
+         <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">
+            <i class="material-icons">help</i> Help
+            </tr>
 
          <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
-                <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">Feedback</a></td></tr>
-         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">About</td></tr>
+                  <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">
+                      <i class="material-icons">email</i> Feedback
+                  </a></td></tr>
+         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">
+            <i class="material-icons">info_outline</i> About
+            </td></tr>
 
     </table>
     </div>
@@ -674,7 +749,7 @@
                <p> &nbsp  Updates every minute.&nbsp  
         <span id="updatetime" >Screen update time.</span><br />       
         <span id="versionnumber" style="font-size:x-small"> &nbsp &nbsp AIA Ver: 1.9.030917	</span>
-        <span style="font-size:x-small"> [52018]</span>
+        <span style="font-size:x-small"> [072418]</span>
         </p>
     </div>
 <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
