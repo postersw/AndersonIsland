@@ -82,7 +82,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 06/16/18. Ver 1.19.053118 Uploaded to itunes as ver 1.19.
 06/21/18. Ver 1.20 Branch Ver120 created. 
 07/23/18. Ver 1.20.072218 (really 072318) Google Play Store #2233 to Beta. Enlarge tide graph to show 2 full days; Enhance the event display to always show a full day of events;  Fix the ferry grid to properly display one-way runs;  Clear all ferry notifications when the app opens.
-07/24/18. Ver 1.21.072418. Icons on main page. New branch Ver121.
+07/24/18. Ver 1.21.072418. Icons on main page. New branch Ver121.  Released to web 7/26.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:

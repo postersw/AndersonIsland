@@ -47,7 +47,7 @@
         1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
         1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
-        1.21 072418. Icons on main page.
+        1.21 072618. Icons on main page.  Released to web.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.072618.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.072618.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
