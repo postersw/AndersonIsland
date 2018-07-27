@@ -218,8 +218,8 @@
 
  <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse";>
         <tr id='ferryrow' style="background-color:azure;" onclick="DisplayFerrySchedulePage();" >
-            <td style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">
-                <i class="material-icons">directions_boat</i> Ferry </td>
+            <td id="ferrytitle" style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">
+               FERRY </td>
             <td id="ferrytimes" style="font-size:small;margin-top:0px;margin-bottom:0px;"> </td>
         </tr>
 
@@ -227,14 +227,14 @@
             <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;padding-top:2px;padding-bottom:2px" colspan="2"> 
                 <table align="center" style="width:100%;padding:0;border-collapse:collapse;border:0px";>
                     <tr style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;border:0px"> 
-                        <td style="text-align:center;" onclick="ShowFerryWebCam()">
-                            <i class="material-icons">videocam</i>&nbspCamera
+                        <td id="webcamtitle" style="text-align:center;" onclick="ShowFerryWebCam()">
+                           &nbsp;CAMERA
                         </td> 
-                        <td style="text-align:center;border-right:1px solid lightgray;border-left:1px solid lightgray" onclick="ShowFerryLocation()">
-                            <i class="material-icons" >pin_drop</i>Location
+                        <td id="loctitle" style="text-align:center;border-right:1px solid lightgray;border-left:1px solid lightgray" onclick="ShowFerryLocation()">
+                            LOCATION
                         </td>
-                        <td style="text-align:center" onclick="StartTicketApp()">
-                            <i class="material-icons" >local_offer</i>Tickets</td>
+                        <td id="tickettitle" style="text-align:center" onclick="StartTicketApp()">
+                            TICKETS</td>
                     </tr>
                 </table>
             </td>
@@ -242,16 +242,14 @@
 
          <tr style="background-color:lightcyan"  onclick="TidesDataPage();"> 
              <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px">
-                 <i class="material-icons">wrap_text</i>
-                 Tides
+                 TIDES
              </td>
             <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px"> </td>
          </tr>
 
         <tr style="background-color:honeydew"  onclick="ShowWeatherPage();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px">
-                <i class="material-icons">cloud</i>
-                Weather
+            <td id="weathertitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px">
+                WEATHER
             </td>
             <td style="font-size:small;margin-top:4px;margin-bottom:0px">
                 <span id="weather" ><br />Current weather:</span><br />
@@ -261,88 +259,81 @@
          </tr>
 
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('events');">
-            <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
-            <i class="material-icons" >event</i>
-            Events </td>
+            <td id="eventtitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
+            EVENTS </td>
             <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
         </tr>
         <tr style="background-color:floralwhite;"  onclick="DisplayComingEventsPage('activity');">
-            <td style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
-                <i class="material-icons" >directions_run</i>
-                Activity
+            <td id="activitytitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
+                ACTIVITY
             </td>
             <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
         </tr>
 
      <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
-         <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px">
-             <i class="material-icons">schedule</i> Open<br />&nbsp&nbsp&nbsp&nbsp;Hours
+         <td id="opentitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px">
+             OPEN<br />HOURS
          </td>
              <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px"> </td>
          </tr>
      
         <tr style="background-color:lightyellow"  onclick="ShowBurnBan();"> 
-            <td style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
-                <i class="material-icons">whatshot</i>
-                Burnban
+            <td id="burnbantitle" style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
+                BURNBAN
             </td>
             <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.<br /></td>
          </tr>
                 
         <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">  
-            <td style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">
-                <i class="material-icons">flash_on</i> Tanner
+            <td id="tannertitle" style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">
+               TANNER
             </td>
             <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.<br /></td>
         </tr>
              <tr style="background-color:#ccffcc"  onclick="ShowParks()"> 
-                 <td style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
-                     <i class="material-icons">nature_people</i>
-                     Parks
+                 <td id="parkstitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
+                    PARKS
                  </td>
          </tr>
          <tr style="background-color:#cce4ff;" onclick="ShowLinksPage('fishing', 'island');">
-             <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">
-                 <i class="material-icons">file_download</i> Fishing / Shellfish
+             <td id="fishtitle" style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">
+                 FISHING
              </td>            
          </tr>
         <tr style="background-color:#f0f0f5;" onclick="ShowNews()")>  
-            <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
-                <i class="material-icons">textsms</i>
-                News
+            <td id="newstitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
+                NEWS
             </td>
          </tr>
      
           <tr style="background-color:#cce4ff" onclick="ShowMap();"> 
-              <td style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
-                  <i class="material-icons">map</i>
-                  Map
+              <td id="maptitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
+                  MAP
               </td>  
          </tr>
 
          <tr style="background-color:azure;" onclick="ShowLinksPage('island', 'fishing');">
-             <td style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">
-                 <i class="material-icons">link</i> Island Information Links
+             <td id="linkstitle" style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">
+                 ISLAND INFO LINKS
              </td>            
          </tr>
               <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">  
-                  <td style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
-                      <i class="material-icons">phone</i>
-                      Emergency Contacts
+                  <td id="contactstitle" style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
+                      EMERGENCY CONTACTS
                   </td>
          </tr>
          <tr id="maintablerows"></tr>   
 
-         <tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">
-            <i class="material-icons">help</i> Help
+         <tr> <td id="helptitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">
+            HELP
             </tr>
 
-         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
+         <tr> <td id="feedbacktitle" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                   <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">
-                      <i class="material-icons">email</i> Feedback
+                      FEEDBACK
                   </a></td></tr>
-         <tr> <td style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">
-            <i class="material-icons">info_outline</i> About
+         <tr> <td id="abouttitle" style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">
+            ABOUT
             </td></tr>
 
     </table>
@@ -767,29 +758,52 @@
     width:100%;height: 100%;overflow-x: hidden; background-color:#000000;background-color: rgba(0,0,0,0.5);transition: 0.3s; "> -->
   <div id="sidemenu" class="sidenav"   style="height: 100%; width: 0; position: fixed; top: 40px;
     left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" onclick="CloseMenu()">
-    <table style="width:100%;border-collapse:collapse;border-style:none">
-            <tr class="menu" id="tm1"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
-            <tr class="menu" id="tm2"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
-            <tr class="menu" id="tm3"> <td id="notifyswitch" class="menu" > Notifications:
-                <input type="radio" name="notifyon" id="notifymon" onclick="NotifyOn()"><span id="notifymont"> ON &nbsp&nbsp&nbsp</span>
-                <input type="radio" name="notifyon" id="notifymoff" onclick="NotifyOff()"><span id="notifymofft"> OFF</span> 
-                </td></tr>
-            <tr class="menu"> <td class="menu" > Ferry Departure Countdown:<br />
+      <table style="width:100%;border-collapse:collapse;border-style:none">
+          <tr class="menu" id="tm1"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
+          <tr class="menu" id="tm2"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
+          <tr class="menu" id="tm3">
+              <td id="notifyswitch" class="menu">
+                  Notifications:
+                  <input type="radio" name="notifyon" id="notifymon" onclick="NotifyOn()"><span id="notifymont"> ON &nbsp&nbsp&nbsp</span>
+                  <input type="radio" name="notifyon" id="notifymoff" onclick="NotifyOff()"><span id="notifymofft"> OFF</span>
+              </td>
+          </tr>
+          <tr class="menu">
+              <td class="menu">
+                  Ferry Departure Countdown:<br />
                   <input type="radio" name="ferrycd" id="ferrycdon" onclick="FerryShowCDOn()"><span id="ferrycdont"> ON &nbsp&nbsp&nbsp</span>
-                  <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowCDOff()"><span id="ferrycdofft"> OFF</span> 
-                </td></tr>
-            <tr class="menu"> <td id="ferry3times" class="menu" > Ferry Times/row:
-                <input type="radio" name="ferry3t" id="ferry2t" onclick="FerryShow3Off()"><span id="ferry2tt"> 2 &nbsp&nbsp&nbsp</span>
-                <input type="radio" name="ferry3t" id="ferry3t" onclick="FerryShow3On()"><span id="ferry3tt"> 3</span> 
-                </td></tr>
-            <tr class="menu"> <td  class="menu" > Ferry Highlight by Location:<br />
-                <input type="radio" name="ferryhl" id="ferryhlon"  onclick="FerryHighlightOn()"><span id="ferryhlont"> ON &nbsp&nbsp&nbsp</span>
-                <input type="radio" name="ferryhl" id="ferryhloff" onclick="FerryHighlightOff()"><span id="ferryhlofft"> OFF</span> 
-                </td></tr>
-            <tr class="menu" id="tm4"> <td class="menu" onclick="ShowAboutPage()">About</td></tr>
-            <!--<tr class="menu"> <td class="menu" onclick="backKeyDown()">Exit</td></tr> Doesnt work on IOS or PC -->
+                  <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowCDOff()"><span id="ferrycdofft"> OFF</span>
+              </td>
+          </tr>
+          <tr class="menu">
+              <td id="ferry3times" class="menu">
+                  Ferry Times/row:
+                  <input type="radio" name="ferry3t" id="ferry2t" onclick="FerryShow3Off()"><span id="ferry2tt"> 2 &nbsp&nbsp&nbsp</span>
+                  <input type="radio" name="ferry3t" id="ferry3t" onclick="FerryShow3On()"><span id="ferry3tt"> 3</span>
+              </td>
+          </tr>
+          <tr class="menu">
+              <td class="menu">
+                  Ferry Highlight by Location:<br />
+                  <input type="radio" name="ferryhl" id="ferryhlon" onclick="FerryHighlightOn()"><span id="ferryhlont"> ON &nbsp&nbsp&nbsp</span>
+                  <input type="radio" name="ferryhl" id="ferryhloff" onclick="FerryHighlightOff()"><span id="ferryhlofft"> OFF</span>
+              </td>
+          </tr>
+          <tr class="menu">
+              <td class="menu">
+                  Icons in Menu:<br />
+                  <input type="radio" name="ferryhl" id="iconl1" onclick="ShowIcons(1)"><span id="iconlont"> ON/LC </span>
+                  <input type="radio" name="ferryhl" id="iconl2" onclick="ShowIcons(2)"><span id="iconlofft"> ON/UC </span>
+                  <input type="radio" name="ferryhl" id="iconl3" onclick="ShowIcons(3)"><span id="iconlont"> On/none</span>
+                  <input type="radio" name="ferryhl" id="iconl4" onclick="ShowIcons(4)"><span id="iconlofft"> Off/UC</span>
+                  <input type="radio" name="ferryhl" id="iconl5" onclick="ShowIcons(5)"><span id="iconlont"> Off/LC</span>
+              </td>
+          </tr>
 
-    </table>
+          <tr class="menu" id="tm4"> <td class="menu" onclick="ShowAboutPage()">About</td></tr>
+          <!--<tr class="menu"> <td class="menu" onclick="backKeyDown()">Exit</td></tr> Doesnt work on IOS or PC -->
+
+      </table>
       <p style="text-align:center">
       <button style="font-size: 24px" onclick="CloseMenu()">Close</button>
           </p>
