@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.072618.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.072718.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -2456,7 +2456,9 @@ function ShowOpenHoursTable(showall) {
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
 //  Exit    returns html for a table entry                             
 function FormatOneBusiness(Oh, mmdd, showall) {
-    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
+    var showicon = "<i class='material-icons'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons'>" + Oh.Icon + "</i> ";
+    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" + showicon + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
@@ -2523,8 +2525,9 @@ function ShowOneBusinessFullPage(id) {
     if (t == "Store") t = "General Store";
     SetPageHeader(t);
     //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
-
-    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
+    var showicon = "<i class='material-icons'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons'>" + Oh.Icon + "</i> ";
+    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
         + "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +
