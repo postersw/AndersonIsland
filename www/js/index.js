@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.072718.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.072818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1553,12 +1553,20 @@ function ShowNextTides() {
                 //nextTides = "Incoming. Now ";
                 //nextTides = "Incoming";
                 nextTides = "&uarr; Incoming";
-                document.getElementById("tidestitle").innerHTML = "TIDE &uarr;";
+                if (gIconSwitch == 1 || gIconSwitch == 2) {
+                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>waves</i> Tide <i class='material-icons'>arrow_upward</i>";
+                } else {
+                    document.getElementById("tidestitle").innerHTML = "TIDE <i class='material-icons'>arrow_upward</i>";
+                }
             } else {
                 //nextTides = "Outgoing. Now ";
                 //nextTides = "Outgoing";
                 nextTides = "&darr; Outgoing";
-                document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
+                if (gIconSwitch == 1 || gIconSwitch == 2) {
+                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>waves</i> Tide <i class='material-icons'>arrow_downward</i>";
+                } else {
+                    document.getElementById("tidestitle").innerHTML = "TIDE <i class='material-icons'>arrow_downward</i>";
+                }
             }
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
@@ -3983,18 +3991,21 @@ function LocationPrevent() {
 //  ShowIcons - show icons in the front page
 //
 // icona: html id, icon name, title, ...
+var gIconSwitch=0; // icon switch 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc
 var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam", "Camera",
     "loctitle", "pin_drop", "Location", "tickettitle", "local_offer", "Tickets",
-    "tidestitle", "wrap_text", "Tides", "weathertitle", "cloud", "Weather",
+    "tidestitle", "waves", "Tides", "weathertitle", "cloud", "Weather",
     "eventtitle", "event", "Events", "activitytitle", "directions_run", "Activity",
-    "opentitle", "schedule", "Open", "burnbantitle", "whatshot", "Burnban",
+    "opentitle", "schedule", "Open", "burnbantitle", "smoke_free", "Burnban",
     "tannertitle", "flash_on", "Tanner", "parkstitle", "nature_people", "Parks",
     "fishtitle", "file_download", "Fishing", "newstitle", "textsms", "News",
     "maptitle", "map", "Map", "linkstitle", "link", "Island Information Links",
     "contactstitle", "phone", "Emergency Contacts", "helptitle", "help", "Help",
-    "feedbacktitle", "email", "Feedback", "abouttitle", "info_outline", "About"];
+    "feedbacktitle", "email", "Feedback", "abouttitle", "info_outline", "About",
+    "voluntitle","group","Volunteer"];
 // n=1 for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 for UC titles only, 5 for LC titles only
 function ShowIcons(n) {
+    gIconSwitch = n;
     var i = 0;
     var s;
     for (i = 0; i < icona.length; i = i + 3) {
