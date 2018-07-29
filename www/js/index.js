@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.072818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.072918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1554,7 +1554,7 @@ function ShowNextTides() {
                 //nextTides = "Incoming";
                 nextTides = "&uarr; Incoming";
                 if (gIconSwitch == 1 || gIconSwitch == 2) {
-                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>waves</i> Tide <i class='material-icons'>arrow_upward</i>";
+                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>arrow_upward</i> Tide";
                 } else {
                     document.getElementById("tidestitle").innerHTML = "TIDE <i class='material-icons'>arrow_upward</i>";
                 }
@@ -1563,7 +1563,7 @@ function ShowNextTides() {
                 //nextTides = "Outgoing";
                 nextTides = "&darr; Outgoing";
                 if (gIconSwitch == 1 || gIconSwitch == 2) {
-                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>waves</i> Tide <i class='material-icons'>arrow_downward</i>";
+                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>arrow_downward</i> Tide";
                 } else {
                     document.getElementById("tidestitle").innerHTML = "TIDE <i class='material-icons'>arrow_downward</i>";
                 }
@@ -3994,11 +3994,11 @@ function LocationPrevent() {
 var gIconSwitch=0; // icon switch 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc
 var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam", "Camera",
     "loctitle", "pin_drop", "Location", "tickettitle", "local_offer", "Tickets",
-    "tidestitle", "waves", "Tides", "weathertitle", "cloud", "Weather",
+    "weathertitle", "cloud_queue", "Weather",
     "eventtitle", "event", "Events", "activitytitle", "directions_run", "Activity",
-    "opentitle", "schedule", "Open", "burnbantitle", "smoke_free", "Burnban",
+    "opentitle", "schedule", "Open", "burnbantitle", "whatshot", "Burnban",
     "tannertitle", "flash_on", "Tanner", "parkstitle", "nature_people", "Parks",
-    "fishtitle", "file_download", "Fishing", "newstitle", "textsms", "News",
+    "fishtitle", "rowing", "Fishing", "newstitle", "chat", "News",
     "maptitle", "map", "Map", "linkstitle", "link", "Island Information Links",
     "contactstitle", "phone", "Emergency Contacts", "helptitle", "help", "Help",
     "feedbacktitle", "email", "Feedback", "abouttitle", "info_outline", "About",
@@ -4023,6 +4023,10 @@ function ShowIcons(n) {
         }
         document.getElementById(icona[i]).innerHTML = s;
     }
+    // update variable icons
+    ShowNextTides();
+    // remember it
+    localStorage.setItem("icons", n.toFixed(0)); // icons = 0 - 5,
 }
 
 
@@ -4066,9 +4070,18 @@ function StartApp() {
         ShowCachedData();
     } else gForceCacheReload = true;
 
+    // Replace labels with icons if user selected them
+    i = localStorage.getItem("icons"); // icons = 0 - 5,
+    if (i == null || i == 0 || i == 4) {
+    } else {
+        ShowIcons(Number(i));
+    }
+
     // show the page
     Show("mainpage");  // now display the main page
     Show("vermsg"); // display the version
+
+    // -------------  after main page has been displayed ---------------------------
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
