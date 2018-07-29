@@ -1513,6 +1513,9 @@ function HandleForecastAReply(jsondata) {
 //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
 //  exit: gForceCacheReload = true to reload tide data.  
 //          html populated.
+var gTideTitleNoIcon; // title for tide, with up or down arrow
+var gTideTitleIcon; // title for tide, with up or down arrow
+
 function ShowNextTides() {
     var hilow;
     var nextTides;
@@ -1550,24 +1553,18 @@ function ShowNextTides() {
         } else if (oldtide != 1) {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
-                //nextTides = "Incoming. Now ";
-                //nextTides = "Incoming";
                 nextTides = "&uarr; Incoming";
-                if (gIconSwitch == 1 || gIconSwitch == 2) {
-                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>arrow_upward</i> Tide";
-                } else {
-                    document.getElementById("tidestitle").innerHTML = "TIDE <i class='material-icons'>arrow_upward</i>";
-                }
+                gTideTitleIcon = "<i class='material-icons'>file_upload</i> Tide";
+                gTideTitleNoIcon = "TIDE <i class='material-icons'>file_upload</i>";
+                //arrow_upward
             } else {
-                //nextTides = "Outgoing. Now ";
-                //nextTides = "Outgoing";
+                gTideTitleIcon = "<i class='material-icons'>file_upload</i> Tide";
+                gTideTitleNoIcon = "TIDE <i class='material-icons'>file_upload</i>";
                 nextTides = "&darr; Outgoing";
-                if (gIconSwitch == 1 || gIconSwitch == 2) {
-                    document.getElementById("tidestitle").innerHTML = "<i class='material-icons'>arrow_downward</i> Tide";
-                } else {
-                    document.getElementById("tidestitle").innerHTML = "TIDE <i class='material-icons'>arrow_downward</i>";
-                }
+                //arrow_downward
             }
+            SetTideTitle();
+
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             var tdx = "<td style='padding:0;margin:0'>";
@@ -4024,9 +4021,18 @@ function ShowIcons(n) {
         document.getElementById(icona[i]).innerHTML = s;
     }
     // update variable icons
-    ShowNextTides();
+    SetTideTitle();
     // remember it
     localStorage.setItem("icons", n.toFixed(0)); // icons = 0 - 5,
+}
+/////////////////////////////////////////////////////////////
+//  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
+function SetTideTitle() {
+    if (gIconSwitch == 1 || gIconSwitch == 2) {
+        document.getElementById("tidestitle").innerHTML = gTideTitleIcon;
+    } else {
+        document.getElementById("tidestitle").innerHTML = gTideTitleNoIcon;
+    }
 }
 
 
