@@ -4010,7 +4010,7 @@ function ShowIcons(n) {
     var s;
     for (i = 0; i < icona.length; i = i + 3) {
         switch (n){
-            case 1: s = "<i class='material-icons'>" + icona[i + 1] + "</i>" + icona[i + 2];
+            case 1: s = "<span style='white-space:nowrap'><i class='material-icons'>" + icona[i + 1] + "</i><span style='font-size:16px'>" + icona[i + 2] + "</span></span>";
                 break;
             case 2: s = "<i class='material-icons'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
                 break;
