@@ -1554,14 +1554,14 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 nextTides = "&uarr; Incoming";
-                gTideTitleIcon = "<i class='material-icons'>file_upload</i> Tide";
-                gTideTitleNoIcon = "TIDE <i class='material-icons'>file_upload</i>";
+                gTideTitleIcon = "<i class='material-icons'>publish</i> Tide";
+                gTideTitleNoIcon = "TIDE <i class='material-icons'>publish</i>";
                 //arrow_upward
             } else {
-                gTideTitleIcon = "<i class='material-icons'>file_upload</i> Tide";
-                gTideTitleNoIcon = "TIDE <i class='material-icons'>file_upload</i>";
+                gTideTitleIcon = "<i class='material-icons'>file_download</i> Tide";
+                gTideTitleNoIcon = "TIDE <i class='material-icons'>file_download</i>";
                 nextTides = "&darr; Outgoing";
-                //arrow_downward
+                //arrow_downward  file_upload<
             }
             SetTideTitle();
 
@@ -2635,6 +2635,7 @@ function ParseOpenHours() {
 //  entry   type = 'events' or 'activities'
 var EventFilter = ""; //letter to filter for
 var EventDisp = ""; // event display type, L, W, M
+var gEventIcons = true;
 
 function DisplayComingEventsPage(type) {
     localStorage.setItem("eventtype", type);
@@ -2785,7 +2786,7 @@ function DisplayComingEventsList(CE) {
         col = row.insertCell(1);
         col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
         var col2 = row.insertCell(2);
-        col2.innerHTML = aCE[4];//event
+        col2.innerHTML = FormatEvent(aCE[4], aCE[3]);//event
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = aCE[5];//where
         var color;
@@ -2799,6 +2800,38 @@ function DisplayComingEventsList(CE) {
         previouseventdate = aCE[0];
     } // end loop through CE
     document.getElementById("locations").innerHTML = LSget("locations");
+}
+
+//////////////////////////////////////////////////////////////////////
+//  FormatEvent - add icon if switch is on
+//  Entry   event name, event type
+//  Exit    html for event, includes icon if switch is on
+function FormatEvent(ev, key) {
+    var iconlist = ["meeting", "people", "music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
+        "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", "film", "theaters",
+        "fitness", "fitness_center", "craft", "palette", "night out", "local_bar", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
+    ];
+    var evlc = ev.toLowerCase();
+    var icon;
+    if (!gEventIcons) return ev;  // if no icons
+    // default icon
+    switch (key) {
+        case "E": icon = "mood"; break; // special events
+        case "S": icon = "music_note"; break; // show
+        case "A": icon = "directions_run"; break; // activity
+        case "C": icon = "palette"; break; // craft
+        case "G": icon = "games"; break; // game
+        default: icon = "people";
+    }
+    // find speical case icon
+    var i;
+    for (i = 0; i < iconlist.length; i = i + 2) {
+        if (evlc.indexOf(iconlist[i]) >= 0) {
+            icon = iconlist[i + 1];
+            break;
+        }
+    }
+    return '<i class="material-icons" style="font-size:16px">' + icon + '</i> ' + ev;
 }
 
 
