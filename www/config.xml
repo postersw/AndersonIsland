@@ -219,8 +219,9 @@
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
+  <!-- DEBUG FOR PGB
     <platform name="ios">
       <allow-navigation href="ttpapps.pcf://" />
     </platform>
-    
+   --> 
 </widget>
