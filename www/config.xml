@@ -75,10 +75,9 @@
   
     <!--Define a specific version of PhoneGap to build into your app. -->
         <preference name="phonegap-version" value="cli-7.1.0" />
-         <!--<preference name='pgb-builder-version' value='1' /> -->
-      <preference name='pgb-builder-version' value='2' />
-       <!-- 2 for android, 1 for ios as of 5/31-->
-  <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
+        <preference name='pgb-builder-version' value='1' /> 
+      <!--<preference name='pgb-builder-version' value='2' />-->
+      <!-- 2 for android, 1 for ios as of 5/31-->
 
   <!-- Plugins -->
 
@@ -204,7 +203,7 @@
     <access origin="*"/>
     <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
     <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
-    <!-- DEBUG FOR PGB
+
     <plugin name="cordova-plugin-whitelist" />
 
     <allow-intent href="http://*/*" />
@@ -220,5 +219,5 @@
     <platform name="ios">
       <allow-navigation href="ttpapps.pcf://" />
     </platform>
-   --> 
+
 </widget>
