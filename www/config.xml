@@ -5,163 +5,198 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.20.072218"
-        android-versionCode="2233" 
-        android:versionName="1.20.072218">
-        <!-- versionCode 2233 for 1.20 6/23/18 -->
-        <!-- versionCode 2232 for 1.19 5/13/18 -->
-        <!-- versionCode 2231 for 1.18 5/13/18 -->
-        <!-- versionCode 2230 for 1.17 4/25/18 -->
-        <!-- versionCode 2229 for 1.16 2/3/18 -->
-        <!-- versionCode 2228 for 1.15 8/28/17 -->
-        <!-- versionCode 2227 for 1.14 6/14/17 -->      
-        <!-- versionCode 2226 for 1.13 5/17/17 -->
-        <!-- versionCode 2225 for 1.12 4/11/17.  1.11 3/20/17-->
-        <!-- versionCode 2224 for 1.10 3/14/17-->
-        <!-- versionCode 2223 for 1.9 3/10/17-->
-        <!-- versionCode=2220 on 10/13/16 1.7. Used by Android to trigger an upgrade. -->
-    
+        version   = "1.21.073018"
+        android-versionCode="2234"
+        android:versionName="1.21.073018">
+  <!-- versionCode 2234 for 1.20 7/30/18 -->
+  <!-- versionCode 2233 for 1.20 6/23/18 -->
+  <!-- versionCode 2232 for 1.19 5/13/18 -->
+  <!-- versionCode 2231 for 1.18 5/13/18 -->
+  <!-- versionCode 2230 for 1.17 4/25/18 -->
+  <!-- versionCode 2229 for 1.16 2/3/18 -->
+  <!-- versionCode 2228 for 1.15 8/28/17 -->
+  <!-- versionCode 2227 for 1.14 6/14/17 -->
+  <!-- versionCode 2226 for 1.13 5/17/17 -->
+  <!-- versionCode 2225 for 1.12 4/11/17.  1.11 3/20/17-->
+  <!-- versionCode 2224 for 1.10 3/14/17-->
+  <!-- versionCode 2223 for 1.9 3/10/17-->
+  <!-- versionCode=2220 on 10/13/16 1.7. Used by Android to trigger an upgrade. -->
+
   <name>Anderson Island Assistant</name>
 
-    <description>
-        Instant access to a wealth of time-sensitive Anderson Island information.
-    </description>
+  <description>
+    Instant access to a wealth of time-sensitive Anderson Island information.
+  </description>
 
-    <author href="http://anderson-island.org/about" email="support@postersw.com">
-        Bob Bedoll, Poster Software LLC.
-    </author>
+  <author href="http://anderson-island.org/about" email="support@postersw.com">
+    Bob Bedoll, Poster Software LLC.
+  </author>
 
-    <!-- Define the main entry-point to the application -->
-    <content src="index.html" />
+  <!-- Define the main entry-point to the application -->
+  <content src="index.html" />
 
-    <!--
+  <!--
         If you do not want any permissions to be added to your app, add the
         following tag to your config.xml; you will still have the INTERNET
         permission on your app, which PhoneGap requires.
     -->
   <!--<preference name="permissions"                value="none"/>-->
 
-    <!-- Customize your app and platform with the preference element. -->
-    <!-- <preference name="SplashScreen"               value="Default.png" />-->
-    <!-- <preference name="SplashScreenDelay"          value="3000" />-->
-    <preference name="SplashMaintainAspectRatio"  value="true" />
+  <!-- Customize your app and platform with the preference element. -->
+  <!-- <preference name="SplashScreen"               value="Default.png" />-->
+  <!-- <preference name="SplashScreenDelay"          value="3000" />-->
+  <preference name="SplashMaintainAspectRatio"  value="true" />
   <!--<preference name="ShowSplashScreenSpinner" value="true" />  DEBUG TEST-->
-    <preference name="ShowSplashScreenSpinner" value="false" />
-    <preference name="orientation"                value="default" />        <!-- all: default means both landscape and portrait are enabled -->
-    <preference name="target-device"              value="universal" />      <!-- all: possible values handset, tablet, or universal -->
-    <preference name="fullscreen"                 value="false" />           <!-- all: hides the status bar at the top of the screen -->
-    <preference name="webviewbounce"              value="true" />           <!-- ios: control whether the screen 'bounces' when scrolled beyond the top -->
-    <preference name="prerendered-icon"           value="true" />           <!-- ios: if icon is prerendered, iOS will not apply it's gloss to the app's icon on the user's home screen -->
-    <preference name="stay-in-webview"            value="false" />          <!-- ios: external links should open in the default browser, 'true' would use the webview the app lives in -->
-    <preference name="ios-statusbarstyle"         value="black-opaque" />   <!-- ios: black-translucent will appear black because the PhoneGap webview doesn't go beneath the status bar -->
-    <preference name="detect-data-types"          value="true" />           <!-- ios: controls whether data types (such as phone no. and dates) are automatically turned into links by the system -->
-    <preference name="exit-on-suspend"            value="false" />          <!-- ios: if set to true, app will terminate when home button is pressed -->
+  <preference name="ShowSplashScreenSpinner" value="false" />
+  <preference name="orientation"                value="default" />
+  <!-- all: default means both landscape and portrait are enabled -->
+  <preference name="target-device"              value="universal" />
+  <!-- all: possible values handset, tablet, or universal -->
+  <preference name="fullscreen"                 value="false" />
+  <!-- all: hides the status bar at the top of the screen -->
+  <preference name="webviewbounce"              value="true" />
+  <!-- ios: control whether the screen 'bounces' when scrolled beyond the top -->
+  <preference name="prerendered-icon"           value="true" />
+  <!-- ios: if icon is prerendered, iOS will not apply it's gloss to the app's icon on the user's home screen -->
+  <preference name="stay-in-webview"            value="false" />
+  <!-- ios: external links should open in the default browser, 'true' would use the webview the app lives in -->
+  <preference name="ios-statusbarstyle"         value="black-opaque" />
+  <!-- ios: black-translucent will appear black because the PhoneGap webview doesn't go beneath the status bar -->
+  <preference name="detect-data-types"          value="true" />
+  <!-- ios: controls whether data types (such as phone no. and dates) are automatically turned into links by the system -->
+  <preference name="exit-on-suspend"            value="false" />
+  <!-- ios: if set to true, app will terminate when home button is pressed -->
   <!--<preference name="show-splash-screen-spinner" value="true" />          ios: if set to false, the spinner won't appear on the splash screen during app loading -->
-    <preference name="auto-hide-splash-screen"    value="true" />           <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
-    <preference name="disable-cursor"             value="false" />          <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
-    <preference name="android-minSdkVersion"      value="15" />              <!-- android: changed from 14->15 on 4/15/18 for pushbots. MIN SDK version supported on the target device. MAX version is blank by default. -->
-    <preference name="android-installLocation"    value="auto" />           <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
-    <preference name="android-build-tool"         value="gradle"/>           <!-- required for calendar plugin-->
-        <!-- Permission description for calendar-->
+  <preference name="auto-hide-splash-screen"    value="true" />
+  <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
+  <preference name="disable-cursor"             value="false" />
+  <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
+  <preference name="android-minSdkVersion"      value="15" />
+  <!-- android: changed from 14->15 on 4/15/18 for pushbots. MIN SDK version supported on the target device. MAX version is blank by default. -->
+  <preference name="android-installLocation"    value="auto" />
+  <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
+  <preference name="android-build-tool"         value="gradle"/>
+  <!-- required for calendar plugin-->
+  <!-- Permission description for calendar-->
   <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
     <string>For copying events to your personal calendar</string>
   </config-file>
   <!-- Allow launch of ferry ticket app-->
   <config-file platform="ios" parent="LSApplicationQueriesSchemes" mode="replace">
-  <array>
-    <string>ttpapps.pcf</string>
-  </array>
+    <array>
+      <string>ttpapps.pcf</string>
+    </array>
   </config-file>
-  
-    <!--Define a specific version of PhoneGap to build into your app. -->
-        <preference name="phonegap-version" value="cli-7.1.0" />
-         <!--<preference name='pgb-builder-version' value='1' /> -->
-      <preference name='pgb-builder-version' value='2' />
-       <!-- 2 for android, 1 for ios as of 5/31-->
+
+  <!--Define a specific version of PhoneGap to build into your app. -->
+  <preference name="phonegap-version" value="cli-7.1.0" />
+  <!--<preference name='pgb-builder-version' value='1' /> -->
+  <preference name='pgb-builder-version' value='2' />
+  <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
 
   <!-- Plugins -->
 
-    <!-- Core plugins -->
-    <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
-    <!--<gap:plugin name="org.apache.cordova.camera" />-->
-    <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
-    <!--<gap:plugin name="org.apache.cordova.console" />-->
-    <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-    <plugin name="cordova-plugin-device"  source="npm"/> 
-    <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
-    <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
-    <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
-    <!--<gap:plugin name="org.apache.cordova.file" />-->
-    <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
-    <plugin name="cordova-plugin-geolocation" source="npm" spec="2.4.3" />  <!-- platform="android"  removed- forced 3.0.1 on 2/16/18-->
-    <!--<gap:plugin name="org.apache.cordova.globalization" />-->
-    <plugin name="cordova-plugin-inappbrowser" source="npm"/>
-    <!--<gap:plugin name="org.apache.cordova.media" />-->
-    <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-    <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
-    <!--<gap:plugin name="org.apache.cordova.vibration" />-->
+  <!-- Core plugins -->
+  <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
+  <!--<gap:plugin name="org.apache.cordova.camera" />-->
+  <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
+  <!--<gap:plugin name="org.apache.cordova.console" />-->
+  <!--<gap:plugin name="org.apache.cordova.contacts" />-->
+  <plugin name="cordova-plugin-device"  source="npm"/>
+  <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
+  <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
+  <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
+  <!--<gap:plugin name="org.apache.cordova.file" />-->
+  <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
+  <plugin name="cordova-plugin-geolocation" source="npm" spec="2.4.3" />
+  <!-- platform="android"  removed- forced 3.0.1 on 2/16/18-->
+  <!--<gap:plugin name="org.apache.cordova.globalization" />-->
+  <plugin name="cordova-plugin-inappbrowser" source="npm"/>
+  <!--<gap:plugin name="org.apache.cordova.media" />-->
+  <!--<gap:plugin name="org.apache.cordova.network-information" />-->
+  <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
+  <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 
-    <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />  <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
-    <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
-  
-    <plugin name="cordova-plugin-calendar" source="npm" /> 
+  <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />
+  <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
+  <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
+
+  <plugin name="cordova-plugin-calendar" source="npm" />
   <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
-    <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>
+  <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git"/>
 
-    <!-- Third party plugins -->
-    <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
-    <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
-  
+  <!-- Third party plugins -->
+  <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
+  <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
 
-    <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
+
+  <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
       and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17-->
 
-    <icon src="icon.png"   /> 
-    <!-- Define app icon for each platform. -->
-  
+  <icon src="icon.png"   />
+  <!-- Define app icon for each platform. -->
+
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
             76x76 2xipad1xipad 83.5 2xipad-->
   <platform name="ios">
-    <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />  <!--29x29--> 
-    <icon src="www/res/icon/ios/icon-58.png"  width="58" height="58" />  <!--29x29 2x =58x58-->
-    <icon src="www/res/icon/ios/icon-87.png"  width="87" height="87" />  <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
+    <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />
+    <!--29x29-->
+    <icon src="www/res/icon/ios/icon-58.png"  width="58" height="58" />
+    <!--29x29 2x =58x58-->
+    <icon src="www/res/icon/ios/icon-87.png"  width="87" height="87" />
+    <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
 
-    <icon src="www/res/icon/ios/icon-40.png"     width="40" height="40" />  <!--40x40--> 
-    <icon src="www/res/icon/ios/icon-80.png"     width="80" height="80" />  <!--40x40 2x =80x80--> 
-    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" />  <!--40x40 3x =120x120--> 
+    <icon src="www/res/icon/ios/icon-40.png"     width="40" height="40" />
+    <!--40x40-->
+    <icon src="www/res/icon/ios/icon-80.png"     width="80" height="80" />
+    <!--40x40 2x =80x80-->
+    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" />
+    <!--40x40 3x =120x120-->
 
-    <icon src="www/res/icon/ios/icon-50.png"     width="50" height="50" />  <!--50x50--> 
-    <icon src="www/res/icon/ios/icon-100.png"    width="100" height="100" />  <!--50x50 2x =100x100--> 
+    <icon src="www/res/icon/ios/icon-50.png"     width="50" height="50" />
+    <!--50x50-->
+    <icon src="www/res/icon/ios/icon-100.png"    width="100" height="100" />
+    <!--50x50 2x =100x100-->
 
-    <icon src="www/res/icon/ios/icon-57.png"     width="57" height="57" />  <!--57x57-->
-    <icon src="www/res/icon/ios/icon-57-2x.png"  width="114" height="114" /> <!--57x57 2x =114x114-->
+    <icon src="www/res/icon/ios/icon-57.png"     width="57" height="57" />
+    <!--57x57-->
+    <icon src="www/res/icon/ios/icon-57-2x.png"  width="114" height="114" />
+    <!--57x57 2x =114x114-->
 
-    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" /> <!--60x60 2x =120x120 iPhone 6s -->
-    <icon src="www/res/icon/ios/icon-180A.png"    width="180" height="180" /> <!--60x60 3x = 180x180 iPhone 6s Plus-->
-    
-    <icon src="www/res/icon/ios/icon-72.png"     width="72" height="72" /> <!-- 72x72 -->
-    <icon src="www/res/icon/ios/icon-72-2x.png"  width="144" height="144" /> <!-- 72x72 2x =144x144-->
-    
-    <icon src="www/res/icon/ios/icon-76.png"     width="76" height="76" />   <!-- 76x76 -->
-    <icon src="www/res/icon/ios/icon-152.png"    width="152" height="152" /> <!-- 76x76 2x =152x152 WORKS FOR IPAD-->
-    
-    <icon src="www/res/icon/ios/icon-167.png"    width="167" height="167" /> <!-- iPad Pro -->
+    <icon src="www/res/icon/ios/icon-120.png"    width="120" height="120" />
+    <!--60x60 2x =120x120 iPhone 6s -->
+    <icon src="www/res/icon/ios/icon-180A.png"    width="180" height="180" />
+    <!--60x60 3x = 180x180 iPhone 6s Plus-->
 
-    <icon src="icon1024.png"                     width="1024" height="1024" />  <!-- App Store -->
+    <icon src="www/res/icon/ios/icon-72.png"     width="72" height="72" />
+    <!-- 72x72 -->
+    <icon src="www/res/icon/ios/icon-72-2x.png"  width="144" height="144" />
+    <!-- 72x72 2x =144x144-->
+
+    <icon src="www/res/icon/ios/icon-76.png"     width="76" height="76" />
+    <!-- 76x76 -->
+    <icon src="www/res/icon/ios/icon-152.png"    width="152" height="152" />
+    <!-- 76x76 2x =152x152 WORKS FOR IPAD-->
+
+    <icon src="www/res/icon/ios/icon-167.png"    width="167" height="167" />
+    <!-- iPad Pro -->
+
+    <icon src="icon1024.png"                     width="1024" height="1024" />
+    <!-- App Store -->
   </platform>
-  
-    <icon src="www/res/icon/webos/icon-64.png"          gap:platform="webos" />
-    <icon src="www/res/icon/windows-phone/icon-48.png"  gap:platform="winphone" />
-    <icon src="www/res/icon/windows-phone/icon-173-tile.png" gap:platform="winphone"   gap:role="background" />
 
-    <!-- Define app splash screen for each platform. -->
+  <icon src="www/res/icon/webos/icon-64.png"          gap:platform="webos" />
+  <icon src="www/res/icon/windows-phone/icon-48.png"  gap:platform="winphone" />
+  <icon src="www/res/icon/windows-phone/icon-173-tile.png" gap:platform="winphone"   gap:role="background" />
+
+  <!-- Define app splash screen for each platform. -->
 
   <!-- icon src="icon.png"                                  platform="ios"   />-->
 
-    <splash src="Default.png"                             platform="android" />
-    <splash src="Default.png"                             platform="ios" />
+  <splash src="Default.png"                             platform="android" />
+  <splash src="Default.png"                             platform="ios" />
 
   <platform name="ios">
     <splash scr="www/res/screen/ios/SS320x480.png"   width="320" height="480" />
@@ -172,7 +207,7 @@
     <splash src="www/res/screen/ios/SS750x1334.png" width="750" height="1334" />
     <splash src="www/res/screen/ios/SS1242x2208.png" width="1242" height="2208" />
   </platform>
-  
+
   <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
     <!--Pushbots Icons-->
@@ -184,7 +219,7 @@
     <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4/ic_stat_pushbots_sicon.png" />
     <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_pushbots_licon.png" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_pushbots_sicon.png" />
-  <!--OneSignal Icons 5/24/18-->
+    <!--OneSignal Icons 5/24/18-->
     <resource-file src="locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
@@ -192,7 +227,7 @@
     <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
   </platform>
 
-    <!--
+  <!--
         Define access to external domains.
 
         <access />            - a blank access tag denies access to all external resources.
@@ -200,27 +235,27 @@
 
         Otherwise, you can specify specific domains:
     -->
-    <access origin="*"/>
-    <!--
+  <access origin="*"/>
+  <!--
        <access origin="http://phonegap.com" />                    - allow any secure requests to http://phonegap.com/
        <access origin="http://phonegap.com" subdomains="true" />  - same as above, but including subdomains, such as http://build.phonegap.com/
        <access origin="http://phonegap.com" browserOnly="true" /> - only allows http://phonegap.com to be opened by the child browser.
    -->
-    <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
-    <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
-    <plugin name="cordova-plugin-whitelist" />
+  <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
+  <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
+  <plugin name="cordova-plugin-whitelist" />
 
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
-    <platform name="android">
-        <allow-intent href="market:*" />
-    </platform>
-    <platform name="ios">
-      <allow-navigation href="ttpapps.pcf://" />
-    </platform>
-    
+  <allow-intent href="http://*/*" />
+  <allow-intent href="https://*/*" />
+  <allow-intent href="tel:*" />
+  <allow-intent href="sms:*" />
+  <allow-intent href="mailto:*" />
+  <allow-intent href="geo:*" />
+  <platform name="android">
+    <allow-intent href="market:*" />
+  </platform>
+  <platform name="ios">
+    <allow-navigation href="ttpapps.pcf://" />
+  </platform>
+
 </widget>

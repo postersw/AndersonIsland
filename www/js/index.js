@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.072918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.073018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1554,12 +1554,12 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 nextTides = "&uarr; Incoming";
-                gTideTitleIcon = "<i class='material-icons'>publish</i> Tide";
-                gTideTitleNoIcon = "TIDE <i class='material-icons'>publish</i>";
+                gTideTitleIcon = "<i class='material-icons'>arrow_upward</i> Tide";
+                gTideTitleNoIcon = "TIDE <i class='material-icons'>arrow_upward</i>";
                 //arrow_upward
             } else {
-                gTideTitleIcon = "<i class='material-icons'>file_download</i> Tide";
-                gTideTitleNoIcon = "TIDE <i class='material-icons'>file_download</i>";
+                gTideTitleIcon = "<i class='material-icons'>arrow_downward</i> Tide";
+                gTideTitleNoIcon = "TIDE <i class='material-icons'>arrow_downward</i>";
                 nextTides = "&darr; Outgoing";
                 //arrow_downward  file_upload<
             }
@@ -4040,7 +4040,7 @@ function ShowIcons(n) {
     var s;
     for (i = 0; i < icona.length; i = i + 3) {
         switch (n){
-            case 1: s = "<span style='white-space:nowrap'><i class='material-icons'>" + icona[i + 1] + "</i><span style='font-size:16px'>" + icona[i + 2] + "</span></span>";
+            case 1: s = "<span style='white-space:nowrap'><i class='material-icons'>" + icona[i + 1] + "</i><span style='font-size:15px'>" + icona[i + 2] + "</span></span>";
                 break;
             case 2: s = "<i class='material-icons'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
                 break;
