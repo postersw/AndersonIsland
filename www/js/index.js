@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.073018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.080118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1431,6 +1431,8 @@ function HandleCurrentWeatherReply(responseText) {
         StripDecimal(r.wind.speed) + " mph" + ((rain!="0")? (", " + rain + " rain") : "");
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
+    FormatWeatherIcon(r.weather[0].icon); // format weather icon for menu
+
     // detailed string for weather detail page
     gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
     gDateSunset = new Date(Number(r.sys.sunset) * 1000);
@@ -1448,9 +1450,21 @@ function HandleCurrentWeatherReply(responseText) {
 
     localStorage.setItem("currentweatherlong", currentlong);
 } // end of function
+//////////////////////////////////////////////////////////////////////////////
+//  FormatWeatherIcon - create a main page icon from the google icon font, based on the OpenWeather icon
+// entry    icon = xxd or xxn, where xx is a number for the weather icons.
+var gWeatherIcon = "cloud_queue";  // default
+function FormatWeatherIcon(icon) {
+    var iconlist = ["brightness_2", "wb_sunny", "cloud_queue", "cloud_queue", "cloud", "cloud", "cloud", "cloud", "cloud",
+        "cloud_download", "cloud_download", "cloud_download", "", "ac_unit"];
+    i = Number(icon.substr(0, 2));
+    if (i > 13) i = 3;
+    if (icon == "01n") i = 0;
+    gWeatherIcon = iconlist[i];
+    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
+}
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // getForecast using OpenWeatherMap. This is the ONLY routine that gets the forecast
 // get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
@@ -1599,6 +1613,8 @@ function DisplayNextEvents(CE) {
     var aCEyymmdd; // yymmdd of Calendar Entry
     var DisplayDate = 0; // event date we are displaying
     var nEvents = 0; // number of events displayed
+    var CEvent = "";
+
     if (CE === null) return;
     // break CE up into rows
     CE = CE.split("\n");  // break it up into rows
@@ -1616,11 +1632,14 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
+        if (gIconSwitch == 1) CEvent = FormatEvent(aCE[4], aCE[3], "14");
+        else CEvent = aCE[4];
+
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + aCE[4] + " @ " + aCE[5] + "<br/>";
+            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + CEvent + " @ " + aCE[5] + "<br/>";
+            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
             DisplayDate = aCEyymmdd;
@@ -1634,7 +1653,7 @@ function DisplayNextEvents(CE) {
             else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
-        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
+        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + CEvent + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -2786,7 +2805,7 @@ function DisplayComingEventsList(CE) {
         col = row.insertCell(1);
         col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
         var col2 = row.insertCell(2);
-        col2.innerHTML = FormatEvent(aCE[4], aCE[3]);//event
+        col2.innerHTML = FormatEvent(aCE[4], aCE[3], "16");//event
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = aCE[5];//where
         var color;
@@ -2804,9 +2823,9 @@ function DisplayComingEventsList(CE) {
 
 //////////////////////////////////////////////////////////////////////
 //  FormatEvent - add icon if switch is on
-//  Entry   event name, event type
+//  Entry   event name, event type (M, E, A, ...), font size in pixels
 //  Exit    html for event, includes icon if switch is on
-function FormatEvent(ev, key) {
+function FormatEvent(ev, key, size) {
     var iconlist = ["meeting", "people", "music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
         "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", "film", "theaters",
         "fitness", "fitness_center", "craft", "palette", "night out", "local_bar", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
@@ -2831,7 +2850,7 @@ function FormatEvent(ev, key) {
             break;
         }
     }
-    return '<i class="material-icons" style="font-size:16px">' + icon + '</i> ' + ev;
+    return '<i class="material-icons" style="font-size:' + size + 'px">' + icon + '</i> ' + ev;
 }
 
 
@@ -4054,6 +4073,7 @@ function ShowIcons(n) {
         document.getElementById(icona[i]).innerHTML = s;
     }
     // update variable icons
+    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
     SetTideTitle();
     // remember it
     localStorage.setItem("icons", n.toFixed(0)); // icons = 0 - 5,
