@@ -5,7 +5,7 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.20.073118"
+        version   = "1.20.080218"
         android-versionCode="2233" 
         android:versionName="1.20.072218">
         <!-- versionCode 2233 for 1.20 6/23/18 -->
@@ -65,6 +65,9 @@
         <!-- Permission description for calendar-->
   <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
     <string>For copying events to your personal calendar</string>
+  </config-file>
+  <config-file platform="ios" parent="NSLocationWhenInUseUsageDescription" mode="replace">
+    <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </config-file>
   <!-- Allow launch of ferry ticket app-->
   <config-file platform="ios" parent="LSApplicationQueriesSchemes" mode="replace">
