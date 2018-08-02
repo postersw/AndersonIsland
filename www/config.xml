@@ -62,7 +62,8 @@
     <preference name="android-minSdkVersion"      value="15" />              <!-- android: changed from 14->15 on 4/15/18 for pushbots. MIN SDK version supported on the target device. MAX version is blank by default. -->
     <preference name="android-installLocation"    value="auto" />           <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
     <preference name="android-build-tool"         value="gradle"/>           <!-- required for calendar plugin-->
-        <!-- Permission description for calendar-->
+ 
+  <!-- Permission description for calendar-->
   <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
     <string>For copying events to your personal calendar</string>
   </config-file>
@@ -72,6 +73,16 @@
   <config-file platform="ios" parent="NSLocationWhenInUseUsageDescription" mode="replace">
     <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </config-file>
+
+  <platform name="ios">
+    <edit-config target="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="merge">
+      <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
+    </edit-config>
+    <edit-config target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+      <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
+    </edit-config>
+  </platform>
+  
   <!-- Allow launch of ferry ticket app-->
   <config-file platform="ios" parent="LSApplicationQueriesSchemes" mode="replace">
   <array>
