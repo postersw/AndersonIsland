@@ -1568,11 +1568,11 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 nextTides = "&uarr; Incoming";
-                gTideTitleIcon = "<i class='material-icons'>arrow_upward</i> Tide";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons'>arrow_upward</i><span style='font-size:15px'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons'>arrow_upward</i>";
                 //arrow_upward
             } else {
-                gTideTitleIcon = "<i class='material-icons'>arrow_downward</i> Tide";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons'>arrow_downward</i><span style='font-size:15px'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons'>arrow_downward</i>";
                 nextTides = "&darr; Outgoing";
                 //arrow_downward  file_upload<
