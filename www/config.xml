@@ -110,7 +110,7 @@
     <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
     <!--<gap:plugin name="org.apache.cordova.file" />-->
     <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
-    <plugin name="cordova-plugin-geolocation" source="npm" spec="2.4.3" />  <!-- platform="android"  removed- forced 3.0.1 on 2/16/18-->
+    <plugin name="cordova-plugin-geolocation" source="npm"/>  <!-- removed  spec="2.4.3" on 8/3/18. platform="android"  removed- forced 3.0.1 on 2/16/18-->
     <!--<gap:plugin name="org.apache.cordova.globalization" />-->
     <plugin name="cordova-plugin-inappbrowser" source="npm"/>
     <!--<gap:plugin name="org.apache.cordova.media" />-->
