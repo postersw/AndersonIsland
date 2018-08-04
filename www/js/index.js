@@ -236,10 +236,10 @@ function IncrementDate(dateincr) {
     var mm = gMonth;
     var yy = gYear;
     if (dd > gDaysInMonth[gMonth]) {  // if month overflow
-        mm = gMonth + 1;
-        dd = gDaysInMonth[gMonth] - dd;
+        mm = mm + 1;
+        dd = dd - gDaysInMonth[gMonth];
         if (mm == 13) {  // if next year
-            mm = 1; yy = gYear + 1;
+            mm = 1; yy = yy + 1;
         }
     }
     return (mm*100) + dd + (yy - 2000) * 10000; // yymmdd
