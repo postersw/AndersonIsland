@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.080118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.080418.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -225,6 +225,24 @@ function InitializeDates(dateincr) {
     if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
     // compute holidays
     holiday = IsHoliday(gMonthDay);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//  IncrementDate - returns date in YYmmdd format, incremented by dateincr
+//  entry   dateincr = increment in days against current gdate values
+//  exit    returns yymmdd  e.g. 180828
+function IncrementDate(dateincr) {
+    var dd = gDayofMonth + dateincr;
+    var mm = gMonth;
+    var yy = gYear;
+    if (dd > gDaysInMonth[gMonth]) {  // if month overflow
+        mm = gMonth + 1;
+        dd = gDaysInMonth[gMonth] - dd;
+        if (mm == 13) {  // if next year
+            mm = 1; yy = gYear + 1;
+        }
+    }
+    return (mm*100) + dd + (yy - 2000) * 10000; // yymmdd
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1619,6 +1637,8 @@ function DisplayNextEvents(CE) {
     // break CE up into rows
     CE = CE.split("\n");  // break it up into rows
     if (CE == "") return;
+    var yymmddP6 = IncrementDate(6); // add 6 to date
+
     // roll through the next 30 days
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE] == "") continue; // skip blank lines
@@ -1645,12 +1665,13 @@ function DisplayNextEvents(CE) {
             DisplayDate = aCEyymmdd;
             continue;
         }
-        // if not today, display date
+        // if not today, display day of week. Do NOT display > 6 days (1 week) ahead because it is too confusing.
         if (aCEyymmdd != DisplayDate) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
-            else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
-            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
+            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
+            //else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
+            else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
         datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + CEvent + " @ " + aCE[5] + "<br/>";
