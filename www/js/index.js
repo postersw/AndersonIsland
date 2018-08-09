@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.080418.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.080918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1479,7 +1479,7 @@ function FormatWeatherIcon(icon) {
     if (i > 13) i = 3;
     if (icon == "01n") i = 0;
     gWeatherIcon = iconlist[i];
-    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
+    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons f36'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1586,12 +1586,12 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 nextTides = "&uarr; Incoming";
-                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons'>arrow_upward</i><span style='font-size:15px'>Tide</span></span>";
-                gTideTitleNoIcon = "TIDE <i class='material-icons'>arrow_upward</i>";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons f36'>arrow_upward</i><span style='font-size:15px'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons f36'>arrow_upward</i>";
                 //arrow_upward
             } else {
-                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons'>arrow_downward</i><span style='font-size:15px'>Tide</span></span>";
-                gTideTitleNoIcon = "TIDE <i class='material-icons'>arrow_downward</i>";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons f36'>arrow_downward</i><span style='font-size:15px'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons f36'>arrow_downward</i>";
                 nextTides = "&darr; Outgoing";
                 //arrow_downward  file_upload<
             }
@@ -2501,10 +2501,12 @@ function ShowOpenHoursTable(showall) {
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
 //  Exit    returns html for a table entry                             
 function FormatOneBusiness(Oh, mmdd, showall) {
-    var showicon = "<i class='material-icons'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons'>" + Oh.Icon + "</i> ";
-    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" + showicon + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
+    var showicon = "<i class='material-icons f36'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons f36'>" + Oh.Icon + "</i> ";
+    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
+        showicon + Oh.Name + "&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
+    openlist += "<div style=margin:8px>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
     // loop through the Oh.Sc entries. Each entry is for 1 date range.
@@ -2548,7 +2550,7 @@ function FormatOneBusiness(Oh, mmdd, showall) {
         if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
     }
     // buttons for call and web site
-    return openlist + "&nbsp&nbsp " +
+    return openlist + "</div>&nbsp&nbsp " +
         "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>" + Oh.Phone + "</a></button>&nbsp&nbsp" +
         "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web</button>&nbsp&nbsp" +
         "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>Map</button>";
@@ -2570,8 +2572,8 @@ function ShowOneBusinessFullPage(id) {
     if (t == "Store") t = "General Store";
     SetPageHeader(t);
     //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
-    var showicon = "<i class='material-icons'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons'>" + Oh.Icon + "</i> ";
+    var showicon = "<i class='material-icons f36'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons f36'>" + Oh.Icon + "</i> ";
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
@@ -2871,7 +2873,7 @@ function FormatEvent(ev, key, size) {
             break;
         }
     }
-    return '<i class="material-icons" style="font-size:' + size + 'px">' + icon + '</i> ' + ev;
+    return '<i class="material-icons">' + icon + '</i> ' + ev;
 }
 
 
@@ -4080,11 +4082,11 @@ function ShowIcons(n) {
     var s;
     for (i = 0; i < icona.length; i = i + 3) {
         switch (n){
-            case 1: s = "<span style='white-space:nowrap'><i class='material-icons'>" + icona[i + 1] + "</i><span style='font-size:15px'>" + icona[i + 2] + "</span></span>";
+            case 1: s = "<span style='white-space:nowrap'><i class='material-icons f36'>" + icona[i + 1] + "</i><span style='font-size:15px'>" + icona[i + 2] + "</span></span>";
                 break;
-            case 2: s = "<i class='material-icons'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
+            case 2: s = "<i class='material-icons f36'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
                 break;
-            case 3: s = "<i class='material-icons'>" + icona[i + 1];
+            case 3: s = "<i class='material-icons f36'>" + icona[i + 1];
                 break;
             case 4: s = icona[i + 2].toLocaleUpperCase();
                 break;
@@ -4094,7 +4096,7 @@ function ShowIcons(n) {
         document.getElementById(icona[i]).innerHTML = s;
     }
     // update variable icons
-    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
+    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons f36'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
     SetTideTitle();
     // remember it
     localStorage.setItem("icons", n.toFixed(0)); // icons = 0 - 5,

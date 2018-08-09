@@ -134,7 +134,7 @@ h1 {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
-    font-size: 36px; /* Preferred icon size */
+    /*font-size: 36px; Preferred icon size */
     display: inline-block;
     line-height: 1;
     text-transform: none;
@@ -150,4 +150,13 @@ h1 {
     -moz-osx-font-smoothing: grayscale;
     /* Support for IE. */
     font-feature-settings: 'liga';
+}
+.f36 {
+    font-size: 36px; 
+}
+.f24 {
+    font-size: 24px;
+}
+.f18 {
+    font-size: 18px;
 }
