@@ -189,6 +189,10 @@ var tidesLastUpdate; // time of last update
 var gWeatherForecastCount = 0; // number of weather forcast requests to debug API key exceeding 60 rpm
 var gWeatherCurrentCount = 0; // number of weather current requests to debug API key exceeding 60 rpm
 
+// icons
+var gIconSwitch = 0; // icon switch 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc
+var gEventIcons = true;
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
 function IsHoliday(md) {
@@ -1658,7 +1662,7 @@ function DisplayNextEvents(CE) {
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + CEvent + " @ " + aCE[5] + "<br/>";
+            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
             else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
@@ -1668,13 +1672,13 @@ function DisplayNextEvents(CE) {
         // if not today, display day of week. Do NOT display > 6 days (1 week) ahead because it is too confusing.
         if (aCEyymmdd != DisplayDate) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
-            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
-            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
+            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
+            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
             //else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
             else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
-        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + CEvent + " @ " + aCE[5] + "<br/>";
+        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " + CEvent + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -2677,7 +2681,7 @@ function ParseOpenHours() {
 //  entry   type = 'events' or 'activities'
 var EventFilter = ""; //letter to filter for
 var EventDisp = ""; // event display type, L, W, M
-var gEventIcons = true;
+
 
 function DisplayComingEventsPage(type) {
     localStorage.setItem("eventtype", type);
@@ -4080,7 +4084,6 @@ function LocationPrevent() {
 //  ShowIcons - show icons in the front page
 //
 // icona: html id, icon name, title, ...
-var gIconSwitch=0; // icon switch 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc
 var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam", "Camera",
     "loctitle", "pin_drop", "Location", "tickettitle", "local_offer", "Tickets",
     "weathertitle", "cloud_queue", "Weather",
@@ -4110,7 +4113,7 @@ function ShowIcons(n) {
             case 5: s = icona[i + 2];
                 break;
         }
-        document.getElementById(icona[i]).innerHTML = s;
+        if (document.getElementById(icona[i])!=null) document.getElementById(icona[i]).innerHTML = s;
     }
     // update variable icons
     if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons f36'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
@@ -4118,6 +4121,7 @@ function ShowIcons(n) {
     // remember it
     localStorage.setItem("icons", n.toFixed(0)); // icons = 0 - 5,
 }
+
 /////////////////////////////////////////////////////////////
 //  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
 function SetTideTitle() {
@@ -4162,20 +4166,19 @@ function StartApp() {
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
+
+    // Replace labels with icons if user selected them
+    i = localStorage.getItem("icons"); // icons = 0 - 5,
+    if (i == "1") ShowIcons(Number(i));
+
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
-
-    // Replace labels with icons if user selected them
-    i = localStorage.getItem("icons"); // icons = 0 - 5,
-    if (i == null || i == 0 || i == 4) {
-    } else {
-        ShowIcons(Number(i));
-    }
-
+    //if (gIconSwitch==1) ShowIcons(Number(i));
+    
     // show the page
     Show("mainpage");  // now display the main page
     Show("vermsg"); // display the version
