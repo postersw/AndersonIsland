@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.080918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.081018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1652,7 +1652,7 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
-        if (gIconSwitch == 1) CEvent = FormatEvent(aCE[4], aCE[3], "14");
+        if (gIconSwitch == 1) CEvent = FormatEvent(aCE, "14");
         else CEvent = aCE[4];
 
         // if Today: bold time. if current, make time green.  
@@ -2743,6 +2743,8 @@ function SetEventFilter(f) {
 //  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
 // or 'comingactivities' localStorage items. 
 //  entry   CE is a single big string containing multiple lines, so we split the string by \n.
+//          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
+//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
 function DisplayComingEventsList(CE) {
     var i;
     var row;
@@ -2828,7 +2830,7 @@ function DisplayComingEventsList(CE) {
         col = row.insertCell(1);
         col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
         var col2 = row.insertCell(2);
-        col2.innerHTML = FormatEvent(aCE[4], aCE[3], "16");//event
+        col2.innerHTML = FormatEvent(aCE, "16");//event
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = aCE[5];//where
         var color;
@@ -2846,18 +2848,32 @@ function DisplayComingEventsList(CE) {
 
 //////////////////////////////////////////////////////////////////////
 //  FormatEvent - add icon if switch is on
-//  Entry   event name, event type (M, E, A, ...), font size in pixels
+//  Entry   event array, font size in pixels
+//          each array   is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
+//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
 //  Exit    html for event, includes icon if switch is on
-function FormatEvent(ev, key, size) {
-    var iconlist = ["meeting", "people", "music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
-        "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", "film", "theaters",
-        "fitness", "fitness_center", "craft", "palette", "night out", "local_bar", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
+function FormatEvent(aCE, fontsize) {
+    // iconlist:   keyword, iconname, ...
+    var iconlist = ["meeting", "people", "film", "theaters","music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
+        "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", 
+        "fitness", "fitness_center", "craft", "palette", "art", "palette", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
     ];
-    var evlc = ev.toLowerCase();
+    var ev = aCE[4];
     var icon;
     if (!gEventIcons) return ev;  // if no icons
-    // default icon
-    switch (key) {
+    // 1. look for user specified icon in aCE[8]
+    if (aCE.length >= 9) {
+        if (aCE[8].substr(0, 1) == "{") {
+            try {
+                var us = JSON.parse(aCE[8]); // parse it
+                if (us.i != null) return '<i class="material-icons">' + us.i + '</i> ' + ev;
+            } catch (err) {
+            }
+        }
+    }
+    
+    // default icon based on the key: E, S, A, C, G, M
+    switch (aCE[3]) {
         case "E": icon = "mood"; break; // special events
         case "S": icon = "music_note"; break; // show
         case "A": icon = "directions_run"; break; // activity
@@ -2865,8 +2881,9 @@ function FormatEvent(ev, key, size) {
         case "G": icon = "games"; break; // game
         default: icon = "people";
     }
-    // find speical case icon
+    // find an icon based on keyword in the title
     var i;
+    var evlc = ev.toLowerCase();
     for (i = 0; i < iconlist.length; i = i + 2) {
         if (evlc.indexOf(iconlist[i]) >= 0) {
             icon = iconlist[i + 1];
