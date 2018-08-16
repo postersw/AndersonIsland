@@ -1486,7 +1486,7 @@ function FormatWeatherIcon(icon) {
     if (i > 13) i = 3;
     if (icon == "01n") i = 0;
     gWeatherIcon = iconlist[i];
-    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons f36'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
+    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1593,12 +1593,12 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 nextTides = "&uarr; Incoming";
-                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons f36'>arrow_upward</i><span style='font-size:15px'>Tide</span></span>";
-                gTideTitleNoIcon = "TIDE <i class='material-icons f36'>arrow_upward</i>";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_upward</i><span class='mptext'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_upward</i>";
                 //arrow_upward
             } else {
-                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons f36'>arrow_downward</i><span style='font-size:15px'>Tide</span></span>";
-                gTideTitleNoIcon = "TIDE <i class='material-icons f36'>arrow_downward</i>";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_downward</i><span class='mptext'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_downward</i>";
                 nextTides = "&darr; Outgoing";
                 //arrow_downward  file_upload<
             }
@@ -2508,8 +2508,8 @@ function ShowOpenHoursTable(showall) {
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
 //  Exit    returns html for a table entry                             
 function FormatOneBusiness(Oh, mmdd, showall) {
-    var showicon = "<i class='material-icons f36'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons f36'>" + Oh.Icon + "</i> ";
+    var showicon = "<i class='material-icons mpicon'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons mpicon'>" + Oh.Icon + "</i> ";
     var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
         showicon + Oh.Name + "&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
@@ -2579,8 +2579,8 @@ function ShowOneBusinessFullPage(id) {
     if (t == "Store") t = "General Store";
     SetPageHeader(t);
     //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
-    var showicon = "<i class='material-icons f36'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons f36'>" + Oh.Icon + "</i> ";
+    var showicon = "<i class='material-icons mpicon'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons mpicon'>" + Oh.Icon + "</i> ";
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
@@ -4109,9 +4109,9 @@ function ShowIcons(nt) {
             switch (nt) {
                 case "1": s = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + icona[i + 1] + "</i><span class='mptext'>" + icona[i + 2] + "</span></span>";
                     break;
-                case "2": s = "<i class='material-icons f36'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
+                case "2": s = "<i class='material-icons mpicon'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
                     break;
-                case "3": s = "<i class='material-icons f36'>" + icona[i + 1];
+                case "3": s = "<i class='material-icons mpicon'>" + icona[i + 1];
                     break;
                 case "4": s = icona[i + 2].toLocaleUpperCase();
                     break;
