@@ -220,7 +220,7 @@
             <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse" ;>
                 <tr id='ferryrow' style="background-color:azure;" onclick="DisplayFerrySchedulePage();">
                     <td id="ferrytitle" style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px">
-                        FERRY
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>directions_boat</i><span class='mptext'>Ferry</span></span>
                     </td>
                     <td id="ferrytimes" style="font-size:small;margin-top:0px;margin-bottom:0px;"> </td>
                 </tr>
@@ -230,13 +230,13 @@
                         <table align="center" style="width:100%;padding:0;border-collapse:collapse;border:0px" ;>
                             <tr style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;border:0px">
                                 <td id="webcamtitle" style="text-align:center;" onclick="ShowFerryWebCam()">
-                                    &nbsp;CAMERA
+                                    <span style='white-space:nowrap'><i class='material-icons mpicon'>videocam</i><span class='mptext'>Camera</span></span>
                                 </td>
                                 <td id="loctitle" style="text-align:center;border-right:1px solid lightgray;border-left:1px solid lightgray" onclick="ShowFerryLocation()">
-                                    LOCATION
+                                    <span style='white-space:nowrap'><i class='material-icons mpicon'>pin_drop</i><span class='mptext'>Location</span></span>
                                 </td>
                                 <td id="tickettitle" style="text-align:center" onclick="StartTicketApp()">
-                                    TICKETS
+                                    <span style='white-space:nowrap'><i class='material-icons mpicon'>local_offer</i><span class='mptext'>Tickets</span></span>
                                 </td>
                             </tr>
                         </table>
@@ -252,7 +252,7 @@
 
                 <tr style="background-color:honeydew" onclick="ShowWeatherPage();">
                     <td id="weathertitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px;text-wrap:avoid">
-                        WEATHER
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>cloud-queue</i><span class='mptext'>Weather</span></span>
                     </td>
                     <td style="font-size:small;margin-top:4px;margin-bottom:0px">
                         <span id="weather"><br />Current weather:</span><br />
@@ -263,86 +263,86 @@
 
                 <tr style="background-color:floralwhite;" onclick="DisplayComingEventsPage('events');">
                     <td id="eventtitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
-                        EVENTS
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>event</i><span class='mptext'>Events</span></span>
                     </td>
                     <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
                 </tr>
                 <tr style="background-color:floralwhite;" onclick="DisplayComingEventsPage('activity');">
                     <td id="activitytitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
-                        ACTIVITY
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>directions_run</i><span class='mptext'>Activity</span></span>
                     </td>
                     <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
                 </tr>
 
                 <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
                     <td id="opentitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px">
-                        OPEN<br />HOURS
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>schedule</i><span class='mptext'>Open</span></span>
                     </td>
                     <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px"> </td>
                 </tr>
 
                 <tr style="background-color:lightyellow" onclick="ShowBurnBan();">
                     <td id="burnbantitle" style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
-                        BURNBAN
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>whatshot</i><span class='mptext'>Burnban</span></span>
                     </td>
                     <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.<br /></td>
                 </tr>
 
                 <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">
                     <td id="tannertitle" style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">
-                        TANNER
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>flash_on</i><span class='mptext'>Tanner</span></span>
                     </td>
                     <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.<br /></td>
                 </tr>
                 <tr style="background-color:#ccffcc" onclick="ShowParks()">
                     <td id="parkstitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
-                        PARKS
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>nature_people</i><span class='mptext'>Parks</span></span>
                     </td>
                 </tr>
                 <tr style="background-color:#cce4ff;" onclick="ShowLinksPage('fishing', 'island');">
                     <td id="fishtitle" style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">
-                        FISHING
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>rowing</i><span class='mptext'>Fishing</span></span>
                     </td>
                 </tr>
                 <tr style="background-color:#f0f0f5;" onclick="ShowNews()" )>
                     <td id="newstitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
-                        NEWS
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>chat</i><span class='mptext'>News</span></span>
                     </td>
                 </tr>
 
                 <tr style="background-color:#cce4ff" onclick="ShowMap();">
                     <td id="maptitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
-                        MAP
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>map</i><span class='mptext'>Map</span></span>
                     </td>
                 </tr>
 
                 <tr style="background-color:azure;" onclick="ShowLinksPage('island', 'fishing');">
                     <td id="linkstitle" style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">
-                        ISLAND INFO LINKS
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>link</i><span class='mptext'>Island Information Links</span></span>
                     </td>
                 </tr>
                 <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">
                     <td id="contactstitle" style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
-                        EMERGENCY CONTACTS
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>phone</i><span class='mptext'>Emergency Contacts</span></span>
                     </td>
                 </tr>
                 <tr id="maintablerows"></tr>
 
                 <tr>
                     <td id="helptitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">
-                        HELP
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>help</i><span class='mptext'>Help</span></span>
                 </tr>
 
                 <tr>
                     <td id="feedbacktitle" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
                         <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">
-                            FEEDBACK
+                            <span style='white-space:nowrap'><i class='material-icons mpicon'>email</i><span class='mptext'>Feedback</span></span>
                         </a>
                     </td>
                 </tr>
                 <tr>
                     <td id="abouttitle" style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">
-                        ABOUT
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>info_outline</i><span class='mptext'>About</span></span>
                     </td>
                 </tr>
 
@@ -809,8 +809,8 @@
             <tr class="menu">
                 <td class="menu">
                     Icons:
-                    <input type="radio" name="ferryhl" id="iconl1" onclick="ShowIcons(1)"><span id="iconlont"> ON </span>
-                    <input type="radio" name="ferryhl" id="iconl4" onclick="ShowIcons(4)"><span id="iconlofft"> Off</span>
+                    <input type="radio" name="ferryhl" id="iconl1" onclick="ShowIcons('1')"><span id="iconlont"> ON </span>
+                    <input type="radio" name="ferryhl" id="iconl4" onclick="ShowIcons('4')"><span id="iconlofft"> Off</span>
                 </td>
             </tr>
 

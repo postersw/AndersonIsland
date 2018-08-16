@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.081318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.081618.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -190,7 +190,7 @@ var gWeatherForecastCount = 0; // number of weather forcast requests to debug AP
 var gWeatherCurrentCount = 0; // number of weather current requests to debug API key exceeding 60 rpm
 
 // icons
-var gIconSwitch = 0; // icon switch 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc
+var gIconSwitch = "1"; // icon switch, text: 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
 var gEventIcons = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -742,6 +742,9 @@ function MenuSetup() {
         if (LSget('notifyoff') != "OFF") MenuSet("notifymont", "lime", "notifymofft", "white", "notifymon");
         else MenuSet("notifymont", "white", "notifymofft", "red", "notifymoff");
     } else Hide("notifyswitch");
+    // icons
+    if (gIconSwitch == "1") MenuSet("iconlont", "lime", "iconlofft", "white");
+    else MenuSet("iconlont", "white", "iconlofft", "red");
 
 }
 
@@ -4080,10 +4083,7 @@ function LocationPrevent() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  Switch icon/no icon mode
-//////////////////////////////////////////////////////////
-//  ShowIcons - show icons in the front page
-//
-// icona: html id, icon name, title, ...
+
 var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam", "Camera",
     "loctitle", "pin_drop", "Location", "tickettitle", "local_offer", "Tickets",
     "weathertitle", "cloud_queue", "Weather",
@@ -4094,38 +4094,59 @@ var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam"
     "maptitle", "map", "Map", "linkstitle", "link", "Island Information Links",
     "contactstitle", "phone", "Emergency Contacts", "helptitle", "help", "Help",
     "feedbacktitle", "email", "Feedback", "abouttitle", "info_outline", "About",
-    "voluntitle","group","Volunteer"];
-// n=1 for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 for UC titles only, 5 for LC titles only
-function ShowIcons(n) {
-    gIconSwitch = n;
-    var i = 0;
-    var s;
-    for (i = 0; i < icona.length; i = i + 3) {
-        switch (n){
-            case 1: s = "<span style='white-space:nowrap'><i class='material-icons f36'>" + icona[i + 1] + "</i><span style='font-size:15px'>" + icona[i + 2] + "</span></span>";
-                break;
-            case 2: s = "<i class='material-icons f36'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
-                break;
-            case 3: s = "<i class='material-icons f36'>" + icona[i + 1];
-                break;
-            case 4: s = icona[i + 2].toLocaleUpperCase();
-                break;
-            case 5: s = icona[i + 2];
-                break;
+    "voluntitle", "group", "Volunteer"];
+//////////////////////////////////////////////////////////
+//  ShowIcons - show icons in the front page
+//
+// icona: html id, icon name, title, ...
+//  Entry: nt="1" for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 for UC titles only, 5 for LC titles only
+function ShowIcons(nt) {
+    if (gIconSwitch != nt) {
+        gIconSwitch = nt;
+        var i = 0;
+        var s;
+        for (i = 0; i < icona.length; i = i + 3) {
+            switch (nt) {
+                case "1": s = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + icona[i + 1] + "</i><span class='mptext'>" + icona[i + 2] + "</span></span>";
+                    break;
+                case "2": s = "<i class='material-icons f36'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
+                    break;
+                case "3": s = "<i class='material-icons f36'>" + icona[i + 1];
+                    break;
+                case "4": s = icona[i + 2].toLocaleUpperCase();
+                    break;
+                case "5": s = icona[i + 2];
+                    break;
+            }
+            if (document.getElementById(icona[i]) != null) document.getElementById(icona[i]).innerHTML = s;
         }
-        if (document.getElementById(icona[i])!=null) document.getElementById(icona[i]).innerHTML = s;
     }
     // update variable icons
-    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons f36'>" + gWeatherIcon + "</i><span style='font-size:15px'>Weather</span></span>";
+    if (gIconSwitch == "1") document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
     SetTideTitle();
     // remember it
-    localStorage.setItem("icons", n.toFixed(0)); // icons = 0 - 5,
+    localStorage.setItem("icons", nt); // icons = 0 - 5,
+    if (gIconSwitch == "1") MenuSet("iconlont", "lime", "iconlofft", "white");
+    else MenuSet("iconlont", "white", "iconlofft", "red");
 }
 
+//////////////////////////////////////////////////////////////////////
+//  InitializeIcons - show startup message if necessary.
+//  ASSUMES THAT index.html HAS ICONS AT STARTUP!
+//  Entry: local storage "icons" = icon value
+function InitializeIcons() {
+    gIconSwitch = "1";
+    var ic = localStorage.getItem("icons"); // icons = 0 - 5,
+    if (ic == null) {
+        alert("The Anderson Island Assistant now uses icons on its main screen. To revert to the former text-only display, select:\n Menu -> Icons -> Off\n in the upper left-hand corner of the main screen.");
+        ic = "1";
+    }
+    ShowIcons(ic);
+}
 /////////////////////////////////////////////////////////////
 //  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
 function SetTideTitle() {
-    if (gIconSwitch == 1 || gIconSwitch == 2) {
+    if (gIconSwitch == "1" || gIconSwitch == "2") {
         document.getElementById("tidestitle").innerHTML = gTideTitleIcon;
     } else {
         document.getElementById("tidestitle").innerHTML = gTideTitleNoIcon;
@@ -4167,9 +4188,8 @@ function StartApp() {
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
 
-    // Replace labels with icons if user selected them
-    i = localStorage.getItem("icons"); // icons = 0 - 5,
-    if (i == "1") ShowIcons(Number(i));
+    // Replace icons with Labels if user selected them
+    InitializeIcons();
 
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
@@ -4177,7 +4197,6 @@ function StartApp() {
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
-    //if (gIconSwitch==1) ShowIcons(Number(i));
     
     // show the page
     Show("mainpage");  // now display the main page
