@@ -69,7 +69,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.081618.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.081818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -4085,7 +4085,7 @@ function LocationPrevent() {
 //  Switch icon/no icon mode
 
 var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam", "Camera",
-    "loctitle", "pin_drop", "Location", "tickettitle", "local_offer", "Tickets",
+    "loctitle", "pin_drop", "Location", "tickettitle", "confirmation_number", "Tickets",
     "weathertitle", "cloud_queue", "Weather",
     "eventtitle", "event", "Events", "activitytitle", "directions_run", "Activity",
     "opentitle", "schedule", "Open", "burnbantitle", "whatshot", "Burnban",
