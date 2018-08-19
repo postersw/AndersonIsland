@@ -110,7 +110,7 @@
   <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
   <!--<gap:plugin name="org.apache.cordova.console" />-->
   <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-  <plugin name="cordova-plugin-device"  source="npm"/>
+  <!--<plugin name="cordova-plugin-device"  source="npm"/> removed with cli=8.0 cause it fails. 8/18/18-->
   <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
   <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
   <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
