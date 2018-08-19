@@ -48,6 +48,7 @@
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
         1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
         1.21 072618. Icons on main page.  Released to web.
+             081818. Moon phases added to weather.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -69,7 +70,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.081818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.081818.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1798,6 +1799,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
     parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
+    parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
@@ -3887,7 +3889,7 @@ function ShowWeatherPage() {
     ShowPage("weatherpage");
     SetPageHeader("Weather");
     InitializeDates(0);
-    document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong");
+    document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong") + localStorage.getItem("moon");
     generateWeatherForecastPage(); // display page from cache
     getForecast(); // start refresh of forecast if necessary (only happens every 60 min)
 }

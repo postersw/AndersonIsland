@@ -111,6 +111,14 @@
     <Content Include="www\img\50d.png" />
     <Content Include="www\img\50n.png" />
     <Content Include="www\img\logo.png" />
+    <Content Include="www\img\moon_firstqtr.png" />
+    <Content Include="www\img\moon_full.png" />
+    <Content Include="www\img\moon_lastqtr.png" />
+    <Content Include="www\img\moon_new.png" />
+    <Content Include="www\img\moon_wancres.png" />
+    <Content Include="www\img\moon_wangib.png" />
+    <Content Include="www\img\moon_waxcres.png" />
+    <Content Include="www\img\moon_waxgib.png" />
     <Content Include="www\img\screen.png" />
     <Content Include="www\index.html" />
     <Content Include="www\js\index.js" />
@@ -175,6 +183,7 @@
     <Content Include="www\serverside\getferryalerts.php" />
     <Content Include="www\serverside\getgooglecalendarcron.php" />
     <Content Include="www\serverside\getgooglecalendarcron1002.txt" />
+    <Content Include="www\serverside\getmooncron.php" />
     <Content Include="www\serverside\gettanneralerts.php" />
     <Content Include="www\serverside\gettidescron.php" />
     <Content Include="www\serverside\makecomingevents.php" />

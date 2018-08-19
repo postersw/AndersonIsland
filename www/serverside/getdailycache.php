@@ -5,6 +5,7 @@
 //  rfb. 6/6/16.
 
 copyfile("dailycache.txt", "");
+copyfile("moondata.txt","MOON");   // moon data
 copyfile("comingevents.txt", "COMINGEVENTS");
 copyfile("tidedata.txt", "TIDES");
 // log it
