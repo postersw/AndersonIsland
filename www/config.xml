@@ -103,8 +103,7 @@
   <!-- Plugins -->
 
   <!-- Core plugins -->
-  <plugin name="onesignal-cordova-plugin" source="npm" />
-   <!-- DEBUG <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />-->
+
   <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
   <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
   <!--<gap:plugin name="org.apache.cordova.camera" />-->
@@ -125,7 +124,9 @@
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-
+  
+  <plugin name="onesignal-cordova-plugin" source="npm" />
+   <!-- DEBUG <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />-->
 
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
 
