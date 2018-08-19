@@ -55,6 +55,7 @@ $d = date("d", $ts); // day with leading zero
 $link = $link . $m . "/" . $d . "/" . $y;
 echo $link; //debug
 
+
 // retry 10 times
 for ($x = 0; $x <= 10; $x++) {
     $str = "";
@@ -86,7 +87,7 @@ function FormatHtml($reply) {
     //var_dump($jreply);
     //echo count($jreply->predictions) . " items. <br/>";
     $st = $jreply->moondata[0]->time;  // start time
-    $et = $jreply->moondata[1]->time;  // end time n:nn p.m. DT
+    $et = $jreply->nextmoondata[0]->time;  // end time n:nn p.m. DT
     echo $st, $et;
     // if an error
     if ($st == "") {
