@@ -125,7 +125,7 @@
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
   
-  <plugin name="onesignal-cordova-plugin" source="npm" />
+  <plugin name="onesignal-cordova-plugin" spec="^2.3.3"  source="npm" />
    <!-- DEBUG <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />-->
 
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
