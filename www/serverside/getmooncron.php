@@ -84,17 +84,46 @@ return 0;
 
 function FormatHtml($reply) {
     $jreply = json_decode($reply);  // decode the json reply
-    //var_dump($jreply);
-    //echo count($jreply->predictions) . " items. <br/>";
-    $st = $jreply->moondata[0]->time;  // start time
-    $et = $jreply->nextmoondata[0]->time;  // end time n:nn p.m. DT
+    // rise time today:
+    $st = "";
+    for($i=0; $i<count($jreply->moondata); $i++) {
+        if($jreply->moondata[$i]->phen == "R") {
+            $st = $jreply->moondata[$i]->time;
+            break;
+        }
+    }
+    // if an error
+    if ($st == "") {
+        echo "ERROR - no moon rise returned. \n";
+        die( "ERROR - no moon rise returned.");
+    }
+    // possible set time today
+    $et = "";
+    for($i++; $i<count($jreply->moondata); $i++) {
+        if($jreply->moondata[$i]->phen == "S") {
+            $et = $jreply->moondata[$i]->time;
+            echo "<br/>Moon sets today $et<br/>";
+            break;
+        }
+    }
+    // not setting today. get set time tomorrow.
+    if($et == "") {
+        for($i=0; $i<count($jreply->nextmoondata); $i++) {
+            if($jreply->nextmoondata[$i]->phen == "S") {
+                $et = $jreply->nextmoondata[$i]->time;
+                echo "<br/>Moon sets tomorrow $et<br/>";
+                break;
+            }
+        }
+    }
     echo $st, $et;
     // if an error
     if ($st == "") {
-        echo "ERROR - no tides returned. \n";
-        die( "ERROR - no tides returned.");
+        echo "ERROR - no moon rise returned. \n";
+        die( "ERROR - no moon rise returned.");
     }
-
+    // get phase and icon
+    $pct =  $jreply->fracillum;
     $phase = $jreply->closestphase->phase;
     echo $phase;
     $icon = "";
@@ -109,10 +138,11 @@ function FormatHtml($reply) {
         case "Last Quarter": $mp = "Last"; $icon = "moon_lastqtr"; break;
         case "Waning Crescent": $mp = "Waning"; $icon = "moon_wancres"; break;
     }
-    $s = "<br/>Moon:<span style='font-weight:normal'> $mp <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> Rise: $st | Set: $et</span> ";
+    //  final return;
+    $s = "<br/>Moon:<span style='font-weight:normal'> <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> $pct, Rise: $st | Set: $et</span> ";
     // fix times
-    $s = str_replace("a.m.", "AM", $s);
-    $s = str_replace("p.m.", "PM", $s);
+    $s = str_replace("a.m.", "a", $s);
+    $s = str_replace("p.m.", "p", $s);
     $s = str_replace("DT", "", $s);
     $s = str_replace("ST", "", $s);
     return $s . "";
