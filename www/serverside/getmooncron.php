@@ -85,6 +85,7 @@ return 0;
 function FormatHtml($reply) {
     $jreply = json_decode($reply);  // decode the json reply
     // rise time today:
+
     $st = "";
     for($i=0; $i<count($jreply->moondata); $i++) {
         if($jreply->moondata[$i]->phen == "R") {
@@ -124,7 +125,9 @@ function FormatHtml($reply) {
     }
     // get phase and icon
     $pct =  $jreply->fracillum;
-    $phase = $jreply->closestphase->phase;
+    $phase = "";
+    $phase = $jreply->curphase;
+    if($phase == "") $phase = $jreply->closestphase->phase;
     echo $phase;
     $icon = "";
     $mp = "";
@@ -139,6 +142,7 @@ function FormatHtml($reply) {
         case "Waning Crescent": $mp = "Waning"; $icon = "moon_wancres"; break;
     }
     //  final return;
+    if($pct == "") $pct = $mp; // if no pct, use the phase
     $s = "<br/>Moon:<span style='font-weight:normal'> <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> $pct, Rise: $st | Set: $et</span> ";
     // fix times
     $s = str_replace("a.m.", "a", $s);
