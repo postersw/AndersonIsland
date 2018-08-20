@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+
+<html lang='en' xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+</head>
+<body>
+    <script>
+        var OpenHours = [];
+        js = [
+        {
+            Name: 'Store', Phone: '884-4001', Desc: 'USPS Post Office in Store', Href: 'https://www.co.pierce.wa.us/index.aspx?NID=1541',
+            H: [{ From: 101, To: 1231, D: ['', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500'] }
+            ]
+        },
+        {
+            Name: 'Post Office', Phone: '884-4001', Desc: 'USPS Post Office in Store', Href: 'https://www.co.pierce.wa.us/index.aspx?NID=1541',
+            H: [{ From: 1225, To: 1225},
+                { From: 101, To: 1231, D: ['', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500/1800-1900', '1100-1500'] }
+            ]
+        },
+        {
+            Name: 'Dump', Phone: '884-4072', Desc: 'USPS Post Office in Store', Href: 'https://www.co.pierce.wa.us/index.aspx?NID=1541',
+            H: [{ From: 101, To: 430, D: ['1000-1400, 1300-1700,,,,,'] },
+                { From: 901, To: 1231, D: ['1000-1400, 1300-1700,,,,,'] },
+                { From: 501, To: 831, D: ['1000-1700, 1000-1700,,,,,'] }
+            ]
+        }
+
+        ];
+        var js = JSON.stringify(OpenHours);
+        localStorage.setItem("openhours", js);
+        ShowOpenHours();
+        ShowOpenHoursTable();
+
+        //var OH = JSON.parse(js);
+        //for (var k = 0; k < OH.length; k++) {
+        //    t = OH[k];
+        //    alert('OpenHours ' + k + '\n' + t.Name + '\n' + t.Phone + '\n' + t.Desc + '\n' + t.Href + '\n' + t.H.length);
+        //    for (var i = 0; i < t.H.length; i++) {
+        //        var hh = t.H[i];  // hh = 1st entry in hours array
+        //        var daylist = '  ';
+        //        for (var j = 0; j < hh.D.length; j++) {  // step through days in the hours array
+        //            daylist += j + ': ' + hh.D[j] + '\n';
+        //        }
+        //        alert(hh.From + ' - ' + hh.To + '\n' + daylist);
+        //    }
+        //}
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // ShowOpenHours - shows whether something is open or closed. 
+        //  Entry: openhours is a string in "openhours", loaded from 'dailycache.txt'
+        //  exit: sets the openhours element to the open hours string
+        //     
+        function ShowOpenHours() {
+            // openHours format is array of objects, 1 object per business.
+            // each object is: name, phone, desc, href, 
+            //      array of H: from (mmdd), to (mmdd), D [array of 7 hhmm-hhmm opentime-closetime], 
+            //                  optional D2 [array of 7 additional hhmm-hhmm opentime-closetime]
+            //   where xxxtime = hhmm-hhmm in 24 hour format. 
+            //   List more restrictive from/to dates first.
+            var j;
+            var openlist;
+            var a;
+            var store;
+            var opentimetoday, opentime, closetime;
+            var openHours;
+
+            var str = localStorage.getItem("openhours");
+            if (str === null) return "";
+            if (str == "") return "";
+            openHours = JSON.parse(str);
+            openlist = "";
+
+            // loop through the openHours array (each array entry is one business)
+            for (var i = 0; i < openHours.length; i++) {
+                Oh = openHours[i];  // entry for 1 business
+                openlist += "<span style='font-weight:bold'>" + Oh.store + "</span>:";
+                openlist += GetOpenStatus(Oh) + "<br/>";
+                if (i == 2) break; // only do 1st 3 on main page
+            } // end for
+            openlist += "More ...";
+            document.getElementById("openhours").innerHTML = openlist;
+            return;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // GetOpenStatus - determine if business is open & reeturn string
+        //  entry: Oh = openTime object for 1 business
+        //          mmdd, timehhmm, and dayofweek all set
+        //  exit: returns string
+        function GetOpenStatus(Oh) {
+            var opentimetoday, opentime, closetime;
+            // loop through the oh.H entries. Each entry is for 1 date range.
+            for (var i = 0; i < Oh.H.length; i++) {
+                if ((mmdd >= Oh.H[i].From) && (mmdd <= Oh.H[i].To)) {
+
+                    // ok we have the a.entry for the date, now check it
+
+                    var a = Oh.H[i].D;  // array indexed by day of week
+                    if (a == null) return " <span style='color:red'> Closed. </span>";  // if no times, its closed
+                    opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+                    opentime = Number(opentimetoday.substring(0, 4)); // open time hhmm
+                    closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+
+                    var openlist; openlist = "";
+                    // test for closed
+                    if (opentimetoday == "" || (timehhmm > closetime) || (timehhmm < opentime)) {
+                        openlist += " <span style='color:red'> Closed. </span>";
+                        if (timehhmm < opentime) return " Opens today " + VeryShortTime(opentime);
+                        // find next open time
+                        j = dayofweek + 1; if (j == 7) j = 0;
+                        // if it opens tomorrow
+                        if (a[j + 1]) return " Opens tomorrow " + VeryShortTime(a[j + 1].substring(0, 4));
+                        // not open tomorrow. find next open day.
+                        for (var k = 0; k < 7; k++) {  // ensure we check each day only once
+                            j++; if (j == 7) j = 0; // handle day rollover
+                            if (a[j + 1] != "") return " Opens " + dayofweekshort[j] + " " + VeryShortTime(a[j + 1].substring(0, 4));
+                        } // find open day
+
+                    } else {
+                        // its open
+                        return " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
+                    }
+                }
+                return " <span style='color:red'> Closed. </span>";
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // ShowOpenHours - shows whether something is open or closed
+        // openHours (global) is a string consisting of strings (rows) of store hours, separated by /n.
+        // each string is: name,Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
+        //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
+        function ShowOpenHoursTable() {
+
+            var str = localStorage.getItem("openhours");
+            if (str === null) return "";
+            if (str == "") return "";
+            openHours = JSON.parse(str);
+            openlist = "";
+
+
+            // loop through the openHours array (each string entry is one business)
+            var i;
+            for (i = 0; i < openHours.length - 1; i++) {
+                Oh = openHours[i];  // entry for 1 business
+                openlist = FormatOneBusiness(openHours[i]);
+                var row = table.insertRow(-1);
+                var cell = row.insertCell(0);
+                cell.innerHTML = openlist;
+                cell.style.border = "thin solid black";
+            }
+            return;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        // FormatOneBusiness - formats one OpenHours object
+        //  Entry   Oh = one OpenHours object
+        //  Exit    returns html for a table entry
+        function FormatOneBusiness(Oh) {
+            openlist = "<span style='font-weight:bold'>" + Oh.store + GetOpenStatus(Oh) + " </span><br/>"
+                + Oh.Desc + "<br/>";  // name of business
+
+            // loop through the oh.H entries. Each entry is for 1 date range.
+            for (var i = 0; i < Oh.H.length; i++) {
+                if ((mmdd >= Oh.H[i].From) && (mmdd <= Oh.H[i].To)) {  // stop at 1st match
+                    // print date range if there is > 1
+                    if (Oh.H.length > 1) openlist += Oh.H[i].From / 100 + "/" + (Oh.H[i].From % 100) + " - " +
+                        Oh.H[i].to / 100 + "/" + (Oh.H[i].To % 100) + ":<br/>";
+                    var a = Oh.H[i].D; // a is the date array
+                    // loop through Sun - Sat
+                    for (j = 0; j < 7; j++) {
+                        var opentimetoday, opentime, closetime;
+                        opentimetoday = a[j + 1]; // hhmm-hhmm open today
+                        if (opentimetoday != "") {
+                            opentime = opentimetoday.substring(0, 4); // open time hhmm
+                            closetime = opentimetoday.substring(5, 9); // close time hhmm
+                            openlist += "<nobr>" + dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "</nobr>";
+                            if (j < 6) openlist += ", ";
+                        }
+                    } // for loop for each day
+
+                    openlist += "<br/><br/>&nbsp&nbsp" +
+                        "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='tel:" + Oh.Phone + "'>Call " + Oh.Phone + "</a>&nbsp&nbsp&nbsp&nbsp" +
+                        "<a style='display:normal;text-decoration:none;background-color:lightgray;padding:8px;width:300px' href='" + Oh.Href + "'>Web Site</a><br/>&nbsp";
+
+                    return openlist;  // don't do any other date range
+                }
+            } // end for  for 1 date range
+        } // end of function
+
+
+    </script>
+</body>
+</html>
