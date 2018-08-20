@@ -68,6 +68,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.xml" />
     <Content Include="Default-568h.png" />
     <Content Include="Default-568h@2x.png" />
     <Content Include="Default.png" />
@@ -81,7 +82,7 @@
     <Content Include="ReadMe.txt" />
     <Content Include="www\aimapx.9.png" />
     <Content Include="www\android\aimap.9.png" />
-    <Content Include="www\config.xml">
+    <Content Include="www\oldconfig.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="www\css\index.css" />
