@@ -70,7 +70,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.081818.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.082018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -4128,6 +4128,7 @@ function ShowIcons(nt) {
     SetTideTitle();
     // remember it
     localStorage.setItem("icons", nt); // icons = 0 - 5,
+    if (gIconSwitch == "4") MarkPage("5"); // 5=no icons
     if (gIconSwitch == "1") MenuSet("iconlont", "lime", "iconlofft", "white");
     else MenuSet("iconlont", "white", "iconlofft", "red");
 }
