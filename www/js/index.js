@@ -412,7 +412,7 @@ function ShortTime(ft) {
 //  like ShortTime but does not return minutes if not needed
 //  so it returns 1p, where ShortTime returns 1:00p;
 function VeryShortTime(ft) {
-    if (ft == 1200) return "noon";
+    //if (ft == 1200) return "noon";
     if ((ft % 100) == 0) {
         if (ft == 0) return "12a";
         var h = (Math.floor(ft / 100));
@@ -4123,14 +4123,18 @@ function ShowIcons(nt) {
             if (document.getElementById(icona[i]) != null) document.getElementById(icona[i]).innerHTML = s;
         }
     }
-    // update variable icons
-    if (gIconSwitch == "1") document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
-    SetTideTitle();
+
     // remember it
     localStorage.setItem("icons", nt); // icons = 0 - 5,
-    if (gIconSwitch == "4") MarkPage("5"); // 5=no icons
-    if (gIconSwitch == "1") MenuSet("iconlont", "lime", "iconlofft", "white");
-    else MenuSet("iconlont", "white", "iconlofft", "red");
+    // special case for icons
+    SetTideTitle();
+    if (gIconSwitch == "1") {
+        MarkPage("5"); // 5=no icons
+        document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
+        MenuSet("iconlont", "lime", "iconlofft", "white");
+    } else {
+        MenuSet("iconlont", "white", "iconlofft", "red");
+    }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -4201,9 +4205,9 @@ function StartApp() {
         ShowCachedData();
     } else gForceCacheReload = true;
     
-    // show the page
-    Show("mainpage");  // now display the main page
-    Show("vermsg"); // display the version
+    //// show the page
+    //Show("mainpage");  // now display the main page
+    //Show("vermsg"); // display the version
 
     // -------------  after main page has been displayed ---------------------------
 
@@ -4255,5 +4259,9 @@ function StartApp() {
     //DisplayLoadTimes();
 
     MenuSetup(); // setup the menu switches
+
+    // show the page
+    Show("mainpage");  // now display the main page
+    Show("vermsg"); // display the version
 
 }
