@@ -83,6 +83,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 06/21/18. Ver 1.20 Branch Ver120 created. 
 07/23/18. Ver 1.20.072218 (really 072318) Google Play Store #2233 to Beta. Enlarge tide graph to show 2 full days; Enhance the event display to always show a full day of events;  Fix the ferry grid to properly display one-way runs;  Clear all ferry notifications when the app opens.
 07/24/18. Ver 1.21.072418. Icons on main page. New branch Ver121.  Released to web 7/26.
+07/27/18. Ver 1.20.072218 Google Play Store #2233 Production.
+08/03/18. Ver 1.20.072218 Apple App Store on ver120 dangling branch with PGB builder=1 (not merged back to main).
+08/21/18. Ver 1.21.082018 Google Play Store #2234 Beta. Icons on main page and event page.  Phase of the moon.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
