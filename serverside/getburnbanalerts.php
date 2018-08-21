@@ -8,7 +8,7 @@
 //      Rev 6/4/16.
 //  Fire department: looks for string "COUNTY WIDE BURN BAN", and then "Lifted" or "Effective".
 //      Rev 9/28/16.
-//  Fire department: look for "Current Fire Safety Burn Ban Status". Then for "NO BURN BAN". 
+//  Fire department: look for "Current Fire Safety Burn Ban Status". Then for "NO BURN BAN".
 //      Rev 2/16/18.
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
@@ -41,20 +41,24 @@
     // write it
     $airqual = "Air quality: " . $bb;
 
-// Fire Department. read pierce county page and find "Current Fire Safety Burn Ban Status".
+// Fire Department. read pierce county page and find "Fire Safety Burn Ban Status" or Burn Ban Status.
 // then find the alt image tages: FIRE SAFETY - NO BURN BAN or FIRE SAFETY - BURN BAN. Not the best solution. 6/6/18.
 
     $fire = file_get_contents($firebblink); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
     if($fire == "") $fire = file_get_contents($firebblink); //1 retry
     //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
     //$fire = strip_tags($firew);  // remove the tags
-    //echo $fire; echo "<br/>";
-    //$cwbb = "COUNTY-WIDE BURN BAN";
+    
+    // find starting point for burn ban
     $cwbb = "Fire Safety Burn Ban Status";
     $i = stripos($fire, $cwbb);
+    if($i == 0) {
+        $cwbb = "Burn Ban Status";
+        $i = stripos($fire, $cwbb);
+    }
     if($i == 0) Bailout("Could not find \"$cwbb\"");
-    //$iaq = stripos($file, "Current Air Quality Burn Ban Status", $i);
-    //$lifted = stripos($fire, "NO BURN BAN", $i)
+    
+    // now find alt image tags (bad solution) to get the actual status
     $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
     $effective = stripos($fire, "FIRE SAFETY - BURN BAN", $i);
     if($effective===false) $effective = stripos($file, "BURN BAN IN EFFECT", $i);
