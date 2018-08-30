@@ -86,6 +86,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 07/27/18. Ver 1.20.072218 Google Play Store #2233 Production.
 08/03/18. Ver 1.20.072218 Apple App Store on ver120 dangling branch with PGB builder=1 (not merged back to main).
 08/21/18. Ver 1.21.082018 Google Play Store #2234 Beta. Icons on main page and event page.  Phase of the moon.
+08/29/18. Ver 1.21.082918 Google Play Store #2235 Beta. Icons on main page and event page.  Phase of the moon. CLI-7.1.0. OneSignal 2.4.0. Icons in res/
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -378,86 +379,9 @@ For OneSignal 5/31/18
 7. I immediately right clicked on that certificate in KeychainAccess and exported it to a P12 file I called APNProd0518.p12
 8. I emailed it to me. then I uploaded it to OneSignal.
 ---------------------------------------------------------------------------------------------------------------------
-APN Apple Push Notification CERTIFICATES from Bryan Musial 1/2015.
-
-PUSHBOT-Server --->APN Cert---> Apple APN Service --->>> mobile devices
-
-The ApplePushNotifications certificate that you created is used by what the documentation refers to as the "APNs Provider" --
-In the simplest case, this is your own server that is responsible for keeping track of APNs device tokens and generating APNs Push Payloads
-that instruct the APNs what message, sound, or badge to deliver to a specific device token. 
-Just as the arrangement of executable code and other assets in your app is secured by a cryptographic signature 
-(via your iPhone Development or iPhone Distribution certificate and associated provisioning profile), communications between your server and
-the Apple APNs gateway must also be secured to prevent a rogue 3rd party from masquerading as your server and sending spammy push messages
-to your users. This APNs SSL certificate is used to secure and authenticate your server's connection to the APNs, authorizing it to deliver
-push payloads to your app on user's devices -- Keep those certificates secure! If anyone gains access to the private key of the SSL 
-certificate then they could send spammy pushes to your app!
-
-Your APNs Provider (PUSHBOTS) will need access to the private key for this SSL certificate. Without it, Apple's APNs gateways will reject any
-and all attempts to connect. Your provider, does not need to have your provisioning profiles -- this APNs certificate is entirely separate 
-than the mechanisms used to code sign an iOS app, that is, the server only needs the server certificate, while the app needs the code signing
-certificate + provisioning profile. These two items do not intersect and do not exchange data with each other.
-
-It is true that your provisioning profiles (Development, Ad-Hoc Distribution, and App Store Distribution) will need to be reissued, but that
-is specifically to add the aps-environment entitlement to each of these profiles allowing apps signed with these profiles to connect with 
-the APNs environments. To be absolutely clear, reissuing these profiles does not and should not add your APNs SSL certificate anywhere in 
-the profile...your application code doesn't need to leverage this certificate in any way and would lead to a slight increase in your 
-application's size.
-
-You can check if your current provisioning profiles include the aps-environment entitlement by opening Terminal, copy and pasting the 
-following, taking care to update the path to your specific .mobileprovision:
-/usr/libexec/PlistBuddy -c 'Print :Entitlements' /dev/stdin <<< $(security cms -D -i /path/to/your/application.mobileprovision)
-
-This command does two things:
-
-Uses the security tool in OS X to extract the plist content from the .mobileprovision file identified after the -i argument and passes all of this content into...
-PlistBuddy printing the entire contents of t
-he Entitlements key to screen.
-The output for a basic Development profile that has not been enabled for Push Notifications will resemble the following:
-
-Dict {
-  get-task-allow = true
-  com.apple.developer.team-identifier = ABC1DEF2G3
-  application-identifier = XYZW1ABC2D.com.mycompany.niftyapp
-  keychain-access-groups = Array {
-      XYZW1ABC2D.*
-  }
-}
-While the output for a basic Ad-Hoc or App Store Distribution that has not been enabled for Push Notifications will resemble:
-
-Dict {
-  get-task-allow = false
-  com.apple.developer.team-identifier = ABC1DEF2G3
-  application-identifier = XYZW1ABC2D.com.mycompany.niftyapp
-  keychain-access-groups = Array {
-      XYZW1ABC2D.*
-  }
-}
-Now that you have the APNs certificates issued for your app's AppId, you do need to step through and reissue your Development, Ad-Hoc, and Distribution provisioning profiles to add the aps-environment entitlement to each of your profiles.
-
-Navigate to Certificates, Identifiers, and Profiles tool and find one of the profiles associated with this application.
-Click the Edit button and walk through each step of the wizard -- you don't have to make any changes to the previously defined settings, you simply need the current profile reissued!
-Click the Download button at the end of the wizard.
-Drag and drop the updated profile on the Xcode icon on your Dock to install.
-If you run that same set of Terminal commands again on these new files (remember to update the path to the new .mobileprovision if necessary!) you'll now see that aps-environment key appear in your App's entitlements:
-
-Dict {
-  get-task-allow = true
-  aps-environment = development
-  com.apple.developer.team-identifier = ABC1DEF2G3
-  application-identifier = XYZW1ABC2D.com.mycompany.niftyapp
-  keychain-access-groups = Array {
-      XYZW1ABC2D.*
-  }
-}
-There are two values for this new key:
-
-aps-environment = development -- This will appear only on Development Provisioning Profiles and allows apps signed using iPhone Developer certificates and may only connect with the Sandbox APNs Environment
-aps-environment = production -- This will appear only on Distribution Provisioning Profiles (Ad-Hoc or App Store), allowing apps signed using iPhone Distribution certificates to connect with the Production APNs Environment
-Depending on which certificate you use to sign a build determines which APNs gateway your app will connect to and fetch a Push token as well as which gateway your app will receive push messages from. One of the most common errors developers make with respect to push notifications is mismatching how the app is signed with how their server is connecting to Apple's APNs gateways:
-
-Apps signed with Development certificates can only successfully negotiate APNs and receive Push Messages when the Provider is also connecting with the Development APNs SSL certificate to the Sandbox APNs gateway and using a sandbox device token in the payloads it generates.
-Apps signed with Distribution certificates can only successfully negotiate APNs and receive Push Messages when the Provider is also connecting with the Production APNs SSL certificate to the Production APNs gateway and using a production device token in the payloads it generates.
-Give it a shot and let us know how things go!
+OneSignal test
+1. I have created a single test user named "Bob"
+2. To test: select Messages, New Push, Send to Test Device
 
 -------------------------------------------------------------------------------------------------------------------------
 

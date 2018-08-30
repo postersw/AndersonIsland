@@ -6,10 +6,11 @@
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
         version   = "1.21.082918"
-        android-versionCode="2234"
-        android:versionName="1.21.082418">
+        android-versionCode="2235"
+        android:versionName="1.21.082918">
   <!-- moved config.xml to root 8/19/18-->
-  <!-- versionCode 2234 for 1.21 7/30/18 -->
+  <!-- versionCode 2235 for 1.21 8/29/18 -->
+  <!-- versionCode 2234 for 1.21 7/30/18 beta only -->
   <!-- versionCode 2233 for 1.20 6/23/18 -->
   <!-- versionCode 2232 for 1.19 5/13/18 -->
   <!-- versionCode 2231 for 1.18 5/13/18 -->
