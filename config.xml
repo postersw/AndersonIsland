@@ -96,7 +96,8 @@
   </config-file>
 
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
-  <preference name="phonegap-version" value="cli-8.0.0" />
+  <preference name="phonegap-version" value="cli-7.1.0" /> <!--test 8/29/18-->
+  <!--<preference name="phonegap-version" value="cli-8.0.0" />-->
   <!--<preference name='pgb-builder-version' value='1' /> -->
   <preference name='pgb-builder-version' value='2' />
   <!-- 2 for android, 1 for ios as of 5/31-->
@@ -127,7 +128,8 @@
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
 
-  <plugin name="onesignal-cordova-plugin"   source="npm" />
+  <plugin name="onesignal-cordova-plugin" spec="^2.4.0" source="npm" />  <!--8/29/18-->
+   <!-- <plugin name="onesignal-cordova-plugin"   source="npm" />-->
   <!-- DEBUG <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />-->
 
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
