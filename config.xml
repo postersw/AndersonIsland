@@ -5,10 +5,11 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.21.082918"
-        android-versionCode="2235"
-        android:versionName="1.21.082918">
+        version   = "1.21.090118"
+        android-versionCode="2236"
+        android:versionName="1.21.090118">
   <!-- moved config.xml to root 8/19/18-->
+  <!-- versionCode 2236 for 1.21 9/01/18 -->
   <!-- versionCode 2235 for 1.21 8/29/18 -->
   <!-- versionCode 2234 for 1.21 7/30/18 beta only -->
   <!-- versionCode 2233 for 1.20 6/23/18 -->

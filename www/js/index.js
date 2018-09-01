@@ -70,7 +70,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.082018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.09018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1798,7 +1798,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
-    parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
+    //parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
     parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
@@ -2037,8 +2037,8 @@ function ShowCachedData() {
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
     
-    s = localStorage.getItem("maintablerows"); // additional main page rows
-    if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
+    //s = localStorage.getItem("maintablerows"); // additional main page rows. Removed 9/1/18 because of issue with icons.
+    //if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
 }
 
@@ -2510,8 +2510,8 @@ function ShowOpenHoursTable(showall) {
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
 //  Exit    returns html for a table entry                             
 function FormatOneBusiness(Oh, mmdd, showall) {
-    var showicon = "<i class='material-icons mpicon'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons mpicon'>" + Oh.Icon + "</i> ";
+    var showicon = "<i class='material-icons bizicon'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
     var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
         showicon + Oh.Name + "&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
@@ -2581,8 +2581,8 @@ function ShowOneBusinessFullPage(id) {
     if (t == "Store") t = "General Store";
     SetPageHeader(t);
     //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
-    var showicon = "<i class='material-icons mpicon'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons mpicon'>" + Oh.Icon + "</i> ";
+    var showicon = "<i class='material-icons bizicon'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
@@ -4096,7 +4096,7 @@ var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam"
     "maptitle", "map", "Map", "linkstitle", "link", "Island Information Links",
     "contactstitle", "phone", "Emergency Contacts", "helptitle", "help", "Help",
     "feedbacktitle", "email", "Feedback", "abouttitle", "info_outline", "About",
-    "voluntitle", "group", "Volunteer"];
+    "voluntitle", "group", "Volunteering"];
 //////////////////////////////////////////////////////////
 //  ShowIcons - show icons in the front page
 //
