@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+     <meta name="format-detection" content="telephone=no" />
+     <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+     <link rel="stylesheet" type="text/css" href="css/index.css" />
+     <title>AI Weather</title>
+     <style>
+            button {font-size: 12px;}
+            p {font-size:12px;}
+      </style>
+
+
+</head>
+<body>
+    <div class="app">
+    <h1>Anderson Island Weather</h1>
+
+        <p id="forecast">Please wait for the forecast.</p>
+       <table id='table' style="border:thin solid black;border-collapse:collapse">
+            <tr style="background-color:black;color:white;">
+                <td>DAY</td>
+                <td>HI&nbsp</td>
+                <td>LO&nbsp</td>
+                <td>FORECAST</td>
+                <td>RAIN </td>
+                <td>WIND </td>
+            </tr>
+        </table>
+        <p>The forecast in yellow is for the 12 hour day.<br />
+            The forecast in gray is for the 12 hour night.<br />
+            Forecast data provided by AerisWeather.
+        </p>
+</div>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/AIA.js"></script>
+    <script type="text/javascript">
+
+
+         /////////////////////////////////////////////////////////////////////////////////////////////
+        // get weather data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+        // License as of 2/8/16 is for 750 hits/day for free.
+        //  fromdate = optional starting date for the weather
+        function getWeather(fromdate) {
+            var olddate, newdate; // dates
+            var ampm; // am or pm
+            var currentTemp;
+
+            //$("#tideButton").hide();  // hide the user button
+
+            $.ajax({
+               // url: 'http://api.aerisapi.com/forecasts/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                url: 'http://api.aerisapi.com/forecasts/98303?filter=daynight&client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                dataType: 'jsonp',
+                success: function (json) {
+
+                    if (json.success == true) {
+
+                        //debug - display the return
+                        //alert("json success");
+                        //var output;
+                        //output = JSON.stringify(json);
+                        //alert(output);
+                        // document.getElementById("forecast").innerHTML = output;
+
+                        var resp = json.response[0].periods;
+                        var mydayofweek = dayofweek;
+                        var firstrow = true;  // true for first row
+                        // roll through the reply in jason.response.periods[i]
+                        var table = document.getElementById("table");
+                        for (var i = 0; i < resp.length; i++) {
+                            // if date changed, add a blank row
+                            var r = resp[i];
+
+                            // Insert New Row for table at end of table.
+                            var row1 = table.insertRow(-1);
+                            if (r.isDay) row1.style.backgroundColor = "yellow";
+                            else row1.style.backgroundColor = "lightgray";
+
+                            // Insert New Column for date
+                            var row1col1 = row1.insertCell(0);
+                            //var m = r.dateTimeISO.substring(5, 7);
+                            //var d = r.dateTimeISO.substring(8, 10);
+                            //row1col1.innerHTML = m + "/" + d + '&nbsp';
+                            if(r.isDay || firstrow) row1col1.innerHTML = dayofweekname[mydayofweek].substring(0, 3);
+                            firstrow = false;
+
+                            row1col1.style.border = "thin solid gray";
+
+                            // high
+                            row1col1 = row1.insertCell(1);
+                            if(r.maxTempF!= null) row1col1.innerHTML = r.maxTempF + "&deg";
+                            row1col1.style.border = "thin solid gray";
+                            // low
+                            row1col1 = row1.insertCell(2);
+                            if(r.minTempF != null) row1col1.innerHTML = r.minTempF + "&deg";
+                            row1col1.style.border = "thin solid gray";
+                            // weather
+                            row1col1 = row1.insertCell(3);
+                            row1col1.innerHTML = r.weather;
+                            row1col1.style.border = "thin solid gray";
+                            // rain
+                            row1col1 = row1.insertCell(4);
+                            row1col1.innerHTML = r.pop + "% &nbsp" + r.precipIN + " in.";
+                            row1col1.style.border = "thin solid gray";
+                            // wind
+                            row1col1 = row1.insertCell(5);
+                            row1col1.innerHTML = r.windDir + " " + r.windSpeedMPH + " mph" ;
+                            row1col1.style.border = "thin solid gray";
+
+                            // bump day if we just did a night
+                            if (r.isDay==false) {
+                                mydayofweek++; if (mydayofweek > 6) mydayofweek = 0;
+                            }
+
+                        }  // for end
+
+                    }
+                    else {
+                        alert('An error occurred: ' + json.error.description);
+                    }
+
+                }
+
+            });  // end of ajax call
+        }  // end of function
+
+            /////////////////////////////////////////////////////////////////////////////////////////////
+            // get current weather observation data using the aeris api and returning a jsonp structure. This is the only way to get data from a different web site.
+            //for documentation see: http://www.aerisweather.com/support/docs/api/reference/endpoints/observations/
+            // License as of 2/8/16 is for 750 hits/day for free.
+            function getCurrentWeather() {
+
+                $.ajax({
+                    url: 'http://api.aerisapi.com/observations/98303?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW',
+                    dataType: 'jsonp',
+                    success: function (json) {
+                    
+                        if (json.success == true) {
+
+                            // pick out the return variables
+                            var r = json.response.ob;
+                            var current = "Currently " + r.weather + ", " + r.tempF + "&degF, " + r.humidity + "% RH, wind " + r.windDir + " " + r.windMPH + " mph " +
+                                ", " + r.precipIN + " in. rain, " +
+                                "<br/>Sunrise at " + r.sunriseISO.substring(11, 19) + ", Sunset at " + r.sunsetISO.substring(11, 19);
+                            //document.getElementById("forecast").innerHTML = current;
+                            $("#forecast").html(current); // jquery equivalent. Is this really easier?
+
+                        }
+                        else {
+                            alert('An error occurred: ' + json.error.description);
+                        }
+
+                    }
+
+                });
+            
+        } // end of function
+        </script>
+
+        <!-- actual javascript execution begins here:-->
+        <script type="text/javascript">
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // run the script
+            InitializeDates(0);
+            getCurrentWeather();
+            getWeather("today");
+           
+    </script>
+
+</body>
+</html>

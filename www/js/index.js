@@ -47,6 +47,8 @@
         1.18 051318. Error handling for data errors. Custom Tide request: wait message. call NOAA directly. WEB only.
         1.19 052318. Replace Pushbots by OneSignal because its free. Android only.
         1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
+        1.21 072618. Icons on main page.  Released to web.
+             081818. Moon phases added to weather.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -68,7 +70,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.20.072318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.09018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -188,6 +190,10 @@ var tidesLastUpdate; // time of last update
 var gWeatherForecastCount = 0; // number of weather forcast requests to debug API key exceeding 60 rpm
 var gWeatherCurrentCount = 0; // number of weather current requests to debug API key exceeding 60 rpm
 
+// icons
+var gIconSwitch = "1"; // icon switch, text: 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
+var gEventIcons = true;
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
 function IsHoliday(md) {
@@ -224,6 +230,24 @@ function InitializeDates(dateincr) {
     if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
     // compute holidays
     holiday = IsHoliday(gMonthDay);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//  IncrementDate - returns date in YYmmdd format, incremented by dateincr
+//  entry   dateincr = increment in days against current gdate values
+//  exit    returns yymmdd  e.g. 180828
+function IncrementDate(dateincr) {
+    var dd = gDayofMonth + dateincr;
+    var mm = gMonth;
+    var yy = gYear;
+    if (dd > gDaysInMonth[gMonth]) {  // if month overflow
+        mm = mm + 1;
+        dd = dd - gDaysInMonth[gMonth];
+        if (mm == 13) {  // if next year
+            mm = 1; yy = yy + 1;
+        }
+    }
+    return (mm*100) + dd + (yy - 2000) * 10000; // yymmdd
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -388,7 +412,7 @@ function ShortTime(ft) {
 //  like ShortTime but does not return minutes if not needed
 //  so it returns 1p, where ShortTime returns 1:00p;
 function VeryShortTime(ft) {
-    if (ft == 1200) return "noon";
+    //if (ft == 1200) return "noon";
     if ((ft % 100) == 0) {
         if (ft == 0) return "12a";
         var h = (Math.floor(ft / 100));
@@ -719,6 +743,9 @@ function MenuSetup() {
         if (LSget('notifyoff') != "OFF") MenuSet("notifymont", "lime", "notifymofft", "white", "notifymon");
         else MenuSet("notifymont", "white", "notifymofft", "red", "notifymoff");
     } else Hide("notifyswitch");
+    // icons
+    if (gIconSwitch == "1") MenuSet("iconlont", "lime", "iconlofft", "white");
+    else MenuSet("iconlont", "white", "iconlofft", "red");
 
 }
 
@@ -1430,6 +1457,8 @@ function HandleCurrentWeatherReply(responseText) {
         StripDecimal(r.wind.speed) + " mph" + ((rain!="0")? (", " + rain + " rain") : "");
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
+    FormatWeatherIcon(r.weather[0].icon); // format weather icon for menu
+
     // detailed string for weather detail page
     gDateSunrise = new Date(Number(r.sys.sunrise) * 1000);
     gDateSunset = new Date(Number(r.sys.sunset) * 1000);
@@ -1447,9 +1476,21 @@ function HandleCurrentWeatherReply(responseText) {
 
     localStorage.setItem("currentweatherlong", currentlong);
 } // end of function
+//////////////////////////////////////////////////////////////////////////////
+//  FormatWeatherIcon - create a main page icon from the google icon font, based on the OpenWeather icon
+// entry    icon = xxd or xxn, where xx is a number for the weather icons.
+var gWeatherIcon = "cloud_queue";  // default
+function FormatWeatherIcon(icon) {
+    var iconlist = ["brightness_2", "wb_sunny", "cloud_queue", "cloud_queue", "cloud", "cloud", "cloud", "cloud", "cloud",
+        "cloud_download", "cloud_download", "cloud_download", "", "ac_unit"];
+    i = Number(icon.substr(0, 2));
+    if (i > 13) i = 3;
+    if (icon == "01n") i = 0;
+    gWeatherIcon = iconlist[i];
+    if (gIconSwitch == 1) document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
+}
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 // getForecast using OpenWeatherMap. This is the ONLY routine that gets the forecast
 // get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
@@ -1512,6 +1553,9 @@ function HandleForecastAReply(jsondata) {
 //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
 //  exit: gForceCacheReload = true to reload tide data.  
 //          html populated.
+var gTideTitleNoIcon; // title for tide, with up or down arrow
+var gTideTitleIcon; // title for tide, with up or down arrow
+
 function ShowNextTides() {
     var hilow;
     var nextTides;
@@ -1549,16 +1593,18 @@ function ShowNextTides() {
         } else if (oldtide != 1) {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
-                //nextTides = "Incoming. Now ";
-                //nextTides = "Incoming";
                 nextTides = "&uarr; Incoming";
-                document.getElementById("tidestitle").innerHTML = "TIDE &uarr;";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_upward</i><span class='mptext'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_upward</i>";
+                //arrow_upward
             } else {
-                //nextTides = "Outgoing. Now ";
-                //nextTides = "Outgoing";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_downward</i><span class='mptext'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_downward</i>";
                 nextTides = "&darr; Outgoing";
-                document.getElementById("tidestitle").innerHTML = "TIDE &darr;";
+                //arrow_downward  file_upload<
             }
+            SetTideTitle();
+
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             var tdx = "<td style='padding:0;margin:0'>";
@@ -1593,10 +1639,14 @@ function DisplayNextEvents(CE) {
     var aCEyymmdd; // yymmdd of Calendar Entry
     var DisplayDate = 0; // event date we are displaying
     var nEvents = 0; // number of events displayed
+    var CEvent = "";
+
     if (CE === null) return;
     // break CE up into rows
     CE = CE.split("\n");  // break it up into rows
     if (CE == "") return;
+    var yymmddP6 = IncrementDate(6); // add 6 to date
+
     // roll through the next 30 days
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE] == "") continue; // skip blank lines
@@ -1610,25 +1660,29 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
+        if (gIconSwitch == 1) CEvent = FormatEvent(aCE, "14");
+        else CEvent = aCE[4];
+
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
-            if (datefmt == "") datefmt += "<span style='font-weight:bold;color:green'>TODAY</span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span> " + aCE[4] + " @ " + aCE[5] + "<br/>";
-            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + aCE[4] + " @ " + aCE[5] + "<br/>";
+            if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
+            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
+            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
             DisplayDate = aCEyymmdd;
             continue;
         }
-        // if not today, display date
+        // if not today, display day of week. Do NOT display > 6 days (1 week) ahead because it is too confusing.
         if (aCEyymmdd != DisplayDate) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
-            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>Tomorrow</strong><br/>";
-            else if (aCEyymmdd <= (gYYmmdd + 6)) datefmt += "<strong>" + gDayofWeekNameL[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
-            else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
+            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
+            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
+            //else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
+            else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
-        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + " " + aCE[4] + " @ " + aCE[5] + "<br/>";
+        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " + CEvent + " @ " + aCE[5] + "<br/>";
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -1744,7 +1798,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
-    parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
+    //parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
+    parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
@@ -1982,8 +2037,8 @@ function ShowCachedData() {
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
     
-    s = localStorage.getItem("maintablerows"); // additional main page rows
-    if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
+    //s = localStorage.getItem("maintablerows"); // additional main page rows. Removed 9/1/18 because of issue with icons.
+    //if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
 }
 
@@ -2455,8 +2510,12 @@ function ShowOpenHoursTable(showall) {
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
 //  Exit    returns html for a table entry                             
 function FormatOneBusiness(Oh, mmdd, showall) {
-    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" + Oh.Name + "&nbsp&nbsp</span><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
+    var showicon = "<i class='material-icons bizicon'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
+    var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
+        showicon + Oh.Name + "&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
+    openlist += "<div style=margin:8px>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 
     // loop through the Oh.Sc entries. Each entry is for 1 date range.
@@ -2500,7 +2559,7 @@ function FormatOneBusiness(Oh, mmdd, showall) {
         if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
     }
     // buttons for call and web site
-    return openlist + "&nbsp&nbsp " +
+    return openlist + "</div>&nbsp&nbsp " +
         "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>" + Oh.Phone + "</a></button>&nbsp&nbsp" +
         "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web</button>&nbsp&nbsp" +
         "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>Map</button>";
@@ -2522,8 +2581,9 @@ function ShowOneBusinessFullPage(id) {
     if (t == "Store") t = "General Store";
     SetPageHeader(t);
     //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
-
-    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
+    var showicon = "<i class='material-icons bizicon'>store</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
+    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
 
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
         + "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +
@@ -2627,6 +2687,7 @@ function ParseOpenHours() {
 var EventFilter = ""; //letter to filter for
 var EventDisp = ""; // event display type, L, W, M
 
+
 function DisplayComingEventsPage(type) {
     localStorage.setItem("eventtype", type);
     document.getElementById("othercalendars").setAttribute("style", "display:none");
@@ -2691,6 +2752,8 @@ function SetEventFilter(f) {
 //  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
 // or 'comingactivities' localStorage items. 
 //  entry   CE is a single big string containing multiple lines, so we split the string by \n.
+//          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
+//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
 function DisplayComingEventsList(CE) {
     var i;
     var row;
@@ -2776,7 +2839,7 @@ function DisplayComingEventsList(CE) {
         col = row.insertCell(1);
         col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
         var col2 = row.insertCell(2);
-        col2.innerHTML = aCE[4];//event
+        col2.innerHTML = FormatEvent(aCE, "16");//event
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = aCE[5];//where
         var color;
@@ -2790,6 +2853,53 @@ function DisplayComingEventsList(CE) {
         previouseventdate = aCE[0];
     } // end loop through CE
     document.getElementById("locations").innerHTML = LSget("locations");
+}
+
+//////////////////////////////////////////////////////////////////////
+//  FormatEvent - add icon if switch is on
+//  Entry   event array, font size in pixels
+//          each array   is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
+//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
+//  Exit    html for event, includes icon if switch is on
+function FormatEvent(aCE, fontsize) {
+    // iconlist:   keyword, iconname, ...
+    var iconlist = ["meeting", "people", "film", "theaters","music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
+        "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", 
+        "fitness", "fitness_center", "craft", "palette", "art", "palette", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
+    ];
+    var ev = aCE[4];
+    var icon;
+    if (!gEventIcons) return ev;  // if no icons
+    // 1. look for user specified icon in aCE[8]
+    if (aCE.length >= 9) {
+        if (aCE[8].substr(0, 1) == "{") {
+            try {
+                var us = JSON.parse(aCE[8]); // parse it
+                if (us.i != null) return '<i class="material-icons">' + us.i + '</i> ' + ev;
+            } catch (err) {
+            }
+        }
+    }
+    
+    // default icon based on the key: E, S, A, C, G, M
+    switch (aCE[3]) {
+        case "E": icon = "mood"; break; // special events
+        case "S": icon = "music_note"; break; // show
+        case "A": icon = "directions_run"; break; // activity
+        case "C": icon = "palette"; break; // craft
+        case "G": icon = "games"; break; // game
+        default: icon = "people";
+    }
+    // find an icon based on keyword in the title
+    var i;
+    var evlc = ev.toLowerCase();
+    for (i = 0; i < iconlist.length; i = i + 2) {
+        if (evlc.indexOf(iconlist[i]) >= 0) {
+            icon = iconlist[i + 1];
+            break;
+        }
+    }
+    return '<i class="material-icons">' + icon + '</i> ' + ev;
 }
 
 
@@ -3779,7 +3889,7 @@ function ShowWeatherPage() {
     ShowPage("weatherpage");
     SetPageHeader("Weather");
     InitializeDates(0);
-    document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong");
+    document.getElementById("currentweatherpage").innerHTML = localStorage.getItem("currentweatherlong") + localStorage.getItem("moon");
     generateWeatherForecastPage(); // display page from cache
     getForecast(); // start refresh of forecast if necessary (only happens every 60 min)
 }
@@ -3973,6 +4083,84 @@ function LocationPrevent() {
     document.getElementById("locationdialog").style.width = "0";
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Switch icon/no icon mode
+
+var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam", "Camera",
+    "loctitle", "pin_drop", "Location", "tickettitle", "confirmation_number", "Tickets",
+    "weathertitle", "cloud_queue", "Weather",
+    "eventtitle", "event", "Events", "activitytitle", "directions_run", "Activity",
+    "opentitle", "schedule", "Open", "burnbantitle", "whatshot", "Burnban",
+    "tannertitle", "flash_on", "Tanner", "parkstitle", "nature_people", "Parks",
+    "fishtitle", "rowing", "Fishing", "newstitle", "chat", "News",
+    "maptitle", "map", "Map", "linkstitle", "link", "Island Information Links",
+    "contactstitle", "phone", "Emergency Contacts", "helptitle", "help", "Help",
+    "feedbacktitle", "email", "Feedback", "abouttitle", "info_outline", "About",
+    "voluntitle", "group", "Volunteering"];
+//////////////////////////////////////////////////////////
+//  ShowIcons - show icons in the front page
+//
+// icona: html id, icon name, title, ...
+//  Entry: nt="1" for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 for UC titles only, 5 for LC titles only
+function ShowIcons(nt) {
+    if (gIconSwitch != nt) {
+        gIconSwitch = nt;
+        var i = 0;
+        var s;
+        for (i = 0; i < icona.length; i = i + 3) {
+            switch (nt) {
+                case "1": s = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + icona[i + 1] + "</i><span class='mptext'>" + icona[i + 2] + "</span></span>";
+                    break;
+                case "2": s = "<i class='material-icons mpicon'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
+                    break;
+                case "3": s = "<i class='material-icons mpicon'>" + icona[i + 1];
+                    break;
+                case "4": s = icona[i + 2].toLocaleUpperCase();
+                    break;
+                case "5": s = icona[i + 2];
+                    break;
+            }
+            if (document.getElementById(icona[i]) != null) document.getElementById(icona[i]).innerHTML = s;
+        }
+    }
+
+    // remember it
+    localStorage.setItem("icons", nt); // icons = 0 - 5,
+    // special case for icons
+    SetTideTitle();
+    if (gIconSwitch == "1") {
+        MarkPage("5"); // 5=no icons
+        document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
+        MenuSet("iconlont", "lime", "iconlofft", "white");
+    } else {
+        MenuSet("iconlont", "white", "iconlofft", "red");
+    }
+}
+
+//////////////////////////////////////////////////////////////////////
+//  InitializeIcons - show startup message if necessary.
+//  ASSUMES THAT index.html HAS ICONS AT STARTUP!
+//  Entry: local storage "icons" = icon value
+function InitializeIcons() {
+    gIconSwitch = "1";
+    var ic = localStorage.getItem("icons"); // icons = 0 - 5,
+    if (ic == null) {
+        alert("The Anderson Island Assistant now uses icons on its main screen. To revert to the former text-only display, select:\n Menu -> Icons -> Off\n in the upper left-hand corner of the main screen.");
+        ic = "1";
+    }
+    ShowIcons(ic);
+}
+/////////////////////////////////////////////////////////////
+//  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
+function SetTideTitle() {
+    if (gIconSwitch == "1" || gIconSwitch == "2") {
+        document.getElementById("tidestitle").innerHTML = gTideTitleIcon;
+    } else {
+        document.getElementById("tidestitle").innerHTML = gTideTitleNoIcon;
+    }
+}
+
+
 //<!-- MAIN ---------------------------------->
 //<script type="text/javascript">
 //======================================================================================================
@@ -4006,16 +4194,22 @@ function StartApp() {
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
+
+    // Replace icons with Labels if user selected them
+    InitializeIcons();
+
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
         ShowCachedData();
     } else gForceCacheReload = true;
+    
+    //// show the page
+    //Show("mainpage");  // now display the main page
+    //Show("vermsg"); // display the version
 
-    // show the page
-    Show("mainpage");  // now display the main page
-    Show("vermsg"); // display the version
+    // -------------  after main page has been displayed ---------------------------
 
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
@@ -4065,5 +4259,9 @@ function StartApp() {
     //DisplayLoadTimes();
 
     MenuSetup(); // setup the menu switches
+
+    // show the page
+    Show("mainpage");  // now display the main page
+    Show("vermsg"); // display the version
 
 }

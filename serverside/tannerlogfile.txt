@@ -1,0 +1,55 @@
+2018/07/03 09:22:0309:22: No Outages.Array
+(
+)
+,Array
+(
+    [<?xml_version] => "1.0"?>
+<outageSummary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" coopID="0"><totals><nbrOut>0</nbrOut><nbrServed>4862</nbrServed></totals><regions type="County"><region><id>North Bend</id><name></name><nbrOut>0</nbrOut><nbrServed>2175</nbrServed></region><region><id>Ames Lake</id><name></name><nbrOut>0</nbrOut><nbrServed>1481</nbrServed></region><region><id>Anderson Island</id><name></name><nbrOut>0</nbrOut><nbrServed>1206</nbrServed></region></regions></outageSummary>
+
+)
+,Array
+(
+    [<?xml_version] => "1.0"?>
+<outageSummary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" coopID="0"><totals><nbrOut>0</nbrOut><nbrServed>4862</nbrServed></totals><regions type="County"><region><id>North Bend</id><name></name><nbrOut>0</nbrOut><nbrServed>2175</nbrServed></region><region><id>Ames Lake</id><name></name><nbrOut>0</nbrOut><nbrServed>1481</nbrServed></region><region><id>Anderson Island</id><name></name><nbrOut>0</nbrOut><nbrServed>1206</nbrServed></region></regions></outageSummary>
+
+)
+,Array
+(
+    [LSPHP_ENABLE_USER_INI] => on
+    [PATH] => /usr/local/bin:/usr/bin:/bin
+    [TEMP] => /tmp
+    [TMP] => /tmp
+    [TMPDIR] => /tmp
+    [PWD] => /
+    [HTTP_ACCEPT] => text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+    [HTTP_CONNECTION] => keep-alive
+    [CONTENT_TYPE] => application/x-www-form-urlencoded
+    [CONTENT_LENGTH] => 545
+    [HTTP_HOST] => www.anderson-island.org
+    [HTTP_PRAGMA] => no-cache
+    [HTTP_USER_AGENT] => Java/1.8.0_152
+    [HTTP_CACHE_CONTROL] => no-cache
+    [UNIQUE_ID] => Wzuiq1cqBTsjwHGXgQrkrwAAAgA
+    [SERVER_SIGNATURE] => 
+    [SERVER_SOFTWARE] => Apache
+    [SERVER_NAME] => www.anderson-island.org
+    [SERVER_ADDR] => 107.180.54.175
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 66.97.237.3
+    [DOCUMENT_ROOT] => /home/postersw/public_html
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /home/postersw/public_html
+    [SERVER_ADMIN] => webmaster@anderson-island.org
+    [SCRIPT_FILENAME] => /home/postersw/public_html/tanneroutage.php
+    [REMOTE_PORT] => 38028
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => POST
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /tanneroutage.php
+    [SCRIPT_NAME] => /tanneroutage.php
+    [PHP_SELF] => /tanneroutage.php
+    [REQUEST_TIME_FLOAT] => 1530634923.317
+    [REQUEST_TIME] => 1530634923
+)
+, r=NO FILE

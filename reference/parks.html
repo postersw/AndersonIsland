@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+    <!--<meta name="viewport" content="initial-scale=1, width=device-width,height=device-height,target-densitydpi=medium-dpi,user-scalable=no" /> <!--device-dpi" />-->
+
+    <title>Parks</title>
+    <style>
+        /*img { width: 50%; }  image maps don't work when rescaling*/
+
+        @media only screen and (max-width: 768px) {
+            img.resize {
+                width: 100%;
+            }
+        }
+
+        body {
+            font-family: 'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+        }
+
+        td {
+            border-style: solid;
+            border-width: thin;
+            border-color: lightgray;
+            padding: 6px;
+        }
+
+        .red {
+            color: #FF0000;
+        }
+    </style>
+</head>
+<body>
+    <h1>PARKS</h1>
+
+    <p style="font-size:small">
+        Parks on Anderson Island are maintained by The Anderson Island Park District, the Anderson Island Historical Society and the Riviera.
+        Parks are open from 7 a.m. to 10:30 p.m. <br />
+        Tap an entry for more information.
+    </p>
+    <!--<img src="MapWithParksNames.jpg" class="resize" style="float:left;" usemap="#parkmap" />-->
+    <img id="mapimg" src="MapWithParksNames.jpg?071518" style="width:100%;max-width:768px"  usemap="#parkmap" />
+    <map id="map" name="parkmap">
+        <area alt="Jane Cammon" title="Jane Cammon" shape="rect" coords="282,255,355,383" style="outline:none;" target="_blank" href="janecammon.html" />
+        <area alt="" title="AIHS Farm" shape="rect" coords="321,178,417,256" style="outline:none;" target="_blank" href="http://www.anderson-island.org/hs/farm.html" />
+        <area alt="" title="Andys Wildlife park" shape="rect" coords="246,471,393,633" style="outline:none;" target="_blank" href="andywildlife.html?071518" />
+        <area alt="" title="Andys Marine" shape="rect" coords="74,562,242,697" style="outline:none;" target="_blank" href="andymarine.html?071518" />
+        <area alt="" title="Jacobs point" shape="rect" coords="381,593,514,750" style="outline:none;" target="_blank" href="jacobspoint.html?071518" />
+        <area alt="" title="Swimming Hole" shape="rect" coords="521,249,595,305" style="outline:none;" target="_blank" href="swimminghole.html" />
+        <area alt="" title="School House" shape="rect" coords="360,410,413,466" style="outline:none;" target="_blank" href="schoolhouse.html" />
+        <area alt="" title="Tom White" shape="rect" coords="409,410,473,466" style="outline:none;" target="_blank" href="tomwhite.html" />
+        <area alt="" title="Montalvo" shape="rect" coords="226,218,276,278" style="outline:none;" target="_blank" href="montalvo.html" />
+        <area alt="" title="golf" shape="rect" coords="499,376,579,483" style="outline:none;" target="_blank" href="golf.html" />
+    </map>
+    <table style="border-style:solid;border-collapse:collapse;">
+        <tr><td><strong><em>Parks Department:</em></strong>Tap for more info & maps.</td></tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/swimminghole.html')">
+            <td>
+                <strong><span class="red">A</span> - Ol' Swimming Hole/Lowell Johnson Park </strong>
+                <img src="IconSwimming.png" height="20" width="20" /> <img src="IconVolleyball.png" height="20" width="20" /> 
+                <img src="IconPicnic.png" height="20" width="20" />
+                <img src="IconNoDog.png" height="20" width="20" />
+                <img src="IconOuthouse.png" height="20" width="20" />
+                <br />
+                2 swimming areas and sandy beach on Lake Florence. Floating Dock and slide.
+                Volleyball court. Picnic area.<br />
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/andymarine.html?071518')">
+            <td>
+                <strong><span class="red">B</span> - Andy's Marine Park</strong>
+                <img src="IconHiking.png" height="20" width="20" /> <img src="IconNoDog.png" height="20" width="20" />
+                <img src="IconPicnic.png" height="20" width="20" /><img src="IconBeach.png" height="20" width="20" />
+                <img src="IconStarfish.png" height="20" width="20" /><img src="IconOuthouse.png" height="20" width="20" />
+                <br />
+                81 acres. 3/4 mile public beach and tidal inlet.  1 mile trail (through woods) to the beach.
+                (Some steep parts.) <br />
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/andywildlife.html?071518')">
+            <td>
+                <strong><span class="red">C</span> - Andy's Wildlife Park</strong>
+                <img src="IconHiking.png" height="20" width="20" /><img src="IconDogWalk.png" height="20" width="20" /><img src="IconOuthouse.png" height="20" width="20" /><br />
+                180 acres wedlands, tidal estuary, and forest. 2 mile nature trail loop.
+                Best in summer due to wet conditions. <br />
+                Facilities: Restroom and picnic area at trailhead. <br />
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/andywildlife.html')">
+            <td>
+                <strong><span class="red">C</span> - Off-Leash Dog Walk</strong>
+                <img src="IconDogWalk.png" height="20" width="20" /> <br />
+                1-acre fenced OFF-LEASH dog area on Sandberg Road. The only off-leash park.
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/janecammon.html')">
+            <td>
+                <strong><span class="red">D</span> - Jane Cammon Park</strong>
+                <img src="IconHiking.png" height="20" width="20" /><img src="IconDogWalk.png" height="20" width="20" /><img src="IconOuthouse.png" height="20" width="20" />
+                <br />
+                40 acres. Includes Elementary School, ballfield (J), covered play area, play equipment,
+                and the Jane Cammon Walking and Bicycle Trail (2 miles flat and dry).<br />
+
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/jacobspoint.html?071518')">
+            <td>
+                <strong><span class="red">L</span> - Jacob's Point Park</strong>
+                <img src="IconHiking.png" height="20" width="20" /> 
+                <img src="IconNoDog.png" height="20" width="20" />
+                <img src="IconPicnic.png" height="20" width="20" />
+                <img src="IconBeach.png" height="20" width="20" />
+                <img src="IconOuthouse.png" height="20" width="20" />
+                <br />
+                82 acres of woods, wetlands, and beach.  Historically a pioneer farm.
+                1.4 mile (each way) loop trail. Beach access. Outhouse near trail midpoint.
+
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/schoolhouse.html')">
+            <td>
+                <strong><span class="red">E</span> - The Old School House</strong>
+                <img src="IconTennis.png" height="20" width="20" />
+                <img src="IconPicnic.png" height="20" width="20" />
+                <img src="IconSeasaw.png" height="20" width="20" />
+                <img src="IconOuthouse.png" height="20" width="20" /><br />
+                Historic one-room schoolhouse and tennis/pickleball/basketball court.
+                The schoolhouse serves as a fitness center run by Wendy Field 884-9261.<br />
+                Facilities: portable restroom. <br />
+
+            </td>
+        </tr>
+        <tr onclick="window.open('http://www.anderson-island.org/parks/tomwhite.html')">
+            <td>
+                <strong><span class="red">F</span> - Tom White Park (Schoolhouse creek)</strong>
+                <img src="IconHiking.png" height="20" width="20" />
+                <img src="IconNoDog.png" height="20" width="20" /><br />
+                5 acres. Wooded area with hiking trail and a salmon creek.<br />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <strong><span class="red">J</span> - Russ Cammon Ball Field.</strong>
+                <img src="IconBaseball.png" height="20" width="20" />
+                <img src="IconSeasaw.png" height="20" width="20" />
+                <img src="IconPicnic.png" height="20" width="20" />
+            </td>
+        </tr>
+
+        <tr onclick="window.open('http://www.anderson-island.org/parks/montalvo.html')">
+            <td>
+                <strong><span class="red">G</span> - Montalvo Park</strong>
+                <img src="IconHiking.png" height="20" width="20" />
+                <img src="IconNoDog.png" height="20" width="20" />
+                <img src="IconOuthouse.png" height="20" width="20" />
+                <img src="IconPicnic.png" height="20" width="20" />
+                <br />
+                5 acres. Wooded with an open area and picnic table. Trail connects to Jane Cammon park.<br />
+            </td>
+        </tr>
+
+        <tr><td><em>UNDEVELOPED:</em></td></tr>
+
+        <tr>
+            <td>
+                <span class="red">H</span> - St. Anne's Woods (UNDEVELOPED, No Access)<br />
+            </td>
+        </tr>
+
+        <tr><td>Tom's Park (UNDEVELOPED)</td></tr>
+
+        <tr><td></td></tr>
+
+        <tr onclick="window.open('http://www.anderson-island.org/hs/farm.html')">
+            <td>
+                <strong>
+                    <em>Anderson Island Historical Society</em><br />
+                    <span class="red">K</span> -
+                    Johnson Farm and Museum
+                </strong><br />
+                Historical island farm with a nature trail, museum, gift shop.
+
+            </td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+            <td>
+                <strong><em>Riviera Parks</em></strong><br />
+                For Riviera residents and their guests.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong><span class="red">1</span> - Golf Course</strong>
+                <img src="IconGolf.png" height="20" width="20" /><br />
+                9-hole golf course for Riviera members and guests.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong><span class="red">2</span> - Jim Ray Park</strong>
+                <img src="IconSeasaw.png" height="20" width="20" /><img src="IconBeach.png" height="20" width="20" /><img src="IconPicnic.png" height="20" width="20" />
+                <br />Swimming and picnic area on Lake Josephine.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong><span class="red">3</span> - Interlaken Park</strong>
+                <img src="IconSeasaw.png" height="20" width="20" /><img src="IconBeach.png" height="20" width="20" /><img src="IconPicnic.png" height="20" width="20" /><img src="IconTennis.png" height="20" width="20" />
+                <br />Between Lake Florence and Lake Josephine. Picnic area, playground, and tennis/pickleball court.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong><span class="red">4</span> - Golf Course Driving Range</strong>
+                <img src="IconGolf.png" height="20" width="20" />
+                <br />Driving Range only.
+            </td>
+        </tr>
+    </table>
+    <span style="font-size:x-small"> 07/15/18.</span>
+</body>
+
+</html>
+<script type="text/javascript" src="imageMapResizer.min.js"></script>
+<script type="text/javascript">
+    imageMapResize();  //OLD CALL document.getElementById("mapimg")
+
+</script>

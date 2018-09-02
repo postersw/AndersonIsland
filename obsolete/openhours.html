@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>Open Hours</title>
+    <style>
+        p {
+            font-size: 14px;
+        }
+        a {
+            -webkit-appearance: button;
+            -moz-appearance: button;
+
+            text-decoration: none;
+            color: initial;
+            padding: 6px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Open Hours</h1>
+        <p>Touch an entry for more information.</p>
+        <table id='table' style="border:thin solid black;border-collapse:collapse">
+            <tr style="background-color:black;color:white">
+                <td>Location</td>
+               
+
+            </tr>
+
+
+        </table>
+
+        </div>
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/AIA.js"></script>
+
+    <script>
+       /////////////////////////////////////////////////////////////////////////////////////////
+       // ShowOpenHours - shows whether something is open or closed
+        // openHours (global) is a string consisting of strings (rows) of store hours, separated by /n.
+       // each string is: name,Suntime,Montime,Tuetime,Wedtime,Thurtime,Fritime,Sattime,closedholidays
+       //   where xxxtime = hhmm-hhmm in 24 hour format. closedholidays = mmdd/mmdd/mmdd...
+        function ShowOpenHours() {
+            var openlist;
+            table = document.getElementById("table");
+
+            // read open hours from master source
+            var openHours = localStorage.getItem("openhours");
+            openHours = openHours.split("\n");
+
+            // loop through the openHours array (each string entry is one business)
+            var i;
+            for (i = 0; i < openHours.length-1; i++) {
+                var a; a = openHours[i].split(",");  // parse it into an array
+                openlist = "<span style='font-weight:bold'>" + a[0] + GetOpenStatus(a) + " </span><br/>&nbsp&nbsp&nbsp";  // name of business
+                var phonenumber = a[0].split("(");
+                phonenumber[1] = phonenumber[1].replace(")", ""); // remove closing paren
+                // loop through Sun - Sat
+                for (j = 0; j < 7; j++) {
+                    var opentimetoday, opentime, closetime;
+                    opentimetoday = a[j + 1]; // hhmm-hhmm open today
+                    if (opentimetoday != "") {
+                        opentime = opentimetoday.substring(0, 4); // open time hhmm
+                        closetime = opentimetoday.substring(5, 9); // close time hhmm
+                        openlist += dayofweekshort[j] + ":" + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + "&nbsp";
+                    }
+                } // for loop for each day
+                var row = table.insertRow(-1);
+                var s = '' + a[8] + '';
+                //if (a[8] != "") row.onclick = function () { window.open(s); };
+                var cell = row.insertCell(0);
+                cell.innerHTML = openlist + "<br/>" +
+                    "<a href='tel:" + phonenumber[1] + "'>Tap to Call " + phonenumber[1] + "</a>&nbsp&nbsp&nbsp&nbsp" +
+                    "<a href='" + a[8] + "'> Tab to visit Web Site</a><br/>";
+                cell.style.border = "thin solid black";
+            } // for loop for each business
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // GetOpenStatus - determine if business is open & reeturn string
+        //  entry: a = array of openTime for 1 business
+        //  exit: returns string
+        function GetOpenStatus(a) {
+            var opentimetoday, opentime, closetime;
+            opentimetoday = a[dayofweek + 1]; // hhmm-hhmm open today
+            opentime = Number(opentimetoday.substring(0,4)); // open time hhmm
+            closetime = Number(opentimetoday.substring(5, 9)); // close time hhmm
+            var openlist; openlist = "";
+            // test for closed
+            if (opentimetoday = "" || (timehhmm > closetime) || (timehhmm < opentime)) {
+                openlist += " <span style='color:red'> Closed. </span>";
+                if (timehhmm < opentime) {
+                    openlist += " Opens today at " + VeryShortTime(opentime);
+                    return openlist;
+                }
+                // find next open time
+                j = dayofweek + 1; if (j == 7) j = 0;
+                // if it opens tomorrow
+                if (a[j + 1]) {  
+                    openlist += " Opens tomorrow at " + VeryShortTime(a[j + 1].substring(0, 4));
+                    return openlist;
+                }
+                // not open tomorrow. find next open day.
+                while (true) {
+                    j++;  if (j == 7) j = 0; // handle day rollover
+                    if (a[j + 1] != "") { // open day found
+                        openlist += " Opens " + dayofweekname[j] + " at " + VeryShortTime(a[j + 1].substring(0, 4));
+                        return openlist;
+                    }
+                } // while loop
+                    
+            } else {
+                // its open
+                openlist += " <span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today";
+                return openlist;
+            }
+        }
+ </script>
+
+    <!-- actual javascript execution begins here:-->
+    <script type="text/javascript">
+        InitializeDates(0);
+        ShowOpenHours(); //  open hours
+    </script>
+</body>
+</html>

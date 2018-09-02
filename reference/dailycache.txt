@@ -1,0 +1,93 @@
+DAILYCACHE
+FERRYTIMESS
+545,H123456A,645,*,800,*,900,*,1000,HF,1200,*,1410,*,1510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y
+FERRYTIMESA
+615,H123456A,730,*,830,*,930,*,1030,HF,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y;
+FERRYTIMESK
+0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,1800,*,0,,0,,2130,40,2250,X6H,2350,Y;
+FERRYTIMESS2
+545,H123456A,645,*,800,*,900,*,1000,HF,1200,*,1410,*,1510,*,1610,*,1710,*,1830,*,1930,*,2040,4560H,2200,X6H,2300,Y
+FERRYTIMESA2
+615,H123456A,730,*,830,*,930,*,1030,HF,1230,*,1440,*,1540,*,1640,*,1740,*,1900,*,2000,*,2110,4560H,2230,X6H,2330,Y;
+FERRYTIMESK2
+0,,655,*,0,,0,,1010,G,1255,*,0,,0,,0,,1800,*,0,,0,,2130,40,2250,X6H,2350,Y;
+OPENHOURS
+Store (884-4001),1000-1800,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,http://www.andersonislandgeneralstore.com
+Coffee Shop (884-1644),0800-1500,0530-2000,0530-1500,0530-1500,0530-1500,0530-2000,0800-2000,http://www.andersonislandgeneralstore.com
+Restaurant (884-3344),0930-1900,,,1600-2000,1600-2100,1600-2100,0930-2100,http://rivieracommunityclub.com/amenities/restaurant
+Post Office (884-4001),,1100-1500,1100-1500,1100-1500,1100-1500,1100-1500,1100-1500,http://www.hourspostoffice.com/USPS+Post+Office+Anderson+Island/98303/Anderson+Island/40629
+Dump (884-4072),1000-1800,1000-1800,,,,,,https://www.co.pierce.wa.us/index.aspx?NID=1541
+OPENHOURSEND
+EMERGENCY
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:911"> All emergencies: 911</a> </td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-798-4333">  Crisis Line: 798-4333</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:884-4040">  Fire Department: 884-4040</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:884-4057"> Fire Department Burn Line: 884-4057</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:606-5273"> Fire Department Cell Phone:606-5273</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:970-5403"> Island Volunteer Patrol: 970-5403</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-9800"> Pierce County Sheriff: 1-800-562-9800</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-253-798-4721"> Pierce County Sheriff Non-Emergency: 253-798-4721</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-732-6985">  Poison Center: 1-800-732-6985</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-5632"> Red Tide:1-800-562-5632</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:884-4808">  Riviera Disaster Hot Line: 884-4808</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-472-0208">Tanner Electric: 1-800-472-0208</a></td></tr>
+EMERGENCYEND
+MOREHOURS
+Museum Store (884-2135),1200-1600,,,,,,1000-1600,http://www.andersonislandhs.com
+MHEND
+OPENHOURSJSON
+[{
+    "Name": "Store", "Phone": "884-4001", "Desc": "Groceries, Deli, Hardware, Gas",
+    "Href": "https://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Addr": "10202 Eckenstam Johnson Rd",
+    "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 101, "To": 1231, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] }],
+    "Closed": [1225]
+},{
+    "Name": "Coffee Shop", "Phone": "884-1644", "Desc": "Coffee and food",
+    "Href": "https://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Addr": "10006 Eckenstam Johnson Rd",
+    "Map": "https://www.google.com/maps?q=Island+Coffee+Shoppe,+10006+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 101, "To": 1231, "H": [800, 1500, 530, 2000, 530, 1500, 530, 1500, 530, 1500, 530, 2000, 800, 2000] }],
+    "Closed": [1225]
+},{
+    "Name": "Restaurant", "Phone": "884-3344", "Desc": "Rivera Lakeshore Restaurant",
+    "Href": "https://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Addr": "11019 Country Club Dr",
+    "Map": "https://www.google.com/maps?q=Riviera+Lakeshore+Restaurant,+11019+Country+Club+Dr,+Anderson+Island,+WA",
+    "Sc": [{ "From": 601, "To": 831, "H":[900, 2000, 0, 0, 0, 0, 1600, 2000, 1600, 2000, 1100, 2100, 900, 2100] },
+        { "From": 901, "To": 531, "H":[800, 2000, 0, 0, 0, 0, 1600, 2000, 1600, 2100, 930, 2100, 930, 1900] }],
+    "Closed": [1225]
+},{
+    "Name": "Post Office", "Phone": "884-4001", "Desc": "USPS Post Office in General Store",
+    "Href": "https://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Addr": "10202 Eckenstam Johnson Rd",
+    "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
+    "Sc": [{"From": 101, "To": 1231, "H": [0, 0, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500],
+        "H2":[0, 0, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 0, 0]}],
+    "Closed": [101, 118, 215, 330, 704, 905, 1010, 1111, 1124, 1225, 1226]
+},{
+    "Name": "Dump", "Phone": "253-847-7555", "Desc": "Pierce County Recycle Transfer Station",
+    "Href": "https://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Addr": "9607 Steffensen Rd",
+    "Map": "https://www.google.com/maps?q=Pierce+County+Recycling,+9607+Steffense+Rd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 1001, "To": 331, "H": [1000, 1400, 1300, 1700, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+        { "From": 401, "To": 930, "H":[1000, 1800, 1000, 1800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }],
+    "Closed": [1124, 1225, 101]
+},{
+    "Name": "Museum Gift Shop", "Phone": "884-2135", "Desc": "Located at the Johnson Farm",
+    "Href": "https://www.andersonislandhs.org",
+    "Addr": "9306 Otso Point Rd",
+    "Map": "https://maps.google.com/maps?q=9306+Otso+Point+Road,+Anderson+Island,+WA",
+    "Sc": [{ "From": 401, "To": 831, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600] }],
+    "Closed": [1225]
+},{
+    "Name": "Fire and Rescue (PCFD27)", "Phone": "884-4040", "Desc": "Anderson Island Fire and Rescue (PC Fire District 27)",
+    "Href": "http://www.pcfd27.com/",
+    "Addr": "12207 Lake Josephine Blvd",
+    "Map": "https://maps.google.com/maps?q=Pierce+County+Fire+District+27,+12207+Lake+Josephine+Blvd,+Anderson+Island,+WA",
+    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 800, 1600, 800, 1600, 800, 1600, 800, 1600, 800, 1600, 0, 0] }],
+    "Closed": [1225]
+}]
+OPENHOURSJSONEND
+// 5/09/16
