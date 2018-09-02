@@ -41,7 +41,7 @@
 // BUT SOMETIMES I HAVE TO REISSUE THE REQUEST FOR TOMORROW AND USE THE SET TIME IN MOONDATA.
 //"closestphase":{"phase":"First Quarter","date":"August 18, 2018","time":"12:48 a.m. DT"},
 // SOMETIMES I GET (if it is not a full moon):
-//  "fracillum":"64%", 
+//  "fracillum":"64%",
 // SOMETIMES I GET:
 //  "curphase":"Waning Gibbous"
 //}
@@ -104,61 +104,55 @@ function FormatHtml($reply) {
     if(is_null($jreply)) echo "<br/>Error decoding Today json data<br/>";
 
     // find rise time today:
+    $times = "";
     $risetime = "";
+    $settime = "";
     for($i=0; $i<count($jreply->moondata); $i++) {
-        if($jreply->moondata[$i]->phen == "R") {
-            $risetime = $jreply->moondata[$i]->time;
-            break;
+        switch ($jreply->moondata[$i]->phen) {
+            case "R":
+                if($times <> "") $times = $times . "|";
+                $times = "$times Rise: {$jreply->moondata[$i]->time} ";
+                break;
+            case "S":
+                if($times <> "") $times = $times . "|";
+                $times = "$times Set: {$jreply->moondata[$i]->time} ";
+                $settime = $jreply->moondata[$i]->time;
         }
     }
     // if an error
-    if ($risetime == "") {
+    if ($times == "") {
         echo "ERROR - no moon rise returned. \n";
         die( "ERROR - no moon rise returned.");
-    } else echo "<br/>Moon Rise: $risetime <br/>";
+    } else echo "<br/>Moon Times: $times <br/>";
 
-    // find possible set time today
-    $settime = "";
-    for($i++; $i<count($jreply->moondata); $i++) {
-        if($jreply->moondata[$i]->phen == "S") {
-            $settime = $jreply->moondata[$i]->time;
-            echo "<br/>Moon sets today $settime<br/>";
-            break;
-        }
-    }
+
     // not setting today. find set time tomorrow.
     if($settime == "") {
         for($i=0; $i<count($jreply->nextmoondata); $i++) {
             if($jreply->nextmoondata[$i]->phen == "S") {
-                $settime = $jreply->nextmoondata[$i]->time;
-                echo "<br/>Moon sets tomorrow $settime<br/>";
+                $times = "$times | Set: {$jreply->nextmoondata[$i]->time} ";
+                echo "<br/>Moon sets tomorrow $times<br/>";
                 break;
             }
         }
     }
 
-    // no set time for tomorrow present in the reply, so get and use tomorrow data
-    if($settime == "") {
-        echo "<br/>Getting moon data for tomorrow 1<br/>";
-        $str = GetData($linktomorrow);  // ask the navy for tomorrows data which will have the set time for tonight
-        if($str == "" || $str==false) echo "<br/>No tomorrow data returned for $link <br/>";
-        $jreplytomorrow = json_decode($str);  // decode the json reply
-        if(is_null($jreplytomorrow)) echo "<br/>Error decoding Tomorrow json data<br/>";
-        for($i=0; $i<count($jreplytomorrow->moondata); $i++) {
-            if($jreplytomorrow->moondata[$i]->phen == "S") {
-                $settime = $jreplytomorrow->moondata[$i]->time . " tomorrow";
-                echo "<br/>Moon sets tomorrow $settime<br/>";
-                break;
-            }
-        }
-    }
+    //// no set time for tomorrow present in the reply, so get and use tomorrow data. Turned off 9/2,.
+    //if($settime == "") {
+    //    echo "<br/>Getting moon data for tomorrow 1<br/>";
+    //    $str = GetData($linktomorrow);  // ask the navy for tomorrows data which will have the set time for tonight
+    //    if($str == "" || $str==false) echo "<br/>No tomorrow data returned for $link <br/>";
+    //    $jreplytomorrow = json_decode($str);  // decode the json reply
+    //    if(is_null($jreplytomorrow)) echo "<br/>Error decoding Tomorrow json data<br/>";
+    //    for($i=0; $i<count($jreplytomorrow->moondata); $i++) {
+    //        if($jreplytomorrow->moondata[$i]->phen == "S") {
+    //            $settime = $jreplytomorrow->moondata[$i]->time;
+    //            echo "<br/>Moon sets tomorrow $settime<br/>";
+    //            break;
+    //        }
+    //    }
+    //}
 
-    echo $risetime, $settime;
-    // if an error
-    if ($risetime == "") {
-        echo "<br/>ERROR - no moon rise returned. <br/>";
-        die( "ERROR - no moon rise returned.");
-    }
     // get phase and icon
     $pct =  $jreply->fracillum;
     $phase = "";
@@ -179,13 +173,13 @@ function FormatHtml($reply) {
     }
     //  final return;
     if($pct == "") $pct = $mp; // if no pct, use the phase
-    $s = "<br/>Moon:<span style='font-weight:normal'> <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> $pct, Rise: $risetime | Set: $settime</span> ";
+    $s = "<br/>Moon:<span style='font-weight:normal'> <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> $pct, $times</span> ";
     // fix times
-    $s = str_replace("a.m.", "a", $s);
-    $s = str_replace("p.m.", "p", $s);
+    $s = str_replace(" a.m.", "a", $s);
+    $s = str_replace(" p.m.", "p", $s);
     $s = str_replace("DT", "", $s);
     $s = str_replace("ST", "", $s);
-    return $s . "";
+    return $s;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
