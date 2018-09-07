@@ -70,7 +70,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.09018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.090718";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1266,8 +1266,8 @@ function FillFerryArray(itemname) {
     FA = str.split(";"); // fill array with strings
     // convert ferry time to a number
     for (var i = 0; i < FA.length; i = i + 2) {
-        FA[i] = Number(FA[i]);  // convert to number
         if (isNaN(FA[i])) alert("Data error " + itemname + " " + i);
+        FA[i] = Number(FA[i]);  // convert to number
     }
     
     return FA;
@@ -1631,6 +1631,7 @@ function ShowNextTides() {
 //          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
 //  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
+//          mmdd;hhmm;hhmm;t;title;location;sponsor;info
 //  Exit    returns the information to display on the main screen
 function DisplayNextEvents(CE) {
     var datefmt = ""; // formatted date and event list
@@ -1651,7 +1652,9 @@ function DisplayNextEvents(CE) {
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE] == "") continue; // skip blank lines
         aCE = CE[iCE].split(';');  // split the string
-        //  advance schedule date to today
+        if (BadEvent(aCE)) continue; // must have 6 entries
+
+         //  advance schedule date to today
         aCEyymmdd = Number(aCE[0]);
         if (aCEyymmdd < gYYmmdd) continue; // not there yet.
         // if the entry is for today and it is done, skip it
@@ -2797,6 +2800,7 @@ function DisplayComingEventsList(CE) {
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE] == "") continue; // skip blank lines
         aCE = CE[iCE].split(';');  // split the string
+        if (BadEvent(aCE)) continue; // must have 6 entries
         if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
         var CEyymmdd = Number(aCE[0]); // yymmdd
@@ -2868,6 +2872,10 @@ function FormatEvent(aCE, fontsize) {
         "fitness", "fitness_center", "craft", "palette", "art", "palette", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
     ];
     var ev = aCE[4];
+    if (ev == null || ev == "") {
+        alert("Event error - no type: " + aCE[1] + " " + aCE[2] + aCE[3]);
+        return "";
+    }
     var icon;
     if (!gEventIcons) return ev;  // if no icons
     // 1. look for user specified icon in aCE[8]
@@ -3093,6 +3101,7 @@ function DisplayComingWeek(CE) {
         for (iCE = 0; iCE < CE.length; iCE++) {
             if (CE[iCE] == "") continue; // skip blank lines
             aCE = CE[iCE].split(';');  // split the string
+            if (BadEvent(aCE)) continue; // must have 6 entries
             var dateCE = Number(aCE[0]); // yymmdd
             if (dateCE >= endyymmdd) break; // past one week
             if (dateCE < startyymmdd) continue; // if before today
@@ -3204,6 +3213,7 @@ function DisplayComingMonth(CE) {
             for (; iCE < CE.length; iCE++) {
                 if (CE[iCE] == "") continue; // skip blank lines
                 aCE = CE[iCE].split(';');  // split the string
+                if (BadEvent(aCE)) continue; // must have 6 entries
                 //  advance schedule date to today
                 var dateCE = Number(aCE[0]); // yymmdd
                 if (dateCE > yymmdd) break; // if past today, exit
@@ -3220,6 +3230,20 @@ function DisplayComingMonth(CE) {
     }
 
 } // end function
+
+//////////////////////////////////////////////////////////////////////////////////////
+//  BadEvent - returns true if the event is bad.
+//  Entry   aCE = arry of form: mmdd;hhmm;hhmm;t;title;location;sponsor;info;icon object
+//  Exit    true if bad, false if good
+function BadEvent(aCE) {
+    if (isNaN(aCE[0])) return true;
+    if (isNaN(aCE[1])) return true;
+    if (isNaN(aCE[2])) return true;
+    if (aCE.length < 6) return true; // must have 6 entries
+    if (aCE.length > 9) return true; // must have 6 entries
+    return false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 // eventcolor - return the color for an event, based on the key (M, S, E, A, C, G)
