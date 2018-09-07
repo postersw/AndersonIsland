@@ -235,11 +235,13 @@
     <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_pushbots_licon.png" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_pushbots_sicon.png" />-->
     <!--OneSignal Icons 5/24/18-->
+    <!--
    <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
+    -->
 
 
   </platform>
