@@ -5,10 +5,11 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.21.090118"
-        android-versionCode="2236"
-        android:versionName="1.21.090118">
+        version   = "1.21.090718.1"
+        android-versionCode="2238"
+        android:versionName="1.21.090718.1">
   <!-- moved config.xml to root 8/19/18-->
+  <!-- versionCode 2237 for 1.21 9/07/18 -->
   <!-- versionCode 2236 for 1.21 9/01/18 -->
   <!-- versionCode 2235 for 1.21 8/29/18 -->
   <!-- versionCode 2234 for 1.21 7/30/18 beta only -->
@@ -98,8 +99,8 @@
   </config-file>
 
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
-  <preference name="phonegap-version" value="cli-7.1.0" /> <!--test 8/29/18-->
-  <!--<preference name="phonegap-version" value="cli-8.0.0" />-->
+  <!--<preference name="phonegap-version" value="cli-7.1.0" />--> <!--test 8/29/18-->
+  <preference name="phonegap-version" value="cli-8.0.0" />
   <!--<preference name='pgb-builder-version' value='1' /> -->
   <preference name='pgb-builder-version' value='2' />
   <!-- 2 for android, 1 for ios as of 5/31-->
@@ -234,11 +235,18 @@
     <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_pushbots_licon.png" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_pushbots_sicon.png" />-->
     <!--OneSignal Icons 5/24/18-->
+    <!--
    <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
+    -->
+       <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="www/ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
 
 
   </platform>
