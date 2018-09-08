@@ -87,6 +87,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/03/18. Ver 1.20.072218 Apple App Store on ver120 dangling branch with PGB builder=1 (not merged back to main).
 08/21/18. Ver 1.21.082018 Google Play Store #2234 Beta. Icons on main page and event page.  Phase of the moon.
 08/29/18. Ver 1.21.082918 Google Play Store #2235 Beta. Icons on main page and event page.  Phase of the moon. CLI-7.1.0. OneSignal 2.4.0. Icons in res/
+09/08/18. Ver 1.21.090718 Google Play Store #2238 PRODUCTION. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
