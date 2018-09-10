@@ -14,8 +14,9 @@
  </head >
  <body > 
     <h1 > Stats for Anderson Island Assistant (dailycachelog)</h1 >
-     <p id="a" > </p > 
+     <p id="a" > To start on a date: change the variable 'startdate'</p > 
     <script>
+        var startdate = "2018-06-00";  // start date for stats
         var starttime = "", endtime = ""; 
         var rows = 0;
         var oldrows = 0;
@@ -147,6 +148,7 @@
                 if (W.length < 5) continue;
                 var rowdate = W[0].substr(0, 10);  // get date
                 if (rowdate == "") continue;
+                if (rowdate < startdate) continue;//  skip rows before startdate
                 if (starttime == "") starttime = W[0];
                 endtime = W[0];
                 if (W[5] == "I=67.183.229.238") continue;
