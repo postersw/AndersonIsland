@@ -212,7 +212,7 @@
 
   <splash src="Default.png"                             platform="android" />
   <splash src="Default.png"                             platform="ios" />
-
+<!--
   <platform name="ios">
     <splash scr="www/res/screen/ios/SS320x480.png"   width="320" height="480" />
     <splash src="www/res/screen/ios/SS640x1136.png"  width="640" height="1136"/>
@@ -221,7 +221,7 @@
     <splash src="www/res/screen/ios/SS1536x2048.png" width="1536" height="2048" />
     <splash src="www/res/screen/ios/SS750x1334.png" width="750" height="1334" />
     <splash src="www/res/screen/ios/SS1242x2208.png" width="1242" height="2208" />
-  </platform>
+  </platform> -->
 
   
 </widget>
