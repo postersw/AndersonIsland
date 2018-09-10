@@ -267,6 +267,8 @@
   <platform name="android">
     <allow-intent href="market:*" />
   </platform>
-
+  <platform name="ios">
+    <allow-navigation href="ttpapps.pcf:*" />
+  </platform>
   
 </widget>
