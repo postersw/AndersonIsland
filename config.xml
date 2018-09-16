@@ -5,7 +5,7 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.21.091018.1"
+        version   = "1.21.091618.1"
         android-versionCode="2238"
         android:versionName="1.21.090718.1">
   <!-- moved config.xml to root 8/19/18-->
@@ -252,6 +252,7 @@
 
   </platform> 
 
+  <access origin="*"/>  <!-- a wildcard access tag allows access to all external resource.-->
 
   <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
   <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
