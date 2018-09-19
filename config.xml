@@ -5,7 +5,7 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.21.091918.1"
+        version   = "1.21.091918.2"
         android-versionCode="2238"
         android:versionName="1.21.090718.1">
   <!-- moved config.xml to root 8/19/18-->
@@ -269,7 +269,7 @@
     <allow-intent href="market:*" />
   </platform>
   <platform name="ios">
-    <allow-navigation href="ttpapps.pcf://*" />
+    <allow-navigation href="ttpapps.pcf://" />
   </platform>
   
 </widget>
