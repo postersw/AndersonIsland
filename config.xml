@@ -5,7 +5,7 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.21.091918.5"
+        version   = "1.21.092618"
         android-versionCode="2238"
         android:versionName="1.21.090718.1">
   <!-- moved config.xml to root 8/19/18-->
@@ -99,7 +99,7 @@
   </config-file>
 
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
-  <preference name="phonegap-version" value="cli-7.1.0" />-->
+  <preference name="phonegap-version" value="cli-7.1.0" /> <!-- Still required with builder=1 for IOS-->
    <preference name='pgb-builder-version' value='1' />     
     <!--<preference name="phonegap-version" value="cli-8.0.0" />
   <preference name='pgb-builder-version' value='2' /> -->
@@ -214,7 +214,7 @@
 
   <splash src="Default.png"                             platform="android" />
   <splash src="Default.png"                             platform="ios" />
-  <!-- splash screens removed 9/10/18 because they abort PGB under cli 8.0.0
+
   <platform name="ios">
     <splash scr="www/res/screen/ios/SS320x480.png"   width="320" height="480" />
     <splash src="www/res/screen/ios/SS640x1136.png"  width="640" height="1136"/>
@@ -223,7 +223,8 @@
     <splash src="www/res/screen/ios/SS1536x2048.png" width="1536" height="2048" />
     <splash src="www/res/screen/ios/SS750x1334.png" width="750" height="1334" />
     <splash src="www/res/screen/ios/SS1242x2208.png" width="1242" height="2208" />
-  </platform> -->
+  </platform> 
+  
   <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
     <!--Pushbots Icons
