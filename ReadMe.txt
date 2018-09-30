@@ -89,6 +89,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/29/18. Ver 1.21.082918 Google Play Store #2235 Beta. Icons on main page and event page.  Phase of the moon. CLI-7.1.0. OneSignal 2.4.0. Icons in res/
 09/08/18. Ver 1.21.090718 Google Play Store #2238 PRODUCTION. CLI-8.0.0. OneSignal 2.4.0. Icons in app/src/main/res/
 09/27/18. Ver 1.21.092618 Apple app store. Production. Note: built with CLI 7.1 builder=1 because CLI 8 aborts on <allow-navigation href="ttpapps.pcf://"> 
+09/30/18. Ver 1.22 Branch Ver122 created.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
