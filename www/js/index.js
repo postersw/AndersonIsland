@@ -70,7 +70,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.090718";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.21.091918";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -4153,10 +4153,11 @@ function ShowIcons(nt) {
     // special case for icons
     SetTideTitle();
     if (gIconSwitch == "1") {
-        MarkPage("5"); // 5=no icons
+        MarkPage("5"); // 5= icons
         document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
         MenuSet("iconlont", "lime", "iconlofft", "white");
     } else {
+        MarkPage("6"); // 6=no icons
         MenuSet("iconlont", "white", "iconlofft", "red");
     }
 }

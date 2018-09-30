@@ -5,7 +5,7 @@
         xmlns:gap = "http://phonegap.com/ns/1.0"
         xmlns:android = "http://schemas.android.com/apk/res/android"
         id        = "org.anderson-island.andersonislandassistant"
-        version   = "1.21.090718.1"
+        version   = "1.21.092618"
         android-versionCode="2238"
         android:versionName="1.21.090718.1">
   <!-- moved config.xml to root 8/19/18-->
@@ -99,10 +99,10 @@
   </config-file>
 
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
-  <!--<preference name="phonegap-version" value="cli-7.1.0" />--> <!--test 8/29/18-->
-  <preference name="phonegap-version" value="cli-8.0.0" />
-  <!--<preference name='pgb-builder-version' value='1' /> -->
-  <preference name='pgb-builder-version' value='2' />
+  <preference name="phonegap-version" value="cli-7.1.0" /> <!-- Still required with builder=1 for IOS-->
+   <preference name='pgb-builder-version' value='1' />     
+    <!--<preference name="phonegap-version" value="cli-8.0.0" />
+  <preference name='pgb-builder-version' value='2' /> -->
   <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- added 4/28 because I couldnt get the pushbot files into the res folders-->
 
@@ -155,6 +155,8 @@
 
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
             76x76 2xipad1xipad 83.5 2xipad-->
+  
+ <!-- REMOVED ICONS FROM HERE -->
   <platform name="ios">
     <icon src="www/res/icon/ios/icon-29.png"      width="29" height="29" />
     <!--29x29-->
@@ -221,8 +223,8 @@
     <splash src="www/res/screen/ios/SS1536x2048.png" width="1536" height="2048" />
     <splash src="www/res/screen/ios/SS750x1334.png" width="750" height="1334" />
     <splash src="www/res/screen/ios/SS1242x2208.png" width="1242" height="2208" />
-  </platform>
-
+  </platform> 
+  
   <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
     <!--Pushbots Icons
@@ -242,29 +244,17 @@
     <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
     -->
-       <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
 
 
-  </platform>
+  </platform> 
 
-  <!--
-        Define access to external domains.
+  <access origin="*"/>  <!-- a wildcard access tag allows access to all external resource.-->
 
-        <access />            - a blank access tag denies access to all external resources.
-        <access origin="*" /> - a wildcard access tag allows access to all external resource.
-
-        Otherwise, you can specify specific domains:
-    -->
-  <access origin="*"/>
-  <!--
-       <access origin="http://phonegap.com" />                    - allow any secure requests to http://phonegap.com/
-       <access origin="http://phonegap.com" subdomains="true" />  - same as above, but including subdomains, such as http://build.phonegap.com/
-       <access origin="http://phonegap.com" browserOnly="true" /> - only allows http://phonegap.com to be opened by the child browser.
-   -->
   <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
   <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
   <plugin name="cordova-plugin-whitelist" />
@@ -275,11 +265,13 @@
   <allow-intent href="sms:*" />
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
+  <!-- IOS BUILDS TO HERE. NOW ADDING IN ACCESS TO EXTERNAL DOMAINS -->
   <platform name="android">
     <allow-intent href="market:*" />
   </platform>
   <platform name="ios">
-    <allow-navigation href="ttpapps.pcf://" />
+    <!-- <allow-navigation href="*" /> Builds under 8.0 but wont launch ticket app -->
+     <allow-navigation href="ttpapps.pcf://" /> <!--wont build under 8.0-->
   </platform>
-
+  
 </widget>

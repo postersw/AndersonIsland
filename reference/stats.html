@@ -32,7 +32,7 @@
         var PagesPerDay = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var Pages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var pname = ["About", "Business", "Events", "Add to Cal", "Emergency", "Ferry Sch", "Map", "Help", "I", "J", "K", "Links", "WebcaM", "News", "Open Hours", "Parks", "Q", "Tanner",
-"Location", "Tides", "Burn Ban", "Activities", "Weather", "PC Ferry page", "Upgrade app", "Upgrade app", "0", "Custom Tides", "CE Month", "CE Week", "Notify Off", "IconOff", "6", "7", "8"];
+"Location", "Tides", "Burn Ban", "Activities", "Weather", "PC Ferry page", "Upgrade app", "Upgrade app", "0", "Custom Tides", "CE Month", "CE Week", "Notify Off", "IconOn", "IconOff", "7", "8"];
         var nip = 0;  // index into IP array
         var IP = [0, 0];
         var nudate = 0; // index into udate
@@ -189,6 +189,7 @@
                 p = p.replace("mm", "m"); 
                 p = p.replace("mm", "m"); 
                 var plen = p.length; // length 
+                var n5 = 0;  // number of occurrences of the number 5 (for icon on)
                 if (plen > 20) plen = 20; 
                 PagesPerDay[plen]++; // pages per visit 
                 //PA = p.split(""); 
@@ -198,7 +199,13 @@
                     if (np < 0) {
                         np = np + 97 - 48 + 26;
                     }
-                    Pages[np]++;
+                   // special case for "5" which is icon on- don't count each occurrence. 
+                    if (np == 31) n5++;   // count number of 5's  
+                    else Pages[np]++;
+                }
+                if (W[1] == "V=1.21.090718") {
+                    if (nn <= n5) Pages[31]++; // if icon ON, count it once if there are the same number of 5s as nn
+                    else Pages[32]++; // if there are not the same number of 5s as nn, count a 6 ICON OFF
                 }
 
                 // count ip
