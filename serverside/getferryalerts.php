@@ -1,7 +1,8 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  getferryalerts - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
-//  alerts are cleared after 4 hours or if they are removed from the rss feed.
+//  Run by cron every 4 minutes.
+//  Alerts are cleared after 4 hours or if they are removed from the rss feed.
 //  To change the default message (from "") change $DefaultMessage in function ClearAlertFile().
 //
 //  Bob Bedoll. 3/13/16.
@@ -14,6 +15,7 @@
 //      4/02/17. Add "DELAYED:" or "DELAYED nn MIN: " for late, behind, or delayed. This is displayed by the app.
 //      5/24/18. Add call to OneSignal to send the alerts. I'll eventually remove Pushbots.
 //      7/9/18. Modify pushbots call to not bump badge.
+//      9/30/18. Add warning for Pushbots.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -30,6 +32,12 @@
 //<description>The ferry is currently running 22 minutes late. Thank you for your patience.</description>
 //</channel>
 //</rss>
+//
+//  NOTIFICATION MESSAGE FORMAT SENT TO PHONE:
+//  hh:mm DELAYED nn: <ferry message title>
+//
+//  NOTIFICATION MESSAGE WRITTEN TO ALERT FILE:
+//  hh:mm DELAYED nn: <ferry message title> \n <ferry message description>
 
 chdir("/home/postersw/public_html");
 //chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
@@ -78,7 +86,7 @@ $t=time(); // current seconds in PDT I hope
 $deltat = $t - $talert;
 //echo (" delta t hrs = " . ($deltat/3600));
 
-// if alert is >5 hrs old, clear it
+// if alert is >4 hrs old, clear it
  if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
      ClearAlertFile($alertfile, $alertlog);
      exit(0);
@@ -128,8 +136,9 @@ fclose($fhl);
 echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
 
-// now send alert using Pushbots and Google Cloud Messaging
-PushANotification(  $alerthr . $alertmin . $alertam . " " . $delay . $title );
+// now send alert using Pushbots.  Deprecation warning added 9/30/18.
+$pbwarn = "Upgrade to AIA ver 1.21 to continue receiving alerts: ";
+PushANotification(  $pbwarn . $alerthr . $alertmin . $alertam . " " . $delay . $title );
 
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
 $msgtitle = "FERRY ALERT";
