@@ -14,7 +14,7 @@ FERRYTIMESK2
 FERRYDATE2
 09/05/2017
 FERRYMESSAGE
-No 7:40p/8:10p run on 1st/3rd Tuesday of each month. Two boat service on Fri,Sun begins 6/29.
+Non-peak fares begin 10/1.
 FERRYMESSAGEEND
 OPENHOURS
 Store (253-884-4001),0800-2000,0700-2000,0700-2000,0700-2000,0700-2000,0700-2100,0800-2100,http://www.andersonislandgeneralstore.com
@@ -51,10 +51,11 @@ LINKS
 <button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/362537050519207', '_system');">Facebook: AI Buy and Sell</button>
 <button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/797030787077525', '_system');">Facebook: AI Community</button><br />
 <button  style="width:45%;padding:6px" onclick="window.open('http://www.co.pierce.wa.us/index.aspx?NID=1793', '_system');">FERRY</button> &nbsp
-<button  style="width:45%;padding:6px" onclick="window.open('https://tickets.piercecountywa.org/', '_system');">Buy Tickets</button> <br/>
+<button  style="width:45%;padding:6px" onclick="window.open('https://www.pierceferrytickets.com/', '_system');">Buy Tickets</button> <br/>
 <button style="width:100%;padding:6px" onclick="window.open('http://www.pcfd27.com', '_system');">Fire and Rescue (PC Fire District 27)</button><br />   
-<button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org', '_system');">Historical Society (AIHS)</button><br />                 
-<button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandsafety.org', '_system');">Island Patrol</button><br />
+<button style="width:100%;padding:6px" onclick="window.open('http://andersonislandhs.org', '_system');">Historical Society (AIHS)</button><br />   
+<button style="width:100%;padding:6px" onclick="window.open('http://andersonislandarts.org', '_system');">Island Arts</button><br />                
+<button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandpatrol.org', '_system');">Island Patrol</button><br />
 <button style="width:100%;padding:6px" onclick="window.open('http://www.marinetraffic.com/en/ais/home/centerx:-122.743/centery:47.1558/zoom:12', '_system');">Marine Traffic Tracking</button><br /> 
 <button style="width:100%;padding:6px" onclick="window.open('http://www.hobolink.com/p/de3ae8d02aff87b5523cf8b2e7491441', '_system');">Oro Bay Weather</button><br />          
 <button style="width:100%;padding:6px" onclick="window.open('http://andersonislandparks.org', '_system');">Parks</button><br />
@@ -100,15 +101,15 @@ LINKS
 LINKSEND
 OPENHOURSJSON
 [{
-    "Name": "Store", "Phone": "253-884-4001", "Desc": "Groceries, Deli, Hardware, Gas, Tool Rental",
+    "Name": "Store", "Phone": "253-884-4001", "Desc": "Groceries, Deli, Hardware, Gas, Tool Rental","Icon":"local_grocery_store",
     "Href": "http://www.andersonislandgeneralstore.com",
     "Addr": "10202 Eckenstam Johnson Rd",
     "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
-    "Sc": [{ "From": 1001, "To": 430, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
-           { "From": 501, "To": 930, "H": [800, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] }],
+    "Sc": [{ "From": 906, "To": 430, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
+           { "From": 501, "To": 905, "H": [800, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] }],
     "Closed": [1225]
 },{
-    "Name": "Cafe", "Phone": "253-884-1300", "Desc": "Coffee, breads, lunch and dinner",
+    "Name": "Cafe", "Phone": "253-884-1300", "Desc": "Coffee, breads, lunch and dinner", "Icon":"local_cafe",
     "Href": "http://www.andersonislandcafe.com",
     "Addr": "10006 Eckenstam Johnson Rd",
     "Map": "https://www.google.com/maps?q=Island+Coffee+Shoppe,+10006+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
@@ -120,26 +121,26 @@ OPENHOURSJSON
            { "From": 1127, "To": 1231, "H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630,1500, 630, 2000, 800, 2000]}],
     "Closed": [1225]
 },{
-    "Name": "Restaurant", "Phone": "253-884-3344", "Desc": "Riviera Lakeshore Restaurant",
+    "Name": "Restaurant", "Phone": "253-884-3344", "Desc": "Riviera Lakeshore Restaurant", "Icon": "restaurant",
     "Href": "http://rivieracommunityclub.com/amenities/restaurant",
     "Addr": "11019 Country Club Dr",
     "Map": "https://www.google.com/maps?q=Riviera+Lakeshore+Restaurant,+11019+Country+Club+Dr,+Anderson+Island,+WA",
     "Sc": [{"From": 1131, "To": 1131, "H":[0,0,0,0,1600,2000,0,0,0,0,0,0,0,0] },
-	{ "From": 526, "To": 1015, "H":[900,2100,1100,2100,1100,2100,1100,2100,1100,2100,1100,2200,900,2200] },
-        { "From": 1016, "To": 525, "H":[900, 2000, 1600, 2000, 0, 0, 1600, 2000, 1600, 2000, 1100, 2100, 900, 2100] }],
+	{ "From": 526, "To": 931, "H":[900,2100,1100,2100,1100,2100,1100,2100,1100,2100,1100,2200,900,2200] },
+        { "From": 1001, "To": 525, "H":[900, 2000, 1600, 2000, 0, 0, 1600, 2000, 1600, 2000, 1600, 2100, 900, 2100] }],
     "Closed": [1225]
 },{
-    "Name": "AIHS/Farm Gift Shop", "Phone": "253-884-2135", "Desc": "AIHS Museum and gift shop located at the Johnson Farm",
+    "Name": "AIHS Farm Gift Shop & Farm House", "Phone": "253-884-2135", "Desc": "AIHS Museum and gift shop located at the Johnson Farm","Icon": "card_giftcard",
     "Href": "http://www.andersonislandhs.org",
     "Addr": "9306 Otso Point Rd",
     "Map": "https://maps.google.com/maps?q=9306+Otso+Point+Road,+Anderson+Island,+WA",
-    "Sc": [{ "From": 401, "To": 931, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600] },
-	   { "From": 1001, "To": 1119, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] },
-	   { "From": 1120, "To": 1126, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600, 1000, 1600] },
-	   { "From": 1127, "To": 1223, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] }],
+    "Sc": [{ "From": 401, "To": 922, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600] },
+	   { "From": 923, "To": 1117, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] },
+	   { "From": 1118, "To": 1124, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600, 1000, 1600] },
+	   { "From": 1125, "To": 1223, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] }],
     "Closed": [1225]
 },{
-    "Name": "Dump/Recycling", "Phone": "253-847-7555", "Desc": "Pierce County Recycle Transfer Station",
+    "Name": "Dump/Recycling", "Phone": "253-847-7555", "Desc": "Pierce County Recycle Transfer Station","Icon": "delete",
     "Href": "http://www.co.pierce.wa.us/index.aspx?NID=1541",
     "Addr": "9607 Steffensen Rd",
     "Map": "https://www.google.com/maps?q=Pierce+County+Recycling,+9607+Steffense+Rd,+Anderson+Island,+WA",
@@ -147,7 +148,7 @@ OPENHOURSJSON
         { "From": 401, "To": 930, "H":[1000, 1800, 1000, 1800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }],
     "Closed": [1124, 1225, 101]
 },{
-    "Name": "Fire and Rescue (PCFD27)", "Phone": "253-884-4040", "Desc": "Anderson Island Fire and Rescue (PC Fire District 27)",
+    "Name": "Fire and Rescue (PCFD27)", "Phone": "253-884-4040", "Desc": "Anderson Island Fire and Rescue (PC Fire District 27)","Icon":"whatshot",
     "Href": "http://www.pcfd27.com/",
     "Addr": "12207 Lake Josephine Blvd",
     "Map": "https://maps.google.com/maps?q=Pierce+County+Fire+District+27,+12207+Lake+Josephine+Blvd,+Anderson+Island,+WA",
@@ -155,35 +156,35 @@ OPENHOURSJSON
     "Closed": [1225]
 },{
     "Name": "Fitness Center", "Phone": "253-884-9261", "Desc": "Anderson Island 24-hour Fitness Center in Old Schoolhouse. Call Wendy for information on membership, equipment, and classes.",
-    "Href": "",
+    "Href": "", "Icon":"fitness_center",
     "Addr": "10833 Eckenstam Johnson Rd",
     "Map": "https://maps.google.com/maps/place/+10833+Eckenstam+Johnson+Rd,+Anderson+Island,+WA+98303",
     "Sc": [{ "From": 101, "To": 1231, "H":[1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359]}],
     "Closed": [1225]
 },{
-    "Name": "Garbage Weekly Wednesday Pickup", "Phone": "253-414-0345", "Desc": "Weekly Curbside Garbage Pickup by LeMay",
+    "Name": "Garbage Weekly Wednesday Pickup", "Phone": "253-414-0345", "Desc": "Weekly Curbside Garbage Pickup by LeMay","Icon": "delete",
     "Href": "http://lemaypiercecountyrefuse.com/residential.aspx",
     "Addr": "",
     "Map": "",
     "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 800, 1600, 0, 0, 0, 0, 0, 0] }],
     "Closed": [1124, 1225]
 },{
-     "Name": "Golf Course and Shop (Riviera)", "Phone": "253-884-9634", "Desc": "Riviera golf course and pro shop",
+     "Name": "Golf Course and Shop (Riviera)", "Phone": "253-884-9634", "Desc": "Riviera golf course and pro shop","Icon": "golf_course",
     "Href": "http://rivieracommunityclub.com/amenities/golf-course",
     "Addr": "11019 Country Club Dr",
     "Map": "",
     "Sc": [{"From": 501, "To": 925, "H":[ 830, 1600, 830, 1600, 830, 1600, 800, 1600, 830, 1600, 800, 1700, 800, 1700]},
-	{"From": 926, "To": 430, "H":[900, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600, 900, 1600]}],
+	{"From": 926, "To": 430, "H":[1100, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 1100, 1500, 1000, 1600]}],
     "Closed": [425,426,427,912,913,914]
 },{
-    "Name": "Library (Pierce County)", "Phone": "", "Desc": "Weekly Pierce Country Library",
+    "Name": "Library (Pierce County)", "Phone": "", "Desc": "Weekly Pierce Country Library","Icon": "local_library",
     "Href": "http://www.piercecountylibrary.org",
     "Addr": "Community Center Clubhouse",
     "Map": "",
     "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 1100, 1500, 0, 0, 0, 0, 0, 0] }],
     "Closed": [1124, 1225]
 },{
-    "Name": "Post Office", "Phone": "253-884-4001", "Desc": "USPS Post Office in General Store",
+    "Name": "Post Office", "Phone": "253-884-4001", "Desc": "USPS Post Office in General Store","Icon": "email",
     "Href": "http://www.hourspostoffice.com/USPS+Post+Office+Anderson+Island/98303/Anderson+Island/40629",
     "Addr": "10202 Eckenstam Johnson Rd",
     "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
@@ -191,12 +192,12 @@ OPENHOURSJSON
         "H2":[0, 0, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 0, 0]}],
     "Closed": [101, 115, 219, 528, 704, 903, 1008, 1112, 1122, 1225]
 },{
-    "Name": "Recycle alternate-week Thursday Pickup", "Phone": "253-414-0345", "Desc": "Alternate Week Curbside Recycle Pickup by LeMay",
+    "Name": "Recycle alternate-week Thursday Pickup", "Phone": "253-414-0345", "Desc": "Alternate Week Curbside Recycle Pickup by LeMay","Icon": "refresh",
     "Href": "http://lemaypiercecountyrefuse.com/residential.aspx",
     "Addr": "",
     "Map": "",
     "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 0, 0, 800, 1600, 0, 0, 0, 0] }],
-    "Closed": [504,518,601,615,629,713,727,810,824,907,921,1005,1019,1102,1116,1130,1214,1228]
+    "Closed": [809,823,906,920,1004,1018,1101,1115,1129,1213,1227]
 },{
     "Name": "Riviera Office", "Phone": "253-884-4093", "Desc": "Riviera Business Office",
     "Href": "http://rivieracommunityclub.com",
@@ -219,22 +220,26 @@ FERRYLOCATIONLINK
 https://matterhornago.co.pierce.wa.us/ferrystatus/
 FERRYSCHEDULELINK
 http://www.co.pierce.wa.us/index.aspx?NID=2200
+PARKSLINK
+http://www.anderson-island.org/parks/parks.html?1
+NEWSLINK
+http://www.anderson-island.org/news.html?1
 ANDROIDVER
-1.17
+1.21
 IOSVER
-1.15
+1.19
 FERRYTS
-445;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123));545;123456;645;*;800;*;900;*;930;(InList(gMonthDay,memorialday,laborday));1000;(gMonthDay!=705)&&((gMonthDay==704)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1030;(InList(gMonthDay,memorialday,laborday));1130;(InList(gMonthDay,memorialday,laborday));1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1730;*;1800;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||InList(gMonthDay,memorialday-3,laborday));1840;*;1940;((gMonthDay==703)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2040;*;2200;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday)))||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225));2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday));
+445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,1123,1224,1225);545;123456;645;*;800;*;900;*;930;(InList(gMonthDay,memorialday));1000;(gMonthDay!=705)&&((gMonthDay==704)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1030;(InList(gMonthDay,memorialday,laborday));1100;(gMonthDay==laborday);1130;(InList(gMonthDay,memorialday,laborday));1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday-3));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday-3));1730;*;1800;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(719)))||InList(gMonthDay,memorialday-3));1840;*;1940;((gMonthDay==703)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2040;*;2200;(gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<laborday)))||InList(gMonthDay,1231,101,memorialday,703,704,thanksgiving,1123,1224,1225);2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<laborday))
 FERRYTA
-515;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123));615;123456;730;*;830;*;930;*;1000;(InList(gMonthDay,memorialday,laborday));1030;(gMonthDay!=705)&&((gMonthDay==704)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1100;(InList(gMonthDay,memorialday,laborday));1200;(InList(gMonthDay,memorialday,laborday));1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1650;*;1730;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3,laborday));1800;*;1840;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(laborday-1)))||InList(gMonthDay,memorialday-3,laborday));1910;*;2010;((gMonthDay==703)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2110;*;2230;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225));2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday));
+515;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,1123,1224,1225);615;123456;730;*;830;*;930;*;1000;(InList(gMonthDay,memorialday,laborday));1030;(gMonthDay!=705)&&((gMonthDay==704)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1100;(gMonthDay==laborday);1130;(InList(gMonthDay,memorialday,laborday));1200;(InList(gMonthDay,memorialday,laborday));1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday-3));1650;*;1800;(false);1800;*;1840;((InList(gDayofWeek,5,0)&&(gMonthDay>=629)&&(gMonthDay<(718)))||InList(gMonthDay,memorialday-3));1910;*;2010;((gMonthDay==703)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2110;*;2230;(gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,thanksgiving,1123,1224,1225);2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<laborday))
 FERRYTK
-0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3));0;;0;;1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225));2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday));
+0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3));0;;0;;0;;1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,thanksgiving,1224,1225));2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<laborday))
 FERRYTS2
-445;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123)); 545;123456; 645;*; 800;*; 900;*; 930;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1000;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1030;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1130;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday))); 1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1730;*;1800;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1840;*;1940;*;2040;*; 2200;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225)); 2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+445;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,thanksgiving)); 545;123456; 645;*; 800;*; 900;*; 930;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1000;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1030;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1130;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday))); 1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1730;*;1800;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1840;*;1940;*;2040;*; 2200;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225)); 2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
 FERRYTA2
-515;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123)); 615;123456; 730;*; 830;*; 930;*; 1000;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1030;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1100;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1650;*;1730;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1800;*;1840;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1910;*;2010;*;2110;*; 2230;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225)); 2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+515;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,thanksgiving)); 615;123456; 730;*; 830;*; 930;*; 1000;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1030;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1100;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1650;*;1730;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1800;*;1840;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1910;*;2010;*;2110;*; 2230;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225)); 2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
 FERRYTK2
-0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3)); 0;; 0;; 1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,1123,1224,1225)); 2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3)); 0;; 0;; 1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225)); 2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
 FERRYD2
 01/01/2099
 
@@ -242,12 +247,12 @@ LOCATIONS
             <strong>LOCATIONS</strong><br />
             <span style="font-weight:bold">&nbsp AICC: </span><a href="https://www.google.com/maps/place/11319+Yoman+Rd,+Anderson+Island,+WA+98303/@47.176412,-122.651711,12z/data=!4m5!3m4!1s0x5491a86cc02efe9d:0x49d9213aae5ece4f!8m2!3d47.173838!4d-122.689996?hl=en">AI Community Club, 11319 Yoman Rd</a><br />
             <span style="font-weight:bold">&nbsp Farm: </span><a href="https://www.google.com/maps?ll=47.176375,-122.652291&z=12&t=m&hl=en&gl=US&mapclient=embed&q=9306+Otso+Point+Rd+Anderson+Island,+WA+98303">AI Historical Society, Johnson Farm, 9306 Otso Point Road</a><br />
-            <span style="font-weight:bold">&nbsp LSR-Farm: </span>Louis Scholl room, Chicken Coop #2 at the AIHS Johnson Farm.<br/>
-            <span style="font-weight:bold">&nbsp AB-Farm: </span>Archival Building at the AIHS Johnson Farm.<br/>
-            <span style="font-weight:bold">&nbsp MSR-Riv: </span><a href="http://goo.gl/maps/5OB4A">Martha Smith Room, Riviera Community Club, 11016 Country Club Dr.</a><br />
+            <span style="font-weight:bold">&nbsp Farm-LSR: </span>Louis Scholl room, Chicken Coop #2 at the AIHS Johnson Farm.<br/>
+            <span style="font-weight:bold">&nbsp Farm-AB: </span>Archival Building at the AIHS Johnson Farm.<br/>
+            <span style="font-weight:bold">&nbsp Riv-MSR: </span><a href="http://goo.gl/maps/5OB4A">Martha Smith Room, Riviera Community Club, 11016 Country Club Dr.</a><br />
             <span style="font-weight:bold">&nbsp Restaurant: </span><a href="https://www.google.com/maps/place/Riviera+Lakeshore+Restaurant/@47.157078,-122.685269,17z/data=!4m5!3m4!1s0x0:0x808b26de46e35fd6!8m2!3d47.156709!4d-122.685437?hl=en">Riviera Lakeshore Restaurant, 11019 Country Club Dr.</a><br />
 LOCATIONSEND
 MAINTABLEROWS
-<tr> <td style="font-size:18px;font-weight:bold;color:black;padding-left:6px;background-color:#fff4b3" colspan="2" onclick="window.open('http://www.anderson-island.org/volunteers.html', '_system');">Volunteering</tr>
+<tr> <td id="voluntitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px;background-color:#fff4b3" colspan="2" onclick="window.open('http://www.anderson-island.org/volunteers.html', '_system');">Volunteering</tr>
 MAINTABLEEND
 // 5/3/18
