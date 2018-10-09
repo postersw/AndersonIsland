@@ -136,26 +136,16 @@
     <Content Include="www\locales\android\drawable\ic_stat_pushbots_sicon.png" />
     <Content Include="reference\.pgbomit" />
     <Content Include="reference\AIASounder.html" />
-    <Content Include="reference\andymarine.html" />
-    <Content Include="reference\andywildlife.html" />
     <Content Include="reference\churches.html" />
     <Content Include="reference\comingevents.txt" />
     <Content Include="reference\dailycache.txt" />
     <Content Include="reference\eventactivityguidelines.html" />
     <Content Include="reference\ferry_rsstest.txt" />
     <Content Include="reference\info.html" />
-    <Content Include="reference\jacobspoint.html" />
-    <Content Include="reference\janecammon.html" />
-    <Content Include="reference\montalvo.html" />
     <Content Include="reference\news.html" />
-    <Content Include="reference\parks.html" />
-    <Content Include="reference\parks2.html" />
-    <Content Include="reference\schoolhouse.html" />
     <Content Include="reference\stats.html" />
     <Content Include="reference\statsold.html" />
     <Content Include="reference\support.html" />
-    <Content Include="reference\swimminghole.html" />
-    <Content Include="reference\tomwhite.html" />
     <Content Include="reference\transportationservices.html" />
     <Content Include="reference\volunteers.html" />
     <Content Include="reference\volunteerservices.jpg" />
@@ -187,11 +177,8 @@
     <Content Include="serverside\getmooncron.php" />
     <Content Include="serverside\gettanneralerts.php" />
     <Content Include="serverside\gettidescron.php" />
-    <Content Include="serverside\makecomingevents.php" />
-    <Content Include="serverside\newcomingeventsmaster.txt" />
     <Content Include="serverside\PushBots.class.php" />
     <Content Include="serverside\pushtest.php" />
-    <Content Include="serverside\recurring.txt" />
     <Content Include="serverside\script1.php" />
     <Content Include="serverside\switchferryscriptcron.php" />
     <Content Include="serverside\switchferryscriptcron2.php" />
@@ -234,19 +221,19 @@
       <UserProperties />
     </VisualStudio>
   </ProjectExtensions>
-  <ItemGroup >
+  <ItemGroup>
     <ProjectCapability Include="UseFileGlobs" />
   </ItemGroup>
-  <PropertyGroup >
+  <PropertyGroup>
     <!-- Customize which folders are not shown by default -->
     <ExcludedItems>bin;bld;platforms;node_modules;simulation;plugins</ExcludedItems>
   </PropertyGroup>
-  <ItemGroup >
+  <ItemGroup>
     <Content Include="**\**" Exclude="**\platforms\**;**\bin\**;**\bld\**;**\node_modules\**;**\simulation\**;**\plugins\**;.gitignore;AndersonIsland.*" />
   </ItemGroup>
-  <ItemGroup >
+  <ItemGroup>
     <Content Update="config.xml">
       <SubType>Designer</SubType>
     </Content>
-  </ItemGroup>  
+  </ItemGroup>
 </Project>
