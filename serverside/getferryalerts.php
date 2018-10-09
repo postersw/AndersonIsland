@@ -16,6 +16,7 @@
 //      5/24/18. Add call to OneSignal to send the alerts. I'll eventually remove Pushbots.
 //      7/9/18. Modify pushbots call to not bump badge.
 //      9/30/18. Add warning for Pushbots.
+//      10/9/18. Removed Pushbots calls and code. All messages now sent by OneSignal. Saves $29/m.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -136,9 +137,9 @@ fclose($fhl);
 echo ("wrote to file: " . $alertstring);
 logalertlast("wrote to alert file");
 
-// now send alert using Pushbots.  Deprecation warning added 9/30/18.
-$pbwarn = "Upgrade to AIA ver 1.21 to continue receiving alerts: ";
-PushANotification(  $pbwarn . $alerthr . $alertmin . $alertam . " " . $delay . $title );
+// now send alert using Pushbots.  Removed 10/9/18.
+//$pbwarn = "Upgrade to AIA ver 1.21 to continue receiving alerts: ";
+//PushANotification(  $pbwarn . $alerthr . $alertmin . $alertam . " " . $delay . $title );
 
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
 $msgtitle = "FERRY ALERT";
@@ -182,26 +183,27 @@ function logalertlast($s) {
 
 ////////////////////////////////////////////////////////////////////////
 //  Push notification - send a notificatyion using Pushbots to all android users
-function PushANotification($note) {
-    // Push The notification with parameters
-    require_once('PushBots.class.php');
-    $pb = new PushBots();
-    // Application ID
-    $appID = '570ab8464a9efaf47a8b4568';
-    // Application Secret
-    $appSecret = '297abd3ebd83cd643ea94cbc4536318d';
-    $pb->App($appID, $appSecret);
+//  Removed 10/9/18. Deactivated because I switched to OneSignal to avoid paying $29/m.
+//function PushANotification($note) {
+//    // Push The notification with parameters
+//    require_once('PushBots.class.php');
+//    $pb = new PushBots();
+//    // Application ID
+//    $appID = '570ab8464a9efaf47a8b4568';
+//    // Application Secret
+//    $appSecret = '297abd3ebd83cd643ea94cbc4536318d';
+//    $pb->App($appID, $appSecret);
 
-    // Notification Settings
-    $pb->Alert($note);
-    $pb->Platform(array("0","1"));  // android
-    $pb->Badge("0"); // DON'T BUMP BADGE 7/9/18
-    // Push it !
-    $res = $pb->Push();
-    echo($res['status']);
-    echo($res['code']);
-    echo($res['data']);
-}
+//    // Notification Settings
+//    $pb->Alert($note);
+//    $pb->Platform(array("0","1"));  // android
+//    $pb->Badge("0"); // DON'T BUMP BADGE 7/9/18
+//    // Push it !
+//    $res = $pb->Push();
+//    echo($res['status']);
+//    echo($res['code']);
+//    echo($res['data']);
+//}
 
 /////////////////////////////////////////////////////////
 //  PushOneSignalNotification. 5/25/18
