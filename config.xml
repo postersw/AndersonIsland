@@ -115,23 +115,18 @@
   <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
   <!--<gap:plugin name="org.apache.cordova.file" />-->
   <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
-  <plugin name="cordova-plugin-geolocation" source="npm" />
-  <!-- removed spec="2.4.3" on 8/3/18. platform="android"  removed- forced 3.0.1 on 2/16/18-->
-  <!--<gap:plugin name="org.apache.cordova.globalization" />-->
+  <plugin name="cordova-plugin-geolocation" source="npm" />  <!-- removed spec="2.4.3" on 8/3/18. platform="android"  removed- forced 3.0.1 on 2/16/18-->
   <plugin name="cordova-plugin-inappbrowser" source="npm" />
   <!--<gap:plugin name="org.apache.cordova.media" />-->
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-  <plugin name="onesignal-cordova-plugin" spec="^2.4.0" source="npm" />
-  <!--8/29/18-->
-  <!-- <plugin name="onesignal-cordova-plugin"   source="npm" />-->
-  <!-- DEBUG <plugin name="onesignal-cordova-plugin" spec="^2.1.1" source="npm" />-->
-  <!-- <plugin name="pushbots-cordova-plugin" source="npm"/>-->
+  <plugin name="onesignal-cordova-plugin" spec="^2.4.0" source="npm" />  <!--OneSignal added 5/23/18-->
+  <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->-->
   <plugin name="cordova-plugin-calendar" source="npm" />
   <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
   <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
-  <plugin name="cordova-plugin-tts" source="npm=" />  <!--Text To Speech-->
+  <plugin name="cordova-plugin-tts" source="npm" />  <!--Text To Speech added 10/13/18-->
   <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
   
   <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
