@@ -1162,23 +1162,18 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
-            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);
-            //SAVE TO PROPER GLOBAL VARIABLE HOURS, Minutes, and remaining time ftd.Our build the text string here.
-            gftTTS = gftTTS + " at " + ShortTime(ferrytimes[i], 1) + ",";
-            // insert remaining time
+            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);  // display in table
+            if (nruns < 2) gftTTS = gftTTS + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
+
+            // first run only: insert minutes till it sails
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
-                if(nruns < 2) gftTTS = gftTTS + " in " + rtd + " minutes, then ";  // text-to-speech. 2 runs only.
-                if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";
+                gftTTS = gftTTS + " in " + rtd + " minutes, then ";  // text-to-speech time remaining
+                if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
-            //ft = ft + "</td>";
-            //if (RawTimeDiff(gTimehhmm, ferrytimes[i]) < 13) {
-            //    ft = ft + "<span style='color:red'>" + ShortTime(ferrytimes[i]) + "</span>";
-            //} else {
-            //    ft = ft + ShortTime(ferrytimes[i]);
-            //}
+            // Ketron special case 
             if (ferrytimeK != "") { // add ketron time for this run
                 if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1], ferrytimeK[i]))) {
                     ketron = true;
