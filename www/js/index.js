@@ -443,8 +443,11 @@ function timeDiff(hhmm1, hhmm2) {
     diffm = RawTimeDiff(hhmm1, hhmm2);
     return Math.floor(diffm / 60) + ":" + Leading0(diffm % 60);
 }
-
+////////////////////////////////////////////////////////////////////////////////////
 // timeDiffhm - returns formatted time difference as nnh nnm, e.g. 1h 3m
+// time1 is assumed to be now and time2 in the future.  So the diff is time2 - time1. 
+//  hhmm1 = hours*100 + min; hhmm2 = hours*100 + min
+//  returns string: nnhnnm
 function timeDiffhm(hhmm1, hhmm2) {
     var diffm;
     diffm = RawTimeDiff(hhmm1, hhmm2);
@@ -460,6 +463,15 @@ function RawTimeDiff(hhmm1, hhmm2) {
     ftm = (Math.floor(hhmm2 / 100) * 60) + (hhmm2 % 100);
     if (ftm < tm) ftm = ftm + 24 * 60;
     return ftm - tm; // diff in minutes
+}
+////////////////////////////////////////////////////////////////////////////////////
+// timeDiffTTS returns the time difference for speech as 'nn hours nn minutes' or 'hh hours' or 'nn minutes'; 
+//  Entry: rtd = time difference in minutes
+//  Exit: returns text string ready for speach
+function timeDiffTTS(diffm) {
+    if (diffm < 60) return diffm + " minutes ";
+    if ((diffm % 60) == 0) return Math.floor(diffm / 60) + " hours ";
+    return Math.floor(diffm / 60) + " hours " + (diffm % 60) + " minutes";
 }
 
 //////////////////////////////////////   UTILITY ////////////////////////////////////////////
@@ -1169,7 +1181,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
-                gftTTS = gftTTS + " in " + rtd + " minutes, then ";  // text-to-speech time remaining
+                gftTTS = gftTTS + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
