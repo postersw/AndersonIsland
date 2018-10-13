@@ -3,9 +3,9 @@
         xmlns:gap="http://phonegap.com/ns/1.0" 
         xmlns:android="http://schemas.android.com/apk/res/android" 
         id="org.anderson-island.andersonislandassistant" 
-        version="1.22.101318.3" 
+        version="1.22.101318.4" 
         android-versionCode="2239" 
-        android:versionName="1.22.101318.1"
+        android:versionName="1.22.101318.4"
         >
 
   <!-- versionCode 2239 for 1.22 10/13/18 -->
