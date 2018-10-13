@@ -390,7 +390,7 @@ function InList(a) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// format ferry time for display. 
+// format ferry time for display. Formats time as hhmm am  or hhmm pm
 //  ft = time in hhmm 24 hour form. 
 //  returns string of time in 12 hour form.
 function FormatTime(ft) {
@@ -402,17 +402,23 @@ function FormatTime(ft) {
     else return Leading0(Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  shorttime - shortest possible time
-function ShortTime(ft) {
-    var ampm;
-    if (ft < 1199) ampm = "a";
-    else ampm = "p";
+//  ShortTime - formats time as hh:mma or hh:mmp or just hh:mm
+//  Entry   ft = time as hhmm (integer)
+//          noampm = omit parameter to return ampm suffix. 
+//                   specify = 1 to omit ampm suffix.value does not matter
+function ShortTime(ft, noampm) {
+    var ampm = "";
+    if (arguments.length == 1) {
+        if (ft < 1199) ampm = "a";
+        else ampm = "p";
+    }
     if (ft < 100) return "12:" + Leading0(ft % 100) + ampm;
     else if (ft < 1299) return (Math.floor(ft / 100)) + ":" + Leading0(ft % 100) + ampm;
     else return (Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  veryshorttime - shortest possible time
+//  VeryShortTime - shortest possible time. Does not display minutes if minutes=0.
+//      Formats time as ha  or  hp  if no minutes.  else h:mma  or h:mmp
 //  like ShortTime but does not return minutes if not needed
 //  so it returns 1p, where ShortTime returns 1:00p;
 function VeryShortTime(ft) {
@@ -1158,12 +1164,12 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);
             //SAVE TO PROPER GLOBAL VARIABLE HOURS, Minutes, and remaining time ftd.Our build the text string here.
-            gftTTS = gftTTS + " at " + ShortTime(ferrytimes[i]) + ",";
+            gftTTS = gftTTS + " at " + ShortTime(ferrytimes[i], 1) + ",";
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
-                gftTTS = gftTTS + " in " + ftd + " minutes, then ";
+                gftTTS = gftTTS + " in " + rtd + " minutes, then ";
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
@@ -1234,7 +1240,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
             //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
             //}
             ft = ft + "&nbsp&nbsp</td>";
-            gftTTS += " tomorrow morning at " + ShortTime(ferrytimes[i]);
+            gftTTS += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
             nruns++;
