@@ -1135,7 +1135,7 @@ function WriteNextFerryTimes() {
     gftTTS = "ferry departs steilacoom ";
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    gftTTS += ", departs anderson island ";
+    gftTTS += ". ferry departs anderson island ";
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1169,7 +1169,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
-                gftTTS = gftTTS + " in " + rtd + " minutes, then ";
+                if(nruns < 2) gftTTS = gftTTS + " in " + rtd + " minutes, then ";  // text-to-speech. 2 runs only.
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
