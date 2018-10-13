@@ -49,6 +49,7 @@
         1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
         1.21 072618. Icons on main page.  Released to web.
              081818. Moon phases added to weather.
+        1.22 101318. Text to Speech for ferry.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -70,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.21.091918";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.101318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -193,6 +194,9 @@ var gWeatherCurrentCount = 0; // number of weather current requests to debug API
 // icons
 var gIconSwitch = "1"; // icon switch, text: 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
 var gEventIcons = true;
+
+// TTS - Text to Speech
+var gTTS = 1; // 0 = off, 1 = on, 2 = large text (instead of speech)
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
@@ -1088,8 +1092,10 @@ function OpenFerryMenu() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// WriteNextFerryTimes Finds the next ferry times and puts them into the Dom for the FRONT PAGE
+// WriteNextFerryTimes - Front Page. Finds the next ferry times and puts them into the Dom for the FRONT PAGE
 //
+var gftTTS; // global ferry time text-to-speech string
+
 function WriteNextFerryTimes() {
     // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
     // ferrydays:  *=always, H=holiday, 0-6=days of week, AFXY=special rules H=(12/31,1/1,Mem day, 7/3,7/4,labor day,thanksgiving, 12/24,12/25),F=Fuel run 1,3 Wednesday, X=Friday Only labor day-6/30, Y=Fridays only 7/1=labor day
@@ -1120,8 +1126,10 @@ function WriteNextFerryTimes() {
         if (gLocationOnAI==1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
         else if (gLocationOnAI == 0) SteilHighlight = "background-color:#ffff80";
     }
+    gftTTS = "ferry departs steilacoom ";
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
-     FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
+        FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
+    gftTTS += ", departs anderson island ";
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1134,6 +1142,8 @@ function WriteNextFerryTimes() {
 //            ferrytimeK = is the array of times and days for ketron
 //            SA = S or A
 //      exit  returns html string of ferry times
+//            updates global gftTTS text-to-speech string.
+//
 function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
     InitializeDates(0);
@@ -1147,10 +1157,13 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);
+            //SAVE TO PROPER GLOBAL VARIABLE HOURS, Minutes, and remaining time ftd.Our build the text string here.
+            gftTTS = gftTTS + " at " + ShortTime(ferrytimes[i]) + ",";
             // insert remaining time
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
+                gftTTS = gftTTS + " in " + ftd + " minutes, then ";
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
@@ -1221,6 +1234,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
             //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
             //}
             ft = ft + "&nbsp&nbsp</td>";
+            gftTTS += " tomorrow morning at " + ShortTime(ferrytimes[i]);
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
             nruns++;
@@ -4065,7 +4079,38 @@ function ShowHelpPage() {
     SetPageHeader("Help");
 }
 
-//</script>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////  TEXT TO SPEECH using the TTS plugin /////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////
+//  FerryScheduleTTS - announce the ferry departure time
+//  Entry: gftTTS = text string to speak.  Built by FindNextFerryTime
+//
+function FerryScheduleTTS() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            DisplayFerrySchedulePage();
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(gftTTS).then(function () {
+                    alert('success');
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  FerryInitialize - set switches and ask user for geolocate permission.

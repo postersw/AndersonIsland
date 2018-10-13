@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="org.anderson-island.andersonislandassistant" version="1.21.092618" android-versionCode="2238" android:versionName="1.21.090718.1">
-  <!-- moved config.xml to root 8/19/18-->
+<widget xmlns="http://www.w3.org/ns/widgets" 
+        xmlns:gap="http://phonegap.com/ns/1.0" 
+        xmlns:android="http://schemas.android.com/apk/res/android" 
+        id="org.anderson-island.andersonislandassistant" 
+        version="1.22.101318.1" 
+        android-versionCode="2239" 
+        android:versionName="1.22.101318.1"
+        >
+
+  <!-- versionCode 2239 for 1.22 10/13/18 -->
+  <!-- versionCode 2238 for 1.21 9/26/18 -->
   <!-- versionCode 2237 for 1.21 9/07/18 -->
   <!-- versionCode 2236 for 1.21 9/01/18 -->
   <!-- versionCode 2235 for 1.21 8/29/18 -->
+  <!-- moved config.xml to root 8/19/18-->
   <!-- versionCode 2234 for 1.21 7/30/18 beta only -->
   <!-- versionCode 2233 for 1.20 6/23/18 -->
   <!-- versionCode 2232 for 1.19 5/13/18 -->
@@ -121,9 +131,9 @@
   <plugin name="cordova-plugin-calendar" source="npm" />
   <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
   <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
-  <!-- Third party plugins -->
-  <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
+  <plugin name="cordova-plugin-tts" source="npm=" />  <!--Text To Speech-->
   <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
+  
   <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
       and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17-->
@@ -231,9 +241,5 @@
     <allow-navigation href="ttpapps.pcf://" />
     <!--wont build under 8.0-->
   </platform>
-  <vs:toolsetVersion xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">6.3.1</vs:toolsetVersion>
-  <engine name="android" spec="5.2.1" />
-  <engine name="ios" spec="4.2.0" />
-  <engine name="windows" spec="4.4.2" />
-  <preference name="windows-target-version" value="10.0" />
+
 </widget>
