@@ -1112,7 +1112,10 @@ function OpenFerryMenu() {
 /////////////////////////////////////////////////////////////////////////////////////////
 // WriteNextFerryTimes - Front Page. Finds the next ferry times and puts them into the Dom for the FRONT PAGE
 //
-var gftTTS; // global ferry time text-to-speech string
+var gFerryTimeTTS; // global ferry time text-to-speech string
+var gTideDataTTS; // global tide data text-to-speech string
+var gWeatherCurrentTTS; // global weather current text-to-speech string
+var gWeatherForecastTTS; // global weather forecast text-to-speech string
 
 function WriteNextFerryTimes() {
     // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
@@ -1144,10 +1147,10 @@ function WriteNextFerryTimes() {
         if (gLocationOnAI==1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
         else if (gLocationOnAI == 0) SteilHighlight = "background-color:#ffff80";
     }
-    gftTTS = "ferry departs steilacoom ";
+    gFerryTimeTTS = "the next ferry departs steilacoom ";
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    gftTTS += ", , , , , , , , , , ferry departs anderson island ";  // use commas for a pause
+    gFerryTimeTTS += " - - - the next ferry departs anderson island ";  // use commas for a pause
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1160,7 +1163,7 @@ function WriteNextFerryTimes() {
 //            ferrytimeK = is the array of times and days for ketron
 //            SA = S or A
 //      exit  returns html string of ferry times
-//            updates global gftTTS text-to-speech string.
+//            updates global gFerryTimeTTS text-to-speech string.
 //
 function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
@@ -1175,13 +1178,13 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);  // display in table
-            if (nruns < 2) gftTTS = gftTTS + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
+            if (nruns < 2) gFerryTimeTTS = gFerryTimeTTS + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
 
             // first run only: insert minutes till it sails
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
-                gftTTS = gftTTS + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
+                gFerryTimeTTS = gFerryTimeTTS + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
@@ -1247,7 +1250,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
             //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
             //}
             ft = ft + "&nbsp&nbsp</td>";
-            gftTTS += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
+            gFerryTimeTTS += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
             nruns++;
@@ -1481,7 +1484,9 @@ function HandleCurrentWeatherReply(responseText) {
     if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
-        StripDecimal(r.wind.speed) + " mph" + ((rain!="0")? (", " + rain + " rain") : "");
+        StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
+    gWeatherCurrentTTS = "the current temperature is " + StripDecimal(r.main.temp) + "degrees," + r.weather[0].description + " , wind " + DegToCompassPoints(r.wind.deg) + " " +
+        StripDecimal(r.wind.speed) + " mph. ";
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
     FormatWeatherIcon(r.weather[0].icon); // format weather icon for menu
@@ -1566,6 +1571,7 @@ function HandleForecastAReply(jsondata) {
     var forecast = "<strong>Forecast:</strong> " + maxt + "&deg/" + mint + "&deg, " +
         r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
     localStorage.setItem("forecast", forecast);
+    gWeatherForecastTTS = "The forecast is " + r.weather[0].description + ", high " + maxt + ", low " + mint;
     document.getElementById("forecast").innerHTML = forecast;
 
     // if the forecast page is being displayed, regenerate it
@@ -1637,6 +1643,7 @@ function ShowNextTides() {
             var tdx = "<td style='padding:0;margin:0'>";
             nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
+            gTideDataTTS = "the current tide is " + cth.toFixed(1) + "feet. The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
@@ -4097,7 +4104,7 @@ function ShowHelpPage() {
 
 ////////////////////////////////////////////////////////////////////////////////////
 //  FerryScheduleTTS - announce the ferry departure time
-//  Entry: gftTTS = text string to speak.  Built by FindNextFerryTime
+//  Entry: gFerryTimeTTS = text string to speak.  Built by FindNextFerryTime
 //
 function FerryScheduleTTS() {
     // build ferry departure string
@@ -4111,7 +4118,7 @@ function FerryScheduleTTS() {
         // 1 = speak
         case 1:
             TTS
-                .speak(gftTTS).then(function () {
+                .speak(gFerryTimeTTS).then(function () {
                     alert('success');
                 }, function (reason) {
                     alert(reason);
@@ -4124,7 +4131,64 @@ function FerryScheduleTTS() {
 
     }
 }
+////////////////////////////////////////////////////////////////////////////////////
+//  TidesDataTTS - announce the tide data
+//  Entry: gTideDataTTS = text string to speak.  Built by ShowNextTides
+//
+function TidesDataTTS() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            TidesDataPage();
+            break;
 
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(gTideDataTTS).then(function () {
+                    alert('success');
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////
+//  ShowWeatherTTS - announce the weather current and forecast data
+//  Entry: gWeatherForecastTTS = text string to speak.  Built by
+//
+function ShowWeatherTTS() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            ShowWeatherPage();
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(gWeatherCurrentTTS + gWeatherForecastTTS).then(function () {
+                    alert('success');
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+
+    }
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  FerryInitialize - set switches and ask user for geolocate permission.
 //  Note: "ferryhighlight" controls highlighting and is also the 1st time flag for geolocation.
