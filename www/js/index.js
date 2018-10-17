@@ -98,8 +98,8 @@ var app = {
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
             switch(gNotification) {
                 case 1: // pushbots
-                    window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-                    window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
+                    //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                    //window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
                     break;
                 case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
                     window.plugins.OneSignal
@@ -196,7 +196,7 @@ var gIconSwitch = "1"; // icon switch, text: 1=icon+lc,2=icon+uc,3=icon,4=uc,5=l
 var gEventIcons = true;
 
 // TTS - Text to Speech
-var gTTS = 1; // 0 = off, 1 = on, 2 = large text (instead of speech)
+var gTTS = 0; // 0 = off, 1 = on, 2 = large text (instead of speech)
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // return true if a holiday for the ferry schedule. input = month*100+day
@@ -669,7 +669,7 @@ function NotifyOn() {
         localStorage.setItem("pushbotstime", 0);  // force full initialize on next app restart
         switch (gNotification) {
             case 1:  // pushbots
-                window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+                //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
                 break;
             case 2:  // one signal.  Only works if we have initialized the app
                 window.plugins.OneSignal.setSubscription(true);
@@ -685,7 +685,7 @@ function NotifyOff() {
         localStorage.setItem("pushbotstime", 0); // force full initialize on next app restart
         switch (gNotification) {
             case 1:  // pushbots
-                window.plugins.PushbotsPlugin.unregister();
+                //window.plugins.PushbotsPlugin.unregister();
                 break;
             case 2:  // one signal
                 window.plugins.OneSignal.setSubscription(false);
@@ -967,10 +967,14 @@ function MarkOffline(offline) {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-//  LSget - local storage get always returns string or "". never returns null.
-function LSget(id) {
+//  LSget - local storage get always returns string or the default. 
+//      if no default passed, returns "". never returns null.
+//  Entry: id = local storage item id
+//         default = optional value to return if id is not present. If omitted, returns ""
+function LSget(id, def) {
     var s = localStorage.getItem(id);
     if (s != null) return s;
+    if (arguments.length == 2) return def;
     return "";
 }
 
@@ -1053,10 +1057,6 @@ function HandleAlertReply(r) {
 //  entry r = the alert text, "" if none
 function SaveFerryAlert(r) {
     if (r == "") {  // if the alert is gone, clear it
-        if (isPhoneGap() && (gNotification==1)) {  // if the alert has disappeared, clear the badge
-            var a = localStorage.getItem('alerttext');
-            if ((a != null) && (a != "")) window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-        }
         localStorage.setItem("alerttext", "");
         localStorage.setItem("alertdetail", "");
         localStorage.removeItem("alerthide");  // turn off hide
@@ -1116,6 +1116,9 @@ var gFerryTimeTTS; // global ferry time text-to-speech string
 var gTideDataTTS; // global tide data text-to-speech string
 var gWeatherCurrentTTS; // global weather current text-to-speech string
 var gWeatherForecastTTS; // global weather forecast text-to-speech string
+var gNextTTS;// event string
+var gNextEventTTS;// next event text to speech string
+var gNextActivityTTS; // next activity TTS
 
 function WriteNextFerryTimes() {
     // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
@@ -1441,6 +1444,13 @@ function DegToCompassPoints(d) {
     if (d == undefined) return "";
     return cp[Math.floor((Number(d) + 22.5) / 45)];
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//  DegToCompassPointsTTS - converts degrees to talking compass points
+function DegToCompassPointsTTS(d) {
+    var cp = ["north", "north east", "east", "south east", "south", "south west", "west", "north west", "north"];
+    if (d == undefined) return "";
+    return cp[Math.floor((Number(d) + 22.5) / 45)];
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // getCurrentWeather  using openweathermap.com free service
@@ -1485,7 +1495,7 @@ function HandleCurrentWeatherReply(responseText) {
     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
-    gWeatherCurrentTTS = "the current temperature is " + StripDecimal(r.main.temp) + "degrees," + r.weather[0].description + " , wind " + DegToCompassPoints(r.wind.deg) + " " +
+    gWeatherCurrentTTS = "the current weather is " r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," +  " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph. ";
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
@@ -1581,11 +1591,13 @@ function HandleForecastAReply(jsondata) {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// get tide data using NOAA web site and returning a json structure in the aeris format.
+// ShowNextTides MAIN PAGE - read json tide data and build main page tide info
+//  Note: we get tide data using NOAA web site and return a json structure in the aeris json format.
 // Original AERIS call changed to get NOAA data on the server, but still return an AERIS format.
 //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
 //  exit: gForceCacheReload = true to reload tide data.  
 //          html populated.
+//          gTideDataTTS = TTS tide string
 var gTideTitleNoIcon; // title for tide, with up or down arrow
 var gTideTitleIcon; // title for tide, with up or down arrow
 
@@ -1601,14 +1613,14 @@ function ShowNextTides() {
         document.getElementById("tides").innerHTML = "Tide data not available.";
         return;
     }
-
+    // parse the json tides structure
     try{
         var periods = JSON.parse(json); // parse it
     } catch (err) {
         document.getElementById("tides").innerHTML = "Error in tide data.<br/>" + err.message;
         return;
     }
-    // roll through the reply in jason.response.periods[i]
+    // roll through the reply in json.response.periods[i]
     var i;
     for (i = 0; i < periods.length; i++) {
         var thisperiod = periods[i];
@@ -1661,11 +1673,12 @@ function ShowNextTides() {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingEvents - display the events in the 'comingevents'  or 'comingactivities' 
+// DisplayComingEvents MAIN PAGE - display the events in the 'comingevents'  or 'comingactivities' 
 //          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
 //  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
-//          mmdd;hhmm;hhmm;t;title;location;sponsor;info
+//              mmdd;hhmm;hhmm;t;title;location;sponsor;info
+//          label = "event" or "activity"
 //  Exit    returns the information to display on the main screen
 function DisplayNextEvents(CE) {
     var datefmt = ""; // formatted date and event list
@@ -1703,8 +1716,13 @@ function DisplayNextEvents(CE) {
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(aCE[1]) <= gTimehhmm) datefmt += "&nbsp;<span style='font-weight:bold;color:green'>"+ VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
-            else datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
+            if (Number(aCE[1]) <= gTimehhmm) {
+                datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
+                gNextTTS = " now, " + CEvent + " at " + aCE[5] + ".";
+            } else {
+                datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
+                if(nEvents<2) gNextTTS = " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
+            }
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
             DisplayDate = aCEyymmdd;
@@ -1720,6 +1738,7 @@ function DisplayNextEvents(CE) {
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
         datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " + CEvent + " @ " + aCE[5] + "<br/>";
+        if (nEvents < 1) gNextTTS = gDayofWeekName[GetDayofWeek(aCE[0])] + " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -1846,7 +1865,9 @@ function ParseDailyCache(data) {
     FixDates("comingevents");
     FixDates("comingactivities");
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
+    gNextEventTTS = "the next event is " + gNextTTS;
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+    gNextActivityTTS = "the next activity is " + gNextTTS;
 
     // tides (added 6/6/16);
     s = parseCache(data, "", "TIDES", "TIDESEND");
@@ -2063,8 +2084,6 @@ function ShowCachedData() {
     ShowOpenHours(); //  open hours
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
-    //$("#nextevent").html(DisplayNextEvents(localStorage.getItem("comingevents")));
-    //$("#nextactivity").html(DisplayNextEvents(localStorage.getItem("comingactivities")));
     var s = localStorage.getItem("message");
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
 
@@ -4102,6 +4121,15 @@ function ShowHelpPage() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////  TEXT TO SPEECH using the TTS plugin /////////////////////////////////////////////////////////////////
 
+//  TTSOnOff - sets the gTTS switch on or off, and updates the menu colors
+//  Entry   onoff = 0 for off, 1 for on
+function TTSOnOff(onoff) {
+    gTTS = onoff;
+    localStorage.setItem("TTS", gTTS.toFixed(0));
+    if (gTTS == 0) MenuSet("TTSont", "white", "TTSofft", "lime"); //off
+    else MenuSet("TTSont", "lime", "TTSofft", "white");
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 //  FerryScheduleTTS - announce the ferry departure time
 //  Entry: gFerryTimeTTS = text string to speak.  Built by FindNextFerryTime
@@ -4394,6 +4422,7 @@ function StartApp() {
         s = localStorage.getItem("ferryhighlight");
         if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
+        gTTS = Number(LSget("TTS", "1"));  // load text to speech. Defaults to 1 (on)
     }
 
     // set refresh timners
