@@ -1498,7 +1498,7 @@ function HandleCurrentWeatherReply(responseText) {
     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
-    gTTSWeatherCurrent = "the current weather is " r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," +  " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
+    gTTSWeatherCurrent = "the current weather is " + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," +  " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph. ";
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
