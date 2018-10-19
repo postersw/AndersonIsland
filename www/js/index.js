@@ -1156,7 +1156,7 @@ function WriteNextFerryTimes() {
     gTTSFerryTime = "the next ferry departs steilacoom ";
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    gTTSFerryTime += " - - - the next ferry departs anderson island ";  // use commas for a pause
+    gTTSFerryTime += ". The next ferry departs anderson island ";  // use commas for a pause
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1256,7 +1256,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
             //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
             //}
             ft = ft + "&nbsp&nbsp</td>";
-            gTTSFerryTime += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
+            if(nruns < 2) gTTSFerryTime += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
             nruns++;
@@ -1348,12 +1348,14 @@ function UseFerryTime(SA) {
 function ShowOpenHours() {
     var openlist;
     openlist = "";
+    gTTSOpenHours = "";
 
     // loop through the openHours array (each array entry is one business)
     for (var i = 0; i < OpenHours.length; i++) {
         var Oh = OpenHours[i];  // entry for 1 business
         openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:";
         openlist += GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
+        gTTSOpenHours += Oh.name + GetOpenStatus(Oh, gMonthDay, gTimehhmm).replace(/<\/?.+?>/ig, '') + ". ";
         if (i == 2) break; // only do 1st 3 on main page
     } // end for
     openlist += "More ...";
@@ -4277,7 +4279,7 @@ function TTSShowOpen() {
         // 1 = speak
         case 1:
             TTS
-                .speak(document.getElementById("openhours").innerHTML).then(function () {
+                .speak(gTTSOpenHours).then(function () {
                 }, function (reason) {
                     alert(reason);
                 });
@@ -4301,7 +4303,7 @@ function TTSBurnBan() {
         // 1 = speak
         case 1:
             TTS
-                .speak(document.getElementById("burnbanalert").innerHTML).then(function () {
+                .speak(document.getElementById("burnbanalert").innerHTML.replace(/<\/?.+?>/ig, '')).then(function () {
                 }, function (reason) {
                     alert(reason);
                 });
@@ -4325,7 +4327,7 @@ function TTSTannerOutage() {
         // 1 = speak
         case 1:
             TTS
-                .speak(document.getElementById("tanneroutagealert").innerHTML).then(function () {
+                .speak(document.getElementById("tanneroutagealert").innerHTML.replace(/<\/?.+?>/ig, '')).then(function () {
                 }, function (reason) {
                     alert(reason);
                 });
