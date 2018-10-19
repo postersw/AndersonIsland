@@ -390,7 +390,8 @@ function InList(a) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// format ferry time for display. Formats time as hhmm am  or hhmm pm
+// format ferry time for display. Formats time as: 
+//      hh: mm am  OR hh: mm pm
 //  ft = time in hhmm 24 hour form. 
 //  returns string of time in 12 hour form.
 function FormatTime(ft) {
@@ -402,7 +403,8 @@ function FormatTime(ft) {
     else return Leading0(Math.floor(ft / 100) - 12) + ":" + Leading0(ft % 100) + ampm;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  ShortTime - formats time as hh:mma or hh:mmp or just hh:mm
+//  ShortTime - formats time as 
+//      hh:mma OR hh:mmp OR hh:mm if noampm is specified.
 //  Entry   ft = time as hhmm (integer)
 //          noampm = omit parameter to return ampm suffix. 
 //                   specify = 1 to omit ampm suffix.value does not matter
@@ -1739,7 +1741,7 @@ function DisplayNextEvents(CE) {
                 gTTSNext = " now, " + aCE[4] + " at " + aCE[5] + ".";
             } else {
                 datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
-                if (nEvents < 2) gTTSNext = " at " + VeryShortTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
+                if (nEvents < 2) gTTSNext = " at " + FormatTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
             }
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
@@ -1756,7 +1758,7 @@ function DisplayNextEvents(CE) {
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
         datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " + CEvent + " @ " + aCE[5] + "<br/>";
-        if (nEvents < 1) gTTSNext = gDayofWeekName[GetDayofWeek(aCE[0])] + " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
+        if (nEvents < 1) gTTSNext = gDayofWeekName[GetDayofWeek(aCE[0])] + " at " + FormatTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -2761,6 +2763,8 @@ function ParseOpenHours() {
 var EventFilter = ""; //letter to filter for
 var EventDisp = ""; // event display type, L, W, M
 
+function DisplayComingEventsPageE() { DisplayComingEventsPage("events");}
+function DisplayComingEventsPageA() { DisplayComingEventsPage("activity"); }
 
 function DisplayComingEventsPage(type) {
     localStorage.setItem("eventtype", type);
@@ -4205,13 +4209,13 @@ function TTSShowWeather() {
 //  Entry: gTTSNextEvent = text string to speak.  Built by 
 function TTSShowEvent() {
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    TTSSpeak("The next event is " + gTTSNext + ".", DisplayComingEventsPage('events'));
+    TTSSpeak("The next event is " + gTTSNext + ".", DisplayComingEventsPageE);
 }
 
 ///////// TTS Next Activity /////////////////////////////////////////////////////////////////////
 function TTSShowActivity() {
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
-    TTSSpeak("The next activity is " + gTTSNext + ".", DisplayComingEventsPage('activity'));
+    TTSSpeak("The next activity is " + gTTSNext + ".", DisplayComingEventsPageA);
 }
 
 ///////// TTS Show Open Hours /////////////////////////////////////////////////////////////////////
