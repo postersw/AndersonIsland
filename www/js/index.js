@@ -4147,7 +4147,7 @@ function TTSOnOff(onoff) {
     localStorage.setItem("TTS", gTTS.toFixed(0));
     if (gTTS == 0) {
         MenuSet("TTSont", "white", "TTSofft", "red"); //off
-        docu.getElementById("topline").innerHTML = "Tap for Details";
+        document.getElementById("topline").innerHTML = "Tap for Details";
     } else MenuSet("TTSont", "lime", "TTSofft", "white");  // turn on speach
 }
 
@@ -4205,7 +4205,8 @@ function TTSShowWeather() {
 //  Entry: gTTSNextEvent = text string to speak.  Built by 
 function TTSShowEvent() {
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    TTSSpeak("The next event is " + gTTSNext + ".", DisplayComingEventsPage('events'));
+    TTSSpeak("The next event is " + gTTSNext + ".", Disp
+        layComingEventsPage('events'));
 }
 
 ///////// TTS Next Activity /////////////////////////////////////////////////////////////////////
