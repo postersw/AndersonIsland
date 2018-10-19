@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.101818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.101918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -982,6 +982,15 @@ function LSappend(id, s) {
     localStorage.setItem(id, LSget(id) + s)
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+//  Removetags - remove html tags. Replaces <br/> with a period.
+//  Entry: str = string to fix.
+//  Exit: returns the string
+function RemoveTags(str) {
+    str = str.replace("<br/>", ". ");
+    return str.replace(/<\/?.+?>/ig, '');
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayAlertInfo()  - sets the alerttext and sets the alertdiv = display:block if there is an alert
 //  NOTE: if 'alerthide' exists, the alert will NOT be displayed.
@@ -1355,7 +1364,7 @@ function ShowOpenHours() {
         var Oh = OpenHours[i];  // entry for 1 business
         openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:";
         openlist += GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
-        gTTSOpenHours += Oh.name + GetOpenStatus(Oh, gMonthDay, gTimehhmm).replace(/<\/?.+?>/ig, '') + ". ";
+        gTTSOpenHours += Oh.Name + GetOpenStatus(Oh, gMonthDay, gTimehhmm).replace(/<\/?.+?>/ig, '') + ". ";
         if (i == 2) break; // only do 1st 3 on main page
     } // end for
     openlist += "More ...";
@@ -4131,8 +4140,35 @@ function ShowHelpPage() {
 function TTSOnOff(onoff) {
     gTTS = onoff;
     localStorage.setItem("TTS", gTTS.toFixed(0));
-    if (gTTS == 0) MenuSet("TTSont", "white", "TTSofft", "lime"); //off
+    if (gTTS == 0) MenuSet("TTSont", "white", "TTSofft", "red"); //off
     else MenuSet("TTSont", "lime", "TTSofft", "white");
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+//  TTSSpeak - announce the ferry departure time
+//  Entry: speech = text string to talk
+//          displayfunction = function to call if gTTS = 0 (off)
+function TTSSpeak(speech, displayfunction) {
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0: 
+            displayfunction();
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(speech).then(function () {
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4140,204 +4176,52 @@ function TTSOnOff(onoff) {
 //  Entry: gTTSFerryTime = text string to speak.  Built by FindNextFerryTime
 //
 function TTSFerrySchedule() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            DisplayFerrySchedulePage();
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(gTTSFerryTime).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    TTSSpeak(gTTSFerryTime, DisplayFerrySchedulePage);
 }
+
 ////////////////////////////////////////////////////////////////////////////////////
 //  TTSTidesData - announce the tide data
 //  Entry: gTTSTideData = text string to speak.  Built by ShowNextTides
-//
 function TTSTidesData() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            TidesDataPage();
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(gTTSTideData).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    TTSSpeak(gTTSTideData, TidesDataPage);
 }
+
 ///////////////////////////////////////////////////////////////////////////////////
 //  TTSShowWeather - announce the weather current and forecast data
 //  Entry: gTTSWeatherForecast = text string to speak.  Built by
-//
 function TTSShowWeather() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            ShowWeatherPage();
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(gTTSWeatherCurrent + gTTSWeatherForecast).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    TTSSpeak(gTTSWeatherCurrent + gTTSWeatherForecast, ShowWeatherPage);
 }
+
 ////////////////////////////////////////////////////////////////////////////////////
 //  TTSShowEvent - announce the next event
 //  Entry: gTTSNextEvent = text string to speak.  Built by 
-//
 function TTSShowEvent() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            DisplayComingEventsPage('events');
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(gTTSNextEvent).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
+    TTSSpeak("The next event is " + gTTSNext + ".", DisplayComingEventsPage('events'));
 }
+
+///////// TTS Next Activity /////////////////////////////////////////////////////////////////////
 function TTSShowActivity() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            DisplayComingEventsPage('activity');
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(gTTSNextActivity).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+    TTSSpeak("The next activity is " + gTTSNext + ".", DisplayComingEventsPage('activity'));
 }
 
+///////// TTS Show Open Hours /////////////////////////////////////////////////////////////////////
 function TTSShowOpen() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            ShowOpenHoursPage();
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(gTTSOpenHours).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    TTSSpeak(gTTSOpenHours, ShowOpenHoursPage);
 }
 
+///////// TTS Burn Ban /////////////////////////////////////////////////////////////////////
 function TTSBurnBan() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            ShowBurnBan();
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(document.getElementById("burnbanalert").innerHTML.replace(/<\/?.+?>/ig, '')).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    TTSSpeak(RemoveTags(document.getElementById("burnbanalert").innerHTML), ShowBurnBan);
 }
 
+///////// TTS Tanner Outage /////////////////////////////////////////////////////////////////////
 function TTSTannerOutage() {
-    // build ferry departure string
-    var reason;
-    switch (gTTS) {
-        // 0 = ignore. behave in the default way.
-        case 0:
-            ShowTannerOutage();
-            break;
-
-        // 1 = speak
-        case 1:
-            TTS
-                .speak(document.getElementById("tanneroutagealert").innerHTML.replace(/<\/?.+?>/ig, '')).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
-            break;
-
-        // 2 = large text
-        case 2:
-            break;
-    }
+    TTSSpeak("Tanner status as of " + RemoveTags(document.getElementById("tanneroutagealert").innerHTML), ShowTannerOutage);
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  FerryInitialize - set switches and ask user for geolocate permission.
@@ -4535,16 +4419,12 @@ function StartApp() {
     }
 
     // do stuff AFTER we have displayed the main page
-    //if (isPhoneGap()) {
-    //    s = localStorage.getItem("ferryhighlight");
-    //    if (s == null) setTimeout("FerryAskPermission()", 1000); // the 1st time, ask user for permission
-    //    else if (gFerryHighlight) getGeoLocation();
-    //}
+
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
         if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
-        gTTS = Number(LSget("TTS", "1"));  // load text to speech. Defaults to 1 (on)
+        TTSOnOff(Number(LSget("TTS", "1")));  // load text to speech. Defaults to 1 (on)
     }
 
     // set refresh timners
