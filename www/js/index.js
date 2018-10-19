@@ -1112,13 +1112,16 @@ function OpenFerryMenu() {
 /////////////////////////////////////////////////////////////////////////////////////////
 // WriteNextFerryTimes - Front Page. Finds the next ferry times and puts them into the Dom for the FRONT PAGE
 //
-var gFerryTimeTTS; // global ferry time text-to-speech string
-var gTideDataTTS; // global tide data text-to-speech string
-var gWeatherCurrentTTS; // global weather current text-to-speech string
-var gWeatherForecastTTS; // global weather forecast text-to-speech string
-var gNextTTS;// event string
-var gNextEventTTS;// next event text to speech string
-var gNextActivityTTS; // next activity TTS
+var gTTSFerryTime; // global ferry time text-to-speech string
+var gTTSTideData; // global tide data text-to-speech string
+var gTTSWeatherCurrent; // global weather current text-to-speech string
+var gTTSWeatherForecast; // global weather forecast text-to-speech string
+var gTTSNext;// event string
+var gTTSNextEvent;// next event text to speech string
+var gTTSNextActivity; // next activity TTS
+var gTTSOpenHours; // open store hours
+var gTTSBurnBanStatus;
+var gTTSTannerOutageStatus;
 
 function WriteNextFerryTimes() {
     // ferrytimes = time in 24 hours, S=Steilacoom, A=Anderson Island, 
@@ -1150,10 +1153,10 @@ function WriteNextFerryTimes() {
         if (gLocationOnAI==1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
         else if (gLocationOnAI == 0) SteilHighlight = "background-color:#ffff80";
     }
-    gFerryTimeTTS = "the next ferry departs steilacoom ";
+    gTTSFerryTime = "the next ferry departs steilacoom ";
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
-    gFerryTimeTTS += " - - - the next ferry departs anderson island ";  // use commas for a pause
+    gTTSFerryTime += " - - - the next ferry departs anderson island ";  // use commas for a pause
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
              FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1166,7 +1169,7 @@ function WriteNextFerryTimes() {
 //            ferrytimeK = is the array of times and days for ketron
 //            SA = S or A
 //      exit  returns html string of ferry times
-//            updates global gFerryTimeTTS text-to-speech string.
+//            updates global gTTSFerryTime text-to-speech string.
 //
 function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
@@ -1181,13 +1184,13 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);  // display in table
-            if (nruns < 2) gFerryTimeTTS = gFerryTimeTTS + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
+            if (nruns < 2) gTTSFerryTime = gTTSFerryTime + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
 
             // first run only: insert minutes till it sails
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
-                gFerryTimeTTS = gFerryTimeTTS + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
+                gTTSFerryTime = gTTSFerryTime + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
@@ -1253,7 +1256,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
             //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
             //}
             ft = ft + "&nbsp&nbsp</td>";
-            gFerryTimeTTS += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
+            gTTSFerryTime += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
             nruns++;
@@ -1495,7 +1498,7 @@ function HandleCurrentWeatherReply(responseText) {
     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
-    gWeatherCurrentTTS = "the current weather is " r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," +  " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
+    gTTSWeatherCurrent = "the current weather is " r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," +  " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph. ";
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
@@ -1581,7 +1584,7 @@ function HandleForecastAReply(jsondata) {
     var forecast = "<strong>Forecast:</strong> " + maxt + "&deg/" + mint + "&deg, " +
         r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
     localStorage.setItem("forecast", forecast);
-    gWeatherForecastTTS = "The forecast is " + r.weather[0].description + ", high " + maxt + ", low " + mint;
+    gTTSWeatherForecast = "The forecast is " + r.weather[0].description + ", high " + maxt + ", low " + mint;
     document.getElementById("forecast").innerHTML = forecast;
 
     // if the forecast page is being displayed, regenerate it
@@ -1597,7 +1600,7 @@ function HandleForecastAReply(jsondata) {
 //  entry: localStorage "jsontides" = tide data  (refreshed nightly)
 //  exit: gForceCacheReload = true to reload tide data.  
 //          html populated.
-//          gTideDataTTS = TTS tide string
+//          gTTSTideData = TTS tide string
 var gTideTitleNoIcon; // title for tide, with up or down arrow
 var gTideTitleIcon; // title for tide, with up or down arrow
 
@@ -1655,7 +1658,7 @@ function ShowNextTides() {
             var tdx = "<td style='padding:0;margin:0'>";
             nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
-            gTideDataTTS = "the current tide is " + cth.toFixed(1) + "feet. The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
+            gTTSTideData = "the current tide is " + cth.toFixed(1) + "feet. The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
@@ -1718,10 +1721,10 @@ function DisplayNextEvents(CE) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
             if (Number(aCE[1]) <= gTimehhmm) {
                 datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
-                gNextTTS = " now, " + CEvent + " at " + aCE[5] + ".";
+                gTTSNext = " now, " + CEvent + " at " + aCE[5] + ".";
             } else {
                 datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
-                if(nEvents<2) gNextTTS = " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
+                if(nEvents<2) gTTSNext = " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
             }
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
@@ -1738,7 +1741,7 @@ function DisplayNextEvents(CE) {
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
         datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " + CEvent + " @ " + aCE[5] + "<br/>";
-        if (nEvents < 1) gNextTTS = gDayofWeekName[GetDayofWeek(aCE[0])] + " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
+        if (nEvents < 1) gTTSNext = gDayofWeekName[GetDayofWeek(aCE[0])] + " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -1865,9 +1868,9 @@ function ParseDailyCache(data) {
     FixDates("comingevents");
     FixDates("comingactivities");
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    gNextEventTTS = "the next event is " + gNextTTS;
+    gTTSNextEvent = "the next event is " + gTTSNext;
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
-    gNextActivityTTS = "the next activity is " + gNextTTS;
+    gTTSNextActivity = "the next activity is " + gTTSNext;
 
     // tides (added 6/6/16);
     s = parseCache(data, "", "TIDES", "TIDESEND");
@@ -4131,10 +4134,10 @@ function TTSOnOff(onoff) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
-//  FerryScheduleTTS - announce the ferry departure time
-//  Entry: gFerryTimeTTS = text string to speak.  Built by FindNextFerryTime
+//  TTSFerrySchedule - announce the ferry departure time
+//  Entry: gTTSFerryTime = text string to speak.  Built by FindNextFerryTime
 //
-function FerryScheduleTTS() {
+function TTSFerrySchedule() {
     // build ferry departure string
     var reason;
     switch (gTTS) {
@@ -4146,8 +4149,7 @@ function FerryScheduleTTS() {
         // 1 = speak
         case 1:
             TTS
-                .speak(gFerryTimeTTS).then(function () {
-                    alert('success');
+                .speak(gTTSFerryTime).then(function () {
                 }, function (reason) {
                     alert(reason);
                 });
@@ -4156,14 +4158,13 @@ function FerryScheduleTTS() {
         // 2 = large text
         case 2:
             break;
-
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////
-//  TidesDataTTS - announce the tide data
-//  Entry: gTideDataTTS = text string to speak.  Built by ShowNextTides
+//  TTSTidesData - announce the tide data
+//  Entry: gTTSTideData = text string to speak.  Built by ShowNextTides
 //
-function TidesDataTTS() {
+function TTSTidesData() {
     // build ferry departure string
     var reason;
     switch (gTTS) {
@@ -4175,8 +4176,7 @@ function TidesDataTTS() {
         // 1 = speak
         case 1:
             TTS
-                .speak(gTideDataTTS).then(function () {
-                    alert('success');
+                .speak(gTTSTideData).then(function () {
                 }, function (reason) {
                     alert(reason);
                 });
@@ -4185,14 +4185,13 @@ function TidesDataTTS() {
         // 2 = large text
         case 2:
             break;
-
     }
 }
 ///////////////////////////////////////////////////////////////////////////////////
-//  ShowWeatherTTS - announce the weather current and forecast data
-//  Entry: gWeatherForecastTTS = text string to speak.  Built by
+//  TTSShowWeather - announce the weather current and forecast data
+//  Entry: gTTSWeatherForecast = text string to speak.  Built by
 //
-function ShowWeatherTTS() {
+function TTSShowWeather() {
     // build ferry departure string
     var reason;
     switch (gTTS) {
@@ -4204,8 +4203,7 @@ function ShowWeatherTTS() {
         // 1 = speak
         case 1:
             TTS
-                .speak(gWeatherCurrentTTS + gWeatherForecastTTS).then(function () {
-                    alert('success');
+                .speak(gTTSWeatherCurrent + gTTSWeatherForecast).then(function () {
                 }, function (reason) {
                     alert(reason);
                 });
@@ -4214,9 +4212,131 @@ function ShowWeatherTTS() {
         // 2 = large text
         case 2:
             break;
-
     }
 }
+////////////////////////////////////////////////////////////////////////////////////
+//  TTSShowEvent - announce the next event
+//  Entry: gTTSNextEvent = text string to speak.  Built by 
+//
+function TTSShowEvent() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            DisplayComingEventsPage('events');
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(gTTSNextEvent).then(function () {
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+    }
+}
+function TTSShowActivity() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            DisplayComingEventsPage('activity');
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(gTTSNextActivity).then(function () {
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+    }
+}
+
+function TTSShowOpen() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            ShowOpenHoursPage();
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(document.getElementById("openhours").innerHTML).then(function () {
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+    }
+}
+
+function TTSBurnBan() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            ShowBurnBan();
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(document.getElementById("burnbanalert").innerHTML).then(function () {
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+    }
+}
+
+function TTSTannerOutage() {
+    // build ferry departure string
+    var reason;
+    switch (gTTS) {
+        // 0 = ignore. behave in the default way.
+        case 0:
+            ShowTannerOutage();
+            break;
+
+        // 1 = speak
+        case 1:
+            TTS
+                .speak(document.getElementById("tanneroutagealert").innerHTML).then(function () {
+                }, function (reason) {
+                    alert(reason);
+                });
+            break;
+
+        // 2 = large text
+        case 2:
+            break;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  FerryInitialize - set switches and ask user for geolocate permission.
 //  Note: "ferryhighlight" controls highlighting and is also the 1st time flag for geolocation.

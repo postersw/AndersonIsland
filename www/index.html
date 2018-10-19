@@ -219,7 +219,7 @@
 
             <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse" ;>
                 <tr id='ferryrow' style="background-color:azure;" ">
-                    <td id="ferrytitle" style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" onclick="FerryScheduleTTS()">
+                    <td id="ferrytitle" style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" onclick="TTSFerrySchedule()">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>directions_boat</i><span class='mptext'>Ferry</span></span>
                     </td>
                     <td id="ferrytimes" style="font-size:small;margin-top:0px;margin-bottom:0px;" onclick="DisplayFerrySchedulePage()"> </td>
@@ -244,14 +244,14 @@
                 </tr>
 
                 <tr style="background-color:lightcyan">
-                    <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px"  onclick="TidesDataTTS();">
+                    <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px"  onclick="TTSTidesData();">
                         TIDES
                     </td>
                     <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px"  onclick="TidesDataPage();"> </td>
                 </tr>
 
                 <tr style="background-color:honeydew">
-                    <td id="weathertitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px;text-wrap:avoid" onclick="ShowWeatherTTS();">
+                    <td id="weathertitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px;text-wrap:avoid" onclick="TTSShowWeather();">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>cloud-queue</i><span class='mptext'>Weather</span></span>
                     </td>
                     <td style="font-size:small;margin-top:4px;margin-bottom:0px" onclick="ShowWeatherPage();">
@@ -261,38 +261,38 @@
 
                 </tr>
 
-                <tr style="background-color:floralwhite;" onclick="DisplayComingEventsPage('events');">
-                    <td id="eventtitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
+                <tr style="background-color:floralwhite;" >
+                    <td id="eventtitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px" onclick="TTSShowEvent()">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>event</i><span class='mptext'>Events</span></span>
                     </td>
-                    <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
+                    <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;" onclick="DisplayComingEventsPage('events');"> </td>
                 </tr>
-                <tr style="background-color:floralwhite;" onclick="DisplayComingEventsPage('activity');">
-                    <td id="activitytitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px">
+                <tr style="background-color:floralwhite;" >
+                    <td id="activitytitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px" onclick="TTSShowActivity();">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>directions_run</i><span class='mptext'>Activity</span></span>
                     </td>
-                    <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;"> </td>
+                    <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;" onclick="DisplayComingEventsPage('activity');"> </td>
                 </tr>
 
                 <tr style="background-color:#f0f0f5" onclick="ShowOpenHoursPage();">
-                    <td id="opentitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px">
+                    <td id="opentitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" onclick="TTSShowOpen();">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>schedule</i><span class='mptext'>Open</span></span>
                     </td>
-                    <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px"> </td>
+                    <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px" onclick="ShowOpenHoursPage();"> </td>
                 </tr>
 
-                <tr style="background-color:lightyellow" onclick="ShowBurnBan();">
-                    <td id="burnbantitle" style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px">
+                <tr style="background-color:lightyellow" >
+                    <td id="burnbantitle" style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px" onclick="TTSBurnBan();">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>whatshot</i><span class='mptext'>Burnban</span></span>
                     </td>
-                    <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for burn ban status.<br /></td>
+                    <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px" onclick="ShowBurnBan();">Tap for burn ban status.<br /></td>
                 </tr>
 
-                <tr style="background-color:#fff4b3;" onclick="ShowTannerOutage()">
-                    <td id="tannertitle" style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px">
+                <tr style="background-color:#fff4b3;" >
+                    <td id="tannertitle" style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px" onclick="TTSTannerOutage()">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>flash_on</i><span class='mptext'>Tanner</span></span>
                     </td>
-                    <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px">Tap for outage status.<br /></td>
+                    <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px" onclick="ShowTannerOutage()">Tap for outage status.<br /></td>
                 </tr>
                 <tr style="background-color:#ccffcc" onclick="ShowParks()">
                     <td id="parkstitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
