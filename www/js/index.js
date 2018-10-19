@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.101918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.101918.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1009,10 +1009,14 @@ function DisplayAlertInfo() {
     var s = localStorage.getItem("burnbanalert");
     if (IsEmpty(s)) s = "Tap for burn ban status.";
     document.getElementById("burnbanalert").innerHTML = s;
+
     // tanner status or alert
     var s = localStorage.getItem("tanneroutagealert");
     if (IsEmpty(s)) s = "Tap for outage status.";
     document.getElementById("tanneroutagealert").innerHTML = s;
+    var tt = document.getElementById("tannertitle").innerHTML; // tanner title
+    if (s.indexOf("No Outages") > 0) document.getElementById("tannertitle").innerHTML = tt.replace("flash_off", "flash_on");  // if no outage
+    else document.getElementById("tannertitle").innerHTML = tt.replace("flash_on", "flash_off"); // if an outage
 }
 
 
@@ -1364,7 +1368,7 @@ function ShowOpenHours() {
         var Oh = OpenHours[i];  // entry for 1 business
         openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:";
         openlist += GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
-        gTTSOpenHours += Oh.Name + GetOpenStatus(Oh, gMonthDay, gTimehhmm).replace(/<\/?.+?>/ig, '') + ". ";
+        gTTSOpenHours += Oh.Name + RemoveTags(GetOpenStatus(Oh, gMonthDay, gTimehhmm)).replace("p ", "pm") + ". ";
         if (i == 2) break; // only do 1st 3 on main page
     } // end for
     openlist += "More ...";
@@ -1732,10 +1736,10 @@ function DisplayNextEvents(CE) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
             if (Number(aCE[1]) <= gTimehhmm) {
                 datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
-                gTTSNext = " now, " + CEvent + " at " + aCE[5] + ".";
+                gTTSNext = " now, " + aCE[4] + " at " + aCE[5] + ".";
             } else {
                 datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
-                if(nEvents<2) gTTSNext = " at " + VeryShortTime(aCE[1]) + ", " + CEvent + " at " + aCE[5] + "."; // text to speech
+                if (nEvents < 2) gTTSNext = " at " + VeryShortTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
             }
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
@@ -4138,10 +4142,13 @@ function ShowHelpPage() {
 //  TTSOnOff - sets the gTTS switch on or off, and updates the menu colors
 //  Entry   onoff = 0 for off, 1 for on
 function TTSOnOff(onoff) {
+    if (!isPhoneGap()) onoff = 0;  // always force off if not phonegap
     gTTS = onoff;
     localStorage.setItem("TTS", gTTS.toFixed(0));
-    if (gTTS == 0) MenuSet("TTSont", "white", "TTSofft", "red"); //off
-    else MenuSet("TTSont", "lime", "TTSofft", "white");
+    if (gTTS == 0) {
+        MenuSet("TTSont", "white", "TTSofft", "red"); //off
+        docu.getElementById("topline").innerHTML = "Tap for Details";
+    } else MenuSet("TTSont", "lime", "TTSofft", "white");  // turn on speach
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4424,8 +4431,8 @@ function StartApp() {
         s = localStorage.getItem("ferryhighlight");
         if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
-        TTSOnOff(Number(LSget("TTS", "1")));  // load text to speech. Defaults to 1 (on)
     }
+    TTSOnOff(Number(LSget("TTS", "1")));  // load text to speech. Defaults to 1 (on). For web, it is always off
 
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds
