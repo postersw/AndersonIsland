@@ -4205,8 +4205,7 @@ function TTSShowWeather() {
 //  Entry: gTTSNextEvent = text string to speak.  Built by 
 function TTSShowEvent() {
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    TTSSpeak("The next event is " + gTTSNext + ".", Disp
-        layComingEventsPage('events'));
+    TTSSpeak("The next event is " + gTTSNext + ".", DisplayComingEventsPage('events'));
 }
 
 ///////// TTS Next Activity /////////////////////////////////////////////////////////////////////
