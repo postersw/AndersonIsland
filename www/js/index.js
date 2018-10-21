@@ -1408,8 +1408,10 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             }
             var openlist; openlist = "";
             // test for open
-            if ((hhmm >= opentime) && (hhmm < closetime))
+            if ((hhmm >= opentime) && (hhmm < closetime)) {
+                if (opentime == 1 && closetime == 2359) return " <strong><span style='color:green'> Open </span>24 hours today</strong>";  // special case for open 24 hours
                 return " <strong><span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today</strong>";
+            }
             else if ((hhmm >= opentime2) && (hhmm < closetime2))  // 2nd shift for Post Office
                 return " <strong><span style='color:green'> Open </span>till " + VeryShortTime(closetime2) + " today</strong>";
             else {
@@ -2584,12 +2586,14 @@ function ShowOpenHoursTable(showall) {
 //////////////////////////////////////////////////////////////////////////////////////
 // FormatOneBusiness - formats one OpenHours object
 //  Entry   Oh = one OpenHours object,  showall = true for all dates
-//  Exit    returns html for a table entry                             
+//  Exit    returns html for a table entry       
+//  Note:   If open=1 and close=2359, this will display "24 hours".
+//
 function FormatOneBusiness(Oh, mmdd, showall) {
     var showicon = "<i class='material-icons bizicon'>store</i> ";
     if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
     var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
-        showicon + Oh.Name + "&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
+        showicon + RemoveTags(Oh.Name) + "<img style='float:right' src='" + Oh.Img + "' width='33%'>&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
     openlist += "<div style=margin:8px>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
@@ -2607,13 +2611,14 @@ function FormatOneBusiness(Oh, mmdd, showall) {
             nr = nr + 1;
             // loop through Sun - Sat
             for (var j = 0; j < 7; j++) {
-                var opentimetoday;
-                opentimetoday = H[j * 2]; // hhmm-hhmm open today
+                var opentimetoday = H[j * 2]; // hhmm-hhmm open today
+                var closetimetoday = H[j * 2 + 1]; // hhmm-hhmm open today
                 if (opentimetoday > 0) {
                     if (j == gDayofWeek) openlist += "<strong>"; // bold today
-                    openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
+                    if (opentimetoday == 1 && closetimetoday == 2359) openlist += "<nobr>" + gDayofWeekShort[j] + ": 24 hours";
+                    else openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                     if (H2 != null) {
-                        if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
+                        if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(closetimetoday);
                     }
                     openlist += "</nobr>";
                     if (j == gDayofWeek) openlist += "</strong>";
@@ -2652,7 +2657,7 @@ function ShowOneBusinessFullPage(id) {
     ShowPage("businesspage");
     InitializeDates(0);
     var Oh = OpenHours[Number(id)]; // one business
-    var t = Oh.Name;
+    var t = RemoveTags(Oh.Name);
     var mmdd = gMonthDay;
     if (t == "Store") t = "General Store";
     SetPageHeader(t);
@@ -2660,10 +2665,10 @@ function ShowOneBusinessFullPage(id) {
     var showicon = "<i class='material-icons bizicon'>store</i> ";
     if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
-
-    openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>"
-        + "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +
+    openlist += "<p style='margin:10px'><img src='" + Oh.Img + "' width='90%'></p>";
+    openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>" + 
         Oh.Desc +
+        "<br/><button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +   
         "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p style='margin:10px'>" +
         "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp Map &nbsp</button>&nbsp&nbsp " +
         Oh.Addr + "</p>" +
