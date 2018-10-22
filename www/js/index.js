@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102218.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102218.3";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1524,6 +1524,7 @@ function HandleCurrentWeatherReply(responseText) {
         StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
     TXTS.WeatherCurrent = "the current weather is " + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," +  " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph. ";
+    localStorage.setItem("TXTSWeatherCurrent") = TXTS.WeatherCurrent;
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
     FormatWeatherIcon(r.weather[0].icon); // format weather icon for menu
@@ -1609,6 +1610,7 @@ function HandleForecastAReply(jsondata) {
         r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
     localStorage.setItem("forecast", forecast);
     TXTS.WeatherForecast = "The forecast is " + r.weather[0].description + ", high " + maxt + ", low " + mint;
+    localStorage.setItem("TXTSWeatherForecast") = TXTS.WeatherForecast;
     document.getElementById("forecast").innerHTML = forecast;
 
     // if the forecast page is being displayed, regenerate it
@@ -4227,9 +4229,9 @@ function TTSTidesData() {
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  TTSShowWeather - announce the weather current and forecast data
-//  Entry: TXTS.WeatherForecast = text string to speak.  Built by
+//  Entry: TXTSWeatherCurrent in localstorage = text strings to speak.  Built by
 function TTSShowWeather() {
-    TXTS.Speak(TXTS.WeatherCurrent + TXTS.WeatherForecast, ShowWeatherPage);
+    TXTS.Speak(LSget("TXTSWeatherCurrent") + LSget("TXTSWeatherForecast"), ShowWeatherPage);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
