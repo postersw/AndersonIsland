@@ -315,6 +315,7 @@ function GetDayofWeek(mmdd) {
 /////////////////////////////////////////////////////////////////////////////////////
 // GetWeekofYear - returns week of year
 //  entry   mmdd = mmdd (assumes gYear) or yymmdd
+//  exit    week as 0 - 51;
 function GetWeekofYear(mmdd) {
     var mmdd = Number(mmdd);
     var yyyy = gYear;
@@ -326,6 +327,7 @@ function GetWeekofYear(mmdd) {
     var thedate = new Date(gYear, Math.floor(mmdd / 100) - 1, mmdd % 100);
     return Math.floor((((thedate - januaryFirst) / 86400000) + januaryFirst.getDay()) / 7);
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // DateDiff - return difference in days between 2 dates in our funky mmdd format (0101 - 1231)
 //  DateDiff(newer, older)  e.g. DateDiff(0122, 0102) = 20.  Handles rollover for a single year only.
@@ -1368,7 +1370,8 @@ function ShowOpenHours() {
     // loop through the openHours array (each array entry is one business)
     for (var i = 0; i < OpenHours.length; i++) {
         var Oh = OpenHours[i];  // entry for 1 business
-        openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:";
+        if (gIconSwitch == 1) openlist += "<i class='material-icons' > " + Oh.Icon + "</i >";
+        openlist += "<i class='material-icons' > " + Oh.Icon + "</i ><span style='font-weight:bold'>" + Oh.Name + "</span>:";
         openlist += GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
         gTTSOpenHours += Oh.Name + RemoveTags(GetOpenStatus(Oh, gMonthDay, gTimehhmm)).replace("p ", "pm") + ". ";
         if (i == 2) break; // only do 1st 3 on main page
@@ -2609,7 +2612,22 @@ function FormatOneBusiness(Oh, mmdd, showall) {
             var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
             var H2 = Oh.Sc[i].H2; // 2nd hours
             nr = nr + 1;
-            // loop through Sun - Sat
+
+            // Alternate week check.  Skip if not the correct even/odd week, just skip listing it.
+            if (Oh.AlternateWeek === undefined) {
+            } else if (Oh.AlternateWeek == "odd") { // odd week, so its closed on even
+                if (((GetWeekofYear(mmdd) + 1) % 2) == 0) {
+                    openlist += "Closed this week.<br/>";  // if even week
+                    continue;
+                }
+            } else if (Oh.AlternateWeek == "even") {  // even week, so its closed if odd
+                if (((GetWeekofYear(mmdd) + 1) % 2) == 1) {
+                    openlist += "Closed this week.<br/>";  // if odd week
+                    continue;
+                }
+            }
+
+            // loop through Sun - Sat, listing hours each week.
             for (var j = 0; j < 7; j++) {
                 var opentimetoday = H[j * 2]; // hhmm-hhmm open today
                 var closetimetoday = H[j * 2 + 1]; // hhmm-hhmm open today
