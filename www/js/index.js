@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102218.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102218.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1150,6 +1150,7 @@ function WriteNextFerryTimes() {
 
     var str;
     var v = "";
+    TXTS.FerryTime = "";
     // check for a DELAYED: or DELAYED nn MIN: and extract the string
     var s = localStorage.getItem('alerttext');
     if (!IsEmpty(s)) {
@@ -1157,6 +1158,7 @@ function WriteNextFerryTimes() {
         if (i > 0) {
             var j = s.indexOf(":", i);
             if (j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
+            TXTS.FerryTime = s.substring(i, j) + ". ";
         }
     }
 
@@ -1171,7 +1173,7 @@ function WriteNextFerryTimes() {
         if (gLocationOnAI==1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
         else if (gLocationOnAI == 0) SteilHighlight = "background-color:#ffff80";
     }
-    TXTS.FerryTime = "the next ferry departs steilacoom ";
+    TXTS.FerryTime += "The next ferry departs steilacoom ";
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
     TXTS.FerryTime += ". The next ferry departs anderson island ";  // use commas for a pause
@@ -1372,8 +1374,7 @@ function ShowOpenHours() {
     for (var i = 0; i < OpenHours.length; i++) {
         var Oh = OpenHours[i];  // entry for 1 business
         if (gIconSwitch == 1) openlist += "<i class='material-icons' > " + Oh.Icon + "</i >";
-        openlist += "<i class='material-icons' > " + Oh.Icon + "</i ><span style='font-weight:bold'>" + Oh.Name + "</span>:";
-        openlist += GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
+        openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:" + GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
         TXTS.OpenHours += Oh.Name + RemoveTags(GetOpenStatus(Oh, gMonthDay, gTimehhmm)).replace("p ", "pm") + ". ";
         if (i == 2) break; // only do 1st 3 on main page
     } // end for
@@ -1632,6 +1633,7 @@ function ShowNextTides() {
     var nextTides;
     var oldtide = -1;
     var newtidetime, oldtidetime, newtideheight, oldtideheight;
+    var curtidespeech = "";
     var json = localStorage.getItem("jsontides");
     // get tide data
     if (json === null) {
@@ -1665,6 +1667,7 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             if (thisperiod.type == 'h') {
                 nextTides = "&uarr; Incoming";
+                curtidespeech = " Incoming. "
                 gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_upward</i><span class='mptext'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_upward</i>";
                 //arrow_upward
@@ -1672,6 +1675,7 @@ function ShowNextTides() {
                 gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_downward</i><span class='mptext'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_downward</i>";
                 nextTides = "&darr; Outgoing";
+                curtidespeech = " Outgoing. "
                 //arrow_downward  file_upload<
             }
             SetTideTitle();
@@ -1681,7 +1685,7 @@ function ShowNextTides() {
             var tdx = "<td style='padding:0;margin:0'>";
             nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
-            TXTS.TideData = "the current tide is " + cth.toFixed(1) + "feet. The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
+            TXTS.TideData = "the current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
@@ -1747,7 +1751,7 @@ function DisplayNextEvents(CE) {
                 TXTS.Next = " now, " + aCE[4] + " at " + aCE[5] + ".";
             } else {
                 datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
-                if (nEvents < 2) TXTS.Next = " at " + FormatTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
+                if (nEvents < 1) TXTS.Next = " at " + FormatTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
             }
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
