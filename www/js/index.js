@@ -2201,7 +2201,11 @@ function ShowOpenHours() {
 function GetOpenStatus(Oh, mmdd, hhmm) {
     var i, j;
     var opentime, closetime, opentime2, closetime2;
-    if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> Closed today. </span>"
+    var TClosed = "Closed"; var TClosedAW = "Closed"; var TOpen = "Open"; var TOpens = "Opens"; 
+    // for garbage pickup, change wording to 'pickup'
+    if (Oh.Pickup == "on") { TClosed = ""; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup";}  
+
+    if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> " + TClosed + " today. </span>"
     // loop through the oh.Sch entries. Each entry is for 1 date range.
     for (i = 0; i < Oh.Sc.length; i++) {
         if (((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
@@ -2213,17 +2217,17 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             if (Oh.AlternateWeek === undefined) {
             } else if (Oh.AlternateWeek == "odd") { // odd week, so its closed on even
                 if (((GetWeekofYear(mmdd) + 1) % 2) == 0) {
-                    return "<span style='color:red;font-weight:bold'>Closed this week.<span/>";  // if even week
+                    return "<span style='color:red;font-weight:bold'> " + TClosedAW + " this week.<span/>";  // if even week
                 }
             } else if (Oh.AlternateWeek == "even") {  // even week, so its closed if odd
                 if (((GetWeekofYear(mmdd) + 1) % 2) == 1) {
-                    return "<span style='color:red;font-weight:bold'>Closed this week.<span/>";  // if odd week
+                    return "<span style='color:red;font-weight:bold'>" + TClosedAW + " this week.<span/>";  // if odd week
                 }
             }
 
             // array is [sunopen, sunclose, monopen, monclose, tueopen, tueclose,.....satopen, satclose]
             var H = Oh.Sc[i].H;  // array indexed by day of week
-            if (H == null) return " <span style='color:red;font-weight:bold'> Closed. </span>";  // if no times, its closed
+            if (H == null) return " <span style='color:red;font-weight:bold'> " + TClosed + ".</span>";  // if no times, its closed
             opentime = H[gDayofWeek * 2]; // open time hhmm
             closetime = H[gDayofWeek * 2 + 1]; // close time hhmm
             opentime2 = 0; closetime2 = 0;
@@ -2234,24 +2238,24 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             var openlist; openlist = "";
             // test for open
             if ((hhmm >= opentime) && (hhmm < closetime)) {
-                if (opentime == 1 && closetime == 2359) return " <strong><span style='color:green'> Open </span>24 hours today</strong>";  // special case for open 24 hours
-                return " <strong><span style='color:green'> Open </span>till " + VeryShortTime(closetime) + " today</strong>";
+                if (opentime == 1 && closetime == 2359) return " <strong><span style='color:green'> " + TOpen + "  </span>24 hours today</strong>";  // special case for open 24 hours
+                return " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime) + " today</strong>";
             }
             else if ((hhmm >= opentime2) && (hhmm < closetime2))  // 2nd shift for Post Office
-                return " <strong><span style='color:green'> Open </span>till " + VeryShortTime(closetime2) + " today</strong>";
+                return " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime2) + " today</strong>";
             else {
                 // closed right now. Find next open time.
-                openlist += " <span style='color:red;font-weight:bold'> Closed. </span>";
-                if (hhmm < opentime) return openlist + " Opens today " + VeryShortTime(opentime);
+                openlist += " <span style='color:red;font-weight:bold'> " + TClosed + ". </span>";
+                if (hhmm < opentime) return openlist + " " + TOpens + " today " + VeryShortTime(opentime);
                 if (hhmm < opentime2) return openlist + " Reopens today " + VeryShortTime(opentime2);
                 //  closed today find next open time
                 j = gDayofWeek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
-                if (H[j * 2] > 0) return openlist + " Opens tomorrow " + VeryShortTime(H[j * 2]);
+                if (H[j * 2] > 0) return openlist + " " + TOpens + " tomorrow " + VeryShortTime(H[j * 2]);
                 // not open tomorrow. find next open day.
                 for (var k = 0; k < 7; k++) {  // ensure we check each day only once
                     j++; if (j == 7) j = 0; // handle day rollover
-                    if (H[j * 2] > 0) return openlist + " Opens " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
+                    if (H[j * 2] > 0) return openlist + " " + TOpens + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
                 } // find open day
             }
         }
