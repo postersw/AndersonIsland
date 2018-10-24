@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102218.4";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -2181,7 +2181,7 @@ function ShowOpenHours() {
     // loop through the openHours array (each array entry is one business)
     for (var i = 0; i < OpenHours.length; i++) {
         var Oh = OpenHours[i];  // entry for 1 business
-        if (gIconSwitch == 1) openlist += "<i class='material-icons' > " + Oh.Icon + "</i >";
+        if (gIconSwitch == 1) openlist += "<i class='material-icons' > " + Oh.Icon + "</i >&nbsp;";
         openlist += "<span style='font-weight:bold'>" + Oh.Name + "</span>:" + GetOpenStatus(Oh, gMonthDay, gTimehhmm) + "<br/>";
         TXTS.OpenHours += Oh.Name + RemoveTags(GetOpenStatus(Oh, gMonthDay, gTimehhmm)).replace("p ", "pm") + ". ";
         if (i == 2) break; // only do 1st 3 on main page
@@ -2208,6 +2208,19 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd >= Oh.Sc[i].From)))) {
 
             // ok we have the H entry for the date, now check it
+
+            // Alternate week check.  return if not the correct even/odd week.
+            if (Oh.AlternateWeek === undefined) {
+            } else if (Oh.AlternateWeek == "odd") { // odd week, so its closed on even
+                if (((GetWeekofYear(mmdd) + 1) % 2) == 0) {
+                    return "<span style='color:red;font-weight:bold'>Closed this week.<span/>";  // if even week
+                }
+            } else if (Oh.AlternateWeek == "even") {  // even week, so its closed if odd
+                if (((GetWeekofYear(mmdd) + 1) % 2) == 1) {
+                    return "<span style='color:red;font-weight:bold'>Closed this week.<span/>";  // if odd week
+                }
+            }
+
             // array is [sunopen, sunclose, monopen, monclose, tueopen, tueclose,.....satopen, satclose]
             var H = Oh.Sc[i].H;  // array indexed by day of week
             if (H == null) return " <span style='color:red;font-weight:bold'> Closed. </span>";  // if no times, its closed
