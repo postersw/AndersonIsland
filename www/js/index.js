@@ -455,7 +455,7 @@ function RawTimeDiff(hhmm1, hhmm2) {
 ////////////////////////////////////////////////////////////////////////////////////
 // timeDiffTTS returns the time difference for speech as 'nn hours nn minutes' or 'hh hours' or 'nn minutes'; 
 //  Entry: rtd = time difference in minutes
-//  Exit: returns text string ready for speach
+//  Exit: returns text string ready for speech
 function timeDiffTTS(diffm) {
     if (diffm < 60) return diffm + " minutes ";
     if ((diffm % 60) == 0) return Math.floor(diffm / 60) + " hours ";
@@ -4274,7 +4274,7 @@ function TTSOnOff(onoff) {
     if (TXTS.OnOff == 0) {
         MenuSet("TTSont", "white", "TTSofft", "red"); //off
         document.getElementById("topline").innerHTML = "Tap for Details";
-    } else MenuSet("TTSont", "lime", "TTSofft", "white");  // turn on speach
+    } else MenuSet("TTSont", "lime", "TTSofft", "white");  // turn on speech
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4452,17 +4452,28 @@ function ShowIcons(nt) {
 }
 
 //////////////////////////////////////////////////////////////////////
-//  InitializeIcons - show startup message if necessary.
+//  InitializeIcons - show startup message if necessary. Hide icons if requested.
 //  ASSUMES THAT index.html HAS ICONS AT STARTUP!
 //  Entry: local storage "icons" = icon value
 function InitializeIcons() {
     gIconSwitch = "1";
     var ic = localStorage.getItem("icons"); // icons = 0 - 5,
     if (ic == null) {
-        alert("The Anderson Island Assistant now uses icons on its main screen. To revert to the former text-only display, select:\n Menu -> Icons -> Off\n in the upper left-hand corner of the main screen.");
+        //alert("The Anderson Island Assistant now uses icons on its main screen. To revert to the former text-only display, select:\n Menu -> Icons -> Off\n in the upper left-hand corner of the main screen.");
         ic = "1";
     }
     ShowIcons(ic);
+}
+
+//////////////////////////////////////////////////////////////////////
+//  InitializeSpeech - show startup message if necessary.
+//  Entry: local storage "TTS" = icon value
+function InitializeSpeechMessage() {
+    if (!isPhoneGap()) return; // exit if not phonegap
+    var ic = localStorage.getItem("TTS"); // icons = 0 - 5,
+    if (ic == null) {
+        alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.");
+    }
 }
 /////////////////////////////////////////////////////////////
 //  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
@@ -4515,6 +4526,7 @@ function StartApp() {
 
     // Replace icons with Labels if user selected them
     InitializeIcons();
+    InitializeSpeechMessage(); // initial speech message
 
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
