@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102318.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -323,9 +323,9 @@ function GetDayofWeek(mmdd) {
     var d = new Date(yyyy, Math.floor(mmdd / 100) - 1, mmdd % 100);
     return d.getDay();
 }
-/////////////////////////////////////////////////////////////////////////////////////
-// GetWeekofYear - returns week of year
-//  entry   mmdd = mmdd (assumes gYear) or yymmdd
+///////////////////////////////////////////////////////////////////////////////////////
+// GetWeekofYear - returns week of year  
+//  entry   mmdd = mmdd (assumes gYear) or yymmdd (180122)
 //  exit    week as 0 - 51;
 function GetWeekofYear(mmdd) {
     var mmdd = Number(mmdd);
@@ -334,9 +334,9 @@ function GetWeekofYear(mmdd) {
         yyyy = Math.floor(mmdd / 10000) + 2000; // extract year
         mmdd = mmdd % 10000;
     }
-    var januaryFirst = new Date(gYear, 0, 1);
-    var thedate = new Date(gYear, Math.floor(mmdd / 100) - 1, mmdd % 100);
-    return Math.floor((((thedate - januaryFirst) / 86400000) + januaryFirst.getDay()) / 7);
+    var januaryFirst = new Date(yyyy, 0, 1,0,0,0,0);
+    var thedate = new Date(yyyy, Math.floor(mmdd / 100) - 1, mmdd % 100,0,0,0,0);
+    return Math.floor((Math.ceil((thedate - januaryFirst) / 86400000) + januaryFirst.getDay()) / 7);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -2227,7 +2227,7 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
 
             // array is [sunopen, sunclose, monopen, monclose, tueopen, tueclose,.....satopen, satclose]
             var H = Oh.Sc[i].H;  // array indexed by day of week
-            if (H == null) return " <span style='color:red;font-weight:bold'> " + TClosed + ".</span>";  // if no times, its closed
+            if (H == null) return " <span style='color:red;font-weight:bold'> " + TClosed + " today.</span>";  // if no times, its closed
             opentime = H[gDayofWeek * 2]; // open time hhmm
             closetime = H[gDayofWeek * 2 + 1]; // close time hhmm
             opentime2 = 0; closetime2 = 0;
@@ -2252,7 +2252,15 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
                 j = gDayofWeek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
                 if (H[j * 2] > 0) return openlist + " " + TOpens + " tomorrow " + VeryShortTime(H[j * 2]);
-                // not open tomorrow. find next open day.
+                // not open tomorrow. find next open day.---------------------  
+                // Note - for alternate week.  Check to see if it is open later this week. Then return closed status for next week. we know that this week is ok (because it is checked at the top), so next week must be closed
+                if (!(Oh.AlternateWeek === undefined)) {  // if it is an alternate week
+                    for (j = gDayofWeek + 1; j < 7; j++) { // ensure we check each day only through the end of this week.
+                        if (H[j * 2] > 0) return TOpens + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]) + ".";
+                    }
+                    return TClosedAW + " next week.";
+                }
+                // not alternate week and not open tomorrow. find next open day - search next 7 days.  
                 for (var k = 0; k < 7; k++) {  // ensure we check each day only once
                     j++; if (j == 7) j = 0; // handle day rollover
                     if (H[j * 2] > 0) return openlist + " " + TOpens + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
