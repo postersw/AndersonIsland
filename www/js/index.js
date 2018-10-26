@@ -633,38 +633,70 @@ function UpdateApp() {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Notify.  Normal situation is notification is on, and the 'NotifyOff' flag is not there.
 //          If notification is off, then 'NotifyOff' is present in local storage.
-function NotifyOn() {
-    localStorage.removeItem('notifyoff');
+function NotifyToggle() {
     if (isPhoneGap()) {
-        MenuSet("notifymont", "lime", "notifymofft", "white");
-        localStorage.setItem("pushbotstime", 0);  // force full initialize on next app restart
-        switch (gNotification) {
-            case 1:  // pushbots
-                //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+        var ns = LSget("notifyoff");
+        switch (ns) {
+            case "ON":  // set it off
+                localStorage.setItem('notifyoff', 'OFF');
+                MenuSetToggle("notifytog", "OFF");
+                window.plugins.OneSignal.setSubscription(false);
                 break;
-            case 2:  // one signal.  Only works if we have initialized the app
+            case "OFF", "":  // Set it ON
+                localStorage.setItem('notifyoff', 'ON');
+                MenuSetToggle("notifytog", "ON");
                 window.plugins.OneSignal.setSubscription(true);
                 break;
         }
     }
 }
-function NotifyOff() {
-    MarkPage("4");
-    localStorage.setItem('notifyoff', 'OFF');
-    if (isPhoneGap()) {
-        MenuSet("notifymont", "white", "notifymofft", "red");
-        localStorage.setItem("pushbotstime", 0); // force full initialize on next app restart
-        switch (gNotification) {
-            case 1:  // pushbots
-                //window.plugins.PushbotsPlugin.unregister();
-                break;
-            case 2:  // one signal
-                window.plugins.OneSignal.setSubscription(false);
-                break;
-        }
 
+function MenuSetToggle(id, onoff) {
+    var idx = document.getElementById("id");
+
+    switch (onoff) {
+        case "ON":
+            idx.style.color = "green";
+            idx.innerHTML = idx.innerHTML.replace("toggle_off", "toggle_on");
+            break;
+        case "OFF":
+            idx.style.color = "gray";
+            idx.innerHTML = idx.innerHTML.replace("toggle_on", "toggle_off");
+            break;
     }
 }
+//function NotifyOn() {
+//    localStorage.removeItem('notifyoff');
+//    if (isPhoneGap()) {
+//        MenuSet("notifymont", "lime", "notifymofft", "white");
+//        localStorage.setItem("pushbotstime", 0);  // force full initialize on next app restart
+//        switch (gNotification) {
+//            case 1:  // pushbots
+//                //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
+//                break;
+//            case 2:  // one signal.  Only works if we have initialized the app
+//                window.plugins.OneSignal.setSubscription(true);
+//                break;
+//        }
+//    }
+//}
+//function NotifyOff() {
+//    MarkPage("4");
+//    localStorage.setItem('notifyoff', 'OFF');
+//    if (isPhoneGap()) {
+//        MenuSet("notifymont", "white", "notifymofft", "red");
+//        localStorage.setItem("pushbotstime", 0); // force full initialize on next app restart
+//        switch (gNotification) {
+//            case 1:  // pushbots
+//                //window.plugins.PushbotsPlugin.unregister();
+//                break;
+//            case 2:  // one signal
+//                window.plugins.OneSignal.setSubscription(false);
+//                break;
+//        }
+
+//    }
+//}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
