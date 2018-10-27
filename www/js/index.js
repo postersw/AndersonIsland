@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102518.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102718.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -179,7 +179,7 @@ gLocationTime = 0; // time of last location update
 
 
 // ferry time switches default
-var gFerryShowIn = 1; // show (in nnm) on 1st time. Set from "gferryshowin".
+var gFerryShowIn = 1; // 1 to show (in nnm) on 1st time. Set from "gferryshowin". Defaults to 1.
 var gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
 var gFerryHighlight = 0; // highlight ferry AI or Steilacoom depending on user location. Set from "ferryhighlight"
 
@@ -636,154 +636,84 @@ function UpdateApp() {
 function NotifyToggle() {
     if (isPhoneGap()) {
         var ns = LSget("notifyoff");
-        switch (ns) {
-            case "ON":  // set it off
-                localStorage.setItem('notifyoff', 'OFF');
-                MenuSetToggle("notifytog", "OFF");
-                window.plugins.OneSignal.setSubscription(false);
-                break;
-            case "OFF", "":  // Set it ON
-                localStorage.setItem('notifyoff', 'ON');
-                MenuSetToggle("notifytog", "ON");
-                window.plugins.OneSignal.setSubscription(true);
-                break;
+        if (ns == "ON") {  // if ON, set it off
+            localStorage.setItem('notifyoff', 'OFF');
+            window.plugins.OneSignal.setSubscription(false);
+            break;
+        } else {  // if OFF, set it on
+            localStorage.setItem('notifyoff', 'ON');
+            window.plugins.OneSignal.setSubscription(true);
+            break;
         }
     }
 }
 
-function MenuSetToggle(id, onoff) {
-    var idx = document.getElementById("id");
-
-    switch (onoff) {
-        case "ON":
-            idx.style.color = "green";
-            idx.innerHTML = idx.innerHTML.replace("toggle_off", "toggle_on");
-            break;
-        case "OFF":
-            idx.style.color = "gray";
-            idx.innerHTML = idx.innerHTML.replace("toggle_on", "toggle_off");
-            break;
-    }
-}
-//function NotifyOn() {
-//    localStorage.removeItem('notifyoff');
-//    if (isPhoneGap()) {
-//        MenuSet("notifymont", "lime", "notifymofft", "white");
-//        localStorage.setItem("pushbotstime", 0);  // force full initialize on next app restart
-//        switch (gNotification) {
-//            case 1:  // pushbots
-//                //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-//                break;
-//            case 2:  // one signal.  Only works if we have initialized the app
-//                window.plugins.OneSignal.setSubscription(true);
-//                break;
-//        }
-//    }
-//}
-//function NotifyOff() {
-//    MarkPage("4");
-//    localStorage.setItem('notifyoff', 'OFF');
-//    if (isPhoneGap()) {
-//        MenuSet("notifymont", "white", "notifymofft", "red");
-//        localStorage.setItem("pushbotstime", 0); // force full initialize on next app restart
-//        switch (gNotification) {
-//            case 1:  // pushbots
-//                //window.plugins.PushbotsPlugin.unregister();
-//                break;
-//            case 2:  // one signal
-//                window.plugins.OneSignal.setSubscription(false);
-//                break;
-//        }
-
-//    }
-//}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 //  Ferry Schedule Main Page Settings
 
-//  FerryShow Countdown InOn/Off set the gFerryShowIn switch to control the countdown to arrival time
+//  FerryShowCDToggle Countdown InOn/Off set the gFerryShowIn switch to control the countdown to arrival time
 //  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" 
-
-function FerryShowCDOn() {
-    MenuSet("ferrycdont", "lime", "ferrycdofft", "white");
-    gFerryShowIn = 1; // turn on show flag
-    localStorage.setItem("ferryshowin", "1");; // NOTE: 1 is actually the absence of this label, because it is the default case
-    WriteNextFerryTimes();
-}
-function FerryShowCDOff() {
-    MenuSet("ferrycdont", "white", "ferrycdofft", "red");
-    gFerryShowIn = 0; // turn on show flag
-    localStorage.setItem("ferryshowin", "0");
+//
+function FerryShowCDToggle() {
+    if (gFerryShowIn == 1) gFerryShowIn = 0;
+    else gFerryShowIn = 1;
+    localStorage.setItem("ferryshowin", gFerryShowIn.toFixed(0));
     WriteNextFerryTimes();
 }
 
 
 //  FerryShow3On/Off set the gFerry3 switch to control the countdown to arrival time
 //  Exit: sets gFerryShow3 (1 or 0) and local storage "ferryshow3 ("1" or "0")
-function FerryShow3On() {
-    MenuSet("ferry2tt", "white", "ferry3tt", "lime");
-    gFerryShow3 = 1; // turn on show flag
-    localStorage.setItem("ferryshow3", "1");
-    WriteNextFerryTimes();
-}
-function FerryShow3Off() {
-    MenuSet("ferry2tt", "lime", "ferry3tt", "white");
-    gFerryShow3 = 0; // turn off show flag
-    localStorage.setItem("ferryshow3", "0");
+//
+function FerryShow3Toggle() {
+    if (gFerryShow3 == 1) gFerryShow3 = 0;
+    else gFerryShow3 = 1;
+    localStorage.setItem("ferryshow3", gFerryShow3.toFixed(0));
     WriteNextFerryTimes();
 }
 
 //  FerryHighlightOn/Off set the gFerryHighlight switch to control the highlighting of the shedule rows based on location (AI or Steilacoom)
 //  Exit: sets gFerryHighlight (1 or 0) and local storage "ferryhighlight ("1" or "0")
-function FerryHighlightOn() {
-    MenuSet("ferryhlont", "lime", "ferryhlofft", "white");
-    gFerryHighlight = 1; // turn on show flag
-    localStorage.setItem("ferryhighlight", "1");
-    gLocationTime = 0;
-    if(isPhoneGap()) getGeoLocation();
-    WriteNextFerryTimes();
-}
-function FerryHighlightOff() {
-    MenuSet("ferryhlont", "white", "ferryhlofft", "red");
-    gFerryHighlight = 0; // turn off show flag
-    localStorage.setItem("ferryhighlight", "0");
-    WriteNextFerryTimes();
+//
+function FerryHighlightToggle() {
+    if (gFerryHighlight == 0) {
+        gFerryHighlight = 1; // turn on show flag
+        localStorage.setItem("ferryhighlight", "1");
+        gLocationTime = 0;
+        if (isPhoneGap()) getGeoLocation();
+        WriteNextFerryTimes();
+    } else {
+        gFerryHighlight = 0; // turn off show flag
+        localStorage.setItem("ferryhighlight", "0");
+        WriteNextFerryTimes();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////
-// MenuSetup - setup the initial menu settings based on g values.
+// MenuSetup - setup the initial menu settings based on g values. Assumes all items start out as OFF
 function MenuSetup() {
     // ferry countdown
-    if (gFerryShowIn == 1) MenuSet("ferrycdont", "lime", "ferrycdofft", "white", "ferrycdon");
-    else MenuSet("ferrycdont", "white", "ferrycdofft", "red", "ferrycdoff");
+    if (gFerryShowIn == 1) document.getElementById("ferrycdtog").checked = true;
     // ferry highlight
-    if (gFerryHighlight == 1) MenuSet("ferryhlont", "lime", "ferryhlofft", "white", "ferryhlon");
-    else MenuSet("ferryhlont", "white", "ferryhlofft", "red", "ferryhloff");
+    if (gFerryHighlight == 1) document.getElementById("ferryhltog").checked = true;
     // 2/3 times/row
-    if (gFerryShow3 == 0) MenuSet("ferry2tt", "lime", "ferry3tt", "white", "ferry2t");
-    else MenuSet("ferry2tt", "white", "ferry3tt", "lime", "ferry3t");
-    // notify.   pushbots - set the notify switch. hide it for web.
+    if (gFerryShow3 == 1) document.getElementById("ferry3ttog").checked = true;
+    // notify.   set the notify switch. hide it for web.
     if (isPhoneGap()) {
-        if (LSget('notifyoff') != "OFF") MenuSet("notifymont", "lime", "notifymofft", "white", "notifymon");
-        else MenuSet("notifymont", "white", "notifymofft", "red", "notifymoff");
-    } else Hide("notifyswitch");
+        if (LSget('notifyoff') != "OFF") document.getElementById("notifytog").checked = true; 
+    } else Hide("tm3");
     // icons
-    if (gIconSwitch == "1") MenuSet("iconlont", "lime", "iconlofft", "white");
-    else MenuSet("iconlont", "white", "iconlofft", "red");
-
+    if (gIconSwitch == "1") document.getElementById("showiconstog").checked = true;
+    // speech
+    if (TXTS.OnOff == 1) document.getElementById("TTStog").checked = true;
 }
 
-// MenuSet - set color and optionally check menu radio button
-//  Entry:  Set color c1 on element e1
-//          Set color c2 on element e2
-//          check element checkme if specified
-function MenuSet(e1, c1, e2, c2, checkme) {
-    document.getElementById(e1).style.color = c1;
-    document.getElementById(e2).style.color = c2;
-    if (checkme == undefined) return; // note that == checks for null or undefined
-    document.getElementById(checkme).checked = true;
+function MenuCheck(id, truefalse) {
+    document.getElementById(id).checked = truefalse;
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Determine whether the file loaded from PhoneGap or the web
@@ -1093,15 +1023,16 @@ function SaveFerryAlert(r) {
 /* Set the width of the side navigation to 150px */
 function OpenMenu() {
     // if we are not on main page, the click is really a 'BACK' click
+    if (gMenuOpen) {
+        CloseMenu();
+        return;
+    }
     if (gDisplayPage != "mainpage") {
         ShowMainPage();
         return;
     }
-    document.getElementById("tm1").style.display = "table-row";
-    document.getElementById("tm2").style.display = "table-row";
-    document.getElementById("tm3").style.display = "table-row";
-    document.getElementById("tm4").style.display = "table-row";
     document.getElementById("sidemenu").style.width = "85%";
+    SetPageHeader("Settings");
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
     gMenuOpen = true;
 }
@@ -1109,22 +1040,16 @@ function OpenMenu() {
 /* Set the width of the side navigation to 0 */
 function CloseMenu() {
     document.getElementById("sidemenu").style.width = "0";
-    //document.getElementByID("mainpage").onclick = null;
+    SetPageHeader(" Anderson Island Assistant");
+    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>menu</i>&nbsp";  // menu symbol in header
     gMenuOpen = false;
 }
 // Open Ferry Menu
 function OpenFerryMenu() {
     ShowMainPage();
-    // hide the non-ferry stuff
-    document.getElementById("tm1").style.display = "none";
-    document.getElementById("tm2").style.display = "none";
-    document.getElementById("tm3").style.display = "none";
-    document.getElementById("tm4").style.display = "none";
     document.getElementById("sidemenu").style.width = "85%";
     gMenuOpen = true;
 }
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4297,16 +4222,12 @@ function ShowHelpPage() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////  TEXT TO SPEECH using the TTS plugin  and global TXTS Object /////////////////////////////////////////////////////////////////
 
-//  TTSOnOff - sets the TXTS. switch on or off, and updates the menu colors
-//  Entry   onoff = 0 for off, 1 for on
-function TTSOnOff(onoff) {
-    if (!isPhoneGap()) onoff = 0;  // always force off if not phonegap
-    TXTS.OnOff = onoff;
+//  TTSToggle - toggles the TXTS.OnOff switch and saves it as TTS
+//
+function TTSToggle() {
+    if (TXTS.OnOff == 0) TXTS.OnOff = 1;
+    else TXTS.OnOff = 0;
     localStorage.setItem("TTS", TXTS.OnOff.toFixed(0));
-    if (TXTS.OnOff == 0) {
-        MenuSet("TTSont", "white", "TTSofft", "red"); //off
-        document.getElementById("topline").innerHTML = "Tap for Details";
-    } else MenuSet("TTSont", "lime", "TTSofft", "white");  // turn on speech
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4447,6 +4368,7 @@ var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam"
 //
 // icona: html id, icon name, title, ...
 //  Entry: nt="1" for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 for UC titles only, 5 for LC titles only
+//   only 1 and 4 are used.
 function ShowIcons(nt) {
     if (gIconSwitch != nt) {
         gIconSwitch = nt;
@@ -4473,14 +4395,19 @@ function ShowIcons(nt) {
     localStorage.setItem("icons", nt); // icons = 0 - 5,
     // special case for icons
     SetTideTitle();
-    if (gIconSwitch == "1") {
+    if (gIconSwitch == "1") {  // if icons
         MarkPage("5"); // 5= icons
         document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
-        MenuSet("iconlont", "lime", "iconlofft", "white");
-    } else {
+    } else {  // no icons
         MarkPage("6"); // 6=no icons
-        MenuSet("iconlont", "white", "iconlofft", "red");
     }
+}
+
+// ShowIconsToggle - toggle the icon status between 1 and 4.
+//  Exit    gIconSwitch toggled
+function ShowIconsToggle() {
+    if (gIconSwitch == "1") ShowIcons("4");
+    else ShowIcons("1");
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -4605,8 +4532,8 @@ function StartApp() {
         s = localStorage.getItem("ferryhighlight");
         if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
+        TXTS.OnOff = Number(LSget("TTS", "1"));  // load text to speech. Defaults to 1 (on). For web, it is always off
     }
-    TTSOnOff(Number(LSget("TTS", "1")));  // load text to speech. Defaults to 1 (on). For web, it is always off
 
     // set refresh timners
     gMyTimer = setInterval("timerUp()", 60000);  // timeout in milliseconds. currently 60 seconds

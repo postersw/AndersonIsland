@@ -126,63 +126,7 @@
                 height: 32px;
             }
 
-            /* MENU TOGGLE SWITCH - the box around the slider. From w3schools.com */
-            .switch {
-                position: relative;
-                display: inline-block;
-                width: 60px;
-                height: 34px;
-            }
-                /* Hide default HTML checkbox */
-                .switch input {
-                    display: none;
-                }
-            /* The slider */
-            .slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: #ccc;
-                -webkit-transition: .4s;
-                transition: .4s;
-            }
-
-                .slider:before {
-                    position: absolute;
-                    content: "";
-                    height: 26px;
-                    width: 26px;
-                    left: 4px;
-                    bottom: 4px;
-                    background-color: white;
-                    -webkit-transition: .4s;
-                    transition: .4s;
-                }
-
-            input:checked + .slider {
-                background-color: #2196F3;
-            }
-
-            input:focus + .slider {
-                box-shadow: 0 0 1px #2196F3;
-            }
-
-            input:checked + .slider:before {
-                -webkit-transform: translateX(26px);
-                -ms-transform: translateX(26px);
-                transform: translateX(26px);
-            }
-            /* Rounded sliders */
-            .slider.round {
-                border-radius: 34px;
-            }
-
-                .slider.round:before {
-                    border-radius: 50%;
-                }
+    
         </style>
 
 
@@ -777,56 +721,73 @@
     <!-- <div id="sidemenubackground" style="display:none;position:fixed;padding-top:20px;left:0;top:0;
         width:100%;height: 100%;overflow-x: hidden; background-color:#000000;background-color: rgba(0,0,0,0.5);transition: 0.3s; "> -->
     <div id="sidemenu" class="sidenav" style="height: 100%; width: 0; position: fixed; top: 40px;
-    left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" onclick="CloseMenu()">
+    left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" >
         <table style="width:100%;border-collapse:collapse;border-style:none">
             <tr class="menu" id="tm1"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr class="menu" id="tm2"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
             <tr class="menu" id="tm3">
-                <td id="notifyswitch" class="menu">
+                <td class="menu">
                     Notifications:
-                    <span id="notifytog" onclick="NotifyToggle()">Off <i style="color:gray" mclass="material-icons">toggle_off</i> On</span><br />
-                    <!--<input type="radio" name="notifyon" id="notifymon" onclick="NotifyOn()"><span id="notifymont"> ON &nbsp&nbsp&nbsp</span>
-                    <input type="radio" name="notifyon" id="notifymoff" onclick="NotifyOff()"><span id="notifymofft"> OFF</span>-->
                 </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="notifytog" onclick="NotifyToggle()"> <span class="slider round"></span> </label>
+                </td>
+                <!--<input type="radio" name="notifyon" id="notifymon" onclick="NotifyOn()"><span id="notifymont"> ON &nbsp&nbsp&nbsp</span>
+                <input type="radio" name="notifyon" id="notifymoff" onclick="NotifyOff()"><span id="notifymofft"> OFF</span>-->
             </tr>
             <tr class="menu">
                 <td class="menu">
-                    Ferry Departure Countdown:<br />
-                    <input type="radio" name="ferrycd" id="ferrycdon" onclick="FerryShowCDOn()"><span id="ferrycdont"> ON &nbsp&nbsp&nbsp</span>
-                    <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowCDOff()"><span id="ferrycdofft"> OFF</span>
+                    Ferry Departure Countdown:
                 </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ferrycdtog" onclick="FerryShowCDToggle()"> <span class="slider round"></span> </label>
+                </td>
+                <!--<input type="radio" name="ferrycd" id="ferrycdon" onclick="FerryShowCDOn()">
+                <span id="ferrycdont"> ON &nbsp&nbsp&nbsp</span>
+                <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowCDOff()">
+                <span id="ferrycdofft"> OFF</span>
+                </td>-->
             </tr>
             <tr class="menu">
                 <td id="ferry3times" class="menu">
-                    Ferry Times/row:
-                    <input type="radio" name="ferry3t" id="ferry2t" onclick="FerryShow3Off()"><span id="ferry2tt"> 2 &nbsp&nbsp&nbsp</span>
-                    <input type="radio" name="ferry3t" id="ferry3t" onclick="FerryShow3On()"><span id="ferry3tt"> 3</span>
+                    Ferry 3 Times/row:
                 </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ferry3ttog" onclick="FerryShow3Toggle()"> <span class="slider round"></span> </label>
+                </td>
+
+                <!--<input type="radio" name="ferry3t" id="ferry2t" onclick="FerryShow3Off()">
+                <span id="ferry2tt"> 2 &nbsp&nbsp&nbsp</span>
+                <input type="radio" name="ferry3t" id="ferry3t" onclick="FerryShow3On()">
+                <span id="ferry3tt"> 3</span>
+                </td>-->
             </tr>
             <tr class="menu">
                 <td class="menu">
-                    Ferry Highlight by Location:<br />
-                    <input type="radio" name="ferryhl" id="ferryhlon" onclick="FerryHighlightOn()"><span id="ferryhlont"> ON &nbsp&nbsp&nbsp</span>
-                    <input type="radio" name="ferryhl" id="ferryhloff" onclick="FerryHighlightOff()"><span id="ferryhlofft"> OFF</span>
+                Ferry Location Highlight:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ferryhltog" onclick="FerryHighlightToggle()"> <span class="slider round"></span> </label>
                 </td>
             </tr>
             <tr class="menu">
                 <td class="menu">
                     Icons:
-                    <input type="radio" name="iconl" id="iconl1" onclick="ShowIcons('1')"><span id="iconlont"> ON </span>
-                    <input type="radio" name="iconl" id="iconl4" onclick="ShowIcons('4')"><span id="iconlofft"> Off</span>
                 </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="showiconstog" onclick="ShowIconsToggle()"> <span class="slider round"></span> </label>
+                </td>
+                    <!--<input type="radio" name="iconl" id="iconl1" onclick="ShowIcons('1')"><span id="iconlont"> ON </span>
+                    <input type="radio" name="iconl" id="iconl4" onclick="ShowIcons('4')"><span id="iconlofft"> Off</span>-->
             </tr>
             <tr class="menu">
                 <td class="menu">
                     Speech:
-                    <input type="radio" name="TTSs" id="tts1" onclick="TTSOnOff(1)"><span id="TTSont"> ON </span>
-                    <input type="radio" name="TTSs" id="tts0" onclick="TTSOnOff(0)"><span id="TTSofft"> Off</span>
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ttstog" onclick="TTSToggle()"> <span class="slider round"></span> </label>
                 </td>
             </tr>
-
-            <tr class="menu" id="tm4"> <td class="menu" onclick="ShowAboutPage()">About</td></tr>
-            <!--<tr class="menu"> <td class="menu" onclick="backKeyDown()">Exit</td></tr> Doesnt work on IOS or PC -->
 
         </table>
         <p style="text-align:center">
