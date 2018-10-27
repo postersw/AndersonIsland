@@ -707,7 +707,7 @@ function MenuSetup() {
     // icons
     if (gIconSwitch == "1") document.getElementById("showiconstog").checked = true;
     // speech
-    if (TXTS.OnOff == 1) document.getElementById("TTStog").checked = true;
+    if (TXTS.OnOff == 1) document.getElementById("ttstog").checked = true;
 }
 
 function MenuCheck(id, truefalse) {
