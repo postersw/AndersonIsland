@@ -725,16 +725,15 @@
         <table style="width:100%;border-collapse:collapse;border-style:none">
             <tr class="menu" id="tm1"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
             <tr class="menu" id="tm2"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
-            <tr class="menu" id="tm3">
+            <tr class="menu" id="menunotify">
                 <td class="menu">
                     Notifications:
                 </td>
                 <td class="menu">
                     <label class="switch"> <input type="checkbox" id="notifytog" onclick="NotifyToggle()"> <span class="slider round"></span> </label>
                 </td>
-                <!--<input type="radio" name="notifyon" id="notifymon" onclick="NotifyOn()"><span id="notifymont"> ON &nbsp&nbsp&nbsp</span>
-                <input type="radio" name="notifyon" id="notifymoff" onclick="NotifyOff()"><span id="notifymofft"> OFF</span>-->
             </tr>
+
             <tr class="menu">
                 <td class="menu">
                     Ferry Departure Countdown:
@@ -742,26 +741,17 @@
                 <td class="menu">
                     <label class="switch"> <input type="checkbox" id="ferrycdtog" onclick="FerryShowCDToggle()"> <span class="slider round"></span> </label>
                 </td>
-                <!--<input type="radio" name="ferrycd" id="ferrycdon" onclick="FerryShowCDOn()">
-                <span id="ferrycdont"> ON &nbsp&nbsp&nbsp</span>
-                <input type="radio" name="ferrycd" id="ferrycdoff" onclick="FerryShowCDOff()">
-                <span id="ferrycdofft"> OFF</span>
-                </td>-->
             </tr>
+
             <tr class="menu">
                 <td id="ferry3times" class="menu">
-                    Ferry 3 Times/row:
+                    Ferry Show 3 Times/row:
                 </td>
                 <td class="menu">
                     <label class="switch"> <input type="checkbox" id="ferry3ttog" onclick="FerryShow3Toggle()"> <span class="slider round"></span> </label>
                 </td>
-
-                <!--<input type="radio" name="ferry3t" id="ferry2t" onclick="FerryShow3Off()">
-                <span id="ferry2tt"> 2 &nbsp&nbsp&nbsp</span>
-                <input type="radio" name="ferry3t" id="ferry3t" onclick="FerryShow3On()">
-                <span id="ferry3tt"> 3</span>
-                </td>-->
             </tr>
+
             <tr class="menu">
                 <td class="menu">
                 Ferry Location Highlight:
@@ -770,6 +760,7 @@
                     <label class="switch"> <input type="checkbox" id="ferryhltog" onclick="FerryHighlightToggle()"> <span class="slider round"></span> </label>
                 </td>
             </tr>
+
             <tr class="menu">
                 <td class="menu">
                     Icons:
@@ -777,10 +768,9 @@
                 <td class="menu">
                     <label class="switch"> <input type="checkbox" id="showiconstog" onclick="ShowIconsToggle()"> <span class="slider round"></span> </label>
                 </td>
-                    <!--<input type="radio" name="iconl" id="iconl1" onclick="ShowIcons('1')"><span id="iconlont"> ON </span>
-                    <input type="radio" name="iconl" id="iconl4" onclick="ShowIcons('4')"><span id="iconlofft"> Off</span>-->
             </tr>
-            <tr class="menu">
+
+            <tr class="menu" id="menuspeech">
                 <td class="menu">
                     Speech:
                 </td>

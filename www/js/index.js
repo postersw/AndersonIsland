@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102718.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -192,7 +192,7 @@ var gWeatherForecastCount = 0; // number of weather forcast requests to debug AP
 var gWeatherCurrentCount = 0; // number of weather current requests to debug API key exceeding 60 rpm
 
 // icons
-var gIconSwitch = "1"; // icon switch, text: 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
+var gIconSwitch = 1; // icon switch, : 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
 var gEventIcons = true;
 
 //  TXTX - Text to Speech Object.
@@ -633,15 +633,16 @@ function UpdateApp() {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Notify.  Normal situation is notification is on, and the 'NotifyOff' flag is not there.
 //          If notification is off, then 'NotifyOff' is present in local storage.
+//  Entry:  notifytog.checked = true or false
 function NotifyToggle() {
     if (isPhoneGap()) {
-        var ns = LSget("notifyoff");
-        if (ns == "ON") {  // if ON, set it off
+        var n = MenuIfChecked("notifytog");//1 = checked, 0 = unchecked
+        if (n == 0) {  // if Off
             localStorage.setItem('notifyoff', 'OFF');
             window.plugins.OneSignal.setSubscription(false);
             break;
-        } else {  // if OFF, set it on
-            localStorage.setItem('notifyoff', 'ON');
+        } else {  // if On
+            localStorage.removeItem("notifyoff"); // remove the notify off flag
             window.plugins.OneSignal.setSubscription(true);
             break;
         }
@@ -654,41 +655,38 @@ function NotifyToggle() {
 //  Ferry Schedule Main Page Settings
 
 //  FerryShowCDToggle Countdown InOn/Off set the gFerryShowIn switch to control the countdown to arrival time
+//  Entry: document.getElementById("ferrycdtog").checked
 //  Exit: Sets gFerryShowIn (1 or 0) and local storage "ferryshowin" 
 //
 function FerryShowCDToggle() {
-    if (gFerryShowIn == 1) gFerryShowIn = 0;
-    else gFerryShowIn = 1;
+    gFerryShowIn = MenuIfChecked("ferrycdtog");
     localStorage.setItem("ferryshowin", gFerryShowIn.toFixed(0));
     WriteNextFerryTimes();
 }
 
 
 //  FerryShow3On/Off set the gFerry3 switch to control the countdown to arrival time
+//  Entry: ferry3ttog.checked = true of false
 //  Exit: sets gFerryShow3 (1 or 0) and local storage "ferryshow3 ("1" or "0")
 //
 function FerryShow3Toggle() {
-    if (gFerryShow3 == 1) gFerryShow3 = 0;
-    else gFerryShow3 = 1;
+    gFerryShow3 = MenuIfChecked("ferry3ttog");
     localStorage.setItem("ferryshow3", gFerryShow3.toFixed(0));
     WriteNextFerryTimes();
 }
 
 //  FerryHighlightOn/Off set the gFerryHighlight switch to control the highlighting of the shedule rows based on location (AI or Steilacoom)
+//  Entry: ferryhltog.checked = true or false
 //  Exit: sets gFerryHighlight (1 or 0) and local storage "ferryhighlight ("1" or "0")
 //
 function FerryHighlightToggle() {
-    if (gFerryHighlight == 0) {
-        gFerryHighlight = 1; // turn on show flag
-        localStorage.setItem("ferryhighlight", "1");
+    gFerryHighlight = MenuIfChecked("ferryhltog");
+    localStorage.setItem("ferryhighlight", gFerryHighlight.toFixed(0));
+    if (gFerryHighlight == 1) {
         gLocationTime = 0;
         if (isPhoneGap()) getGeoLocation();
-        WriteNextFerryTimes();
-    } else {
-        gFerryHighlight = 0; // turn off show flag
-        localStorage.setItem("ferryhighlight", "0");
-        WriteNextFerryTimes();
     }
+    WriteNextFerryTimes();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -702,10 +700,13 @@ function MenuSetup() {
     if (gFerryShow3 == 1) document.getElementById("ferry3ttog").checked = true;
     // notify.   set the notify switch. hide it for web.
     if (isPhoneGap()) {
-        if (LSget('notifyoff') != "OFF") document.getElementById("notifytog").checked = true; 
-    } else Hide("tm3");
+        if (LSget('notifyoff') != "OFF") document.getElementById("notifytog").checked = true;
+    } else {
+        Hide("menunotify");
+        Hide("menuspeech");
+    }
     // icons
-    if (gIconSwitch == "1") document.getElementById("showiconstog").checked = true;
+    if (gIconSwitch == 1) document.getElementById("showiconstog").checked = true;
     // speech
     if (TXTS.OnOff == 1) document.getElementById("ttstog").checked = true;
 }
@@ -713,7 +714,11 @@ function MenuSetup() {
 function MenuCheck(id, truefalse) {
     document.getElementById(id).checked = truefalse;
 }
-
+//  MenuIfChecked (id) returns 1 if id is checked, 0 if id if not checked
+function MenuIfChecked(id) {
+    if (document.getElementById(id).checked == true) return 1;
+    return 0;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Determine whether the file loaded from PhoneGap or the web
@@ -4367,24 +4372,25 @@ var icona = ["ferrytitle", "directions_boat", "Ferry", "webcamtitle", "videocam"
 //  ShowIcons - show icons in the front page
 //
 // icona: html id, icon name, title, ...
-//  Entry: nt="1" for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 for UC titles only, 5 for LC titles only
+//  Entry: nt=1 for icons and LC titles, 2 for icons and UC titles, 3 for icons only, 4 (or 0) for UC titles only, 5 for LC titles only
 //   only 1 and 4 are used.
 function ShowIcons(nt) {
+    if (nt == 0) nt = 4; // 0 becomes 4 Titles only
     if (gIconSwitch != nt) {
         gIconSwitch = nt;
         var i = 0;
         var s;
         for (i = 0; i < icona.length; i = i + 3) {
             switch (nt) {
-                case "1": s = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + icona[i + 1] + "</i><span class='mptext'>" + icona[i + 2] + "</span></span>";
+                case 1: s = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + icona[i + 1] + "</i><span class='mptext'>" + icona[i + 2] + "</span></span>";
                     break;
-                case "2": s = "<i class='material-icons mpicon'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
+                case 2: s = "<i class='material-icons mpicon'>" + icona[i + 1] + "</i>" + icona[i + 2].toLocaleUpperCase();
                     break;
-                case "3": s = "<i class='material-icons mpicon'>" + icona[i + 1];
+                case 3: s = "<i class='material-icons mpicon'>" + icona[i + 1];
                     break;
-                case "4": s = icona[i + 2].toLocaleUpperCase();
+                case 4: s = icona[i + 2].toLocaleUpperCase();
                     break;
-                case "5": s = icona[i + 2];
+                case 5: s = icona[i + 2];
                     break;
             }
             if (document.getElementById(icona[i]) != null) document.getElementById(icona[i]).innerHTML = s;
@@ -4392,10 +4398,10 @@ function ShowIcons(nt) {
     }
 
     // remember it
-    localStorage.setItem("icons", nt); // icons = 0 - 5,
+    localStorage.setItem("icons", nt.toFixed(0)); // icons = 1 - 5 string,
     // special case for icons
     SetTideTitle();
-    if (gIconSwitch == "1") {  // if icons
+    if (gIconSwitch == 1) {  // if icons
         MarkPage("5"); // 5= icons
         document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
     } else {  // no icons
@@ -4404,10 +4410,10 @@ function ShowIcons(nt) {
 }
 
 // ShowIconsToggle - toggle the icon status between 1 and 4.
-//  Exit    gIconSwitch toggled
+//  Exit    ShowIcons called.
 function ShowIconsToggle() {
-    if (gIconSwitch == "1") ShowIcons("4");
-    else ShowIcons("1");
+    if (MenuIfChecked("showiconstog") == 0) ShowIcons(4);  // if not checked
+    else ShowIcons(1);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -4415,11 +4421,11 @@ function ShowIconsToggle() {
 //  ASSUMES THAT index.html HAS ICONS AT STARTUP!
 //  Entry: local storage "icons" = icon value
 function InitializeIcons() {
-    gIconSwitch = "1";
-    var ic = localStorage.getItem("icons"); // icons = 0 - 5,
-    if (ic == null) {
+    gIconSwitch = 1;
+    var ic = Number(LSget(localStorage.getItem("icons"), "0")); // icons = 0 (null) - 5,
+    if (ic == 0) {
         //alert("The Anderson Island Assistant now uses icons on its main screen. To revert to the former text-only display, select:\n Menu -> Icons -> Off\n in the upper left-hand corner of the main screen.");
-        ic = "1";
+        ic = 1;
     }
     ShowIcons(ic);
 }
@@ -4437,7 +4443,7 @@ function InitializeSpeechMessage() {
 /////////////////////////////////////////////////////////////
 //  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
 function SetTideTitle() {
-    if (gIconSwitch == "1" || gIconSwitch == "2") {
+    if (gIconSwitch == 1 || gIconSwitch == 2) {
         document.getElementById("tidestitle").innerHTML = gTideTitleIcon;
     } else {
         document.getElementById("tidestitle").innerHTML = gTideTitleNoIcon;
