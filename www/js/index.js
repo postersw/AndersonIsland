@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.102918.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -3285,8 +3285,9 @@ function ShowNextTides() {
             oldtidetime = tidehhmm; oldtideheight = thisperiod.heightFT;
         } else if (oldtide != 1) {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
+            var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight) - cth) * 6;
             if (thisperiod.type == 'h') {
-                nextTides = "&uarr; Incoming";
+                nextTides = "&uarr; Rising ";
                 curtidespeech = " Incoming. "
                 gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_upward</i><span class='mptext'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_upward</i>";
@@ -3294,7 +3295,7 @@ function ShowNextTides() {
             } else {
                 gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_downward</i><span class='mptext'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_downward</i>";
-                nextTides = "&darr; Outgoing";
+                nextTides = "&darr; Falling ";
                 curtidespeech = " Outgoing. "
                 //arrow_downward  file_upload<
             }
@@ -3303,7 +3304,7 @@ function ShowNextTides() {
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             var tdx = "<td style='padding:0;margin:0'>";
-            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + "</td></tr> " +
+            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + tiderate2.toFixed(1) + "ft/hr</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
             TXTS.TideData = "the current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
@@ -3321,7 +3322,7 @@ function ShowNextTides() {
 // Calculate current tide height using cosine - assumes a 1/2 sine wave between high and low tide
 // entry: t2 = next hi/low tide time as hhmm
 //        t1 = previous hi/low tide time as hhmm
-//        newtideheight, oldtideheight = next and previous tide heights;
+//        tide2, tide1 = next and previous tide heights;
 //  returns current tide height
 function CalculateCurrentTideHeight(t2, t1, tide2, tide1) {
     var td = RawTimeDiff(t1, t2);
@@ -3331,6 +3332,26 @@ function CalculateCurrentTideHeight(t2, t1, tide2, tide1) {
     tide = ((tide2 + tide1) / 2) + ((tide2 - tide1) / 2) * c;
     return tide;
 }
+// CalculateCurrentTideHeight10 - calculates the tide height in 10 minutes - same algorightm but adds 10 min
+function CalculateCurrentTideHeight10(t2, t1, tide2, tide1) {
+    var td = RawTimeDiff(t1, t2);
+    var cd = RawTimeDiff(t1, gTimehhmm) + 10;
+    if (cd > td) return tide2;
+    var c = cd / td * Math.PI;
+    c = Math.cos(Math.PI - c);// cos(PI to 0) = -1 to 1
+    tide = ((tide2 + tide1) / 2) + ((tide2 - tide1) / 2) * c;
+    return tide;
+}
+// Calculate current tide rate using sine. Parameters identical to CalculateCurrentTideHeight
+// This seems to work correctly.
+//function CalculateCurrentTideRate(t2, t1, tide2, tide1) {
+//    var td = RawTimeDiff(t1, t2);
+//    var cd = RawTimeDiff(t1, gTimehhmm);
+//    var c = cd / td * Math.PI;
+//    c = Math.sin(Math.PI - c);// sin(PI to 0) = 0 to 1 to 0
+//    rate = (tide2 - tide1) * c * Math.PI/2 / td * 60; // rate per hour
+//    return rate;
+//}
 
 //////////////// TIDES DETAIL PAGE /////////////////////////////////////////////////////////////////////////////////
 
@@ -3454,9 +3475,13 @@ function ShowTideDataPage(periods, showcurrent) {
                 // calculate current tide height
                 if (showcurrent) {
                     var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
+                    //var tiderate = CalculateCurrentTideRate(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
+                    var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight)-tideheight) * 6;
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
-                        "Now: " + tideheight.toFixed(1) + " ft. &nbsp Date:" + formatDate(gMonthDay) +
-                         "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" + currentTide;
+                        "Date:" + formatDate(gMonthDay) +
+                        "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" +
+                        "Tide at: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
+                        currentTide;
                         //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
                     currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
@@ -3690,6 +3715,7 @@ function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, ti
     ctx.strokeStyle = "rgb(0, 0, 255)";
     ctx.lineWidth = 2;
     ctx.moveTo(xscale * (t - tLB), h - yscale * (tide - tideLB));
+
     var c;
     // loop througth time from t1 to t2 by .25 hour (15 min)
     for (t = t1; t < (t2 + .25) ; t = t + .25) {
