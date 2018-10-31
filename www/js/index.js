@@ -4284,8 +4284,8 @@ TXTS.InitializeSpeechMessage  = function () {
         itts = 1;
         localStorage.setItem("TTS", "1");
     }
-    TXTS.OnOff = itts;  // load text to speech. Defaults to 1 (on). For web, it is always off
-    if (itts == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
+    TXTS.OnOff = Number(itts);  // load text to speech. Defaults to 1 (on). For web, it is always off
+    if (TXTS.OnOff == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
