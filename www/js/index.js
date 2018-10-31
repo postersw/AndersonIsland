@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.102918.2";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.103018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -690,7 +690,8 @@ function FerryHighlightToggle() {
 }
 
 ////////////////////////////////////////////////////////////////////////
-// MenuSetup - setup the initial menu settings based on g values. Assumes all items start out as OFF
+// MenuSetup - setup the initial menu settings based on g values. 
+//  Assumes all menu items start out as OFF
 function MenuSetup() {
     // ferry countdown
     if (gFerryShowIn == 1) document.getElementById("ferrycdtog").checked = true;
@@ -1601,7 +1602,7 @@ function WriteNextFerryTimes() {
         if (i > 0) {
             var j = s.indexOf(":", i);
             if (j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
-            TXTS.FerryTime = s.substring(i, j) + ". ";
+            TXTS.FerryTime = s.substring(i, j).replace("MIN", "Minutes") + ". ";
         }
     }
 
@@ -3287,16 +3288,16 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight) - cth) * 6;
             if (thisperiod.type == 'h') {
-                nextTides = "&uarr; Rising ";
-                curtidespeech = " Incoming. "
+                nextTides = "<i class='material-icons'>arrow_upward</i> Rising ";
+                curtidespeech = " Rising. "
                 gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_upward</i><span class='mptext'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_upward</i>";
                 //arrow_upward
             } else {
                 gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_downward</i><span class='mptext'>Tide</span></span>";
                 gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_downward</i>";
-                nextTides = "&darr; Falling ";
-                curtidespeech = " Outgoing. "
+                nextTides = "<i class='material-icons'>arrow_downward</i> Falling ";
+                curtidespeech = " Falling. "
                 //arrow_downward  file_upload<
             }
             SetTideTitle();
@@ -3304,13 +3305,15 @@ function ShowNextTides() {
             //nextTides += cth.toFixed(1) + "ft.<br/>Next: " + hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) +
             //     " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")<br/>";
             var tdx = "<td style='padding:0;margin:0'>";
-            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) + "ft.</td>" + tdx + nextTides + tiderate2.toFixed(1) + "ft/hr</td></tr> " +
-                "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
+            nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) +
+                " ft.</td>" + tdx + nextTides + Math.abs(tiderate2).toFixed(1) + " ft/hr</td></tr> " +
+                "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
+                " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
             TXTS.TideData = "the current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
-            nextTides += "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + "ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
+            nextTides += "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
@@ -3480,7 +3483,7 @@ function ShowTideDataPage(periods, showcurrent) {
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Date:" + formatDate(gMonthDay) +
                         "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" +
-                        "Tide at: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
+                        "Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
                         currentTide;
                         //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
@@ -4253,12 +4256,36 @@ function ShowHelpPage() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////  TEXT TO SPEECH using the TTS plugin  and global TXTS Object /////////////////////////////////////////////////////////////////
 
-//  TTSToggle - toggles the TXTS.OnOff switch and saves it as TTS
+//  TTSToggle - toggles the TXTS.OnOff switch and saves it as TTS. Note that the html will set ttstog.checked = true or false
 //
 function TTSToggle() {
-    if (TXTS.OnOff == 0) TXTS.OnOff = 1;
-    else TXTS.OnOff = 0;
+    if (MenuIfChecked("ttstog")) {
+        TXTS.OnOff = 1;
+        document.getElementById("topline").innerHTML = "Tap LEFT for speech.   Tap RIGHT for details.";
+    } else {
+        TXTS.OnOff = 0;
+        document.getElementById("topline").innerHTML = "Tap Row for Details";
+    }
     localStorage.setItem("TTS", TXTS.OnOff.toFixed(0));
+}
+
+/////////////////////////////////////////////////////////////////////
+//  InitializeSpeech - show startup message if necessary.
+//  Entry: local storage "TTS" = stored state, null if 1st call.
+//  Exit:   TXTS.OnOff set.
+//      If first time call, display message and set "TTS".
+TXTS.InitializeSpeechMessage  = function () {
+    var itts;
+    if (!isPhoneGap()) itts = 0; // 0 if not phonegap
+    else itts = localStorage.getItem("TTS"); // 
+
+    if (itts == null) {
+        alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.");
+        itts = 1;
+        localStorage.setItem("TTS", "1");
+    }
+    TXTS.OnOff = itts;  // load text to speech. Defaults to 1 (on). For web, it is always off
+    if (itts == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4456,16 +4483,6 @@ function InitializeIcons() {
     ShowIcons(ic);
 }
 
-//////////////////////////////////////////////////////////////////////
-//  InitializeSpeech - show startup message if necessary.
-//  Entry: local storage "TTS" = icon value
-function InitializeSpeechMessage() {
-    if (!isPhoneGap()) return; // exit if not phonegap
-    var ic = localStorage.getItem("TTS"); // icons = 0 - 5,
-    if (ic == null) {
-        alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.");
-    }
-}
 /////////////////////////////////////////////////////////////
 //  SetTideTitle - sets the tide title with icon in appropriate place, based on gIconSwitch
 function SetTideTitle() {
@@ -4517,7 +4534,7 @@ function StartApp() {
 
     // Replace icons with Labels if user selected them
     InitializeIcons();
-    InitializeSpeechMessage(); // initial speech message
+    TXTS.InitializeSpeechMessage(); // initial speech message
 
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
@@ -4558,13 +4575,10 @@ function StartApp() {
 
     }
 
-    // do stuff AFTER we have displayed the main page
-
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
         if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
         else if (gFerryHighlight) getGeoLocation();
-        TXTS.OnOff = Number(LSget("TTS", "1"));  // load text to speech. Defaults to 1 (on). For web, it is always off
     }
 
     // set refresh timners
