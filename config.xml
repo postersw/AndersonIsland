@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android" 
         id="org.anderson-island.andersonislandassistant" 
-        version="1.22.103018.1" 
+        version="1.22.103118.1" 
         android-versionCode="2239" 
-        android:versionName="1.22.103018.1">
+        android:versionName="1.22.103118.1">
   <!-- versionCode 2239 for 1.22 10/13/18 -->
   <!-- versionCode 2238 for 1.21 9/26/18 -->
   <!-- versionCode 2237 for 1.21 9/07/18 -->
