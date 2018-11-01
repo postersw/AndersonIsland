@@ -2304,9 +2304,9 @@ function ShowOpenHoursTable(showall) {
 //
 function FormatOneBusiness(Oh, mmdd, showall) {
     var showicon = "<i class='material-icons bizicon'>store</i> ";
-    if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
+    if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + " </i> ";
     var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
-        showicon + RemoveTags(Oh.Name) + "<img style='float:right' src='" + Oh.Img + "' width='33%'>&nbsp&nbsp</span><br/><span style='font-weight:bold'>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
+        "<img style='float:right' src='" + Oh.Img + "' width='33%'>" + showicon + RemoveTags(Oh.Name) + "<br/>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
     if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
     openlist += "<div style=margin:8px>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
@@ -2393,7 +2393,7 @@ function ShowOneBusinessFullPage(id) {
     var showicon = "<i class='material-icons bizicon'>store</i> ";
     if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
-    openlist += "<p style='margin:10px'><img src='" + Oh.Img + "' width='90%'></p>";
+    openlist += "<p style='margin:10px'><img src='" + Oh.Img + "' width='" + ((window.screen.width>1000) ? "40" : "100" ) + "%'></p>";
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>" + 
         Oh.Desc +
         "<br/><button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +   
