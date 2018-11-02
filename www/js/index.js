@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.103018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.110118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -1408,9 +1408,10 @@ function onResume() {
     focusEvent();
 }
 
+//  backKeyDown: when back key is pressed, return to main page. If on main page (and not menu) exit.
 function backKeyDown() {
     // Call my back key code here.
-    if (gDisplayPage == 'mainpage' && isPhoneGap()) navigator.app.exitApp();
+    if (gDisplayPage == 'mainpage' && isPhoneGap()  && !gMenuOpen) navigator.app.exitApp();
     ShowMainPage();
 }
 
