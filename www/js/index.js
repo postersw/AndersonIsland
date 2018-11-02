@@ -111,6 +111,7 @@ var app = {
             localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
         }
         app.receivedEvent('deviceready');
+
     },
     // Update DOM on a Received Event. commented out on 2/16/16 because we don't need it.
     receivedEvent: function (id) {
@@ -1527,7 +1528,7 @@ function ShowPage(newpage) {
 
 function SetPageHeader(header) {
     document.getElementById("h1title").innerHTML = header;
-    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>arrow_back</i>&nbsp";  // back arrow
+    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>&#xe5c4;</i>&nbsp";  // back arrow
     //if (isPhoneGap() && !isAndroid()) document.getElementById("h1menu").innerHTML = "&larr;back";
     //else document.getElementById("h1menu").innerHTML = "&nbsp&larr;&nbsp";
 }
@@ -1535,7 +1536,7 @@ function SetPageHeader(header) {
 // show main page
 function ShowMainPage() {
     SetPageHeader(" Anderson Island Assistant");
-    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>menu</i>&nbsp";  // menu symbol in header
+    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>&#xe5d2;</i>&nbsp";  // menu symbol in header
     //document.getElementById("h1menu").innerHTML = "&#9776&nbsp&nbsp";
     ShowPage("mainpage");
     timerUp();
@@ -3288,15 +3289,15 @@ function ShowNextTides() {
             var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
             var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight) - cth) * 6;
             if (thisperiod.type == 'h') {
-                nextTides = "<i class='material-icons'>arrow_upward</i> Rising ";
+                nextTides = "<i class='material-icons'>&#xe5d8;</i> Rising ";
                 curtidespeech = " Rising. "
-                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_upward</i><span class='mptext'>Tide</span></span>";
-                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_upward</i>";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe5d8;</i><span class='mptext'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>&#xe5d8;</i>";
                 //arrow_upward
             } else {
-                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>arrow_downward</i><span class='mptext'>Tide</span></span>";
-                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>arrow_downward</i>";
-                nextTides = "<i class='material-icons'>arrow_downward</i> Falling ";
+                gTideTitleIcon = "<span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe5db;</i><span class='mptext'>Tide</span></span>";
+                gTideTitleNoIcon = "TIDE <i class='material-icons mpicon'>&#xe5db;</i>";
+                nextTides = "<i class='material-icons'>&#xe5db;</i> Falling ";
                 curtidespeech = " Falling. "
                 //arrow_downward  file_upload<
             }
@@ -4025,10 +4026,13 @@ function HandleCurrentWeatherReply(responseText) {
 //////////////////////////////////////////////////////////////////////////////
 //  FormatWeatherIcon - create a main page icon from the google icon font, based on the OpenWeather icon
 // entry    icon = xxd or xxn, where xx is a number for the weather icons.
-var gWeatherIcon = "cloud_queue";  // default
+var gWeatherIcon = "&#xe2c2;" //"cloud_queue";  // default
 function FormatWeatherIcon(icon) {
-    var iconlist = ["brightness_2", "wb_sunny", "cloud_queue", "cloud_queue", "cloud", "cloud", "cloud", "cloud", "cloud",
-        "cloud_download", "cloud_download", "cloud_download", "", "ac_unit"];
+    var iconlist = ["&#xe3a7;", "&#xe430;", "&#xe2c2;", "&#xe2c2;", "&#xe2bd;", "&#xe2bd;", "&#xe2bd;", "&#xe2bd;", "&#xe2bd;",
+        "&#xe2c0;", "&#xe2c0;", "&#xe2c0;", "", "&#xeb3b;"];
+    //var iconlist = ["brightness_2", "wb_sunny", cloud_queue", "cloud_queue", "cloud", "cloud", "cloud", "cloud", "cloud",
+    //    "cloud_download", "cloud_download", "cloud_download", "", "ac_unit"];
+
     i = Number(icon.substr(0, 2));
     if (i > 13) i = 3;
     if (icon == "01n") i = 0;
