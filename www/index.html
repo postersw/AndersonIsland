@@ -555,6 +555,11 @@
         <div id="businesspagediv" style="padding-top:2px">
         </div>
     </div>
+
+    <!-- BigText page ----------------------------------------------------------------------------------->
+     <div id="bigtextpage" style="display:none;font-size:48px">
+     </div>
+
     <!-- HELP ------------------------------------------------------------------------------------->
     <div id="helppage" style="display:none">
         <!--<h1>
@@ -695,6 +700,7 @@
 
         </div>
     </div>
+
     <!-- version message ----------------------------------------------------------------------------------->
 
     <div id="offlinemsg" style="display:none;color:magenta;margin-top:2px;margin-bottom:2px;margin-left:6px;">No network connection. </div>
@@ -707,6 +713,8 @@
             <span style="font-size:x-small"> [072418]</span>
         </p>
     </div>
+
+
     <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
 
     <div id="modaldialog" style="display:none;position:fixed;z-index:1;padding-top:20px;left:0;top:0;
@@ -754,7 +762,7 @@
 
             <tr class="menu">
                 <td class="menu">
-                Ferry Location Highlight:
+                    Ferry Location Highlight:
                 </td>
                 <td class="menu">
                     <label class="switch"> <input type="checkbox" id="ferryhltog" onclick="FerryHighlightToggle()"> <span class="slider round"></span> </label>
@@ -778,6 +786,16 @@
                     <label class="switch"> <input type="checkbox" id="ttstog" onclick="TTSToggle()"> <span class="slider round"></span> </label>
                 </td>
             </tr>
+
+            <tr class="menu" >
+                <td class="menu">
+                    Big Text:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="bigtog" onclick="BigTextToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
 
         </table>
         <p style="text-align:center">

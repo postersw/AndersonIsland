@@ -196,7 +196,7 @@ var gWeatherCurrentCount = 0; // number of weather current requests to debug API
 var gIconSwitch = 1; // icon switch, : 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
 var gEventIcons = true;
 
-//  TXTX - Text to Speech Object.
+//  TXTX - Text to Speech Object.  Also holds BigText
 var TXTS = {
     OnOff: 0, // 0 = off, 1 = on, 2 = large text (instead of speech)
     FerryTime: "", // global ferry time text-to-speech string
@@ -208,6 +208,20 @@ var TXTS = {
     BurnBanStatus: "",
     TannerOutageStatus: ""
 };
+
+//  BigText -  BigText
+var BIGTX = {
+    OnOff: 0, // 0 = off, 1 = on, 
+    FerryTime: "", // global ferry time text-to-speech string
+    TideData: "", // global tide data text-to-speech string
+    WeatherCurrent: "", // global weather current text-to-speech string
+    WeatherForecast: "", // global weather forecast text-to-speech string
+    Next: "", // event string
+    OpenHours: "", // open store hours
+    BurnBanStatus: "",
+    TannerOutageStatus: ""
+};
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -709,8 +723,9 @@ function MenuSetup() {
     }
     // icons
     if (gIconSwitch == 1) document.getElementById("showiconstog").checked = true;
-    // speech
-    if (TXTS.OnOff == 1) document.getElementById("ttstog").checked = true;
+    if (TXTS.OnOff == 1) document.getElementById("ttstog").checked = true; // speech
+    if (BIGTX.OnOff == 1) document.getElementById("bigtog").checked = true; // big text
+
 }
 
 function MenuCheck(id, truefalse) {
@@ -1597,6 +1612,7 @@ function WriteNextFerryTimes() {
     var str;
     var v = "";
     TXTS.FerryTime = "";
+    BIGTX.FerryTime = "";
     // check for a DELAYED: or DELAYED nn MIN: and extract the string
     var s = localStorage.getItem('alerttext');
     if (!IsEmpty(s)) {
@@ -1620,9 +1636,11 @@ function WriteNextFerryTimes() {
         else if (gLocationOnAI == 0) SteilHighlight = "background-color:#ffff80";
     }
     TXTS.FerryTime += "The next ferry departs steilacoom ";
+    BIGTX.FerryTime = "Steilacoom: <br/> "
     v = v + "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr style='font-weight:bold;" + SteilHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Steilacoom: </td>" +
         FindNextFerryTime(UseFerryTime("S"), "", "S") + "</tr>";
     TXTS.FerryTime += ". The next ferry departs anderson island ";  // use commas for a pause
+    BIGTX.FerryTime += "<br/>Anderson Is:<br/> "
     var a = "<tr style='font-weight:bold;color:blue;" + AIHighlight + "'><td style='padding:1px 0 1px 0;margin:0;'>Anderson: </td>" +
         FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</tr></table>";
     document.getElementById("ferrytimes").innerHTML = v + a;
@@ -1651,12 +1669,14 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);  // display in table
             if (nruns < 2) TXTS.FerryTime = TXTS.FerryTime + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
+            BIGTX.FerryTime += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ShortTime(ferrytimes[i]);
 
             // first run only: insert minutes till it sails
             if (nruns == 0 && gFerryShowIn) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
                 TXTS.FerryTime = TXTS.FerryTime + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
+                BIGTX.FerryTime += " (" + ftd + ")";
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
@@ -1668,6 +1688,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
                 } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
             }
             ft = ft + "&nbsp&nbsp</td>";
+            BIGTX.FerryTime += "<br/>";
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
 
@@ -3311,7 +3332,7 @@ function ShowNextTides() {
                 " ft.</td>" + tdx + nextTides + Math.abs(tiderate2).toFixed(1) + " ft/hr</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
-            TXTS.TideData = "the current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
+            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
@@ -4274,6 +4295,17 @@ function TTSToggle() {
     localStorage.setItem("TTS", TXTS.OnOff.toFixed(0));
 }
 
+function BigTextToggle() {
+    if (MenuIfChecked("bigtog")) {
+        BIGTX.OnOff = 1;
+        //document.getElementById("topline").innerHTML = "Tap LEFT for speech.   Tap RIGHT for details.";
+    } else {
+        BIGTX.OnOff = 0;
+        //document.getElementById("topline").innerHTML = "Tap Row for Details";
+    }
+    localStorage.setItem("bigtext", BIGTX.OnOff.toFixed(0));
+}
+
 /////////////////////////////////////////////////////////////////////
 //  InitializeSpeech - show startup message if necessary.
 //  Entry: local storage "TTS" = stored state, null if 1st call.
@@ -4293,12 +4325,33 @@ TXTS.InitializeSpeechMessage  = function () {
     if (TXTS.OnOff == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
 }
 
+BIGTX.InitializeBigText = function () {
+    var ibs;
+    ibs = localStorage.getItem("bigtext"); // 
+
+    if (ibs == null) {
+        //alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.");
+        ibs = 0;
+        localStorage.setItem("bigtext", "1");
+    }
+    BIGTX.OnOff = Number(ibs);  // load text to speech. Defaults to 1 (on). For web, it is always off
+    //if (TXTS.BigSpeech == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 //  TTSSpeak - Speak the text (if speech is on)
 //  Entry: speech = text string to talk
 //          displayfunction = function to call if TXTS. = 0 (off)
-TXTS.Speak = function(speech, displayfunction) {
+TXTS.Speak = function(speech, displayfunction, bigtext) {
     var reason;
+
+    if (BIGTX.OnOff) {
+        document.getElementById("bigtextpage").innerHTML = bigtext;
+        ShowPage("bigtextpage");
+        SetPageHeader("Big Text");
+        if (TXTS.OnOff == 0) return;
+    }
+
     switch (TXTS.OnOff) {
         // 0 = ignore. behave in the default way.
         case 0: 
@@ -4325,21 +4378,21 @@ TXTS.Speak = function(speech, displayfunction) {
 //  Entry: TXTS.FerryTime = text string to speak.  Built by FindNextFerryTime
 //
 function TTSFerrySchedule() {
-    TXTS.Speak(TXTS.FerryTime, DisplayFerrySchedulePage);
+    TXTS.Speak(TXTS.FerryTime, DisplayFerrySchedulePage, BIGTX.FerryTime);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 //  TTSTidesData - announce the tide data
 //  Entry: TXTS.TideData = text string to speak.  Built by ShowNextTides
 function TTSTidesData() {
-    TXTS.Speak(TXTS.TideData, TidesDataPage);
+    TXTS.Speak(TXTS.TideData, TidesDataPage, TXTS.TideData);//document.getElementById("tides").innerHTML);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 //  TTSShowWeather - announce the weather current and forecast data
 //  Entry: TXTSWeatherCurrent in localstorage = text strings to speak.  Built by
 function TTSShowWeather() {
-    TXTS.Speak(LSget("TXTSWeatherCurrent") + LSget("TXTSWeatherForecast"), ShowWeatherPage);
+    TXTS.Speak(LSget("TXTSWeatherCurrent") + LSget("TXTSWeatherForecast"), ShowWeatherPage, LSget("currentweather") + "<br/>" + LSget("forecast"));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4347,28 +4400,28 @@ function TTSShowWeather() {
 //  Entry: TXTS.NextEvent = text string to speak.  Built by 
 function TTSShowEvent() {
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    TXTS.Speak("The next event is " + TXTS.Next + ".", DisplayComingEventsPageE);
+    TXTS.Speak("The next event is " + TXTS.Next + ".", DisplayComingEventsPageE, document.getElementById("nextevent").innerHTML);
 }
 
 ///////// TTS Next Activity /////////////////////////////////////////////////////////////////////
 function TTSShowActivity() {
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
-    TXTS.Speak("The next activity is " + TXTS.Next + ".", DisplayComingEventsPageA);
+    TXTS.Speak("The next activity is " + TXTS.Next + ".", DisplayComingEventsPageA, document.getElementById("nextactivity").innerHTML);
 }
 
 ///////// TTS Show Open Hours /////////////////////////////////////////////////////////////////////
 function TTSShowOpen() {
-    TXTS.Speak(TXTS.OpenHours, ShowOpenHoursPage);
+    TXTS.Speak(TXTS.OpenHours, ShowOpenHoursPage, document.getElementById("openhours").innerHTML);
 }
 
 ///////// TTS Burn Ban /////////////////////////////////////////////////////////////////////
 function TTSBurnBan() {
-    TXTS.Speak(RemoveTags(document.getElementById("burnbanalert").innerHTML), ShowBurnBan);
+    TXTS.Speak(RemoveTags(document.getElementById("burnbanalert").innerHTML), ShowBurnBan, document.getElementById("burnbanalert").innerHTML );
 }
 
 ///////// TTS Tanner Outage /////////////////////////////////////////////////////////////////////
 function TTSTannerOutage() {
-    TXTS.Speak("Tanner status as of " + RemoveTags(document.getElementById("tanneroutagealert").innerHTML), ShowTannerOutage);
+    TXTS.Speak("Tanner status as of " + RemoveTags(document.getElementById("tanneroutagealert").innerHTML), ShowTannerOutage, document.getElementById("tanneroutagealert").innerHTML);
 }
 
 
@@ -4540,6 +4593,7 @@ function StartApp() {
     // Replace icons with Labels if user selected them
     InitializeIcons();
     TXTS.InitializeSpeechMessage(); // initial speech message
+    BIGTX.InitializeBigText(); // initial big text
 
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
