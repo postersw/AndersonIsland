@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.110218.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.111818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -196,9 +196,10 @@ var gWeatherCurrentCount = 0; // number of weather current requests to debug API
 var gIconSwitch = 1; // icon switch, : 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
 var gEventIcons = true;
 
-//  TXTX - Text to Speech Object.  Also holds BigText
+//  TXTX - Text to Speech Object.
 var TXTS = {
     OnOff: 0, // 0 = off, 1 = on, 2 = large text (instead of speech)
+    FirstTime: false, // true to issue first time message
     FerryTime: "", // global ferry time text-to-speech string
     TideData: "", // global tide data text-to-speech string
     WeatherCurrent: "", // global weather current text-to-speech string
@@ -209,7 +210,7 @@ var TXTS = {
     TannerOutageStatus: ""
 };
 
-//  BigText -  BigText
+//  BigText -  BigText object. 
 var BIGTX = {
     OnOff: 0, // 0 = off, 1 = on, 
     FerryTime: "", // global ferry time text-to-speech string
@@ -4298,10 +4299,8 @@ function TTSToggle() {
 function BigTextToggle() {
     if (MenuIfChecked("bigtog")) {
         BIGTX.OnOff = 1;
-        //document.getElementById("topline").innerHTML = "Tap LEFT for speech.   Tap RIGHT for details.";
     } else {
         BIGTX.OnOff = 0;
-        //document.getElementById("topline").innerHTML = "Tap Row for Details";
     }
     localStorage.setItem("bigtext", BIGTX.OnOff.toFixed(0));
 }
@@ -4317,12 +4316,20 @@ TXTS.InitializeSpeechMessage  = function () {
     else itts = localStorage.getItem("TTS"); // 
 
     if (itts == null) {
-        alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.\nFor BIG TEXT instead of speech, select Manu -> Big Text -> On.");
+        this.FirstTime = true;
+        //alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.\nFor BIG TEXT instead of speech, select Manu -> Big Text -> On.");
         itts = 1;
         localStorage.setItem("TTS", "1");
     }
     TXTS.OnOff = Number(itts);  // load text to speech. Defaults to 1 (on). For web, it is always off
     if (TXTS.OnOff == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
+}
+
+/////////////////////////////////////////////////////////////
+//  FirstTimeMsg - issue first time message. 
+TXTS.FirstTimeMsg = function () {
+        alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
+        TXTS.FirstTime = false;
 }
 
 BIGTX.InitializeBigText = function () {
@@ -4655,4 +4662,6 @@ function StartApp() {
     Show("mainpage");  // now display the main page
     Show("vermsg"); // display the version
 
+    // initial alerts are shown now (otherwise they cause a timeout error)
+    if (TXTS.FirstTime) TXTS.FirstTimeMsg();
 }
