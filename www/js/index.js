@@ -4317,7 +4317,7 @@ TXTS.InitializeSpeechMessage  = function () {
 
     if (itts == null) {
         this.FirstTime = true;
-        //alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> Speech -> Off\n in the upper left-hand corner of the main screen.\nFor BIG TEXT instead of speech, select Manu -> Big Text -> On.");
+        //alert("The Anderson Island Assistant now speaks.\nFor speech, tap the LEFT side of a row.\nFor details, tap the RIGHT side of a row.\nTo turn off speech select:\n     Menu -> speech -> Off\n in the upper left-hand corner of the main screen.\nFor BIG TEXT instead of speech, select Manu -> Big Text -> On.");
         itts = 1;
         localStorage.setItem("TTS", "1");
     }
@@ -4326,9 +4326,10 @@ TXTS.InitializeSpeechMessage  = function () {
 }
 
 /////////////////////////////////////////////////////////////
-//  FirstTimeMsg - issue first time message. 
+//  FirstTimeMsg - issue first time message, which is a DIV in index.html. This prevents timeouts from the alert.
 TXTS.FirstTimeMsg = function () {
-        alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
+        Show("speechdialog");
+        //alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
         TXTS.FirstTime = false;
 }
 
