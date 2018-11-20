@@ -4572,6 +4572,7 @@ function SetTideTitle() {
 //
 function StartApp() {
     app.initialize();
+    alert("at 0");//////////////////////////////
     initializeMobile(); // set flags
     FixiPhoneHeader();
     document.getElementById("versionnumber").innerHTML = "&nbsp&nbsp AIA Ver: " + gVer; // version stamp on footer
