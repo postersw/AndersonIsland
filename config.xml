@@ -195,7 +195,7 @@
   </platform><platform name="ios">
     <!-- <allow-navigation href="*" /> Builds under 8.0 but wont launch ticket app -->
     <!--<allow-navigation href="ttpapps.pcf://" />--><!--wont build under 8.0-->
-    <allow-navigation href="ttpapps.pcf://*" /><!--stopgap for testing 8.0-->
+    <allow-navigation href="ttpapps.pcf:*" /><!--stopgap for testing 8.0-->
     <!--wont build under 8.0-->
 
   </platform>
