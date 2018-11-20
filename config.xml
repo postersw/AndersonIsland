@@ -193,10 +193,7 @@
   <!-- IOS BUILDS TO HERE. NOW ADDING IN ACCESS TO EXTERNAL DOMAINS -->
   <platform name="android"><allow-intent href="market:*" />
   </platform>
-  <platform name="ios">
-    <!-- <allow-navigation href="*" /> Builds under 8.0 but wont launch ticket app -->
-    <!--<allow-navigation href="ttpapps.pcf://" />--><!--wont build under 8.0-->
-    <!--wont build under 8.0-->
-
-  </platform>
+  <!--<platform name="ios">
+    <allow-navigation href="ttpapps.pcf://" />
+  </platform>-->
 </widget>
