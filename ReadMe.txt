@@ -91,6 +91,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 09/27/18. Ver 1.21.092618 Apple app store. Production. Note: built with CLI 7.1 builder=1 because CLI 8 aborts on <allow-navigation href="ttpapps.pcf://"> 
 09/30/18. Ver 1.22 Branch Ver122 created.
 11/18/18. Ver 1.22.110218 Google Play Store #2239 Beta. Speech and Big Text. 
+11/19/18. Ver 1.22.111818 Google Play Store #2240 Beta & PRODUCTION. CLI 8.0.0.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
