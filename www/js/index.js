@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.111818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.112018.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -4587,7 +4587,6 @@ function StartApp() {
     document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
     gForceCacheReload = false; // cache reload not needed
     gForceTideReload = false;
-    alert("at 1");//////////////////////////////DEBUG
     InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
     UpdateAvailable(); // point user to google play only if a new version is available
 
@@ -4596,12 +4595,10 @@ function StartApp() {
 
     // ios - hide the update app at the request of the Apple App Review team 3/19/17.
     if (isPhoneGap() && !isAndroid()) document.getElementById("updateappswitch").setAttribute('style', 'display:none;');
-    alert("at 2");//////////////////////////////DEBUG
     // Replace icons with Labels if user selected them
     InitializeIcons();
     TXTS.InitializeSpeechMessage(); // initial speech message
     BIGTX.InitializeBigText(); // initial big text
-    alert("at 3");//////////////////////////////DEBUG
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
@@ -4614,7 +4611,6 @@ function StartApp() {
     //Show("vermsg"); // display the version
 
     // -------------  after main page has been displayed ---------------------------
-    alert("at 4");//////////////////////////////DEBUG
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
     var reloadreason = "";
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
@@ -4640,7 +4636,6 @@ function StartApp() {
         getForecast(); // updates forecast every 2 hrs
 
     }
-    alert("at 5");//////////////////////////////DEBUG
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
         if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
@@ -4655,14 +4650,11 @@ function StartApp() {
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
     //DisplayLoadTimes();
-    alert("at 6");//////////////////////////////DEBUG
     MenuSetup(); // setup the menu switches
 
     // show the page
     Show("mainpage");  // now display the main page
     Show("vermsg"); // display the version
-    alert("at 7");//////////////////////////////DEBUG
     // initial alerts are shown now (otherwise they cause a timeout error)
     if (TXTS.FirstTime) TXTS.FirstTimeMsg();
-    alert("at 8");//////////////////////////////DEBUG
 }
