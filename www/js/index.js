@@ -4573,7 +4573,6 @@ function SetTideTitle() {
 function StartApp() {
     Show("vermsg"); // display the version  DEBUG
     app.initialize();
-    Show("mainpage");  // now display the main page DEBUG
 
     alert("at 0");//////////////////////////////DEBUG
     initializeMobile(); // set flags
