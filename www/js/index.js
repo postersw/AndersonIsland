@@ -102,11 +102,10 @@ var app = {
                     //window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
                     break;
                 case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-                    ////////DEBUG disabled onsignal for IOS debug
-                    ////////window.plugins.OneSignal
-                    ////////    .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
-                    ////////    .endInit();
-                    ////////window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
+                    window.plugins.OneSignal
+                        .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
+                        .endInit();
+                    window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
                     break;
             }
             localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
@@ -657,11 +656,9 @@ function NotifyToggle() {
         if (n == 0) {  // if Off
             localStorage.setItem('notifyoff', 'OFF');
             window.plugins.OneSignal.setSubscription(false);
-            break;
         } else {  // if On
             localStorage.removeItem("notifyoff"); // remove the notify off flag
             window.plugins.OneSignal.setSubscription(true);
-            break;
         }
     }
 }
@@ -4572,7 +4569,6 @@ function SetTideTitle() {
 //  MAIN APP CODE
 //
 function StartApp() {
-     alert("at 0");//////////////////////////////DEBUG
     app.initialize();
 
     initializeMobile(); // set flags
