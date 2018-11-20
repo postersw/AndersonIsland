@@ -102,10 +102,11 @@ var app = {
                     //window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
                     break;
                 case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-                    window.plugins.OneSignal
-                        .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
-                        .endInit();
-                    window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
+                    ////////DEBUG disabled onsignal for IOS debug
+                    ////////window.plugins.OneSignal
+                    ////////    .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
+                    ////////    .endInit();
+                    ////////window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
                     break;
             }
             localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
@@ -4571,10 +4572,9 @@ function SetTideTitle() {
 //  MAIN APP CODE
 //
 function StartApp() {
-    Show("vermsg"); // display the version  DEBUG
+     alert("at 0");//////////////////////////////DEBUG
     app.initialize();
 
-    alert("at 0");//////////////////////////////DEBUG
     initializeMobile(); // set flags
     FixiPhoneHeader();
     document.getElementById("versionnumber").innerHTML = "&nbsp&nbsp AIA Ver: " + gVer; // version stamp on footer
