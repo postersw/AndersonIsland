@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.112018.16";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.112118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -4020,8 +4020,8 @@ function HandleCurrentWeatherReply(responseText) {
     else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
-    TXTS.WeatherCurrent = "the current weather is " + r.weather[0].description + ", " + StripDecimal(r.main.temp) + "degrees," + " , wind " + DegToCompassPointsTTS(r.wind.deg) + " " +
-        StripDecimal(r.wind.speed) + " mph. ";
+    TXTS.WeatherCurrent = "The current weather is " + StripDecimal(r.main.temp) + "degrees, " + r.weather[0].description + ", " +
+        (isAndroid()? "wind ":"win ") + DegToCompassPointsTTS(r.wind.deg) + " " +  StripDecimal(r.wind.speed) + " mph. ";
     localStorage.setItem("TXTSWeatherCurrent", TXTS.WeatherCurrent);
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
