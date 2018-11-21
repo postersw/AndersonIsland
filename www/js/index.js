@@ -71,7 +71,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.112018.15";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.22.112018.16";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
 
@@ -4366,7 +4366,7 @@ TXTS.Speak = function(speech, displayfunction, bigtext) {
 
         // 1 = speak.  Rate set for IOS on 11/20/18 for ver 1.22.112018. Default rate used on Android.
         case 1:
-            var srate = 2.0;
+            var srate = 1.5;
             if (isAndroid()) srate = 1.0;
             TTS
                 .speak({ text: speech, rate: srate },
