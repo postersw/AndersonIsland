@@ -4364,16 +4364,16 @@ TXTS.Speak = function(speech, displayfunction, bigtext) {
             displayfunction();
             break;
 
-        // 1 = speak
+        // 1 = speak.  Rate set for IOS on 11/20/18 for ver 1.22.112018. Default rate used on Android.
         case 1:
             TTS
-                .speak(speech).then(function () {
-                }, function (reason) {
-                    alert(reason);
-                });
+                .speak({ text: speech, rate: 1.0 },
+                    function () { },
+                    function (reason) {alert(reason);}
+                    );
             break;
 
-        // 2 = large text
+        // 2 = large text. Not used. controlled separately by BIGTX.
         case 2:
             break;
     }
