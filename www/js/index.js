@@ -1062,7 +1062,7 @@ function OpenMenu() {
 function CloseMenu() {
     document.getElementById("sidemenu").style.width = "0";
     SetPageHeader(" Anderson Island Assistant");
-    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>menu</i>&nbsp";  // menu symbol in header
+    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>menu</i>&nbsp;";  // menu symbol in header
     gMenuOpen = false;
 }
 // Open Ferry Menu
@@ -1543,7 +1543,7 @@ function ShowPage(newpage) {
 
 function SetPageHeader(header) {
     document.getElementById("h1title").innerHTML = header;
-    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>&#xe5c4;</i>&nbsp";  // back arrow
+    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>&#xe5c4;</i>&nbsp;";  // back arrow
     //if (isPhoneGap() && !isAndroid()) document.getElementById("h1menu").innerHTML = "&larr;back";
     //else document.getElementById("h1menu").innerHTML = "&nbsp&larr;&nbsp";
 }
@@ -1551,7 +1551,7 @@ function SetPageHeader(header) {
 // show main page
 function ShowMainPage() {
     SetPageHeader(" Anderson Island Assistant");
-    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>&#xe5d2;</i>&nbsp";  // menu symbol in header
+    document.getElementById("h1menu").innerHTML = "<i class='material-icons'>&#xe5d2;</i>&nbsp;";  // menu symbol in header
     //document.getElementById("h1menu").innerHTML = "&#9776&nbsp&nbsp";
     ShowPage("mainpage");
     timerUp();
@@ -1686,7 +1686,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
                     ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i]) + "</td>";
                 } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
             }
-            ft = ft + "&nbsp&nbsp</td>";
+            ft = ft + "&nbsp;&nbsp;</td>";
             BIGTX.FerryTime += "<br/>";
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
@@ -1742,7 +1742,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
             //if (nruns == 0 && gFerryShowIn) {
             //    ft = ft + " (" + timeDiffhm(Timehhmm, ferrytimes[i]) + ")";
             //}
-            ft = ft + "&nbsp&nbsp</td>";
+            ft = ft + "&nbsp;&nbsp;</td>";
             if (nruns < 2) TXTS.FerryTime += " tomorrow morning at " + ShortTime(ferrytimes[i], 1);
             if (nruns == 1 && gFerryShow3 == 0) break;  // show 2 runs
             if (nruns == 2 && gFerryShow3 == 1) break;  // show 3 runs
@@ -1946,34 +1946,34 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             row1col1.style.border.width = 1;
             row1col1.style.border = "thin solid black";
             if (validS) {
-                row1col1.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesS[i]);
+                row1col1.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesS[i]);
                 if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
                 if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
                 row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
                 row1col1.onclick = function () { ferryclick(this.id) };
             } else {
-                row1col1.innerHTML = "&nbsp&nbsp"
+                row1col1.innerHTML = "&nbsp;&nbsp;"
             }
 
             // Anderson Island;
             row1col2 = row1.insertCell(1);
             row1col2.style.border = "thin solid black";
             if (validA) {
-                row1col2.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesA[i]);
+                row1col2.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesA[i]);
                 if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
                 else row1col2.style.color = "darkblue";
                 if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
                 row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
                 row1col2.onclick = function () { ferryclick(this.id) };
             } else {
-                row1col2.innerHTML = "&nbsp&nbsp";
+                row1col2.innerHTML = "&nbsp;&nbsp;";
             }
 
             // Ketron
             var row1col3 = row1.insertCell(2);
             row1col3.style.border = "thin solid black";
             if (validK) {
-                row1col3.innerHTML = "&nbsp&nbsp" + FormatTime(ferrytimesK[i]);
+                row1col3.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesK[i]);
                 if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
                 else row1col3.style.color = "brown";
                 row1col3.style.border = "thin solid black";
@@ -2115,20 +2115,20 @@ function InsertStAI(table) {
     if (gFerryHighlight == 1 && gLocationOnAI == 0) row1col1.style.backgroundColor = "#ffff80";
     else row1col1.style.backgroundColor = "lightblue";
     row1col1.style.color = "black";
-    row1col1.innerHTML = "&nbsp Steilacoom &nbsp";
+    row1col1.innerHTML = "&nbsp; Steilacoom &nbsp;";
     row1col1 = row1.insertCell(1);
     row1col1.style.border.width = 1;
     row1col1.style.border = "thin solid black";
     if (gFerryHighlight == 1 && gLocationOnAI == 1) row1col1.style.backgroundColor = "#ffff80";
     else row1col1.style.backgroundColor = "lightblue";
     row1col1.style.color = "darkblue";
-    row1col1.innerHTML = "&nbsp  Anderson Is &nbsp";
+    row1col1.innerHTML = "&nbsp;  Anderson Is &nbsp;";
     row1col1 = row1.insertCell(2);
     row1col1.style.border.width = 1;
     row1col1.style.border = "thin solid black";
     row1col1.style.backgroundColor = "lightblue";
     row1col1.style.color = "maroon";
-    row1col1.innerHTML = "&nbsp Ketron &nbsp";
+    row1col1.innerHTML = "&nbsp; Ketron &nbsp;";
 }
 ////</script>
 
@@ -2390,9 +2390,9 @@ function FormatOneBusiness(Oh, mmdd, showall) {
         if (closedlist != "") openlist += "<span style='color:red;font-weight:bold'>Closed </span>" + closedlist + "<br/>";
     }
     // buttons for call and web site
-    return openlist + "</div>&nbsp&nbsp " +
-        "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>" + Oh.Phone + "</a></button>&nbsp&nbsp" +
-        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web</button>&nbsp&nbsp" +
+    return openlist + "</div>&nbsp;&nbsp; " +
+        "<button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>" + Oh.Phone + "</a></button>&nbsp;&nbsp;" +
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>Web</button>&nbsp;&nbsp;" +
         "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>Map</button>";
     // "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Href + "'>&nbsp Web Site &nbsp</a>&nbsp&nbsp&nbsp&nbsp" +
     //    "<a style='display:normal;text-decoration:none;background-color:#E0E0E0;width:300px;' href='" + Oh.Map + "'>&nbsp Map &nbsp</a>";
@@ -2414,13 +2414,13 @@ function ShowOneBusinessFullPage(id) {
     //document.getElementById("businesspageh1").innerHTML = "<button class='buttonback' onclick='ShowOpenHoursPage()'>&larr;BACK</button>" + t;
     var showicon = "<i class='material-icons bizicon'>store</i> ";
     if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
-    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp&nbsp&nbsp " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
+    var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp;&nbsp;&nbsp; " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
     openlist += "<p style='margin:10px'><img src='" + Oh.Img + "' width='" + ((window.screen.width>1000) ? "40" : "100" ) + "%'></p>";
     openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>" + 
         Oh.Desc +
-        "<br/><button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp Call " + Oh.Phone + "&nbsp</a></button>&nbsp&nbsp " +   
+        "<br/><button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp; Call " + Oh.Phone + "&nbsp;</a></button>&nbsp;&nbsp; " +   
         "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p style='margin:10px'>" +
-        "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp Map &nbsp</button>&nbsp&nbsp " +
+        "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp; Map &nbsp;</button>&nbsp;&nbsp; " +
         Oh.Addr + "</p>" +
         "<div style='width:100%;background-color:lightblue;padding:6px'>OPEN HOURS</div><p style='margin:10px'>";
 
@@ -2470,7 +2470,7 @@ function ShowOneBusinessFullPage(id) {
     }
     // buttons for web site
     openlist += "<div style='width:100%;background-color:lightblue;padding:6px;margin-bottom:10px'>MORE</div>" +
-        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>&nbsp Web Site &nbsp</button></div>";
+        "<button onclick='window.open(\"" + Oh.Href + "\", \"_blank\", \"EnableViewPortScale=yes\");'>&nbsp; Web Site &nbsp;</button></div>";
 
     document.getElementById("businesspagediv").innerHTML = openlist;
 } // end of function
@@ -3117,7 +3117,7 @@ function DisplayComingMonth(CE) {
             col.style.border = "thin solid lightblue";
             // cell that will hold the events
             col = row.insertCell(i);
-            col.innerHTML = "&nbsp";
+            col.innerHTML = "&nbsp;";
             col.style.border = "thin solid lightblue";
             col.style.verticalAlign = "top";
             col.id = yymmdd.toFixed(0) + '9999';  // id = yymmdd9999
@@ -3329,13 +3329,13 @@ function ShowNextTides() {
             var tdx = "<td style='padding:0;margin:0'>";
             nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) +
                 " ft.</td>" + tdx + nextTides + Math.abs(tiderate2).toFixed(1) + " ft/hr</td></tr> " +
-                "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
+                "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
             TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
-            nextTides += "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
+            nextTides += "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
@@ -3464,14 +3464,14 @@ function ShowTideDataPage(periods, showcurrent) {
         var row1col1 = row1.insertCell(0);
         var m = Number(periods[i].dateTimeISO.substring(5, 7));
         var d = Number(periods[i].dateTimeISO.substring(8, 10));
-        row1col1.innerHTML = gDayofWeekShort[GetDayofWeek(m * 100 + d)] + " " + m + "/" + d + '&nbsp';
+        row1col1.innerHTML = gDayofWeekShort[GetDayofWeek(m * 100 + d)] + " " + m + "/" + d + '&nbsp;';
         row1col1.style.border = "thin solid gray";
         // time
         row1col1 = row1.insertCell(1);
         var h = Number(periods[i].dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(periods[i].dateTimeISO.substring(14, 16));  // time min
         tidehhmm = (Number(h) * 100) + Number(mi);
-        row1col1.innerHTML = "&nbsp" + ShortTime(tidehhmm);
+        row1col1.innerHTML = "&nbsp;" + ShortTime(tidehhmm);
         row1col1.style.border = "thin solid gray";
         if (periods[i].type == 'h') {
             hilow = 'HIGH';
@@ -3504,7 +3504,7 @@ function ShowTideDataPage(periods, showcurrent) {
                     var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight)-tideheight) * 6;
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Date:" + formatDate(gMonthDay) +
-                        "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" +
+                        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" +
                         "Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
                         currentTide;
                         //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
@@ -3539,7 +3539,7 @@ function ShowTideDataPage(periods, showcurrent) {
     // now save the current tide
     if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
         periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
-        "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp&nbsp&nbsp [Change...]";
+        "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp;&nbsp;&nbsp; [Change...]";
     document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
     //$("#tideButton").show();
 
@@ -3566,7 +3566,7 @@ function TideClick(id) {
     if (gPeriods[i].heightFT < gPeriods[i - 1].heightFT) hilo = "Low tide: ";
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
       gPeriods[i].dateTimeISO.substring(5, 7) + "/" + gPeriods[i].dateTimeISO.substring(8, 10) +
-      "&nbsp&nbsp&nbsp<button onclick='ShowCustom();'>New Date</button><br/>" + 
+      "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" + 
       hilo + gPeriods[i].heightFT + " ft. at " + ShortTime(tidehhmm);
 }
 
@@ -4188,7 +4188,7 @@ function generateWeatherForecastPage() {
 
         // Insert New Column for time
         var row1col1 = row1.insertCell(0);
-        row1col1.innerHTML = "&nbsp&nbsp&nbsp" + VeryShortTime(t);  // time
+        row1col1.innerHTML = "&nbsp;&nbsp;&nbsp;" + VeryShortTime(t);  // time
         firstrow = false;
         row1col1.style.border = "thin solid gray";
         // high/low
@@ -4202,7 +4202,7 @@ function generateWeatherForecastPage() {
         icon = "<img src='img/" + icon + ".png' width=30 height=30>";
         // weather
         row1col1 = row1.insertCell(-1);
-        row1col1.innerHTML = icon + "&nbsp " + r.weather[0].description;
+        row1col1.innerHTML = icon + "&nbsp; " + r.weather[0].description;
         row1col1.style.border = "thin solid gray";
         // rain
         row1col1 = row1.insertCell(-1);
@@ -4573,7 +4573,7 @@ function StartApp() {
 
     initializeMobile(); // set flags
     FixiPhoneHeader();
-    document.getElementById("versionnumber").innerHTML = "&nbsp&nbsp AIA Ver: " + gVer; // version stamp on footer
+    document.getElementById("versionnumber").innerHTML = "&nbsp;&nbsp; AIA Ver: " + gVer; // version stamp on footer
     gMyVer = gVer.substr(0, 4); //n.nn
     gDisplayPage = "mainpage";
     CountPage("main");
