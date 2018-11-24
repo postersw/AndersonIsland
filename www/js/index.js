@@ -49,7 +49,8 @@
         1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
         1.21 072618. Icons on main page.  Released to web.
              081818. Moon phases added to weather.
-        1.22 101318. Text to Speech for ferry.
+        1.22 101318. Text to Speech and Big Text for main screen entries.
+        1.23.112418. Keep ferry display up for a few minutes longer.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -71,9 +72,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.112118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.112418.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -1656,6 +1657,7 @@ function WriteNextFerryTimes() {
 //
 function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
+    const extrat = 4; // extra time in display 4 minutes
     InitializeDates(0);
     var i = 0;
     var ketron = false; //ketron run ;
@@ -1663,15 +1665,17 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ft = ""; var ketront = "";
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        if (gTimehhmm > (ferrytimes[i]+extrat)) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
-            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);  // display in table
+            var tcolor = "";
+            if (gTimehhmm > ferrytimes[i]) tcolor = "color:gray;";  // if ferry has already sailed, make it gray
+            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;" + tcolor + "'>" + ShortTime(ferrytimes[i]);  // display in table
             if (nruns < 2) TXTS.FerryTime = TXTS.FerryTime + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
             BIGTX.FerryTime += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ShortTime(ferrytimes[i]);
 
-            // first run only: insert minutes till it sails
-            if (nruns == 0 && gFerryShowIn) {
+            // first run only: insert minutes till it sails (if it has not already sailed)
+            if (nruns == 0 && gFerryShowIn && (gTimehhmm <= ferrytimes[i])) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
                 TXTS.FerryTime = TXTS.FerryTime + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
@@ -1703,21 +1707,23 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// return the single next ferry time as a string. 
+// return the single next ferry time as a string.   Used by ferry camera display.
 //      entry ferrytimes is the array of times and days (eigher for steilacoom or ai))
 //      exit  returns string of next single ferry time.
 function FindNextSingleFerryTime(ferrytimes) {
+    const extrat = 4; // extra time in display 5 minutes
     InitializeDates(0);
     var i = 0;
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        if (gTimehhmm > (ferrytimes[i]+extrat)) continue;  // skip ferrys that have alreaedy run but allow 5 min
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
+            if (gTimehhmm > (ferrytimes[i])) return "<span style='color:gray'>" + ShortTime(ferrytimes[i]) + "</span>"
             var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
             var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
             if (rtd < 13) return ShortTime(ferrytimes[i]) + "<span style='color:red'> (in " + ftd + ")</span>";
-            else return ShortTime(ferrytimes[i]) + " (in " + ftd + ")";
+            return ShortTime(ferrytimes[i]) + " (in " + ftd + ")";
         }
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
@@ -1927,7 +1933,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
     var amcolor = "#f0ffff";
-    var extrat = 13; // extra time in display 12 minutes
+    var extrat = 29; // extra time in display 29 minutes
     var boldS = false, boldA = false, boldK = false;
     var validS = false, validA = false, validK = false; // true if runs are valid
     // roll through the ferry times, skipping runs that are not valid for today
