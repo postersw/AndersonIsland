@@ -50,7 +50,7 @@
         1.21 072618. Icons on main page.  Released to web.
              081818. Moon phases added to weather.
         1.22 101318. Text to Speech and Big Text for main screen entries.
-        1.23.112418. Keep ferry display up for a few minutes longer.
+        1.23.112418. Keep ferry display up for ferry delay time.  Fix android icons.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -72,7 +72,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.112418.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.112818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -184,6 +184,7 @@ gLocationTime = 0; // time of last location update
 var gFerryShowIn = 1; // 1 to show (in nnm) on 1st time. Set from "gferryshowin". Defaults to 1.
 var gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
 var gFerryHighlight = 0; // highlight ferry AI or Steilacoom depending on user location. Set from "ferryhighlight"
+var gFerryDelayMin = 0; // ferry delay in minutes
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -477,6 +478,14 @@ function timeDiffTTS(diffm) {
     if (diffm < 60) return diffm + " minutes ";
     if ((diffm % 60) == 0) return Math.floor(diffm / 60) + " hours ";
     return Math.floor(diffm / 60) + " hours " + (diffm % 60) + " minutes";
+}
+//////////////////////////////////////////////////////////////////////////////////////
+//  timeAdd - increments time by nn minutes. Use -nn to decrement time.
+//  Entry   timehhmm as hhmm, addmm as minutes (positive or negative);
+//  Exit    new time
+function timeAdd(timehhmm, addmm) {
+    var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100) + addmm; // time in min
+    return Math.floor(tm / 60) *100 + (tm % 60);
 }
 
 //////////////////////////////////////   UTILITY ////////////////////////////////////////////
@@ -1611,6 +1620,7 @@ function WriteNextFerryTimes() {
 
     var str;
     var v = "";
+    gFerryDelayMin = 0;
     TXTS.FerryTime = "";
     BIGTX.FerryTime = "";
     // check for a DELAYED: or DELAYED nn MIN: and extract the string
@@ -1621,6 +1631,9 @@ function WriteNextFerryTimes() {
             var j = s.indexOf(":", i);
             if (j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
             TXTS.FerryTime = s.substring(i, j).replace("MIN", "Minutes") + ". ";
+            gFerryDelayMin = Number(s.replace(/\D/g, '')); // remove all non digits, and convert to a number.
+            if (isNaN(gFerryDelaymin)) gFerryDelayMin = 0;
+            if (gFerryDelayMin > 60) gFerryDelayMin = 60; // maximum of 60
         }
     }
 
@@ -1657,15 +1670,17 @@ function WriteNextFerryTimes() {
 //
 function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
-    const extrat = 4; // extra time in display 4 minutes
+    const extrat = 4 + gFerryDelayMin; // extra time in display 4 minutes
     InitializeDates(0);
     var i = 0;
     var ketron = false; //ketron run ;
     var nruns = 0;
     var ft = ""; var ketront = "";
+    var adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat + gFerryDelayMin)); // adjust current time backwards for the ferry sailing test
+
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (gTimehhmm > (ferrytimes[i]+extrat)) continue;  // skip ferrys that have alreaedy run
+        if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             var tcolor = "";
@@ -1933,13 +1948,15 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
     var amcolor = "#f0ffff";
-    var extrat = 29; // extra time in display 29 minutes
+    const extrat = 29; // extra time in display 29 minutes
     var boldS = false, boldA = false, boldK = false;
     var validS = false, validA = false, validK = false; // true if runs are valid
+    var adjustedcurrenttime = 0; // time adjusted for ferry delays (time adjusted backwards)
+    if (gTimehhmm > 0) adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat + gFerryDelayMin)); // adjust current time backwards for the ferry sailing test
+
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
-        if ((gTimehhmm >= (ferrytimesS[i] + extrat)) && (gTimehhmm >= (ferrytimesA[i] + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
-        //if ((gTimehhmm >= (Number(ferrytimesS[i]) + extrat)) && (gTimehhmm >= (Number(ferrytimesA[i]) + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
+        if ((adjustedcurrenttime >= ferrytimesS[i]) && (adjustedcurrenttime >= ferrytimesA[i]) && (adjustedcurrenttime > ferrytimesK[i]))continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         validS = (ferrytimesS[i] != 0) &&  ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
         validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
