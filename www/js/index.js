@@ -2391,7 +2391,7 @@ function FormatOneBusiness(Oh, mmdd, showall) {
                     if (opentimetoday == 1 && closetimetoday == 2359) openlist += "<nobr>" + gDayofWeekShort[j] + ": 24 hours";
                     else openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                     if (H2 != null) {
-                        if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(closetimetoday);
+                        if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                     }
                     openlist += "</nobr>";
                     if (j == gDayofWeek) openlist += "</strong>";
