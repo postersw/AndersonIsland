@@ -92,6 +92,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 09/30/18. Ver 1.22 Branch Ver122 created.
 11/18/18. Ver 1.22.110218 Google Play Store #2239 Beta. Speech and Big Text. 
 11/19/18. Ver 1.22.111818 Google Play Store #2240 Beta & PRODUCTION. CLI 8.0.0.
+11/27/18. Ver 1.22.112518. Apple App Store on branch Ver122. CLI-7.1.
+11/25/18. Ver 1.23.112518 Ver 1.23 created.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -169,10 +171,17 @@ ANDROID GOOGLE PLAY STORE
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
 		1.9 (2223) on 3/11/17. 
 	2. Click on Anderson Island Assistant.  Click on "APK".   
-	3. BETA TEST. Click on "Manage Beta version" and create a new open beta version. Send out email links to testers;
+	3. BETA TEST. Click on "Manage Beta version" and create a new open beta version. 
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
 	5. After the beta has been run a while, click on Manage Beta and then Promote to Production. No need to upload a new production ver.
+
+ANDROID ADAPTIVE ICONS.
+	1. Start Android Studio and let it select my project.
+	2. In the Project tree, select res directory & right click, select New -> Image Asset.   This starts Asset Studio.
+	3. Hopefully this loads the icons from the res directory. They are in C:\Users\Bob\AndroidStudioProjects\AIA\app\src\main\res on the Edgewood PC
+	   in mipmap-hdpi,mdpi,xhdpi,xxhdpi,xxxhdpi, and values.
+	4. They were built from C:\Users\Bob\Documents\icon.png on Edgewood.
 
 ------------------------------------------------------------------------------------------------------------
 IOS DEBUG/BUILD 
@@ -219,6 +228,7 @@ IOS DEBUG/BUILD
 	0. Windows Accessories -> Remote Desktop Connection -> LA051.macincloud.com:6000.
 	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
 	   on phonegap build, select the 'AIADistributionPush' key.  This enables push notifications. Then build.
+	   NOTE: Version must be n.nn.nnnnnn   Only 3 groups of numbers are allowed.
 	1. download the ipa file to your desktop.
 	2. log in to developer.apple.com.  Click on iTunes Connect. log in.  robertbedoll@gmail.com  pw=DD1
 	3. select MyApps, then Anderson Island Assistant, 

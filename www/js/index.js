@@ -72,7 +72,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.112818.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.112918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -1629,10 +1629,11 @@ function WriteNextFerryTimes() {
         var i = s.indexOf("DELAY");
         if (i > 0) {
             var j = s.indexOf(":", i);
-            if (j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
-            TXTS.FerryTime = s.substring(i, j).replace("MIN", "Minutes") + ". ";
-            gFerryDelayMin = Number(s.replace(/\D/g, '')); // remove all non digits, and convert to a number.
-            if (isNaN(gFerryDelaymin)) gFerryDelayMin = 0;
+            var delaystring = s.substring(i, j);
+            if (j > i) v = "<span style='font-weight:bold;color:red'>" + delaystring + "</span><br/>";
+            TXTS.FerryTime = delaystring.replace("MIN", "Minutes") + ". ";
+            gFerryDelayMin = Number(delaystring.replace(/\D/g, '')); // remove all non digits, and convert to a number.
+            if (isNaN(gFerryDelayMin)) gFerryDelayMin = 0;
             if (gFerryDelayMin > 60) gFerryDelayMin = 60; // maximum of 60
         }
     }
@@ -1676,7 +1677,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ketron = false; //ketron run ;
     var nruns = 0;
     var ft = ""; var ketront = "";
-    var adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat + gFerryDelayMin)); // adjust current time backwards for the ferry sailing test
+    var adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat)); // adjust current time backwards for the ferry sailing test
 
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
