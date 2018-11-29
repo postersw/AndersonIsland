@@ -132,7 +132,7 @@
   <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
       and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17-->
-  <icon src="icon.png" />
+  <!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 -->
   <!-- Define app icon for each platform. -->
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 
             76x76 2xipad1xipad 83.5 2xipad-->
@@ -173,15 +173,6 @@
   
   <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
-    <!--Pushbots Icons
-    <resource-file src="ic_pushbots_licon.png" target="res/drawable-hdpi-v4/ic_pushbots_licon.png" />
-    <resource-file src="locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="res/drawable-hdpi-v4/ic_stat_pushbots_sicon.png" />
-    <resource-file src="ic_pushbots_licon.png" target="res/drawable-xhdpi-v4/ic_pushbots_licon.png" />
-    <resource-file src="locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xhdpi-v4/ic_stat_pushbots_sicon.png" />
-    <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxhdpi-v4/ic_pushbots_licon.png" />
-    <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxhdpi-v4/ic_stat_pushbots_sicon.png" />
-    <resource-file src="ic_pushbots_licon.png" target="res/drawable-xxxhdpi-v4/ic_pushbots_licon.png" />
-    <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="res/drawable-xxxhdpi-v4/ic_stat_pushbots_sicon.png" />-->
    
     <!--OneSignal Icons 5/24/18-->
     <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
@@ -189,6 +180,32 @@
     <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
+    
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+      <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" />
+    </edit-config>
+    
+    <!--Adaptive Icons 11/29/18-->
+    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" />
+    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-mdpi/ic_launcher_round.png" />
+    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" />
+    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-hdpi/ic_launcher_round.png" />
+    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" />
+    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
+    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" />
+    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" />
+    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
+    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
+    <!--XML for Adaptive Icons-->
+    <resource-file src="www/locales/android/drawable/ic_launcher_background.xml"     target="app/src/main/res/drawable/ic_launcher_background.xml" />
+    <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
+    <resource-file src="www/locales/android/values/ic_launcher_background.xml"       target="app/src/main/res/values/ic_launcher_background.xml" />
+
   </platform>
   
   <access origin="*" /><!-- a wildcard access tag allows access to all external resource.-->
