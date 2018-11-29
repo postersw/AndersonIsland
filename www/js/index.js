@@ -2212,9 +2212,9 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
     var opentime, closetime, opentime2, closetime2;
     var TClosed = "Closed"; var TClosedAW = "Closed"; var TOpen = "Open"; var TOpens = "Opens"; 
     // for garbage pickup, change wording to 'pickup'
-    if (Oh.Pickup == "on") { TClosed = ""; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup";}  
+    if (Oh.Pickup == "on") { TClosed = "No Pickup today"; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup";}  
 
-    if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> " + TClosed + " today. </span>"
+    if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> " + TClosedAW + " today. </span>"
     // loop through the oh.Sch entries. Each entry is for 1 date range.
     for (i = 0; i < Oh.Sc.length; i++) {
         if (((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
