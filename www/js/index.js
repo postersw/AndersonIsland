@@ -4308,23 +4308,35 @@ function ShowHelpPage() {
 //  TTSToggle - toggles the TXTS.OnOff switch and saves it as TTS. Note that the html will set ttstog.checked = true or false
 //
 function TTSToggle() {
-    if (MenuIfChecked("ttstog")) {
-        TXTS.OnOff = 1;
-        document.getElementById("topline").innerHTML = "Tap LEFT for speech.   Tap RIGHT for details.";
-    } else {
-        TXTS.OnOff = 0;
-        document.getElementById("topline").innerHTML = "Tap Row for Details";
-    }
+    if (MenuIfChecked("ttstog")) TXTS.OnOff = 1;
+    else TXTS.OnOff = 0;
     localStorage.setItem("TTS", TXTS.OnOff.toFixed(0));
+    TXTS.TopMessage();  // set first line
 }
 
 function BigTextToggle() {
-    if (MenuIfChecked("bigtog")) {
-        BIGTX.OnOff = 1;
-    } else {
-        BIGTX.OnOff = 0;
-    }
+    if (MenuIfChecked("bigtog")) BIGTX.OnOff = 1;
+    else BIGTX.OnOff = 0;
     localStorage.setItem("bigtext", BIGTX.OnOff.toFixed(0));
+    TXTS.TopMessage(); // set first line
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+//  TopMessage - set the message in the top row, based on TXTS.OnOff and BIGTX.OnOff
+TXTS.TopMessage = function () {
+    const mnone = "Tap Row for Details";
+    const mtts = "Tap LEFT for speech.   Tap RIGHT for details.";
+    const mbtx = "Tap LEFT for Big Text.   Tap RIGHT for details.";
+    const mboth = "Tap LEFT for speech & big text. Tap RIGHT for details.";
+    var msg;
+    if (TXTS.OnOff) {  // if text to speech
+        if (BIGTX.OnOff) msg = mboth;
+        else msg = mtts;
+    } else {        // no text to speech
+        if (BIGTX.OnOff) msg = mbtx;
+        else msg = mnone;
+    }
+    document.getElementById("topline").innerHTML = msg;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -4365,7 +4377,6 @@ BIGTX.InitializeBigText = function () {
         localStorage.setItem("bigtext", "1");
     }
     BIGTX.OnOff = Number(ibs);  // load text to speech. Defaults to 1 (on). For web, it is always off
-    //if (TXTS.BigSpeech == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4625,6 +4636,7 @@ function StartApp() {
     InitializeIcons();
     TXTS.InitializeSpeechMessage(); // initial speech message
     BIGTX.InitializeBigText(); // initial big text
+    TXTS.TopMessage(); // set top line correctly
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
