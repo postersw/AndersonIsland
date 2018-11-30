@@ -202,6 +202,8 @@
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
     <!--XML for Adaptive Icons-->
+    <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher.xml"       target="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" />
+    <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher_round.xml"       target="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" />
     <resource-file src="www/locales/android/drawable/ic_launcher_background.xml"     target="app/src/main/res/drawable/ic_launcher_background.xml" />
     <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
     <resource-file src="www/locales/android/values/ic_launcher_background.xml"       target="app/src/main/res/values/ic_launcher_background.xml" />
