@@ -72,7 +72,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.112918.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.113018";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -1109,15 +1109,11 @@ function DegToCompassPointsTTS(d) {
 }
 
 
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
-//  GetDailyCache - retrieves the daily cache into the local storage objects 
-//  Load from server using ajax async request.
-//  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
+//  GetDailyCache - retrieves the daily cache into the local storage objects and also uploads app stats
+//  Load from server using ajax async request.  Retrieves dailycache.txt, tides.txt, comingevents.txt.
+//  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND, etc. 
+//  Entry gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
 //function GetDailyCache() {
 //     ajax async request
 //    var myurl = FixURL("dailycache.txt"); 
@@ -1126,13 +1122,16 @@ function DegToCompassPointsTTS(d) {
 //        success: function (data) {
 //}
 function GetDailyCache() {
-    // ajax async request
-    ////var myurl = FixURL("dailycache.txt");
 
+    // mark state of switches for stats on icons, text to speech, bigtext
+    var pagehits = LSget("pagehits").substr(0, 30) + ((gIconSwitch == 1) ? "5" : "6") + (TXTS.OnOff ? "7" : "") +
+        (BIGTX.OnOff ? "8" : "") + (gFerryHighlight ? "9" : "");
+    // gFerryShowIn = 1; // 1 to show (in nnm) on 1st time. Set from "gferryshowin". Defaults to 1.
+    // gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
+  
+    // ajax async request to get cache and upload stats
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
-        "&P=" + LSget("pagehits").substr(0, 30));
-    //var myurl = FixURL("getdailycachetest.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
-    //   "&P=" + LSget("pagehits").substr(0, 30));
+        "&P=" + pagehits);
 
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
@@ -4556,11 +4555,8 @@ function ShowIcons(nt) {
     // special case for icons
     SetTideTitle();
     if (gIconSwitch == 1) {  // if icons
-        MarkPage("5"); // 5= icons
         document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
-    } else {  // no icons
-        MarkPage("6"); // 6=no icons
-    }
+    } 
 }
 
 // ShowIconsToggle - toggle the icon status between 1 and 4.
