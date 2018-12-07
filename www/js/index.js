@@ -72,7 +72,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.113018";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.120718";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -3296,6 +3296,7 @@ var gTideTitleIcon; // title for tide, with up or down arrow
 
 function ShowNextTides() {
     var hilow;
+    var ttshilow;  
     var nextTides;
     var oldtide = -1;
     var newtidetime, oldtidetime, newtideheight, oldtideheight;
@@ -3323,8 +3324,13 @@ function ShowNextTides() {
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         var tidehhmm = ((h) * 100) + (mi);
-        if (thisperiod.type == 'h') hilow = 'High';
-        else hilow = 'Low';
+        if (thisperiod.type == 'h') {
+            hilow = "<i class='material-icons'>&#xe255;</i> High";
+            ttshilow = " high ";
+        } else {
+            hilow = "<i class='material-icons'>&#xe2c4;</i> Low";
+            ttshilow = " low ";
+        }
         // if tide is past, color row gray
         if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
             oldtide = 0;
@@ -3354,7 +3360,7 @@ function ShowNextTides() {
                 " ft.</td>" + tdx + nextTides + Math.abs(tiderate2).toFixed(1) + " ft/hr</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
-            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
+            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + ttshilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
