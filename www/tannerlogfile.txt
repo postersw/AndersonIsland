@@ -1,0 +1,59 @@
+2018/12/15 05:21:15<span style='color:red;font-weight:bold'>Earliest power restoration will be 4am Sat. <br/>05:21 am OUTAGE: 323 Houses Out (26%). Tap for info.</span>Array
+(
+)
+,Array
+(
+    [<?xml_version] => "1.0"?>
+<outageSummary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" coopID="0"><totals><nbrOut>323</nbrOut><nbrServed>4887</nbrServed></totals><regions type="County"><region><id>North Bend</id><name></name><nbrOut>0</nbrOut><nbrServed>2192</nbrServed></region><region><id>Ames Lake</id><name></name><nbrOut>0</nbrOut><nbrServed>1485</nbrServed></region><region><id>Anderson Island</id><name></name><nbrOut>323</nbrOut><nbrServed>1210</nbrServed></region></regions></outageSummary>
+
+)
+,Array
+(
+    [<?xml_version] => "1.0"?>
+<outageSummary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" coopID="0"><totals><nbrOut>323</nbrOut><nbrServed>4887</nbrServed></totals><regions type="County"><region><id>North Bend</id><name></name><nbrOut>0</nbrOut><nbrServed>2192</nbrServed></region><region><id>Ames Lake</id><name></name><nbrOut>0</nbrOut><nbrServed>1485</nbrServed></region><region><id>Anderson Island</id><name></name><nbrOut>323</nbrOut><nbrServed>1210</nbrServed></region></regions></outageSummary>
+
+)
+,Array
+(
+    [LSPHP_ENABLE_USER_INI] => on
+    [PATH] => /usr/local/bin:/usr/bin:/bin
+    [TEMP] => /tmp
+    [TMP] => /tmp
+    [TMPDIR] => /tmp
+    [PWD] => /
+    [HTTP_ACCEPT] => text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+    [HTTP_CONNECTION] => keep-alive
+    [CONTENT_TYPE] => application/x-www-form-urlencoded
+    [CONTENT_LENGTH] => 549
+    [HTTP_HOST] => www.anderson-island.org
+    [HTTP_PRAGMA] => no-cache
+    [HTTP_USER_AGENT] => Java/1.8.0_152
+    [HTTP_CACHE_CONTROL] => no-cache
+    [UNIQUE_ID] => XBT-y3Pd@eVpBRx2XIErOwAAAUs
+    [SERVER_SIGNATURE] => 
+    [SERVER_SOFTWARE] => Apache
+    [SERVER_NAME] => www.anderson-island.org
+    [SERVER_ADDR] => 107.180.54.175
+    [SERVER_PORT] => 80
+    [REMOTE_ADDR] => 66.97.237.3
+    [DOCUMENT_ROOT] => /home/postersw/public_html
+    [REQUEST_SCHEME] => http
+    [CONTEXT_PREFIX] => 
+    [CONTEXT_DOCUMENT_ROOT] => /home/postersw/public_html
+    [SERVER_ADMIN] => webmaster@anderson-island.org
+    [SCRIPT_FILENAME] => /home/postersw/public_html/tanneroutage.php
+    [REMOTE_PORT] => 60625
+    [SERVER_PROTOCOL] => HTTP/1.1
+    [REQUEST_METHOD] => POST
+    [QUERY_STRING] => 
+    [REQUEST_URI] => /tanneroutage.php
+    [SCRIPT_NAME] => /tanneroutage.php
+    [PHP_SELF] => /tanneroutage.php
+    [REQUEST_TIME_FLOAT] => 1544880075.4284
+    [REQUEST_TIME] => 1544880075
+)
+
+ XML: "1.0"?>
+<outageSummary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" coopID="0"><totals><nbrOut>323</nbrOut><nbrServed>4887</nbrServed></totals><regions type="County"><region><id>North Bend</id><name></name><nbrOut>0</nbrOut><nbrServed>2192</nbrServed></region><region><id>Ames Lake</id><name></name><nbrOut>0</nbrOut><nbrServed>1485</nbrServed></region><region><id>Anderson Island</id><name></name><nbrOut>323</nbrOut><nbrServed>1210</nbrServed></region></regions></outageSummary>
+
+ nbrout: 323, nbrserved: 1210

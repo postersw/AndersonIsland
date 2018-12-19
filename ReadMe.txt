@@ -94,6 +94,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 11/19/18. Ver 1.22.111818 Google Play Store #2240 Beta & PRODUCTION. CLI 8.0.0.
 11/27/18. Ver 1.22.112518. Apple App Store on branch Ver122. CLI-7.1.
 11/25/18. Ver 1.23.112518 Ver 1.23 created.
+12/18/18. Ver 1.23.121818 Google Play #2242 Beta. Android 8 icon. Improve business detail listing. Add Island Services.
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:

@@ -72,7 +72,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.120718";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.121818";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -2452,34 +2452,49 @@ function ShowOneBusinessFullPage(id) {
     // loop through the Oh.Sc entries. Each entry is for 1 date range.
     // We could hit multiple date ranges
     var nr = 0; // number of ranges;
+    var openinrange = false; // false = closed, true = open
+    var rangespan = "";
 
-    for (var i = 0; i < Oh.Sc.length; i++) {
+    for (var i = 0; i < Oh.Sc.length; i++) { // loop through each date range for the business
         var active = false;
         if (((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
-            ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From))))
+            ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {
+            openinrange = true;
             openlist += "<span style='color:green;font-weight:bold'>";
-        else openlist += "<span style='color:gray;font-weight:bold'>";
+            rangespan = "<span style='margin-left:10px;color:black;'>"
+        } else {
+            openinrange = false;
+            openlist += "<span style='color:gray;font-weight:bold'>";
+            rangespan = "<span style='margin-left:10px;color:gray;'>"
+        }
+
         // print date range if there is > 1  (Oh.Sc.length>1)
-        openlist += "Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</span><br/>";
         var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
+       // if all days are closed (open time = 0), just say 'closed' once for the entire time.
+        if (H[0] == 0 && H[2] == 0 && H[4] == 0 && H[6] == 0 && H[8] == 0 && H[10] == 0 && H[12] == 0) {
+            openlist += "Closed " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + "</span><br/>" 
+            continue;
+        }
+        openlist += "Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</span><br/>" + rangespan;
         var H2 = Oh.Sc[i].H2; // 2nd hours
         nr = nr + 1;
-        // loop through Sun - Sat
+
+        // loop through each day Sun - Sat
         for (var j = 0; j < 7; j++) {
             var opentimetoday;
             opentimetoday = H[j * 2]; // hhmm-hhmm open today
             if (opentimetoday > 0) {
-                if (j == gDayofWeek) openlist += "<strong>";  // bold today
+                if (openinrange && (j == gDayofWeek)) openlist += "<strong>";  // bold today
                 openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                 if (H2 != null) {
                     if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                 }
                 openlist += "</nobr>";
-                if (j == gDayofWeek) openlist += "</strong>";
+                if (openinrange && (j == gDayofWeek)) openlist += "</strong>";
                 if (j < 6) openlist += ", ";
             }
         } // for loop for each day
-        openlist += "<br/>";
+        openlist += "<br/></span>";
     } // end for  for 1 date range
 
     // find any closed dates in this week range and list them
