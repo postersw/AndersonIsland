@@ -63,6 +63,12 @@ function ValidateRequest() {
         echo "invalid business name.";
         return false;
     }
+    $sql = "SELECT business FROM business WHERE business='" . $business . "'";
+    $result = $myconn->query($sql);
+    if($result->num_rows > 0) {
+        echo "Business " . $business . " already exists. Your business name must be unique.<br/>";
+        return false;
+    }
     return true;
 }
 
