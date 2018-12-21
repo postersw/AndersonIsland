@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=medium-dpi" /> 
     <meta http-equiv="Cache-Control" content="no-cache" />
     <title>Signup for Local Anderson Island Services</title>
+    <link rel="stylesheet" href="lib/w3.css">
     <style>
         tr {border-style: solid; border-width: thin;border-color: gray; padding:6px; }
         a {text-decoration: none}
     </style>
 </head>
 <body>
-<h1>SERVICE SIGNUP</h1>
-    <p>To signup for a listing on the Anderson Island Assistant 'Local Services' page, simply fill out this form and submit it.
+    <div class="w3-container" style="background-color:antiquewhite">
+<h1 class="w3-brown w3-text-white">SERVICE LISTING SIGNUP</h1>
+    <p>To signup for a free listing on the Anderson Island Assistant 'Local Services' page, simply fill out this form and submit it.
     Your listing will appear within 48 hours.</p>
     <p>Some Simple Rules:
     <ul>
-        <li>These listings are to help residents of Anderson Island. You or your business must be located on Anderson Island (have an AI address).</li>
+        <li>These listings are to help residents of Anderson Island find a local service provider.</li>
+        <li>You or your business must be located on Anderson Island.</li>
         <li>There is no charge for the listing.</li>
         <li>Listings will expire after one year. You will be sent an email asking if you want to list for the next year. This is to keep the listings current.</li>
         <li>Listings are moderated by Poster Software, LLC, the publisher of the Anderson Island Assistant.</li>
@@ -24,17 +27,20 @@
 
         
      </ul></p>
-    <form name="business" method="post" action="servicessignup.php">
+    <form class="w3-container" name="business" method="post" action="servicessignup.php">
         All fields are required. <br/>
-    <label>Business Name: </label><input type="text" name="bname"  required="required" /> <br/>
-    <label>Business Category:</label><input  type="text" name="category" required="required"  /> One Category. Example: Landscaping<br/>
-    <label>Owner:</label><input  type="text" name="owner"  required="required" size="50" /><br/>
-    <label>Services:</label><input  type="text" name="services"  required="required" size="50" />One or more services. Example: lawnmoving, trimming<br/>
-    <label>Address:</label><input type="text"  name="address"  required="required" size="50" />Must be an Anderson Island address.<br/>
-    <label>Phone Number:</label><input type="tel"  name="phone"  required="required" /><br/>
-    <label>Email:</label><input  type="email" name="email"  required="required" /><br/>
-    <label>Notes:</label><input type="text"  name="notes" required="required" size="60"/><br/>
+    <label class="w3-label">Business Name: </label><input class="w3-input w3-border" type="text" name="bname"  required="required" /> <br/>
+    <label class="w3-label">Business Category: (One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required"  /><br/>
+    <label class="w3-label">Owner:</label><input class="w3-input w3-border" type="text" name="owner"  required="required" size="50" /><br/>
+    <label class="w3-label">Services: (One or more services. Example: lawnmowing, trimming)</label><input class="w3-input w3-border" type="text" name="services"  required="required" size="50" /><br/>
+    <label class="w3-label">Anderson Island Address:</label><input class="w3-input w3-border" type="text"  name="address"  required="required" size="50" /><br/>
+    <label class="w3-label">Phone Number:</label><input class="w3-input w3-border" type="tel"  name="phone"  required="required" /><br/>
+    <label class="w3-label">CellPhone Number:</label><input class="w3-input w3-border" type="tel"  name="phone2"  required="required" /><br/>
+    <label class="w3-label">Email:</label><input class="w3-input w3-border" type="email" name="email"  required="required" /><br/>
+    <label class="w3-label">Contractor #: (optional)</label><input class="w3-input w3-border" type="text" name="contractor"  /><br/>
+    <label class="w3-label">Notes:</label><input class="w3-input w3-border" type="text"  name="notes" required="required" size="60"/><br/>
         <input type="submit" value="SUBMIT"/>
 </form>
+        </div>
 </body>
 </html>

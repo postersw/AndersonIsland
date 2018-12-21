@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+        <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=medium-dpi" /> 
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <title>Add Anderson Island Business</title>
+    <link rel="stylesheet" href="lib/w3.css">
+    <style>
+        tr {border-style: solid; border-width: thin;border-color: gray; padding:6px; }
+        a {text-decoration: none}
+    </style>
+</head>
+<body>
+    <div class="w3-container" style="background-color:antiquewhite">
+<h1 class="w3-brown w3-text-white">BUSINESS LISTING ADD</h1>
+
+    <form class="w3-container" name="businessform" method="post" action="dbadd.php">
+       
+    <label class="w3-label">Business Name: (Required)</label><input class="w3-input w3-border" type="text" name="business"  required="required" /> <br/>
+    <label class="w3-label">Business Category: (Required. One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required"  /><br/>
+    <label class="w3-label">Owner: (Required)</label><input class="w3-input w3-border" type="text" name="owner"  required="required" size="50" /><br/>
+    <label class="w3-label">Services: (Required, One or more services. Example: lawnmowing, trimming)</label><input class="w3-input w3-border" type="text" name="services"  required="required" size="50" /><br/>
+    <label class="w3-label">Anderson Island Address: (Required)</label><input class="w3-input w3-border" type="text"  name="address"  required="required" size="50" /><br/>
+    <label class="w3-label">Phone Number: (Required)</label><input class="w3-input w3-border" type="tel"  name="phone"  required="required" /><br/>
+    <label class="w3-label">Email: (Required)</label><input class="w3-input w3-border" type="email" name="email"  required="required" /><br/>
+    <label class="w3-label">Website:</label><input class="w3-input w3-border" type="text" name="website"  size="60" /><br/>
+    <label class="w3-label">Notes:</label><input class="w3-input w3-border" type="text"  name="notes"  size="60"/><br/>
+        <input type="submit" value="SUBMIT"/>
+</form>
+        </div>
+</body>
+</html>
