@@ -29,6 +29,7 @@
      </ul></p>
     <form class="w3-container" name="business" method="post" action="servicessignup.php">
     <label class="w3-label">Business Name: (required) </label><input class="w3-input w3-border" type="text" name="bname"  required="required" /> <br/>
+    <label class="w3-label">Password: (Required. You will need this password to update your listing.) </label><input class="w3-input w3-border" type="text" name="password"  size="20" required="required" /> <br/>
     <label class="w3-label">Business Category: (Required. One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required"  /><br/>
     <label class="w3-label">Owner: (required)</label><input class="w3-input w3-border" type="text" name="owner"  required="required" size="50" /><br/>
     <label class="w3-label">Services: (Required. One or more services. Example: lawnmowing, trimming)</label><input class="w3-input w3-border" type="text" name="services"  required="required" size="50" /><br/>
@@ -37,7 +38,9 @@
     <label class="w3-label">CellPhone Number:</label><input class="w3-input w3-border" type="tel"  name="phone2"  /><br/>
     <label class="w3-label">Email: (required)</label><input class="w3-input w3-border" type="email" name="email"  required="required" /><br/>
     <label class="w3-label">Contractor #: (optional)</label><input class="w3-input w3-border" type="text" name="contractor"  /><br/>
-    <label class="w3-label">Notes:</label><input class="w3-input w3-border" type="text"  name="notes" size="60"/><br/>
+    <label class="w3-label">Web Site: (optional)</label><input class="w3-input w3-border" type="text" name="website"  /><br/>
+    <!--<label class="w3-label">Additional Information:</label><input class="w3-input w3-border" type="text"  name="notes" size="255"/><br/>-->
+    <label class="w3-label">Additional Information: (visible to custormers when they click on your entry)</label><textarea class="w3-input w3-border" name="notes" rows="12"></textarea><br/>
         <input type="submit" value="SUBMIT"/>
 </form>
         </div>
