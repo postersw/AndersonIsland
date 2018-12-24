@@ -1,7 +1,8 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  dbgentable - generates the services table displayed to the user
-//  writes the table to file services.txt.
+//  writes the table to file services.html.
+//  RFB.  12/23/18.
 //
 $servicetablefile = "services.html";
 
@@ -12,7 +13,7 @@ if(empty($myconn)) {
 
     echo "Generating table<br/>";
 
-    $sql = "Select * from business order by category, business";
+    $sql = "Select * from business where ok=1 order by category, business";
     $result = $myconn->query($sql);
     echo "rows " . $result->num_rows;
 
@@ -28,7 +29,9 @@ if(empty($myconn)) {
             $t = $t . "<tr><td> </td></tr><tr><td class='w3-brown w3-text-white' ><b>" . $cat . "</b></td></tr>";
         }
         $t = $t . "<tr><td><b>" . $row["business"] . "</b><br/>" . $row["services"] . "<br/>" . $row["owner"] . " " . $row["contractor"] . "<br/>" .
-            $row["phone"] . ", " . $row["phone2"] . "  <a href='mailto:" . $row["email"] . "'>" . $row["email"] . "</a></td></tr>\n";
+            FPhone($row["phone"]) . ", " . FPhone($row["phone2"]) . "  <a href='mailto:" . $row["email"] . "'>" . $row["email"] . "</a>";
+        if($row["website"] != "") $t = $t . ", <a href='" . $row["website"] . "'>Website</a>";
+        $t = $t . "</td></tr>\n";
     }
     $t = $t . "</table>";
     echo $t;
@@ -56,20 +59,30 @@ if(empty($myconn)) {
     This page lists <strong>Anderson-Island-based</strong> local services, such as plumbing, electrical, yard maintenance, music lessons, etc.
     (Businesses based on the mainland are NOT listed here.)</p>
     <p><a href="servicesignup.html">To list yourself or your business here, click on this link.</a>
-    This is a community information service and is provided free of charge.</p>
+   <br/> If you signed up on Fri 12/21 or Sat 12/22, please signup again and provide the additional information. <br/>
+This is a community information service and is provided free of charge.</p>
 AAA;
     // this is the services html trailer
     $ed=<<<'END'
-    <p style="font-size:x-small">This information has been provided by each individual, and its accuracy, dependability, or reliability cannot be guaranteed by
+    <p style="font-size:x-small">This information has been provided by each business, and its accuracy, dependability, or reliability cannot be guaranteed by
     the Anderson Island Assistant or Poster Software, LLC.<br/>
-    Updated 12/21/2018</p>
 END;
+    date_default_timezone_set("America/Los_Angeles"); // set PDT
+    $ed = $ed . "Updated " . date("m/d/Y h:i");
+    echo $ed;
 
-    // write to services.txt
+    // write to services.html
     $fh = fopen($servicetablefile, 'w');
     fwrite($fh, $hd);
     fwrite($fh, $t);
     fwrite($fh, $ed);
     fclose($fh);
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //  FPhone - format phone number and return the formatted string (nnn) nnn-nnnn
+    function FPhone($pn) {
+        if($pn==null) return "";
+        if($pn=="") return "";
+        return "(" . substr($pn, 0,3) . ") " . substr($pn, 3, 3) . "-" . substr($pn, 6);
+    }
 ?>
