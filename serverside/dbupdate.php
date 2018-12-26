@@ -3,6 +3,10 @@
 //  dbupdate - update an existing business in the database.
 //  I'm sure this is overkill for our little business database, but it's fun and interesting.
 //  rfb 12/23/18.
+//
+//  Entry: called by serviceupdate.php
+//          $_POST = all the modified database values  (oldpassword = original pw. oldbusiness = original business).
+    
 
 include "dbconnect.php"; // connect to the database.  returns $myconn.
 {
