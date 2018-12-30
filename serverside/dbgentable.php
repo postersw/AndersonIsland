@@ -47,7 +47,7 @@ if(empty($myconn)) {
     <title>Local Anderson Island Services</title>
     <link rel="stylesheet" href="lib/w3.css">
     <style>
-        tr {border-style: solid; border-width: thin;border-color: gray; padding:6px; }
+        tr {border-style: solid; border-width: thin;border-color: black; padding:6px;font-size:small }
         .cat {background-color: lightgray}
         p {font-size:small}
     </style>
@@ -56,10 +56,10 @@ if(empty($myconn)) {
         <div class="w3-container" style="background-color:antiquewhite">
     <h1 class="w3-brown w3-text-white">Local Anderson Island Services</h1>
     <p >
-    This page lists <strong>Anderson-Island-based</strong> local services, such as plumbing, electrical, yard maintenance, music lessons, etc.
-    (Businesses based on the mainland are NOT listed here.)</p>
+    This page lists <strong>only Anderson-Island-based</strong> local services, such as plumbing, electrical, yard maintenance, music lessons, etc.
+</p>
     <p><a href="servicesignup.html">To list yourself or your business here, click on this link.</a>
-   <br/> If you signed up on Fri 12/21 or Sat 12/22, please signup again and provide the additional information. <br/>
+   <br/>
 This is a community information service and is provided free of charge.</p>
 AAA;
     // this is the services html trailer
