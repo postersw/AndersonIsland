@@ -2,21 +2,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 //  dbupdate - update an existing business in the database.
 //  I'm sure this is overkill for our little business database, but it's fun and interesting.
-//  rfb 12/23/18.
+//  rfb 1/3/19.
 //
 //  Entry: called by serviceupdate.php
 //          $_POST = all the modified database values  (oldpassword = original pw. oldbusiness = original business).
-    
+//  Exit: Runs an SQL Update statement to update all changed fields.
+//        Will also update password and change business name if necessary.
+//        calls: dbgentable2.php to update services.html.
+
 
 include "dbconnect.php"; // connect to the database.  returns $myconn.
 {
 
-    echo "Updating Business<br/>";
+    //echo "Updating Business<br/>";
 
     // unpack request
     $oldbusiness = $myconn->real_escape_string($_POST['oldbusiness']);
     $oldpassword = $_POST['oldpassword'];
-    $business = trim($_POST['bname']);
+    $business = $myconn->real_escape_string(trim($_POST['bname']));
     $password = trim($_POST['password']);
     $category = strtoupper (trim($_POST['category']));  // force upper case category
     $services = trim($_POST['services']);
@@ -34,20 +37,22 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     // clean info
     $business = preg_replace("/[^\w\.\,\ \&\(\)]/", "", $business); // remove all non an, allow ., &()
 
+    //echo "reading $oldbusiness<br/>";
     // read the existing record for the business
     $sql = "Select * from business where business='" . $oldbusiness . "'";
     $result = $myconn->query($sql);
-    if($result->num_rows = 0) {
-        echo "<br/><br/>ERROR: The business '" . $business . "' does not exist.<br/>";
+    if($result->num_rows == 0) {
+        echo "<br/><br/>ERROR: The business '" . $oldbusiness . "' does not exist.<br/>";
         exit();
     }
 
     // Check the password
     $row = $result->fetch_assoc(); // get first row
     if($oldpassword != $row['password']) {
-        echo "<br/><br/>ERROR: Invalid password. If you forgot your password, send email to support@anderson-island.org.";
+        echo "<br/><br/>ERROR: Invalid password. <br/>If you forgot your password, send email to support@anderson-island.org.";
         exit();
     }
+    //echo "successfully read $oldbusiness<br/>";
 
     // now build the change request for each field
     $sql = "UPDATE business SET ";
@@ -55,7 +60,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     $msg = "";
     UpD("business", $business);
     UpD("category", $category);
-    UpD("password", $password);
+    if($password!="") UpD("password", $password);
     UpD("services", $services);
     UpD("owner", $owner);
     UpD("address", $address);
@@ -71,8 +76,9 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     }
 
     // display info
-
-    echo "Business update request for: <br/><b>" . $oldbusiness ."</b>" . $msg . "<br/>";
+    $emailbody= "AIA Business Listing update request for: <br/><b>" . $oldbusiness .":</b><br/>The following changes have been made:<br/>" . $msg . "<br/>";
+    $emailaddr = "postersw@comcast.net,robertbedoll@gmail.com,$email";
+    $headers = "From: support@anderson-island.org\r\nMime-Version: 1.0\r\nContent-type: text/html; charset=\"iso-8859-1\"";
 
     // validate request
     if($business != $oldbusiness) {
@@ -85,12 +91,36 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     // update it
 
     $sql = substr($sql, 0, strlen($sql)-1) . " WHERE business='$oldbusiness'";
-    echo "<br/>" . $sql . "<br/>";
-    if ($myconn->query($sql) === TRUE) {
-        echo "Record updated successfully";
-    } else {
+    //echo "<br/>" . $sql . "<br/>";
+    if ($myconn->query($sql) === TRUE) {  // update successful
+        echo $emailbody;
+        echo "Record updated successfully<br/>";
+        echo "<a href='http://www.anderson-island.org/servicedetail.php?business=$business'>Click here to see updated listing.</a><br/>";
+        echo date("Y/m/d H:i:s");
+        // add to log file
+        $fhl = fopen("../private/servicesignuplog.log", 'a');
+        fwrite($fhl, date("Y/m/d H:i:s") . "|" . $emailbody . $sql . "\n");
+        fclose($fhl);
+        // mail it
+        $r = mail($emailaddr, "AIA Business Listing update",$emailbody,$headers);
+        if($r == false) {
+            echo "Your service update failed. Contact support@anderson-island.org";
+            exit(0);
+        }
+        // regenerate services.html
+        $nolog = 1;  // suppress the log
+        include "dbgentable2.php"; // connect to the database.  returns $myconn
+
+    } else {  // update failed
         echo "Error updating record: " . $myconn->error;
+        $r = mail("support@postersw.com", "AIA Business Listing update FAILURE","UPDATE FAILURE: " . $emailbody,$headers);
+        // add to log file
+        $fhl = fopen("../private/servicesignuplog.log", 'a');
+        fwrite($fhl, date("Y/m/d H:i:s") . "| UPDATE FAILED:" . $emailbody . $sql . "\n");
+        fclose($fhl);
+
     }
+
 }
 
 
@@ -104,9 +134,6 @@ function ValidateRequest() {
         return false;
     }
     $sql = "SELECT business FROM business WHERE business='$business'";
-    //echo "<br/>" . $sql ."<br/>";
-    //$stmt = $myconn->prepare($sql);
-    //$rc = $stmt->bind_param('s',$business);
     $result = $myconn->query($sql);
     if($result->num_rows > 0) {
         echo "<br/><br/>ERROR: The business '" . $business . "' already exists. Your business name must be unique.<br/>";
@@ -124,9 +151,11 @@ function UpD($fieldname, $newvalue) {
     global $row;
     global $sql;
     global $msg, $updatecount;
+    //echo $row[$fieldname] . " vs " . $newvalue . "<br/>";
     if($row[$fieldname] == $newvalue) return; // if no delta
+    //echo $row[$fieldname] . "!=" . $newvalue . "<br/>";
     $sql = $sql . $fieldname . "='" . $myconn->real_escape_string($newvalue) . "',";
-    $msg = $fieldname . ": " . $newvalue . "<br/>";
+    $msg = $msg . $fieldname . ": " . $newvalue . "<br/>";
     $updatecount++;
 }
 

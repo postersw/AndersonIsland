@@ -11,6 +11,6 @@ if ($myconn->connect_errno) {
     echo "Failed to connect to MySQL: " . $myconn->connect_error;
     exit;
 }
-echo "successfully connected to database $database<br/>";
+//echo "successfully connected to database $database<br/>";
 
 ?>
