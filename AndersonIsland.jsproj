@@ -159,7 +159,6 @@
     <Content Include="serverside\burnban.txt" />
     <Content Include="serverside\comingevents.txt" />
     <Content Include="serverside\comingeventsmaster.txt" />
-    <Content Include="serverside\comingeventsmasterOLD.txt" />
     <Content Include="serverside\comingeventstest.txt" />
     <Content Include="serverside\editferrytimes.html" />
     <Content Include="serverside\ferryschedule.txt" />
