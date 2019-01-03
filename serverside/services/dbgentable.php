@@ -69,6 +69,9 @@ AAA;
     $ed=<<<'END'
     <p style="font-size:x-small">This information has been provided by each business, and its accuracy, dependability, or reliability cannot be guaranteed by
     the Anderson Island Assistant or Poster Software, LLC.<br/>
+    </div>
+    </body>
+    </html>
 END;
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $ed = $ed . "Updated " . date("m/d/Y h:i");

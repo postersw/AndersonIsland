@@ -14,7 +14,28 @@
 include "dbconnect.php"; // connect to the database.  returns $myconn.
 {
 
-    //echo "Updating Business<br/>";
+// this is the services.html header
+$hd=<<<'DOC'
+<!DOCTYPE html>
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <title>Update Anderson Island Services</title>
+    <link rel="stylesheet" href="lib/w3.css">
+    <style>
+        tr {border-style: solid; border-width: thin;border-color: gray; padding:6px; }
+        .cat {background-color: lightgray}
+        p {font-size:small}
+    </style>
+    </head>
+    <body>
+        <div class="w3-container" style="background-color:antiquewhite">
+    <p >
+DOC;
+
+    echo $hd; // send the header
 
     // unpack request
     $oldbusiness = $myconn->real_escape_string($_POST['oldbusiness']);
@@ -36,6 +57,8 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     $notes = trim($_POST['notes']);
     // clean info
     $business = preg_replace("/[^\w\.\,\ \&\(\)]/", "", $business); // remove all non an, allow ., &()
+
+    echo "<h2 class='w3-brown w3-text-white'>Update $oldbusiness</h2>";
 
     //echo "reading $oldbusiness<br/>";
     // read the existing record for the business
@@ -95,8 +118,8 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     if ($myconn->query($sql) === TRUE) {  // update successful
         echo $emailbody;
         echo "Record updated successfully<br/>";
-        echo "<a href='http://www.anderson-island.org/servicedetail.php?business=$business'>Click here to see updated listing.</a><br/>";
-        echo date("Y/m/d H:i:s");
+        echo "<a href='http://www.anderson-island.org/servicedetail.php?business=" . urlencode($business) . "'>Click here to see updated listing.</a><br/>";
+
         // add to log file
         $fhl = fopen("../private/servicesignuplog.log", 'a');
         fwrite($fhl, date("Y/m/d H:i:s") . "|" . $emailbody . $sql . "\n");
@@ -121,6 +144,9 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
 
     }
 
+    // final html
+    echo date("Y/m/d H:i:s");
+    echo "</div></body><html>";
 }
 
 

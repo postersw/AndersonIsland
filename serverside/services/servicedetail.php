@@ -13,7 +13,7 @@ if(empty($myconn)) {
 }
 $businessnamehtml = $_GET["business"];
 $businessname = $myconn->real_escape_string($businessnamehtml);  // will this work???
-//echo $businessnamehtml . "<br/>";
+
 //echo "Generating detail for $businessname<br/>";
 
 $sql = "Select * from business where business='" . $businessname . "'";
@@ -59,7 +59,7 @@ echo "Address:  {$row['address']} on Anderson Island<br/><br/>";
 echo $row["notes"];
 echo "<br/>Updated: {$row['updated']}<br/><br/>";
 $businessnameencoded = htmlspecialchars($businessname);
-echo "<button onclick=\"window.open('http://www.anderson-island.org/serviceeditauth.php?business=" . htmlspecialchars($row['business']) . "', '_system');\">EDIT LISTING</button>";  // edit button
+echo "<button onclick=\"window.open('http://www.anderson-island.org/serviceeditauth.php?business=" . urlencode($row['business']) . "', '_system');\">EDIT LISTING</button>";  // edit button
 
 
 $ed= <<<'END'
