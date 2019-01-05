@@ -2,12 +2,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 //  dbadd - add a business to the database.
 //  I'm sure this is overkill for our little business database, but it's fun and interesting.
+//
+//  Entry: All fields to add are in the $_POST array
+//  Exit:   Record added.  'ok'=0.
+//          $insertid = id of record just inserted.   0 if no insert.
 //  rfb 12/20/18.
 
 include "dbconnect.php"; // connect to the database.  returns $myconn.
 {
 
     echo "Adding Business<br/>";
+    $insertid = 0;
 
     // unpack request
     $business = trim($_POST['bname']);
@@ -45,6 +50,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     //echo " past prepare";
     if(!$stmt) {
         echo 'Error: '.$myconn->error;
+        exit();
     }
 
     /* Bind parameters */
@@ -59,11 +65,12 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     if ( false===$rc ) {
         die('execute() failed: ' . htmlspecialchars($stmt->error));
     }
-    echo "Added rows=" . $stmt->affected_rows . "<br/>";
+    $insertid = $myconn->insert_id;
+    echo "Added rows=" . $stmt->affected_rows . ", id=$insertid<br/>";
     $stmt->close();
 
     // reply
-    echo "<br/>Business added.";
+    echo "<br/>Business $business added and awaiting approval.";
 }
 
 ////////////////////////////////////////////////////////
