@@ -34,10 +34,12 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
 
     $business = $myconn->real_escape_string((trim($_POST['business'])));
     $password = trim($_POST['password']);
-    echo "<h2 class='w3-brown w3-text-white'>UPDATE $business</h2>";
+    $id = preg_replace('/\D/', '', $_POST["id"]);// allow only numbers by deleting all non numbers /\D/ to prevent sql injection
+
+    echo "<h2 class='w3-brown w3-text-white'>UPDATE SERVICE LISTING</h2>";
 
     // read the record.  "business" = business name primary key
-    $sql = "Select * from business where business='" . $business . "'";
+    $sql = "Select * from business where id=$id";
     $result = $myconn->query($sql);
 
     // Check the password
@@ -60,7 +62,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     Your changes will appear immediately.
         </p>
 <form class="w3-container" name="business" method="post" action="dbupdate.php">
-    <label class="w3-label">Business Name: (Required. This name must be unique.) </label><input class="w3-input w3-border" type="text" name="bname"  required="required" maxlength="40" value="{$row['business']}"/> <br/>
+    <label class="w3-label">Business Name: (You may change your business name here. This name must be unique. ) </label><input class="w3-input w3-border" type="text" name="bname"  required="required" maxlength="40" value="{$row['business']}"/> <br/>
     <label class="w3-label">DELETE Business: (Check to DELETE your listing. This removes your listing.) </label><input class="w3-check w3-border" type="checkbox" name="deleteme" /> <br/><br/>
     <label class="w3-label">Password: (Fill in only to CHANGE your password.) </label><input class="w3-input w3-border" type="text" name="password"  size="20" maxlength="20" /> <br/>
     <label class="w3-label">Business Category: (Required. One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required" maxlength="40" value="{$row['category']}" /><br/>
@@ -75,7 +77,9 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     <!--<label class="w3-label">Additional Information:</label><input class="w3-input w3-border" type="text"  name="notes" size="255"/><br/>-->
     <label class="w3-label">Notes: (optional, not displayed to customers)</label><textarea class="w3-input w3-border" name="notes" rows="12">{$row['notes']}</textarea><br/>
     <input type="hidden" name="oldpassword" value="$password">
-    <input type="hidden" name="oldbusiness" value="$business">
+    <input type="hidden" name="id" value="$id">
+    <input type="hidden" name="oldbusiness" value="{$row['business']}">
+
 
     <input type="submit" value="UPDATE"/>
 </form>

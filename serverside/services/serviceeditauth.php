@@ -23,7 +23,7 @@
    <label class="w3-label">Password: </label><input class="w3-input w3-border" type="text" name="password"  size="20" required="required"  maxlength="20" /> <br/>
     If you forgot your password, send an email to <a href="mailto:support@anderson-island.org">support@anderson-island.org</a><br/>
 <br />
-    <input type="hidden" name="business" value="<?php echo $_GET['business']; ?>" />
+    <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" />
     <input type="submit" value="Next" />
 
 </form>

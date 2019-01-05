@@ -41,7 +41,7 @@ if(empty($myconn)) {
             //$t = $t . "<tr><td> </td></tr><tr><td class='w3-brown w3-text-white' ><b>" . $cat . "</b></td></tr>";
 			 $t = $t . "<tr><td id='D$catid' class='w3-brown w3-text-white' style='font-size:medium' onclick=\"ShowHide('$catid')\" ><b>" . $cat . " &#9660;</td></tr> \n<tr><td> <div id='$catid' style='display:none;'> <table>";
         }
-        $t = $t . "<tr><td onclick=\"window.open('http://www.anderson-island.org/servicedetail.php?business=" . urlencode ($row["business"]) . "', '_system');\"><b>" . $row["business"] .
+        $t = $t . "<tr><td onclick=\"window.open('http://www.anderson-island.org/servicedetail.php?id=" . urlencode ($row["id"]) . "', '_system');\"><b>" . $row["business"] .
             "</b><br/>" . $row["services"] . "<br/>" . $row["owner"] . "<br/>" .
             FPhone($row["phone"]) . ", " . FPhone($row["phone2"]) . "  <a href='mailto:" . $row["email"] . "'>" . $row["email"] . "</a>";
         // detail only: if($row["website"] != "") $t = $t . ", <a href='" . $row["website"] . "'>Website</a>";

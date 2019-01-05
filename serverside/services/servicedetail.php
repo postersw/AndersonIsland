@@ -2,7 +2,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //  servicedetail - generates the services table detail for 1 business, displayed to the user
 //
-//  entry   servicedetail.php?business=business name encoded
+//  entry   servicedetail.php?id=id # of business
 //  exit    the EDIT button calls serviceeditauth.php to get the password for the update.
 //          EDIT -> serviceeditauth.php -> serviceupdate.php -> dbupdate.php -> dbgentable2.php
 //
@@ -11,17 +11,18 @@
 if(empty($myconn)) {
     include "dbconnect.php"; // connect to the database.  returns $myconn.
 }
-$businessnamehtml = $_GET["business"];
-$businessname = $myconn->real_escape_string($businessnamehtml);  // will this work???
+//$businessnamehtml = $_GET["business"];
+//$id = $myconn->real_escape_string($_GET["id"]);  // will this work???
+$id = preg_replace('/\D/', '', $_GET["id"]);// allow only numbers by deleting all non numbers /\D/ to prevent sql injection
 
 //echo "Generating detail for $businessname<br/>";
 
-$sql = "Select * from business where business='" . $businessname . "'";
+$sql = "Select * from business where id=" . $id ;
 $result = $myconn->query($sql);
 //echo "rows " . $result->num_rows;
 
 if($result->num_rows == 0) {
-    echo "Business $business does not exist.<br/>";
+    echo "Business ID $id does not exist.<br/>";
     exit();
 }
 $row = $result->fetch_assoc();
@@ -58,8 +59,8 @@ if($row['website'] != "") echo "<a href='" . $row["website"] . "'>Website: {$row
 echo "Address:  {$row['address']} on Anderson Island<br/><br/>";
 echo $row["notes"];
 echo "<br/>Updated: {$row['updated']}<br/><br/>";
-$businessnameencoded = htmlspecialchars($businessname);
-echo "<button onclick=\"window.open('http://www.anderson-island.org/serviceeditauth.php?business=" . urlencode($row['business']) . "', '_system');\">EDIT LISTING</button>";  // edit button
+//$businessnameencoded = htmlspecialchars($businessname);
+echo "<button onclick=\"window.open('http://www.anderson-island.org/serviceeditauth.php?id=" . urlencode($id) . "&business=" . urlencode($row['business']) . "', '_system');\">EDIT LISTING</button>";  // edit button
 
 
 $ed= <<<'END'

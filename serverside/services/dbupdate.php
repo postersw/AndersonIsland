@@ -5,7 +5,7 @@
 //  rfb 1/3/19.
 //
 //  Entry: called by serviceupdate.php
-//          $_POST = all the modified database values  (oldpassword = original pw. oldbusiness = original business).
+//          $_POST = all the modified database values  (oldpassword = original pw. id = business id.).
 //  Exit: Runs an SQL Update statement to update all changed fields.
 //        Will also update password and change business name if necessary.
 //        calls: dbgentable2.php to update services.html.
@@ -38,6 +38,7 @@ DOC;
     echo $hd; // send the header
 
     // unpack request
+    $id = preg_replace('/\D/', '', $_POST["id"]);// allow only numbers by deleting all non numbers /\D/ to prevent sql injection
     $oldbusiness = $myconn->real_escape_string($_POST['oldbusiness']);
     $oldpassword = $_POST['oldpassword'];
     $business = $myconn->real_escape_string(trim($_POST['bname']));
@@ -62,9 +63,9 @@ DOC;
 
     //echo "reading $oldbusiness<br/>";
     // read the existing record for the business
-    $sql = "Select * from business where business='" . $oldbusiness . "'";
+    $sql = "Select * from business where id=$id";
     $result = $myconn->query($sql);
-    if($result->num_rows == 0) {
+    if($result->num_rows != 1) {
         echo "<br/><br/>ERROR: The business '" . $oldbusiness . "' does not exist.<br/>";
         exit();
     }
@@ -113,12 +114,12 @@ DOC;
 
     // update it
 
-    $sql = substr($sql, 0, strlen($sql)-1) . " WHERE business='$oldbusiness'";
+    $sql = substr($sql, 0, strlen($sql)-1) . " WHERE id=$id";
     //echo "<br/>" . $sql . "<br/>";
     if ($myconn->query($sql) === TRUE) {  // update successful
         echo $emailbody;
         echo "Record updated successfully<br/>";
-        echo "<a href='http://www.anderson-island.org/servicedetail.php?business=" . urlencode($business) . "'>Click here to see updated listing.</a><br/>";
+        echo "<a href='http://www.anderson-island.org/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>";
 
         // add to log file
         $fhl = fopen("../private/servicesignuplog.log", 'a');
