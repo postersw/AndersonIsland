@@ -58,6 +58,7 @@ DOC;
     $notes = trim($_POST['notes']);
     // clean info
     $business = preg_replace("/[^\w\.\,\ \&\(\)]/", "", $business); // remove all non an, allow ., &()
+    $approval = false; // set true if this is an approval
 
     echo "<h2 class='w3-brown w3-text-white'>Update $oldbusiness</h2>";
 
@@ -76,7 +77,13 @@ DOC;
         echo "<br/><br/>ERROR: Invalid password. <br/>If you forgot your password, send email to support@anderson-island.org.";
         exit();
     }
-    //echo "successfully read $oldbusiness<br/>";
+    // special case for approval
+    $ok = $row['ok'];
+    if($ok == 0 && $password == "APPROVAL") {
+        $password = "";
+        $ok = 1; // mark as approved
+        $approved = true;
+    }
 
     // now build the change request for each field
     $sql = "UPDATE business SET ";
@@ -84,7 +91,7 @@ DOC;
     $msg = "";
     UpD("business", $business);
     UpD("category", $category);
-    if($password!="") UpD("password", $password);
+    if($password!="") UpD("password", $password);  // update password only if changed
     UpD("services", $services);
     UpD("owner", $owner);
     UpD("address", $address);
@@ -94,6 +101,7 @@ DOC;
     UpD("website", $website);
     UpD("notes", $notes);
     UpD("contractor", $contractor);
+    UpD("ok", $ok);  // approval flag
     if($updatecount == 0) {
         echo "No fields have changed. The business will not be updated.<br/>";
         exit();
@@ -101,7 +109,7 @@ DOC;
 
     // display info
     $emailbody= "AIA Business Listing update request for: <br/><b>" . $oldbusiness .":</b><br/>The following changes have been made:<br/>" . $msg . "<br/>";
-    $emailaddr = "postersw@comcast.net,robertbedoll@gmail.com,$email";
+    $emailaddr = "postersw@comcast.net,robertbedoll@gmail.com";
     $headers = "From: support@anderson-island.org\r\nMime-Version: 1.0\r\nContent-type: text/html; charset=\"iso-8859-1\"";
 
     // validate request
@@ -131,8 +139,14 @@ DOC;
             echo "Your service update failed. Contact support@anderson-island.org";
             exit(0);
         }
+
+        // send message to client.  Client gets unique message for approval.
+        if($approved) $emailbody = "$owner,<br/>Your service business listing for $business has been approved and is now available.<br/>." .
+            "You may edit your listing at any time. Tap on your listing, then tap on the EDIT button.<br/>Thanks,<br/>Bob Bedoll.";
+        $r = mail($email, "AIA Business Listing update",$emailbody,$headers);
+
         // regenerate services.html
-        $nolog = 1;  // suppress the log
+        if($approved == false) $nolog = 1;  // suppress the log
         include "dbgentable2.php"; // connect to the database.  returns $myconn
 
     } else {  // update failed
