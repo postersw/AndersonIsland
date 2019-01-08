@@ -78,7 +78,7 @@ echo $ed;
 function FPhone($pn) {
     if($pn==null) return "";
     if($pn=="") return "";
-    return "(" . substr($pn, 0,3) . ") " . substr($pn, 3, 3) . "-" . substr($pn, 6);
+    return "<a href='tel:$pn'>(" . substr($pn, 0,3) . ") " . substr($pn, 3, 3) . "-" . substr($pn, 6). "</a>";
 }
 ?>
 
