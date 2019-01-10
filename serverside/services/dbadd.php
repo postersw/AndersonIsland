@@ -31,7 +31,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     $contractor = trim($_POST['contractor']);
     $notes = trim($_POST['notes']);
     // clean info
-    $business = preg_replace("/[^\w\.\,\ \&\(\)]/", "", $business); // remove all non an, allow ., &()
+    $business = preg_replace("/[^\w\.\,\ \&\(\)\']/", "", $business); // remove all non an, allow ., &()
     // display info
     echo "Business request for: <br/><b>" . $business ."</b><br/>Category: " . $category . "<br/>Services:" . $services . "<br/>Owner:" . $owner . "<br/>Address: " . $address .
     "<br/>City: " . $city . ", State:" . $state . ", Zip: ". $zip . "<br/>Phone: ". $phone . ", phone2: ". $phone2 ."<br/>Email:" . $email . "<br/>Website :" . $website .

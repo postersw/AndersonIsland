@@ -57,7 +57,7 @@ DOC;
     $contractor = trim($_POST['contractor']);
     $notes = trim($_POST['notes']);
     // clean info
-    $business = preg_replace("/[^\w\.\,\ \&\(\)]/", "", $business); // remove all non an, allow ., &()
+    $business = preg_replace("/[^\w\.\,\ \&\(\)\']/", "", $business); // remove all non an, allow ., &()'
     $approval = false; // set true if this is an approval
 
     echo "<h2 class='w3-brown w3-text-white'>Update $oldbusiness</h2>";
