@@ -6,6 +6,7 @@
 //  Entry: All fields to add are in the $_POST array
 //  Exit:   Record added.  'ok'=0.
 //          $insertid = id of record just inserted.   0 if no insert.
+//          $displayinfo = user readable info summary
 //  rfb 12/20/18.
 
 include "dbconnect.php"; // connect to the database.  returns $myconn.
@@ -18,6 +19,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     $business = trim($_POST['bname']);
     $password = trim($_POST['password']);
     $category = strtoupper (trim($_POST['category']));  // force upper case category
+    $category2 = strtoupper (trim($_POST['category2']));  // force upper case category
     $services = trim($_POST['services']);
     $owner= trim($_POST['owner']);
     $address = trim($_POST['address']);
@@ -32,10 +34,12 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     $notes = trim($_POST['notes']);
     // clean info
     $business = preg_replace("/[^\w\.\,\ \&\(\)\']/", "", $business); // remove all non an, allow ., &()
+
     // display info
-    echo "Business request for: <br/><b>" . $business ."</b><br/>Category: " . $category . "<br/>Services:" . $services . "<br/>Owner:" . $owner . "<br/>Address: " . $address .
+    $displayinfo = "Business request for: <br/><b>$business</b><br/>Category: $category, $category2<br/>Services: $services<br/>Owner: $owner<br/>Address: $address" .
     "<br/>City: " . $city . ", State:" . $state . ", Zip: ". $zip . "<br/>Phone: ". $phone . ", phone2: ". $phone2 ."<br/>Email:" . $email . "<br/>Website :" . $website .
     "<br/>Contractor: " . $contractor .  "<br/>Notes: " . $notes . "<br.>";
+    echo $displayinfo;
 
     // validate request
     if(ValidateRequest() == false) {
@@ -44,7 +48,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     };
 
     // add it
-    $sql = "INSERT INTO business (business,ok,password,category,services,owner,address,city,state,zip,phone,phone2,email,website,contractor,notes) VALUES (?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    $sql = "INSERT INTO business (business,ok,password,category,category2,services,owner,address,city,state,zip,phone,phone2,email,website,contractor,notes) VALUES (?,0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     //echo "past sql";
     $stmt = $myconn->prepare($sql);
     //echo " past prepare";
@@ -54,7 +58,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     }
 
     /* Bind parameters */
-    $rc = $stmt->bind_param('sssssssssssssss',$business,$password,$category,$services,$owner,$address,$city,$state,$zip,$phone,$phone2,$email,$website,$contractor,$notes);
+    $rc = $stmt->bind_param('sssssssssssssss',$business,$password,$category,$category2,$services,$owner,$address,$city,$state,$zip,$phone,$phone2,$email,$website,$contractor,$notes);
     //echo " past bind";
     if ( false===$rc ) {
         die('bind() failed: ' . htmlspecialchars($stmt->error));

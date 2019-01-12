@@ -44,6 +44,7 @@ DOC;
     $business = $myconn->real_escape_string(trim($_POST['bname']));
     $password = trim($_POST['password']);
     $category = strtoupper (trim($_POST['category']));  // force upper case category
+    $category2 = strtoupper (trim($_POST['category2']));  // force upper case category2
     $services = trim($_POST['services']);
     $owner= trim($_POST['owner']);
     $address = trim($_POST['address']);
@@ -91,6 +92,7 @@ DOC;
     $msg = "";
     UpD("business", $business);
     UpD("category", $category);
+    UpD("category2", $category2);
     if($password!="") UpD("password", $password);  // update password only if changed
     UpD("services", $services);
     UpD("owner", $owner);
@@ -139,7 +141,7 @@ DOC;
         // send message to us and client.  Client gets unique message for approval.
         if($approved) $emailbody = "$owner,<br/>Your service business listing for $business has been approved and is now available.<br/>." .
             "<a href='http://www.anderson-island.org/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>" .
-            "You may edit your listing at any time. Tap on your listing, then tap on the EDIT button.<br/>Thanks,<br/>Bob Bedoll.";
+            "You may edit your listing at any time. Tap on your listing, then tap on the EDIT button.<br/><br/>Thanks,<br/>Bob Bedoll<br/>Anderson Island Assistant, Poster Software, LLC.";
         // mail it
         $r = mail($emailaddr, "AIA Business Listing update",$emailbody,$headers);
         if($r == false) {
