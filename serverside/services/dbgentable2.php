@@ -20,8 +20,8 @@ if(empty($myconn)) {
 
     //$sql = "Select * from business where ok=1 order by category, business";
     // UNION query to support 2 categories: category and category2
-    $sql = "SELECT `business`, `category`, `owner`, `address`, `city`, `state`, `zip`, `phone`, `email`, `website`, `contractor`, `updated`, `notes`, `phone2`, `services`, `password`, `ok`, `id` FROM business " .
-        "UNION SELECT `business`, `category2`, `owner`, `address`, `city`, `state`, `zip`, `phone`, `email`, `website`, `contractor`, `updated`, `notes`, `phone2`, `services`, `password`, `ok`, `id` FROM business WHERE category2 is not null " .
+    $sql = "SELECT `business`, `category`, `owner`, `address`, `city`, `state`, `zip`, `phone`, `email`, `website`, `contractor`, `updated`, `notes`, `phone2`, `services`, `password`, `ok`, `id` FROM business WHERE ok=1 " .
+        "UNION SELECT `business`, `category2`, `owner`, `address`, `city`, `state`, `zip`, `phone`, `email`, `website`, `contractor`, `updated`, `notes`, `phone2`, `services`, `password`, `ok`, `id` FROM business WHERE ok=1 AND category2 is not null " .
         "ORDER BY category, business";
     $result = $myconn->query($sql);
     if($nolog==0) echo "rows " . $result->num_rows;

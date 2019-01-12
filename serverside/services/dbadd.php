@@ -58,7 +58,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     }
 
     /* Bind parameters */
-    $rc = $stmt->bind_param('sssssssssssssss',$business,$password,$category,$category2,$services,$owner,$address,$city,$state,$zip,$phone,$phone2,$email,$website,$contractor,$notes);
+    $rc = $stmt->bind_param('ssssssssssssssss',$business,$password,$category,$category2,$services,$owner,$address,$city,$state,$zip,$phone,$phone2,$email,$website,$contractor,$notes);
     //echo " past bind";
     if ( false===$rc ) {
         die('bind() failed: ' . htmlspecialchars($stmt->error));
@@ -74,7 +74,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     $stmt->close();
 
     // reply
-    echo "<br/>Business $business added and awaiting approval.";
+    echo "<br/>Business $business added and awaiting approval.<br/>";
 }
 
 ////////////////////////////////////////////////////////

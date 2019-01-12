@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 //////////////////////////////////////////////////////////////////////////////////
 //  dbupdate - update an existing business in the database.
 //  I'm sure this is overkill for our little business database, but it's fun and interesting.

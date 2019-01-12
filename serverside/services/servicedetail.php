@@ -51,8 +51,9 @@ DOC;
 
 echo $hd; // send the header
 echo "<h2 class='w3-brown w3-text-white'> {$row['business']} </h2>";
-echo "<b>Category: {$row['category']}</b><br/>Services: {$row['services']}<br/>".
-"Owner: {$row['owner']}<br/>Contractor number: {$row['contractor']}<br/>";
+echo "<b>Category: {$row['category']}</b><br/>";
+if($row['category2'] != "") echo "<b>Category2: {$row['category2']}</b><br/>";
+echo "Services: {$row['services']}<br/>Owner: {$row['owner']}<br/>Contractor number: {$row['contractor']}<br/>";
 echo "Phone numbers: " . FPhone($row["phone"]) . ", " . FPhone($row['phone2']);
 echo "<br/>Email: <a href='mailto:{$row['email']}'>{$row['email']}</a><br/>";
 if($row['website'] != "") echo "<a href='" . $row["website"] . "'>Website: {$row['website']}</a><br>";
