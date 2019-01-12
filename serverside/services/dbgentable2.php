@@ -33,17 +33,19 @@ if(empty($myconn)) {
 	$clist = "clist=[";
     $catn = 0;
     $cat = "";
-    $t = '<table style="width:100%;padding:0;border-collapse:collapse">' . "\n";
+    ////$t = '<table style="width:100%;padding:0;border-collapse:collapse">' . "\n";
 
     while($row = $result->fetch_assoc()) {
         if($row["category"] != $cat) {
             $cat = $row["category"];
-			if($catn > 0) $t = $t . "</table></div></td></tr> \n";
+			////if($catn > 0) $t = $t . "</table></div></td></tr> \n";
+			if($catn > 0) $t = $t . "</table></div> \n";
 			$catn++;
             $catid = "C" . $catn;
 			$clist = $clist . '"' . $catid . '",';
             //$t = $t . "<tr><td> </td></tr><tr><td class='w3-brown w3-text-white' ><b>" . $cat . "</b></td></tr>";
-			 $t = $t . "<tr><td id='D$catid' class='w3-brown w3-text-white' style='font-size:medium' onclick=\"ShowHide('$catid')\" ><b>" . $cat . " &#9660;</td></tr> \n<tr><td> <div id='$catid' style='display:none;'> <table>";
+            ////$t = $t . "<tr><td id='D$catid' class='w3-brown w3-text-white' style='font-size:medium' onclick=\"ShowHide('$catid')\" ><b>" . $cat . " &#9660;</td></tr> \n<tr><td> <div id='$catid' style='display:none;'> <table>";
+            $t = $t . "<div id='D$catid' class='w3-brown w3-text-white' style='font-size:medium;padding:6px 0 6px 0;margin-left:2px' onclick=\"ShowHide('$catid')\" ><b>&nbsp;" . $cat . " &#9660;</b></div> <div id='$catid' style='display:none;'> <table>";
         }
         $t = $t . "<tr><td onclick=\"window.open('http://www.anderson-island.org/servicedetail.php?id=" . urlencode ($row["id"]) . "', '_system');\"><b>" . $row["business"] .
             "</b><br/>" . $row["services"] . "<br/>" . $row["owner"] . "<br/>" .
