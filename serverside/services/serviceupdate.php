@@ -50,7 +50,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
 
     // Check the password
     $row = $result->fetch_assoc(); // get first row
-    if($password != $row['password']) {
+    if($password != $row['password'] && $password != $adminpw) {
         echo "<br/><b>ERROR: Invalid password.</b> <br/>If you forgot your password, send email to <a href=\"mailto:support@anderson-island.org\">support@anderson-island.org</a><br/>";
         exit();
     }
@@ -76,7 +76,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     <label class="w3-label">Contractor #: (optional)</label><input class="w3-input w3-border" type="text" name="contractor"  maxlength="50" value="{$row['contractor']}"/><br/>
     <label class="w3-label">Web Site: (optional url)</label><input class="w3-input w3-border" type="url" name="website"  value="{$row['website']}" /><br/>
     <!--<label class="w3-label">Additional Information:</label><input class="w3-input w3-border" type="text"  name="notes" size="255"/><br/>-->
-    <label class="w3-label">Notes: (optional, not displayed to customers)</label><textarea class="w3-input w3-border" name="notes" rows="12">{$row['notes']}</textarea><br/>
+    <label class="w3-label">Notes: (optional)</label><textarea class="w3-input w3-border" name="notes" rows="12">{$row['notes']}</textarea><br/>
     <input type="hidden" name="oldpassword" value="$password">
     <input type="hidden" name="id" value="$id">
     <input type="hidden" name="oldbusiness" value="{$row['business']}">

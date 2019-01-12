@@ -74,7 +74,7 @@ DOC;
 
     // Check the password
     $row = $result->fetch_assoc(); // get first row
-    if($oldpassword != $row['password']) {
+    if($oldpassword != $row['password'] && $oldpassword != $adminpw) {
         echo "<br/><br/>ERROR: Invalid password. <br/>If you forgot your password, send email to support@anderson-island.org.";
         exit();
     }
