@@ -87,6 +87,9 @@ AAA;
     // this is the services html trailer
     $ed=<<<'END'
 <button onclick="clist.forEach(ShowHide)">Show All</button>
+&nbsp;&nbsp;&nbsp;
+<button onclick="window.open('http://www.anderson-island.org/servicealpha.php')">Show Alphabetically</button>
+
     <p style="font-size:x-small">This information has been provided by each business, and its accuracy, dependability, or reliability cannot be guaranteed by
     the Anderson Island Assistant or Poster Software, LLC.<br/>
 <script>
