@@ -126,7 +126,7 @@
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->--&gt;
   <plugin name="cordova-plugin-calendar" source="npm" />
   <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
-  <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
+  <!-- <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />-->
   <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18-->
   <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
   <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
