@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant" 
-        version="1.23.119191" 
+        version="1.23.119192" 
         android-versionCode="2242" 
         android:versionName="1.23.121818">
   <!-- versionCode 2242 for 1.23 11/24/18 -->
@@ -84,12 +84,13 @@
   <config-file platform="ios" parent="NSLocationWhenInUseUsageDescription" mode="replace">
     <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </config-file>
-  <!-- Allow launch of ferry ticket app-->
+  <!-- Allow launch of ferry ticket app
   <config-file platform="ios" parent="LSApplicationQueriesSchemes" mode="replace">
     <array>
       <string>ttpapps.pcf</string>
     </array>
   </config-file>
+  -->
   
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
   <!-- Still required with builder=1 for IOS-->
@@ -126,7 +127,7 @@
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->--&gt;
   <plugin name="cordova-plugin-calendar" source="npm" />
   <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
-  <!-- <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />-->
+<plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
   <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18-->
   <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
   <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
@@ -157,7 +158,7 @@
   </platform>
   
   <!-- Define app splash screen for each platform. -->
-  <!-- icon src="icon.png"                                  platform="ios"   />-->
+  <!-- icon src="icon.png"  platform="ios"   />-->
   <splash src="Default.png" platform="android" />
   <splash src="Default.png" platform="ios" />
   <platform name="ios">
