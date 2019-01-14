@@ -120,8 +120,8 @@
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-  <!--<plugin name="onesignal-cordova-plugin" spec="^2.4.0" source="npm" />  DEACTIVATED 1/14/19 for IOS 1.23 -->
-  <plugin name="onesignal-cordova-plugin"  source="npm" />
+  <plugin name="onesignal-cordova-plugin" platform="android"  spec="^2.4.0" source="npm" />  
+  <plugin name="onesignal-cordova-plugin" platform="ios"  spec="2.1.0" source="npm" />  <!--keep IOS at 2.1-->
   <!--OneSignal added 5/23/18-->
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->--&gt;
   <plugin name="cordova-plugin-calendar" source="npm" />
