@@ -176,6 +176,7 @@
     <icon src="icon1024.png" width="1024" height="1024" />
     <!-- App Store -->
   </platform>
-
- 
+  
+  <!-- Define app splash screen for each platform. -->
+  <splash src="Default.png" platform="ios" />
 </widget>
