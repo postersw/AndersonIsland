@@ -228,4 +228,9 @@
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
 
+
+  <!-- ADDING IN ACCESS TO ios ticketing app -->
+  <platform name="android">
+    <allow-intent href="market:*" />
+  </platform>
 </widget>
