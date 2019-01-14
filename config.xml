@@ -216,10 +216,4 @@
   <allow-intent href="sms:*" />
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
-  
-  <!-- IOS BUILDS TO HERE. NOW ADDING IN ACCESS TO EXTERNAL DOMAINS -->
-  <platform name="android">
-    <allow-intent href="market:*" />
-  </platform>
-
 </widget>
