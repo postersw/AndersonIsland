@@ -227,5 +227,12 @@
   <allow-intent href="sms:*" />
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
-  
+
+  <!-- ADDING IN ACCESS TO ios ticketing app -->
+  <platform name="android">
+    <allow-intent href="market:*" />
+  </platform>
+  platform name="ios">
+    <allow-navigation href="ttpapps.pcf://" />
+  </platform>
 </widget>
