@@ -94,9 +94,9 @@
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
   <!-- Still required with builder=1 for IOS-->
   <!--<preference name="phonegap-version" value="cli-7.1.0" />-->
-  <preference name="pgb-builder-version" value="1" />
+  <!--<preference name="pgb-builder-version" value="1" />-->
   <preference name="phonegap-version" value="cli-8.0.0" />
-  <!--<preference name="pgb-builder-version" value="2" />-->
+  <preference name="pgb-builder-version" value="2" />
   
   <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- Plugins -->
