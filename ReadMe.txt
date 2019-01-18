@@ -226,21 +226,20 @@ IOS DEBUG/BUILD
 
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
-	iTunes Install:
+	App Store Install:  (allow 15 minutes)
 	0. Windows Accessories -> Remote Desktop Connection -> LA051.macincloud.com:6000.
 	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
-	   on phonegap build, select the 'AIADistributionPush' key.  This enables push notifications. Then build.
-	   NOTE: Version must be n.nn.nnnnnn   Only 3 groups of numbers are allowed.
+	   on phonegap build
 	1. download the ipa file to your desktop.
-	2. log in to developer.apple.com.  Click on iTunes Connect. log in.  robertbedoll@gmail.com  pw=DD1
-	3. select MyApps, then Anderson Island Assistant, 
+	2. log in to developer.apple.com.(developer.apple.com->Account->Sign In->AppStore Connect)   log in.  robertbedoll@gmail.com  pw=DD1
+	3. select MyApps, then Anderson Island Ass1Addistant, 
 	4. Create a new version.  The AIA version (like 1.3, 1.4, ...) should match the version in the comfig.xml of the app.
 	5. You will get a new page. fill out the what's new.
 	6. Start "Application Loader 3.6".   select Deliver Your App and click on 'Choose'.  
 	7. Select your xxx.ipa binary.  The process takes at least 2 minutes but no further interaction should be needed other than
 	   clicking on 'next' or 'ok'.   Once the ipa has been uploaded, you can log out of the mac.
 	8. Wait until you get the email that says "Version x of Anderson Island Assistant has finished processing".
-	9. Go back to the itunes connect my app page. under the Build section of the web page, select the version you just uploaded.
+	9. Go back to the itunes connect my app page on either the Mac or Windows (developer.apple.com->Account->Sign In->AppStore Connect). under the Build section of the web page, select the version you just uploaded.
 	   If your new version is not there, click on another choice and then back onto your version (1.x Prepare for Submission) to refresh the 
 	   page. Then your new version should show up.
 	9. Click SAVE and SUBMIT FOR REVIEW.
