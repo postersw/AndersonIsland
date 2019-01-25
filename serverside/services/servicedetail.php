@@ -61,7 +61,7 @@ echo "Address:  {$row['address']} on Anderson Island<br/><br/>";
 echo $row["notes"];
 echo "<br/>Updated: {$row['updated']}<br/><br/>";
 //$businessnameencoded = htmlspecialchars($businessname);
-echo "<button onclick=\"window.open('http://www.anderson-island.org/serviceeditauth.php?id=" . urlencode($id) . "&business=" . urlencode($row['business']) . "', '_system');\">EDIT LISTING</button>";  // edit button
+echo "<button onclick=\"window.open('https://www.anderson-island.org/serviceeditauth.php?id=" . urlencode($id) . "&business=" . urlencode($row['business']) . "', '_system');\">EDIT LISTING</button>";  // edit button
 
 
 $ed= <<<'END'
