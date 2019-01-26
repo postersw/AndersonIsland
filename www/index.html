@@ -27,6 +27,7 @@
                Make menu smaller
     1.15:0623: IOS version. Add sliders to menu.
     1.16:012218: Add main page rows in daily cache.
+    1.23:011419: Add services before churches
 	
     Copyright (c) 2016-2018 Robert Bedoll, Poster Software LLC.
 
@@ -245,6 +246,11 @@
                     </td>
                 </tr>
 
+               <tr style="background-color:#f0f0f5;" onclick="window.open('http://www.anderson-island.org/services.html', '_system');">
+                    <td id="servicestitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe869;</i><span class='mptext'>Island Services</span></span>
+                    </td>
+                </tr>
                 <tr style="background-color:#f0f0f5;" onclick="window.open('http://www.anderson-island.org/churches.html', '_system');" >
                     <td id="churchtitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe145;</i><span class='mptext'>Churches</span></span>
@@ -260,12 +266,6 @@
                 <tr style="background-color:#cce4ff" onclick="ShowMap();">
                     <td id="maptitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe55b;</i><span class='mptext'>Map</span></span>
-                    </td>
-                </tr>
-
-               <tr style="background-color:#f0f0f5;" onclick="window.open('http://www.anderson-island.org/services.html', '_system');">
-                    <td id="servicestitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
-                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe869;</i><span class='mptext'>Island Services</span></span>
                     </td>
                 </tr>
 
@@ -286,7 +286,7 @@
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe7ef;</i><span class='mptext'>Volunteering</span></span>
                 </tr>
 
-                <tr style="background-color:#f0f0f5;" onclick="ShowNews()" )>
+                <tr style="background-color:#f0f0f5;" onclick="ShowNews()" >
                     <td id="newstitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe0b7;</i><span class='mptext'>News</span></span>
                     </td>
@@ -730,7 +730,7 @@
             &nbsp;  Updates every minute.&nbsp;
             <span id="updatetime">Screen update time.</span><br />
             <span id="versionnumber" style="font-size:x-small"> &nbsp; &nbsp; AIA Ver: 1.9.030917	</span>
-            <span style="font-size:x-small"> [072418]</span>
+            <span style="font-size:x-small"> [011419]</span>
         </p>
     </div>
 

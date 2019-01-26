@@ -33,7 +33,7 @@ $headers = "From: support@anderson-island.org\r\nMime-Version: 1.0\r\nContent-ty
 include "dbadd.php";
 if($insertid > 0) {
     $thankyou = "Thank you for your submission. Your entry will appear after approval, generally within 2 days.<br/>" .
-    "<a href='http://www.anderson-island.org/servicedetail.php?id=$insertid'>To preview or edit your listing, click here.</a><br/>" .
+    "<a href='https://www.anderson-island.org/servicedetail.php?id=$insertid'>To preview or edit your listing, click here.</a><br/>" .
     "Once your listing is approved, you can edit it by clicking or tapping on it, and then clicking on the EDIT button. <br/>" .
     "For support, email <a href='mailto:support@anderson-island.org'>support@anderson-island.org</a>.<br/><br/>" .
     "Thanks,<br/>Bob Bedoll<br/>Anderson Island Assistant. Poster Software, LLC.<br/>";

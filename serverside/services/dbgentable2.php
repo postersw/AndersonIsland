@@ -47,7 +47,7 @@ if(empty($myconn)) {
             ////$t = $t . "<tr><td id='D$catid' class='w3-brown w3-text-white' style='font-size:medium' onclick=\"ShowHide('$catid')\" ><b>" . $cat . " &#9660;</td></tr> \n<tr><td> <div id='$catid' style='display:none;'> <table>";
             $t = $t . "<div id='D$catid' class='w3-brown w3-text-white' style='font-size:medium;padding:6px 0 6px 0;margin-left:2px' onclick=\"ShowHide('$catid')\" ><b>&nbsp;" . $cat . " &#9660;</b></div> <div id='$catid' style='display:none;'> <table>";
         }
-        $t = $t . "<tr><td onclick=\"window.open('http://www.anderson-island.org/servicedetail.php?id=" . urlencode ($row["id"]) . "', '_system');\"><b>" . $row["business"] .
+        $t = $t . "<tr><td onclick=\"window.open('https://www.anderson-island.org/servicedetail.php?id=" . urlencode ($row["id"]) . "', '_system');\"><b>" . $row["business"] .
             "</b><br/>" . $row["services"] . "<br/>" . $row["owner"] . "<br/>" .
             FPhone($row["phone"]) . ", " . FPhone($row["phone2"]) . "  <a href='mailto:" . $row["email"] . "'>" . $row["email"] . "</a>";
         // detail only: if($row["website"] != "") $t = $t . ", <a href='" . $row["website"] . "'>Website</a>";
@@ -79,7 +79,7 @@ if(empty($myconn)) {
     <p >
     This page lists <strong>only Anderson-Island-based</strong> local services, such as plumbing, yard maintenance, music lessons, etc.
 </p>
-    <p><a href="servicesignup.html">To list yourself or your business here for free, click on this link.</a>
+    <p><a href="https://www.anderson-island.org/servicesignup.html">To list yourself or your business here for free, click on this link.</a>
    <br/>
 Tap on category to show businesses. Tap on a business for more info.</p>
 AAA;

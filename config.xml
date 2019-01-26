@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant" 
-        version="1.23.121818" 
+        version="1.23.119194" 
         android-versionCode="2242" 
         android:versionName="1.23.121818">
   <!-- versionCode 2242 for 1.23 11/24/18 -->
@@ -90,12 +90,14 @@
       <string>ttpapps.pcf</string>
     </array>
   </config-file>
+  
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
   <!-- Still required with builder=1 for IOS-->
-  <!-- <preference name="phonegap-version" value="cli-7.1.0" />
-  <preference name="pgb-builder-version" value="1" />-->
-  <preference name="phonegap-version" value="cli-8.0.0" />
-  <preference name="pgb-builder-version" value="2" />
+  <preference name="phonegap-version" value="cli-7.1.0" />
+  <preference name="pgb-builder-version" value="1" />
+  <!--<preference name="phonegap-version" value="cli-8.0.0" />-->
+  <!--<preference name="pgb-builder-version" value="2" />-->
+  
   <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- Plugins -->
   <!-- Core plugins -->
@@ -118,12 +120,13 @@
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-  <plugin name="onesignal-cordova-plugin" spec="^2.4.0" source="npm" />
+  <plugin name="onesignal-cordova-plugin" platform="android"  spec="^2.4.0" source="npm" />  
+  <plugin name="onesignal-cordova-plugin" platform="ios"  spec="2.1.0" source="npm" />  <!--keep IOS at 2.1 per ionic zupport 1/14/19-->
   <!--OneSignal added 5/23/18-->
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->--&gt;
   <plugin name="cordova-plugin-calendar" source="npm" />
   <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
-  <plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
+<plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
   <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18-->
   <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
   <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
@@ -132,41 +135,51 @@
   <!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 -->
   <!-- Define app icon for each platform. -->
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad-->
+  <!-- END OF PLUGINS -->
+
+
   <platform name="ios">
-    <icon src="www/res/icon/ios/icon-29.png" width="29" height="29" /><!--29x29-->
-    <icon src="www/res/icon/ios/icon-58.png" width="58" height="58" /><!--29x29 2x =58x58-->
-    <icon src="www/res/icon/ios/icon-87.png" width="87" height="87" /><!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
-    <icon src="www/res/icon/ios/icon-40.png" width="40" height="40" /><!--40x40-->
-    <icon src="www/res/icon/ios/icon-80.png" width="80" height="80" /><!--40x40 2x =80x80-->
-    <icon src="www/res/icon/ios/icon-120.png" width="120" height="120" /><!--40x40 3x =120x120-->
-    <icon src="www/res/icon/ios/icon-50.png" width="50" height="50" /><!--50x50-->
-    <icon src="www/res/icon/ios/icon-100.png" width="100" height="100" /><!--50x50 2x =100x100-->
-    <icon src="www/res/icon/ios/icon-57.png" width="57" height="57" /><!--57x57-->
-    <icon src="www/res/icon/ios/icon-57-2x.png" width="114" height="114" /><!--57x57 2x =114x114-->
-    <icon src="www/res/icon/ios/icon-120.png" width="120" height="120" /><!--60x60 2x =120x120 iPhone 6s -->
-    <icon src="www/res/icon/ios/icon-180A.png" width="180" height="180" /><!--60x60 3x = 180x180 iPhone 6s Plus-->
-    <icon src="www/res/icon/ios/icon-72.png" width="72" height="72" /><!-- 72x72 -->
-    <icon src="www/res/icon/ios/icon-72-2x.png" width="144" height="144" /><!-- 72x72 2x =144x144-->
-    <icon src="www/res/icon/ios/icon-76.png" width="76" height="76" /><!-- 76x76 -->
-    <icon src="www/res/icon/ios/icon-152.png" width="152" height="152" /><!-- 76x76 2x =152x152 WORKS FOR IPAD-->
-    <icon src="www/res/icon/ios/icon-167.png" width="167" height="167" /><!-- iPad Pro -->
-    <icon src="icon1024.png" width="1024" height="1024" /><!-- App Store -->
+    <icon src="www/res/icon/ios/icon-29.png" width="29" height="29" />
+    <!--29x29-->
+    <icon src="www/res/icon/ios/icon-58.png" width="58" height="58" />
+    <!--29x29 2x =58x58-->
+    <icon src="www/res/icon/ios/icon-87.png" width="87" height="87" />
+    <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
+    <icon src="www/res/icon/ios/icon-40.png" width="40" height="40" />
+    <!--40x40-->
+    <icon src="www/res/icon/ios/icon-80.png" width="80" height="80" />
+    <!--40x40 2x =80x80-->
+    <icon src="www/res/icon/ios/icon-120.png" width="120" height="120" />
+    <!--40x40 3x =120x120-->
+    <icon src="www/res/icon/ios/icon-50.png" width="50" height="50" />
+    <!--50x50-->
+    <icon src="www/res/icon/ios/icon-100.png" width="100" height="100" />
+    <!--50x50 2x =100x100-->
+    <icon src="www/res/icon/ios/icon-57.png" width="57" height="57" />
+    <!--57x57-->
+    <icon src="www/res/icon/ios/icon-57-2x.png" width="114" height="114" />
+    <!--57x57 2x =114x114-->
+    <icon src="www/res/icon/ios/icon-120.png" width="120" height="120" />
+    <!--60x60 2x =120x120 iPhone 6s -->
+    <icon src="www/res/icon/ios/icon-180A.png" width="180" height="180" />
+    <!--60x60 3x = 180x180 iPhone 6s Plus-->
+    <icon src="www/res/icon/ios/icon-72.png" width="72" height="72" />
+    <!-- 72x72 -->
+    <icon src="www/res/icon/ios/icon-72-2x.png" width="144" height="144" />
+    <!-- 72x72 2x =144x144-->
+    <icon src="www/res/icon/ios/icon-76.png" width="76" height="76" />
+    <!-- 76x76 -->
+    <icon src="www/res/icon/ios/icon-152.png" width="152" height="152" />
+    <!-- 76x76 2x =152x152 WORKS FOR IPAD-->
+    <icon src="www/res/icon/ios/icon-167.png" width="167" height="167" />
+    <!-- iPad Pro -->
+    <icon src="icon1024.png" width="1024" height="1024" />
+    <!-- App Store -->
   </platform>
   
   <!-- Define app splash screen for each platform. -->
-  <!-- icon src="icon.png"                                  platform="ios"   />-->
-  <splash src="Default.png" platform="android" />
   <splash src="Default.png" platform="ios" />
-  <platform name="ios">
-    <splash scr="www/res/screen/ios/SS320x480.png" width="320" height="480" />
-    <splash src="www/res/screen/ios/SS640x1136.png" width="640" height="1136" />
-    <splash src="www/res/screen/ios/SS640x960.png" width="640" height="960" />
-    <splash src="www/res/screen/ios/SS768x1024.png" width="768" height="1024" />
-    <splash src="www/res/screen/ios/SS1536x2048.png" width="1536" height="2048" />
-    <splash src="www/res/screen/ios/SS750x1334.png" width="750" height="1334" />
-    <splash src="www/res/screen/ios/SS1242x2208.png" width="1242" height="2208" />
-  </platform>
-  
+
   <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
     <!--OneSignal Icons 5/24/18-->
@@ -201,19 +214,27 @@
     <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
     <resource-file src="www/locales/android/values/ic_launcher_background.xml" target="app/src/main/res/values/ic_launcher_background.xml" />
   </platform>
-  
-  <access origin="*" /><!-- a wildcard access tag allows access to all external resource.-->
+
+
+  <access origin="*" />
+  <!-- a wildcard access tag allows access to all external resource.-->
   <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
   <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
   <plugin name="cordova-plugin-whitelist" />
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
-  <allow-intent href="tel:*" /><allow-intent href="sms:*" /><allow-intent href="mailto:*" /><allow-intent href="geo:*" />
-  
-  <!-- IOS BUILDS TO HERE. NOW ADDING IN ACCESS TO EXTERNAL DOMAINS -->
+  <allow-intent href="tel:*" />
+  <allow-intent href="sms:*" />
+  <allow-intent href="mailto:*" />
+  <allow-intent href="geo:*" />
+
+
+  <!-- ADDING IN ACCESS TO ios ticketing app -->
   <platform name="android">
     <allow-intent href="market:*" />
   </platform>
+
   <platform name="ios">
     <allow-navigation href="ttpapps.pcf://" />
-  </platform>
+  </platform> 
+</widget>
