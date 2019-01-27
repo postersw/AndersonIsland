@@ -96,6 +96,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 11/25/18. Ver 1.23.112518 Ver 1.23 created.
 12/18/18. Ver 1.23.121818 Google Play #2242 Beta. Android 8 icon. Improve business detail listing. Add Island Services.
 01/03/19. Ver 1.23.121818 Google # 2243. Released to Production.
+01/18/19. Ver 1.23.119194 Approved for IOS app store production. (main menu service & church items reversed from Android)
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
