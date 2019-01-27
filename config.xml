@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android" 
-        id="org.anderson-island.andersonislandassistant" 
-        version="1.24.012719" 
-        android-versionCode="2243" 
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
+        id="org.anderson-island.andersonislandassistant"
+        version="1.24.012719"
+        android-versionCode="2243"
         android:versionName="1.24.01271">
   <!-- on 1/27/19 this was reformatted by vs2017-->
   <!-- versionCode 2243 for 1.24 1/27/19 -->
@@ -164,7 +164,11 @@
     <!-- iPad Pro -->
     <icon src="icon1024.png" width="1024" height="1024" />
     <!-- App Store -->
-  </platform><!-- Define app splash screen for each platform. --><splash src="Default.png" platform="ios" /><!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1--><platform name="android">
+  </platform>
+  <!-- Define app splash screen for each platform. -->
+  <splash src="Default.png" platform="ios" />
+  <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
+  <platform name="android">
     <!--OneSignal Icons 5/24/18-->
     <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
@@ -196,10 +200,27 @@
     <resource-file src="www/locales/android/drawable/ic_launcher_background.xml" target="app/src/main/res/drawable/ic_launcher_background.xml" />
     <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
     <resource-file src="www/locales/android/values/ic_launcher_background.xml" target="app/src/main/res/values/ic_launcher_background.xml" />
-  </platform><access origin="*" /><!-- a wildcard access tag allows access to all external resource.--><!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin --><!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html --><plugin name="cordova-plugin-whitelist" /><allow-intent href="http://*/*" /><allow-intent href="https://*/*" /><allow-intent href="tel:*" /><allow-intent href="sms:*" /><allow-intent href="mailto:*" /><allow-intent href="geo:*" /><!-- ADDING IN ACCESS TO ios ticketing app --><platform name="android">
+  </platform>
+  <access origin="*" /><!-- a wildcard access tag allows access to all external resource.-->
+  <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
+  <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
+  <plugin name="cordova-plugin-whitelist" />
+  <allow-intent href="http://*/*" />
+  <allow-intent href="https://*/*" />
+  <allow-intent href="tel:*" />
+  <allow-intent href="sms:*" />
+  <allow-intent href="mailto:*" />
+  <allow-intent href="geo:*" />
+  <!-- ADDING IN ACCESS TO ios ticketing app -->
+  <platform name="android">
     <allow-intent href="market:*" />
-  </platform><platform name="ios">
+  </platform>
+  <platform name="ios">
     <allow-navigation href="ttpapps.pcf://" />
   </platform>
-  <vs:toolsetVersion xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">6.3.1</vs:toolsetVersion><engine name="android" spec="5.2.1" /><engine name="ios" spec="4.2.0" /><engine name="windows" spec="4.4.2" /><preference name="windows-target-version" value="10.0" />
+  <vs:toolsetVersion xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">6.3.1</vs:toolsetVersion>
+  <engine name="android" spec="5.2.1" />
+  <engine name="ios" spec="4.2.0" />
+  <engine name="windows" spec="4.4.2" />
+  <preference name="windows-target-version" value="10.0" />
 </widget>
