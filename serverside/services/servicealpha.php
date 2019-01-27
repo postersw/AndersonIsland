@@ -28,7 +28,7 @@ if($result->num_rows == 0) {
 // loop through database and generate html
 $t = "<table>";
 while($row = $result->fetch_assoc()) {
-    $t = $t . "<tr><td onclick=\"window.open('http://www.anderson-island.org/servicedetail.php?id=" . urlencode ($row["id"]) . "', '_system');\">" .
+    $t = $t . "<tr><td onclick=\"window.open('http://www.anderson-island.org/services/servicedetail.php?id=" . urlencode ($row["id"]) . "', '_system');\">" .
         "<b>{$row["business"]}</b> ({$row["category"]} {$row["category2"]})<br/>{$row["services"]}<br/>{$row["owner"]}<br/>" .
         FPhone($row["phone"]) . ", " . FPhone($row["phone2"]) . "  <a href='mailto:" . $row["email"] . "'>" . $row["email"] . "</a></td></tr>\n";
 }
@@ -74,7 +74,7 @@ END;
 
 // write to user
 
-echo $hd; 
+echo $hd;
 echo $t;
 echo $ed;
 

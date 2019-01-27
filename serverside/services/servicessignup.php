@@ -16,7 +16,7 @@
         <div class="w3-container" style="background-color:antiquewhite">
         <h1>Services Signup</h1>
     <p >
-<?php
+        <?php
 //////////////////////////////////////////////////////////////////////////////////
 //  services signup - process service signup form
 //  rfb. 12/15/18.
@@ -33,12 +33,12 @@ $headers = "From: support@anderson-island.org\r\nMime-Version: 1.0\r\nContent-ty
 include "dbadd.php";
 if($insertid > 0) {
     $thankyou = "Thank you for your submission. Your entry will appear after approval, generally within 2 days.<br/>" .
-    "<a href='https://www.anderson-island.org/servicedetail.php?id=$insertid'>To preview or edit your listing, click here.</a><br/>" .
+    "<a href='https://www.anderson-island.org/services/servicedetail.php?id=$insertid'>To preview or edit your listing, click here.</a><br/>" .
     "Once your listing is approved, you can edit it by clicking or tapping on it, and then clicking on the EDIT button. <br/>" .
     "For support, email <a href='mailto:support@anderson-island.org'>support@anderson-island.org</a>.<br/><br/>" .
     "Thanks,<br/>Bob Bedoll<br/>Anderson Island Assistant. Poster Software, LLC.<br/>";
     echo $thankyou;
-} else { 
+} else {
     // if dbadd failed
     echo "Your request had an error and was not added. <br/>";
     $email = ""; // suppress email to user
@@ -59,6 +59,6 @@ if($r == false) {
     exit(0);
 }
 
-?>
+        ?>
 </body>
 </html>

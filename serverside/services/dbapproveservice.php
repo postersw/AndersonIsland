@@ -35,7 +35,7 @@
     if ($r === TRUE) {  // update successful
         echo $emailbody;
         echo "Record approved successfully<br/>";
-        echo "<a href='http://www.anderson-island.org/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>";
+        echo "<a href='http://www.anderson-island.org/services/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>";
 
         // add to log file
         $fhl = fopen("../private/servicesignuplog.log", 'a');

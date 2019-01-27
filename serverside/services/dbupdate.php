@@ -129,8 +129,8 @@ DOC;
     if ($myconn->query($sql) === TRUE) {  // update successful
         echo $emailbody;
         echo "Record updated successfully<br/>";
-        echo "<a href='https://www.anderson-island.org/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>";
-        $emailbody = $emailbody . "<a href='https://www.anderson-island.org/servicedetail.php?id=$id'>Click here to see your updated listing.</a><br/>" .
+        echo "<a href='https://www.anderson-island.org/services/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>";
+        $emailbody = $emailbody . "<a href='https://www.anderson-island.org/services/servicedetail.php?id=$id'>Click here to see your updated listing.</a><br/>" .
 
         // add to log file
         $fhl = fopen("../private/servicesignuplog.log", 'a');
@@ -140,7 +140,7 @@ DOC;
 
         // send message to us and client.  Client gets unique message for approval.
         if($approved) $emailbody = "$owner,<br/>Your service business listing for $business has been approved and is now available.<br/>." .
-            "<a href='https://www.anderson-island.org/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>" .
+            "<a href='https://www.anderson-island.org/services/servicedetail.php?id=$id'>Click here to see updated listing.</a><br/>" .
             "You may edit your listing at any time. Tap on your listing, then tap on the EDIT button.<br/><br/>Thanks,<br/>Bob Bedoll<br/>Anderson Island Assistant, Poster Software, LLC.";
         // mail it
         $r = mail($emailaddr, "AIA Business Listing update",$emailbody,$headers);
