@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=medium-dpi" /> 
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <title>Local Anderson Island Services</title>
+    <link rel="stylesheet" href="lib/w3.css">
+    <style>
+        tr {border-style: solid; border-width: thin;border-color: gray; padding:6px; }
+        .cat {background-color: lightgray}
+        p {font-size:small}
+    </style>
+
+</head>
+<body>
+        <div class="w3-container" style="background-color:antiquewhite">
+    <h1 class="w3-brown w3-text-white">Local Anderson Island Services</h1>
+    <p >
+    This page lists <strong>Anderson-Island-based</strong> local services, such as plumbing, electrical, yard maintenance, music lessons, etc. 
+    (Businesses based on the mainland are NOT listed here.)</p>
+    <p><a href="servicesignup.html">To list yourself or your business here, click on this link.</a>
+    This is a community information service and is provided free of charge.</p>
+    <hr />
+    <?php $theData = file_get_contents("services.txt"); echo $theData; ?>
+ <!--
+            <table style="width:100%;padding:0;border-collapse:collapse">
+     <tr><td class="w3-brown w3-text-white" ><b>CONSTRUCTION</b></td></tr>
+     <tr><td><b>Larsen Construction, LLC.</b><br/>Custom Home Building.<br/>Paul & Bridget Larsen. General Contractor. 253-884-4970.</td></tr>
+     <tr><td><b>Oro Bay Homes. </b><br/>Custom Home Building. Remodeling. Custom Cabinets.<br/>John Larsen. General Contractor. 253-732-5204</td></tr>
+     <tr><td><b>White's Inc.</b><br />Concrete, Septic, Foundations, Road Building, Tree Removal.<br/>Doug Emerick.General Contractor. 253-884-2178</td></tr>
+     <tr><td> </td></tr>
+     <tr><td class="w3-brown w3-text-white"><b>LANDSCAPING</b></td></tr>
+      <tr><td><b>Island Nursery & Landscaping, Inc.</b><br/>Site Prep, Landscaping, Materials, Roads, Drain Fields, Hardscape<br/>Phil Vickers, General Contractor 253-884-3509. </td></tr>
+    </table>
+ -->
+    <hr/>
+    <p style="font-size:x-small">This information has been provided by each individual, and its accuracy, dependability, or reliability cannot be guaranteed by
+    the Anderson Island Assistant or Poster Software, LLC.</p>
+    Updated 12/21/2018
+            </div>
+</body>
+</html>
