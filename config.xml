@@ -1,9 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android" 
         id="org.anderson-island.andersonislandassistant" 
-        version="1.23.119194" 
-        android-versionCode="2242" 
-        android:versionName="1.23.121818">
+        version="1.24.012719" 
+        android-versionCode="2243" 
+        android:versionName="1.24.01271">
+  <!-- on 1/27/19 this was reformatted by vs2017-->
+  <!-- versionCode 2243 for 1.24 1/27/19 -->
   <!-- versionCode 2242 for 1.23 11/24/18 -->
   <!-- versionCode 2240 for 1.22 10/13/18 -->
   <!-- versionCode 2238 for 1.21 9/26/18 -->
@@ -90,14 +92,12 @@
       <string>ttpapps.pcf</string>
     </array>
   </config-file>
-  
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
   <!-- Still required with builder=1 for IOS-->
   <preference name="phonegap-version" value="cli-7.1.0" />
   <preference name="pgb-builder-version" value="1" />
   <!--<preference name="phonegap-version" value="cli-8.0.0" />-->
   <!--<preference name="pgb-builder-version" value="2" />-->
-  
   <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- Plugins -->
   <!-- Core plugins -->
@@ -120,25 +120,14 @@
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-  <plugin name="onesignal-cordova-plugin" platform="android"  spec="^2.4.0" source="npm" />  
-  <plugin name="onesignal-cordova-plugin" platform="ios"  spec="2.1.0" source="npm" />  <!--keep IOS at 2.1 per ionic zupport 1/14/19-->
+  <plugin name="onesignal-cordova-plugin" platform="android" spec="^2.4.0" source="npm" />
+  <plugin name="onesignal-cordova-plugin" platform="ios" spec="2.1.0" source="npm" />
+  <!--keep IOS at 2.1 per ionic zupport 1/14/19-->
   <!--OneSignal added 5/23/18-->
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->--&gt;
-  <plugin name="cordova-plugin-calendar" source="npm" />
-  <!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
-<plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
-  <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18-->
-  <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
-  <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
+  <plugin name="cordova-plugin-calendar" source="npm" /><!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18--><plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" /><plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18--><!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> --><!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
-      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17-->
-  <!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 -->
-  <!-- Define app icon for each platform. -->
-  <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad-->
-  <!-- END OF PLUGINS -->
-
-
-  <platform name="ios">
+      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17--><!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 --><!-- Define app icon for each platform. --><!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad--><!-- END OF PLUGINS --><platform name="ios">
     <icon src="www/res/icon/ios/icon-29.png" width="29" height="29" />
     <!--29x29-->
     <icon src="www/res/icon/ios/icon-58.png" width="58" height="58" />
@@ -175,13 +164,7 @@
     <!-- iPad Pro -->
     <icon src="icon1024.png" width="1024" height="1024" />
     <!-- App Store -->
-  </platform>
-  
-  <!-- Define app splash screen for each platform. -->
-  <splash src="Default.png" platform="ios" />
-
-  <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
-  <platform name="android">
+  </platform><!-- Define app splash screen for each platform. --><splash src="Default.png" platform="ios" /><!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1--><platform name="android">
     <!--OneSignal Icons 5/24/18-->
     <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
@@ -213,28 +196,10 @@
     <resource-file src="www/locales/android/drawable/ic_launcher_background.xml" target="app/src/main/res/drawable/ic_launcher_background.xml" />
     <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
     <resource-file src="www/locales/android/values/ic_launcher_background.xml" target="app/src/main/res/values/ic_launcher_background.xml" />
-  </platform>
-
-
-  <access origin="*" />
-  <!-- a wildcard access tag allows access to all external resource.-->
-  <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
-  <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
-  <plugin name="cordova-plugin-whitelist" />
-  <allow-intent href="http://*/*" />
-  <allow-intent href="https://*/*" />
-  <allow-intent href="tel:*" />
-  <allow-intent href="sms:*" />
-  <allow-intent href="mailto:*" />
-  <allow-intent href="geo:*" />
-
-
-  <!-- ADDING IN ACCESS TO ios ticketing app -->
-  <platform name="android">
+  </platform><access origin="*" /><!-- a wildcard access tag allows access to all external resource.--><!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin --><!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html --><plugin name="cordova-plugin-whitelist" /><allow-intent href="http://*/*" /><allow-intent href="https://*/*" /><allow-intent href="tel:*" /><allow-intent href="sms:*" /><allow-intent href="mailto:*" /><allow-intent href="geo:*" /><!-- ADDING IN ACCESS TO ios ticketing app --><platform name="android">
     <allow-intent href="market:*" />
-  </platform>
-
-  <platform name="ios">
+  </platform><platform name="ios">
     <allow-navigation href="ttpapps.pcf://" />
-  </platform> 
+  </platform>
+  <vs:toolsetVersion xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">6.3.1</vs:toolsetVersion><engine name="android" spec="5.2.1" /><engine name="ios" spec="4.2.0" /><engine name="windows" spec="4.4.2" /><preference name="windows-target-version" value="10.0" />
 </widget>
