@@ -48,7 +48,7 @@
     if($fire == "") $fire = file_get_contents($firebblink); //1 retry
     //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
     //$fire = strip_tags($firew);  // remove the tags
-    
+
     // find starting point for burn ban
     $cwbb = "Fire Safety Burn Ban Status";
     $i = stripos($fire, $cwbb);
@@ -57,11 +57,11 @@
         $i = stripos($fire, $cwbb);
     }
     if($i == 0) Bailout("Could not find \"$cwbb\"");
-    
+
     // now find alt image tags (bad solution) to get the actual status
     $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
     $effective = stripos($fire, "FIRE SAFETY - BURN BAN", $i);
-    if($effective===false) $effective = stripos($file, "BURN BAN IN EFFECT", $i);
+    if($effective===false) $effective = stripos($fire, "BURN BAN IN EFFECT", $i);
     if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
     elseif($effective> 0) $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
     else {

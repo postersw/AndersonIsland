@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+        <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, height=device-height, target-densitydpi=medium-dpi" /> 
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <title>Signup for Local Anderson Island Services</title>
+    <link rel="stylesheet" href="lib/w3.css">
+    <style>
+        tr {border-style: solid; border-width: thin;border-color: gray; padding:6px; }
+        a {text-decoration: none}
+    </style>
+</head>
+<body>
+    <div class="w3-container" style="background-color:antiquewhite">
+<h1 class="w3-brown w3-text-white">SERVICE LISTING SIGNUP</h1>
+    <p>To signup for a free listing on the Anderson Island Assistant 'Local Services' page, simply fill out this form and submit it.
+    Your listing will appear within 48 hours.</p>
+    <p>Some Simple Rules:
+    <ul>
+        <li>These listings are to help residents of Anderson Island find a local service provider.</li>
+        <li>You or your business must be located on Anderson Island.</li>
+        <li>There is no charge for the listing.</li>
+        <li>Listings will expire after one year. You will be sent an email asking if you want to list for the next year. This is to keep the listings current.</li>
+        <li>Listings are moderated by Poster Software, LLC, the publisher of the Anderson Island Assistant.</li>
+        <li>All listings will be identical in format.</li>
+
+        
+     </ul></p>
+    <form class="w3-container" name="business" method="post" action="servicessignup.php">
+        <label class="w3-label">Business Name: (Required. This name must be unique.) </label><input class="w3-input w3-border" type="text" name="bname" required="required" maxlength="40" /> <br />
+        <label class="w3-label">Password: (Required. You will need this password to update your listing.) </label><input class="w3-input w3-border" type="text" name="password" size="20" required="required" maxlength="20" /> <br />
+        <label class="w3-label">Business Category: (Required. One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required" maxlength="40" /><br />
+        <label class="w3-label">Optional 2nd Category: (Optional category, only if it is significantly different from 1st category)</label><input class="w3-input w3-border" type="text" name="category2" maxlength="40" /><br />
+        <label class="w3-label">Owner: (Required)</label><input class="w3-input w3-border" type="text" name="owner" required="required" size="50" maxlength="40" /><br />
+        <label class="w3-label">Services: (Required. A list of one or more services. Example: lawnmowing, trimming)</label><input class="w3-input w3-border" type="text" name="services" required="required" size="50" maxlength="100" /><br />
+        <label class="w3-label">Anderson Island Address: (Required)</label><input class="w3-input w3-border" type="text" name="address" required="required" size="50" maxlength="50" /><br />
+        <label class="w3-label">Phone Number: (Required, 10 digits with area code)</label><input class="w3-input w3-border" type="tel" name="phone" required="required" /><br />
+        <label class="w3-label">CellPhone Number:(optional, 10 digits with area code)</label><input class="w3-input w3-border" type="tel" name="phone2" /><br />
+        <label class="w3-label">Email: (required, must be a valid email address)</label><input class="w3-input w3-border" type="email" name="email" required="required" /><br />
+        <label class="w3-label">Contractor #: (optional)</label><input class="w3-input w3-border" type="text" name="contractor" maxlength="50" /><br />
+        <label class="w3-label">Web Site: (optional url)</label><input class="w3-input w3-border" type="url" name="website" /><br />
+        <!--<label class="w3-label">Additional Information:</label><input class="w3-input w3-border" type="text"  name="notes" size="255"/><br/>-->
+        <label class="w3-label">Notes: (optional)</label><textarea class="w3-input w3-border" name="notes" rows="12"></textarea><br />
+        <input type="submit" value="SUBMIT" />
+    </form>
+        </div>
+</body>
+</html>

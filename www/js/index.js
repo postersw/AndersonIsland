@@ -49,7 +49,8 @@
         1.20 070118. Horiz scroll of tide graph.  Display full day of events.  Fix ferry grid for one-way runs. clearOneSignalNotifications. pierceferryticketlink.
         1.21 072618. Icons on main page.  Released to web.
              081818. Moon phases added to weather.
-        1.22 101318. Text to Speech for ferry.
+        1.22 101318. Text to Speech and Big Text for main screen entries.
+        1.23.112418. Keep ferry display up for ferry delay time.  Fix android icons.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -71,9 +72,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.22.112118.1";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.23.121818";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2018 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -183,6 +184,7 @@ gLocationTime = 0; // time of last location update
 var gFerryShowIn = 1; // 1 to show (in nnm) on 1st time. Set from "gferryshowin". Defaults to 1.
 var gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
 var gFerryHighlight = 0; // highlight ferry AI or Steilacoom depending on user location. Set from "ferryhighlight"
+var gFerryDelayMin = 0; // ferry delay in minutes
 
 // tides
 var nextTides; // string of next tides for the main page
@@ -476,6 +478,14 @@ function timeDiffTTS(diffm) {
     if (diffm < 60) return diffm + " minutes ";
     if ((diffm % 60) == 0) return Math.floor(diffm / 60) + " hours ";
     return Math.floor(diffm / 60) + " hours " + (diffm % 60) + " minutes";
+}
+//////////////////////////////////////////////////////////////////////////////////////
+//  timeAdd - increments time by nn minutes. Use -nn to decrement time.
+//  Entry   timehhmm as hhmm, addmm as minutes (positive or negative);
+//  Exit    new time
+function timeAdd(timehhmm, addmm) {
+    var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100) + addmm; // time in min
+    return Math.floor(tm / 60) *100 + (tm % 60);
 }
 
 //////////////////////////////////////   UTILITY ////////////////////////////////////////////
@@ -1099,15 +1109,11 @@ function DegToCompassPointsTTS(d) {
 }
 
 
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
-//  GetDailyCache - retrieves the daily cache into the local storage objects 
-//  Load from server using ajax async request.
-//  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
+//  GetDailyCache - retrieves the daily cache into the local storage objects and also uploads app stats
+//  Load from server using ajax async request.  Retrieves dailycache.txt, tides.txt, comingevents.txt.
+//  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND, etc. 
+//  Entry gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
 //function GetDailyCache() {
 //     ajax async request
 //    var myurl = FixURL("dailycache.txt"); 
@@ -1116,13 +1122,16 @@ function DegToCompassPointsTTS(d) {
 //        success: function (data) {
 //}
 function GetDailyCache() {
-    // ajax async request
-    ////var myurl = FixURL("dailycache.txt");
 
+    // mark state of switches for stats on icons, text to speech, bigtext
+    var pagehits = LSget("pagehits").substr(0, 30) + ((gIconSwitch == 1) ? "5" : "6") + (TXTS.OnOff ? "7" : "") +
+        (BIGTX.OnOff ? "8" : "") + (gFerryHighlight ? "9" : "");
+    // gFerryShowIn = 1; // 1 to show (in nnm) on 1st time. Set from "gferryshowin". Defaults to 1.
+    // gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
+  
+    // ajax async request to get cache and upload stats
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
-        "&P=" + LSget("pagehits").substr(0, 30));
-    //var myurl = FixURL("getdailycachetest.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
-    //   "&P=" + LSget("pagehits").substr(0, 30));
+        "&P=" + pagehits);
 
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
@@ -1610,6 +1619,7 @@ function WriteNextFerryTimes() {
 
     var str;
     var v = "";
+    gFerryDelayMin = 0;
     TXTS.FerryTime = "";
     BIGTX.FerryTime = "";
     // check for a DELAYED: or DELAYED nn MIN: and extract the string
@@ -1618,8 +1628,12 @@ function WriteNextFerryTimes() {
         var i = s.indexOf("DELAY");
         if (i > 0) {
             var j = s.indexOf(":", i);
-            if (j > i) v = "<span style='font-weight:bold;color:red'>" + s.substring(i, j) + "</span><br/>";
-            TXTS.FerryTime = s.substring(i, j).replace("MIN", "Minutes") + ". ";
+            var delaystring = s.substring(i, j);
+            if (j > i) v = "<span style='font-weight:bold;color:red'>" + delaystring + "</span><br/>";
+            TXTS.FerryTime = delaystring.replace("MIN", "Minutes") + ". ";
+            gFerryDelayMin = Number(delaystring.replace(/\D/g, '')); // remove all non digits, and convert to a number.
+            if (isNaN(gFerryDelayMin)) gFerryDelayMin = 0;
+            if (gFerryDelayMin > 60) gFerryDelayMin = 60; // maximum of 60
         }
     }
 
@@ -1656,22 +1670,27 @@ function WriteNextFerryTimes() {
 //
 function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     var ShowTimeDiff = false;
+    const extrat = 4 + gFerryDelayMin; // extra time in display 4 minutes
     InitializeDates(0);
     var i = 0;
     var ketron = false; //ketron run ;
     var nruns = 0;
     var ft = ""; var ketront = "";
+    var adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat)); // adjust current time backwards for the ferry sailing test
+
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
-            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;'>" + ShortTime(ferrytimes[i]);  // display in table
+            var tcolor = "";
+            if (gTimehhmm > ferrytimes[i]) tcolor = "color:gray;";  // if ferry has already sailed, make it gray
+            ft = ft + "<td style='padding:1px 0 1px 0;margin:0;" + tcolor + "'>" + ShortTime(ferrytimes[i]);  // display in table
             if (nruns < 2) TXTS.FerryTime = TXTS.FerryTime + " at " + ShortTime(ferrytimes[i], 1) + ","; // text-to-speech. 2 runs only.
             BIGTX.FerryTime += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ShortTime(ferrytimes[i]);
 
-            // first run only: insert minutes till it sails
-            if (nruns == 0 && gFerryShowIn) {
+            // first run only: insert minutes till it sails (if it has not already sailed)
+            if (nruns == 0 && gFerryShowIn && (gTimehhmm <= ferrytimes[i])) {
                 var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]); // raw time diff
                 var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
                 TXTS.FerryTime = TXTS.FerryTime + " in " + timeDiffTTS(rtd) + ", then ";  // text-to-speech time remaining
@@ -1703,21 +1722,23 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// return the single next ferry time as a string. 
+// return the single next ferry time as a string.   Used by ferry camera display.
 //      entry ferrytimes is the array of times and days (eigher for steilacoom or ai))
 //      exit  returns string of next single ferry time.
 function FindNextSingleFerryTime(ferrytimes) {
+    const extrat = 4; // extra time in display 5 minutes
     InitializeDates(0);
     var i = 0;
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (gTimehhmm >= ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        if (gTimehhmm > (ferrytimes[i]+extrat)) continue;  // skip ferrys that have alreaedy run but allow 5 min
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
+            if (gTimehhmm > (ferrytimes[i])) return "<span style='color:gray'>" + ShortTime(ferrytimes[i]) + "</span>"
             var rtd = RawTimeDiff(gTimehhmm, ferrytimes[i]);
             var ftd = timeDiffhm(gTimehhmm, ferrytimes[i]);
             if (rtd < 13) return ShortTime(ferrytimes[i]) + "<span style='color:red'> (in " + ftd + ")</span>";
-            else return ShortTime(ferrytimes[i]) + " (in " + ftd + ")";
+            return ShortTime(ferrytimes[i]) + " (in " + ftd + ")";
         }
     }
     // we ran out of the schedule today so give the 1st run for tomorrow
@@ -1927,13 +1948,15 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
     var amcolor = "#f0ffff";
-    var extrat = 13; // extra time in display 12 minutes
+    const extrat = 29; // extra time in display 29 minutes
     var boldS = false, boldA = false, boldK = false;
     var validS = false, validA = false, validK = false; // true if runs are valid
+    var adjustedcurrenttime = 0; // time adjusted for ferry delays (time adjusted backwards)
+    if (gTimehhmm > 0) adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat + gFerryDelayMin)); // adjust current time backwards for the ferry sailing test
+
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
-        if ((gTimehhmm >= (ferrytimesS[i] + extrat)) && (gTimehhmm >= (ferrytimesA[i] + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
-        //if ((gTimehhmm >= (Number(ferrytimesS[i]) + extrat)) && (gTimehhmm >= (Number(ferrytimesA[i]) + extrat)) && (gTimehhmm > Number(ferrytimesK[i]))) continue;  // skip ferrys that have alreaedy run
+        if ((adjustedcurrenttime >= ferrytimesS[i]) && (adjustedcurrenttime >= ferrytimesA[i]) && (adjustedcurrenttime > ferrytimesK[i]))continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         validS = (ferrytimesS[i] != 0) &&  ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
         validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
@@ -2188,9 +2211,9 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
     var opentime, closetime, opentime2, closetime2;
     var TClosed = "Closed"; var TClosedAW = "Closed"; var TOpen = "Open"; var TOpens = "Opens"; 
     // for garbage pickup, change wording to 'pickup'
-    if (Oh.Pickup == "on") { TClosed = ""; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup";}  
+    if (Oh.Pickup == "on") { TClosed = "No Pickup today"; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup";}  
 
-    if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> " + TClosed + " today. </span>"
+    if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> " + TClosedAW + " today. </span>"
     // loop through the oh.Sch entries. Each entry is for 1 date range.
     for (i = 0; i < Oh.Sc.length; i++) {
         if (((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
@@ -2368,7 +2391,7 @@ function FormatOneBusiness(Oh, mmdd, showall) {
                     if (opentimetoday == 1 && closetimetoday == 2359) openlist += "<nobr>" + gDayofWeekShort[j] + ": 24 hours";
                     else openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                     if (H2 != null) {
-                        if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(closetimetoday);
+                        if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                     }
                     openlist += "</nobr>";
                     if (j == gDayofWeek) openlist += "</strong>";
@@ -2429,34 +2452,49 @@ function ShowOneBusinessFullPage(id) {
     // loop through the Oh.Sc entries. Each entry is for 1 date range.
     // We could hit multiple date ranges
     var nr = 0; // number of ranges;
+    var openinrange = false; // false = closed, true = open
+    var rangespan = "";
 
-    for (var i = 0; i < Oh.Sc.length; i++) {
+    for (var i = 0; i < Oh.Sc.length; i++) { // loop through each date range for the business
         var active = false;
         if (((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
-            ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From))))
+            ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {
+            openinrange = true;
             openlist += "<span style='color:green;font-weight:bold'>";
-        else openlist += "<span style='color:gray;font-weight:bold'>";
+            rangespan = "<span style='margin-left:10px;color:black;'>"
+        } else {
+            openinrange = false;
+            openlist += "<span style='color:gray;font-weight:bold'>";
+            rangespan = "<span style='margin-left:10px;color:gray;'>"
+        }
+
         // print date range if there is > 1  (Oh.Sc.length>1)
-        openlist += "Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</span><br/>";
         var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
+       // if all days are closed (open time = 0), just say 'closed' once for the entire time.
+        if (H[0] == 0 && H[2] == 0 && H[4] == 0 && H[6] == 0 && H[8] == 0 && H[10] == 0 && H[12] == 0) {
+            openlist += "Closed " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + "</span><br/>" 
+            continue;
+        }
+        openlist += "Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</span><br/>" + rangespan;
         var H2 = Oh.Sc[i].H2; // 2nd hours
         nr = nr + 1;
-        // loop through Sun - Sat
+
+        // loop through each day Sun - Sat
         for (var j = 0; j < 7; j++) {
             var opentimetoday;
             opentimetoday = H[j * 2]; // hhmm-hhmm open today
             if (opentimetoday > 0) {
-                if (j == gDayofWeek) openlist += "<strong>";  // bold today
+                if (openinrange && (j == gDayofWeek)) openlist += "<strong>";  // bold today
                 openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                 if (H2 != null) {
                     if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                 }
                 openlist += "</nobr>";
-                if (j == gDayofWeek) openlist += "</strong>";
+                if (openinrange && (j == gDayofWeek)) openlist += "</strong>";
                 if (j < 6) openlist += ", ";
             }
         } // for loop for each day
-        openlist += "<br/>";
+        openlist += "<br/></span>";
     } // end for  for 1 date range
 
     // find any closed dates in this week range and list them
@@ -3273,6 +3311,7 @@ var gTideTitleIcon; // title for tide, with up or down arrow
 
 function ShowNextTides() {
     var hilow;
+    var ttshilow;  
     var nextTides;
     var oldtide = -1;
     var newtidetime, oldtidetime, newtideheight, oldtideheight;
@@ -3300,8 +3339,13 @@ function ShowNextTides() {
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         var tidehhmm = ((h) * 100) + (mi);
-        if (thisperiod.type == 'h') hilow = 'High';
-        else hilow = 'Low';
+        if (thisperiod.type == 'h') {
+            hilow = "<i class='material-icons'>&#xe255;</i> High";
+            ttshilow = " high ";
+        } else {
+            hilow = "<i class='material-icons'>&#xe2c4;</i> Low";
+            ttshilow = " low ";
+        }
         // if tide is past, color row gray
         if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
             oldtide = 0;
@@ -3331,7 +3375,7 @@ function ShowNextTides() {
                 " ft.</td>" + tdx + nextTides + Math.abs(tiderate2).toFixed(1) + " ft/hr</td></tr> " +
                 "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
-            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + hilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
+            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + ttshilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
@@ -4284,23 +4328,35 @@ function ShowHelpPage() {
 //  TTSToggle - toggles the TXTS.OnOff switch and saves it as TTS. Note that the html will set ttstog.checked = true or false
 //
 function TTSToggle() {
-    if (MenuIfChecked("ttstog")) {
-        TXTS.OnOff = 1;
-        document.getElementById("topline").innerHTML = "Tap LEFT for speech.   Tap RIGHT for details.";
-    } else {
-        TXTS.OnOff = 0;
-        document.getElementById("topline").innerHTML = "Tap Row for Details";
-    }
+    if (MenuIfChecked("ttstog")) TXTS.OnOff = 1;
+    else TXTS.OnOff = 0;
     localStorage.setItem("TTS", TXTS.OnOff.toFixed(0));
+    TXTS.TopMessage();  // set first line
 }
 
 function BigTextToggle() {
-    if (MenuIfChecked("bigtog")) {
-        BIGTX.OnOff = 1;
-    } else {
-        BIGTX.OnOff = 0;
-    }
+    if (MenuIfChecked("bigtog")) BIGTX.OnOff = 1;
+    else BIGTX.OnOff = 0;
     localStorage.setItem("bigtext", BIGTX.OnOff.toFixed(0));
+    TXTS.TopMessage(); // set first line
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+//  TopMessage - set the message in the top row, based on TXTS.OnOff and BIGTX.OnOff
+TXTS.TopMessage = function () {
+    const mnone = "Tap Row for Details";
+    const mtts = "Tap LEFT for speech.   Tap RIGHT for details.";
+    const mbtx = "Tap LEFT for Big Text.   Tap RIGHT for details.";
+    const mboth = "Tap LEFT for speech & big text. Tap RIGHT for details.";
+    var msg;
+    if (TXTS.OnOff) {  // if text to speech
+        if (BIGTX.OnOff) msg = mboth;
+        else msg = mtts;
+    } else {        // no text to speech
+        if (BIGTX.OnOff) msg = mbtx;
+        else msg = mnone;
+    }
+    document.getElementById("topline").innerHTML = msg;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -4341,7 +4397,6 @@ BIGTX.InitializeBigText = function () {
         localStorage.setItem("bigtext", "1");
     }
     BIGTX.OnOff = Number(ibs);  // load text to speech. Defaults to 1 (on). For web, it is always off
-    //if (TXTS.BigSpeech == 0) document.getElementById("topline").innerHTML = "Tap Row for Details";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -4521,11 +4576,8 @@ function ShowIcons(nt) {
     // special case for icons
     SetTideTitle();
     if (gIconSwitch == 1) {  // if icons
-        MarkPage("5"); // 5= icons
         document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
-    } else {  // no icons
-        MarkPage("6"); // 6=no icons
-    }
+    } 
 }
 
 // ShowIconsToggle - toggle the icon status between 1 and 4.
@@ -4601,6 +4653,7 @@ function StartApp() {
     InitializeIcons();
     TXTS.InitializeSpeechMessage(); // initial speech message
     BIGTX.InitializeBigText(); // initial big text
+    TXTS.TopMessage(); // set top line correctly
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays

@@ -47,12 +47,14 @@ $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 $alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
+$title = "";
 
 //  $alertrssurl = "http://www.anderson-island.org/ferry_rsstest.txt";  // TEST URL/////// debug for local pc ///////////////
 //  Read the RSS feed. Isn't this easy! php is great.
 // try 10 times to get content
-for($i=0; $i<10; $i++) {
+for($i=0; $i<10; $i++) {  // try 10 times
     $x = simplexml_load_file($alertrssurl);
+    if($x===false) continue;  // if no data, try again
     $title = $x->channel->title;
     //echo("  |x->channel->title=" . $x->channel->title);
     if($title != "") break; // if we have content

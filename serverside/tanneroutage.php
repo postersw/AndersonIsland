@@ -59,6 +59,7 @@ exit;
 //  Exit: returns string with the outage message, OR "ERR <error message>"
 function ProcessXMLFile($s) {
 global $logit;
+$tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
 //$s = file_get_contents($f);
 //echo "<pre>" . $s . "</pre>";
 $i=strpos($s, "<outageSummary");
@@ -69,11 +70,11 @@ $nbrOut = TagValue($s, "nbrOut", $i);  // get the tag value
 $nbrServed = TagValue($s, "nbrServed", $i);  // get the tag value
 $logit = $logit . "\n nbrout: " . $nbrOut . ", nbrserved: " . $nbrServed . "\n";
 if((int)$nbrOut == 0) {  // if no outages
-$msg =  date("g:i a") . ": No Outages.";
+    $msg =  date("g:i a") . ": No Outages.";
 } else {
-$msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%). Tap for info.</span>";
+$msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%). Tap for Map.</span>";
 }
-return $msg;
+return $msg . $tweet;
 }
 //////////////////////////////////////////////////////////////////////
 // TagValue returns the string value in the xml tag between <tag> and </tag>
