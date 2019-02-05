@@ -10,6 +10,7 @@
 //      Rev 9/28/16.
 //  Fire department: look for "Current Fire Safety Burn Ban Status". Then for "NO BURN BAN".
 //      Rev 2/16/18.
+//      Rev 2/5/18. Look for NO FIRE SAFETY BURN BAD
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
     $firebblink = "http://www.co.pierce.wa.us/982/Burn-Bans";
@@ -60,8 +61,10 @@
 
     // now find alt image tags (bad solution) to get the actual status
     $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
-    $effective = stripos($fire, "FIRE SAFETY - BURN BAN", $i);
-    if($effective===false) $effective = stripos($fire, "BURN BAN IN EFFECT", $i);
+    if($lifted===false) $lifted = stripos($fire, "NO FIRE SAFETY BURN BAN", $i);
+    $effective = stripos($fire, '"FIRE SAFETY - BURN BAN"', $i);
+    if($effective===false) $effective = stripos($fire, '"BURN BAN IN EFFECT"', $i);
+    if($effective===false) $effective = stripos($fire, '"FIRE SAFETY BURN BAN"', $i);
     if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
     elseif($effective> 0) $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
     else {
