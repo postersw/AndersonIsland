@@ -235,4 +235,7 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="www\locales\android\mipmap-ldpi\" />
+  </ItemGroup>
 </Project>
