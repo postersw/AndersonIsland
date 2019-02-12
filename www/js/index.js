@@ -72,7 +72,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.121818";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.24.021118";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -172,6 +172,7 @@ var gFocusCounter = 0;
 var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
 var gResumeTime = 0;// saved value in sec
+var gDailyCacheLoadedms = 0;
 
 // Location set by gelocation for phone only
 gLatitude = 0.0; // NS
@@ -958,6 +959,11 @@ function RemoveTags(str) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayAlertInfo()  - sets the alerttext and sets the alertdiv = display:block if there is an alert
 //  NOTE: if 'alerthide' exists, the alert will NOT be displayed.
+//  Entry: Local Storage:
+//          alerttext = ferry and emergency alert
+//          alerthide = switch to hide alert
+//          burnbanalert = burn ban alert text
+//          tanneroutagealert = tanner outage text.
 //  Also processes the burnban and tanner alerts.
 function DisplayAlertInfo() {
     if (IsEmpty(localStorage.getItem("alerttext")) || localStorage.getItem("alerthide") != null) {
@@ -988,10 +994,17 @@ function DisplayAlertInfo() {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // getAlertInfo - without jQuery- gets the alert info from the server every minute via php and save it in 
 //      alerttext and alertdetail and ...
+//      file format:
+//          ALERT\n emergency and ferry messages \nENDALERT
+//          BURNBAN\n burn ban text \nENDBURNBAN
+//          TANNER\n tanner text \nTANNEREND
+//          REFRESH\n refresh time stamp \nREFRESHEND
+//
 //  Entry   'alerthide' = true to hide the alert in 'alerttext'
 //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
 //          'burnbanalert' = burn ban alert info
 //          'tanneralert' = tanner alert info
+//          'refreshrequest' = last force- refresh request stamp. REFRESH\n unique stamp\n REFRESHEND. 
 function getAlertInfo() {
     //var alerttimeout = 480; // alert timeout in sec 8 minutes
     var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
@@ -1016,6 +1029,8 @@ function getAlertInfo() {
     }
 }
 
+// HandleAlertReplay - parse the alert file which is checked every minute
+//  NOTE: if REFRESH is set and has not been processed, this calls ReloadCachedData.  
 function HandleAlertReply(r) {
     MarkOffline(false);
     gAlertTime = Date.now(); // time in ms
@@ -1025,8 +1040,13 @@ function HandleAlertReply(r) {
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+    var oldrefreshrequest = LSget('refreshrequest'); // current value of refresh request
+    parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
     WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary.
+    if (oldrefreshrequest != LSget('refreshrequest')) {  
+        if ((gTimeStampms - gDailyCacheLoadedms) > 3*60000) GetDailyCache(); // if >3 min since last reload, reload daily cache, including calendar & ferry sch, 
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1122,7 +1142,7 @@ function DegToCompassPointsTTS(d) {
 //        success: function (data) {
 //}
 function GetDailyCache() {
-
+    gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
     // mark state of switches for stats on icons, text to speech, bigtext
     var pagehits = LSget("pagehits").substr(0, 30) + ((gIconSwitch == 1) ? "5" : "6") + (TXTS.OnOff ? "7" : "") +
         (BIGTX.OnOff ? "8" : "") + (gFerryHighlight ? "9" : "");
