@@ -86,7 +86,7 @@
     // Bailout - send error message and delete file and exit
     function Bailout($s) {
         echo "Error: " . $s;
-        unlink($burnbanfile);
+        //unlink($burnbanfile);
         exit;
     }
 ?>

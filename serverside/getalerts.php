@@ -3,6 +3,8 @@
 // getalerts.php - returns the current alerts from the alert files in a single data stream
 //     so that we don't have to do multiple gets:
 //  To display an emergency alert message: create text in file 'emergencymessage.txt'.  End with a <br/>.
+//  To request immediate refresh (app reload) of dailycache & coming events, create a unique text in 'refresh.txt'. 
+//      it will be cleared nightly by getgooglecalendarcron.php.
 //
 //  FERRY
 //  <emergencymessage.txt file>  Note that this file should have a <br/> to separate it from the ferry message.
@@ -25,7 +27,10 @@
 // special case for FERRY. Put the EmergencyMessage file in front of the ferry alert.
 //
 //copyfile("alert.txt", "FERRY");
-$d1 = file_get_contents("emergencymessage.txt");
+$emergencyfile = "emergencymessage.txt";
+
+$d1 = "";
+if(file_exists($emergencyfile)) $d1 = file_get_contents($emergencyfile);
 $d2 = file_get_contents("alert.txt");
 if($d1 <> "" || $d2 <> "") {
     echo "FERRY\n";
@@ -43,6 +48,7 @@ return;
 //  diskfile = file name
 //  label = label that surrounds the content
 function copyfile($diskfile, $label) {
+    if(!file_exists($diskfile)) return;  // exit if file doesn't exist
     $theData = file_get_contents($diskfile);
     if($theData <> "") {
         if($label <> "") echo $label . "\n";
