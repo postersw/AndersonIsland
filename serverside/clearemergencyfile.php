@@ -18,7 +18,7 @@ echo date("m/d/Y h:i:s") . ": " . $emergencyfile . " cleared.";
 // if there is text, save it
 if(array_key_exists("msg", $_GET)) {
     $msg =  $_GET['msg'];
-    copyfile($emergencyfile, $msg);
+    file_put_contents($emergencyfile, $msg);
     echo "Wrote: " . $msg;
 }
 
