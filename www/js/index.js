@@ -992,8 +992,13 @@ function DisplayAlertInfo() {
     if (IsEmpty(s)) s = "Tap for outage status.";
     document.getElementById("tanneroutagealert").innerHTML = s;
     var tt = document.getElementById("tannertitle").innerHTML; // tanner title
-    if (s.indexOf("No Outages") > 0) document.getElementById("tannertitle").innerHTML = tt.replace("flash_off", "flash_on");  // if no outage
-    else document.getElementById("tannertitle").innerHTML = tt.replace("flash_on", "flash_off"); // if an outage
+    if (s.indexOf("No Outages") > 0) {
+        document.getElementById("tannertitle").innerHTML = tt.replace("flash_off", "flash_on");  // if no outage
+        document.getElementById("tannertitle").style.color = "#802b00";
+    } else {
+        document.getElementById("tannertitle").innerHTML = tt.replace("flash_on", "flash_off"); // if an outage
+        document.getElementById("tannertitle").style.color = "red";
+    }
 }
 
 
