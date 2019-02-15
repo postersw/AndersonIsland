@@ -73,7 +73,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.24.021118";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.24.021518";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -1019,7 +1019,7 @@ function getAlertInfo() {
     var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
     //var timestamp = Date.now() / 1000; // time in sec
     if ((Date.now() - gAlertTime) < alerttimeout) return; // gets alert async every min.
-    DebugLog("getAlertInfo");
+    //DebugLog("getAlertInfo");
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
     MarkOffline(false);
@@ -1044,7 +1044,7 @@ function getAlertInfo() {
 //  NOTE: if REFRESH is set and has not been processed, this calls ReloadCachedData. 
 //      It then remembers the refresh value so it doesn't call it again till it changes.  
 function HandleAlertReply(r) {
-    DebugLog("HandleAlertReply ")
+    //DebugLog("HandleAlertReply ")
     MarkOffline(false);
     gAlertTime = Date.now(); // time in ms
     //localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
@@ -1156,7 +1156,7 @@ function DegToCompassPointsTTS(d) {
 //        success: function (data) {
 //}
 function GetDailyCache() {
-    DebugLog("GetDailyCache");
+    //DebugLog("GetDailyCache");
     gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
     // mark state of switches for stats on icons, text to speech, bigtext
     var pagehits = LSget("pagehits").substr(0, 30) + ((gIconSwitch == 1) ? "5" : "6") + (TXTS.OnOff ? "7" : "") +
@@ -1178,7 +1178,7 @@ function GetDailyCache() {
 }
 function HandleDailyCacheReply(data) {
     InitializeDates(0);
-    DebugLog("HandleDailyCacheReply");
+    //DebugLog("HandleDailyCacheReply");
     localStorage.setItem("Cmain", "0");  // clear page count
     localStorage.setItem("pagehits", "");
     ParseDailyCache(data);
