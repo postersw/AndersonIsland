@@ -1,7 +1,7 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // clearemergencyfile.php - clears the emergencymessage.txt file.
-//      clearemergencyfile.php?pw=<password> [%msg=the emergency message with %20 for spaces];
+//      clearemergencyfile.php?pw=<password> [&msg=the emergency message with %20 or + for spaces];
 //  To display an emergency alert message: create text in file 'emergencymessage.txt'.  End with a <br/>.
 //  To request immediate refresh (app reload) of dailycache & coming events, create a unique text in 'refresh.txt'.
 //      it will be cleared nightly by getgooglecalendarcron.php.

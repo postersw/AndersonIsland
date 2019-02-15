@@ -62,7 +62,7 @@ if($me > 12) {  // if year rollover
 if($me == 2 && $de > 28) $de = 28;  // prevent illegal feb  date
 if(($me == 9 || $me == 4 || $me == 6 || $me = 11) && ($de > 30)) $de = 30; // prevent illegal end date
 $timemax = $ye . "-" . sprintf("%02d", $me) . "-" .  $de . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
-echo "Ver 051818.1033<br/>";
+echo "$m/$d/$y<br/>";
 echo "Events from $timemin to $timemax <br/>";
 
 $http = "https://www.googleapis.com/calendar/v3/calendars/orp3n7fmurrrdumicok4cbn5ds@group.calendar.google.com/events?singleEvents=True&key=AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0" .
@@ -152,8 +152,10 @@ function SetRefresh() {
     if(array_key_exists("refresh", $_GET)) {
         $refresh = date("m/d/Y h:i:s");
         file_put_contents($refreshfile,$refresh);
+        echo "<br/>Wrote $refreshfile: $refresh <br/>";
     } else {
         if(file_exists($refreshfile)) unlink($refreshfile);
+        echo "<br/>Removed $refreshfile.<br/>";
     }
 }
 ?>
