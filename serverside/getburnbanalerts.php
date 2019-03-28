@@ -64,7 +64,7 @@
     $effective = 0; // >0 if there is a burn ban
 
     // 3/26/19: Find the line after Current Fire Safety Burn Ban:
-    $lifted = stripos($fire, "Fire Safety Burn Ban Status:</p><p>No Burn Ban", $i);
+    $lifted = stripos($fire, "Current Fire Safety Burn Ban: NO BURN BAN", $i);
 
     // now find alt image tags (bad solution) to get the actual status
     if($lifted===false) $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
