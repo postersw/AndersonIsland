@@ -1,11 +1,7 @@
 <?php
 ///////////////////////////////////////////////////////////////////////////
 //  Connect to the AIA database
-$dbhost     = "localhost";
-$dbuser     = "posterswaia";
-$dbpassword = "BobSueAIA";
-$database = "AndersonIsland";
-$adminpw = "2538480467";
+require("../../private/dbconnectconfig.php");
 $myconn = new mysqli($dbhost, $dbuser, $dbpassword, $database);
 
 if ($myconn->connect_errno) {
