@@ -10,7 +10,9 @@
 //      Rev 9/28/16.
 //  Fire department: look for "Current Fire Safety Burn Ban Status". Then for "NO BURN BAN".
 //      Rev 2/16/18.
-//      Rev 2/5/18. Look for NO FIRE SAFETY BURN BAD
+//      Rev 2/5/18. Look for NO FIRE SAFETY BURN BAN
+//      Rev 3/26/19: Look for: Current Fire Safety Burn Ban Status:</p><p>No Burn Ban
+//      Rev 4/4/19: Look for alt="FS No Burn Ban"
 //
     $burnbanlink = "http://wc.pscleanair.org/burnban411/";
     $firebblink = "http://www.co.pierce.wa.us/982/Burn-Bans";
@@ -59,8 +61,15 @@
     }
     if($i == 0) Bailout("Could not find \"$cwbb\"");
 
+    $lifted = 0; // >0 if no burn ban
+    $effective = 0; // >0 if there is a burn ban
+
+    // 3/26/19: Find the line after Current Fire Safety Burn Ban:
+    $lifted = stripos($fire, "Current Fire Safety Burn Ban: NO BURN BAN", $i);
+
     // now find alt image tags (bad solution) to get the actual status
-    $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
+    if($lifted===false) $lifted = stripos($fire,'alt="FS No Burn Ban"', $i);
+    if($lifted===false) $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
     if($lifted===false) $lifted = stripos($fire, "NO FIRE SAFETY BURN BAN", $i);
     $effective = stripos($fire, '"FIRE SAFETY - BURN BAN"', $i);
     if($effective===false) $effective = stripos($fire, '"BURN BAN IN EFFECT"', $i);
@@ -86,7 +95,7 @@
     // Bailout - send error message and delete file and exit
     function Bailout($s) {
         echo "Error: " . $s;
-        unlink($burnbanfile);
+        //unlink($burnbanfile);
         exit;
     }
 ?>

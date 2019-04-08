@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.24.012719"
+        version="1.24.021519"
         android-versionCode="2243"
-        android:versionName="1.24.01271">
+        android:versionName="1.24.021519">
   <!-- on 1/27/19 this was reformatted by vs2017-->
   <!-- versionCode 2243 for 1.24 1/27/19 -->
   <!-- versionCode 2242 for 1.23 11/24/18 -->
@@ -94,10 +94,10 @@
   </config-file>
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
   <!-- Still required with builder=1 for IOS-->
-  <preference name="phonegap-version" value="cli-7.1.0" />
-  <preference name="pgb-builder-version" value="1" />
-  <!--<preference name="phonegap-version" value="cli-8.0.0" />-->
-  <!--<preference name="pgb-builder-version" value="2" />-->
+  <!--<preference name="phonegap-version" value="cli-7.1.0" />
+  <preference name="pgb-builder-version" value="1" />-->
+  <preference name="phonegap-version" value="cli-8.0.0" />
+  <preference name="pgb-builder-version" value="2" />
   <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- Plugins -->
   <!-- Core plugins -->
@@ -179,19 +179,30 @@
       <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" />
     </edit-config>
     <!--Adaptive Icons 11/29/18-->
+    <resource-file src="www/locales/android/mipmap-ldpi/icon.png" target="app/src/main/res/mipmap-ldpi/icon.png" />
+
     <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-mdpi/ic_launcher_round.png" />
+    
     <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher.png" target="app/src/main/res/mipmap-hdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-hdpi/ic_launcher_round.png" />
+    
     <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xhdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
+    
     <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxhdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" />
+    
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
+    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
     <!--XML for Adaptive Icons-->

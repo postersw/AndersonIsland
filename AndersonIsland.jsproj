@@ -82,9 +82,6 @@
     <Content Include="ReadMe.txt" />
     <Content Include="www\aimapx.9.png" />
     <Content Include="www\android\aimap.9.png" />
-    <Content Include="www\oldconfig.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="www\css\index.css" />
     <Content Include="www\favicon-16x16.ico" />
     <Content Include="www\favicon-32x32.ico" />
@@ -234,5 +231,11 @@
     <Content Update="config.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Update="oldconfig.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="www\locales\android\mipmap-ldpi\" />
   </ItemGroup>
 </Project>

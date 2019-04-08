@@ -1,8 +1,11 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  getgooglecalendarcron - gets the coming events/activities from the google calendar
-//          for the next 6 months.
+//  getgooglecalendarcron - gets the coming events/activities from the AndersonIslandAssistant Google calendar
+//          for the next 6 months and writes them to the comingevents.txt file
 //          called by cron every day at 11:50pm.
+//  To set immediate refresh flag for the app:
+//      getgooglecalendarcron?refresh=true
+//
 //  Google calendar event format:
 //      Event name or summary:  [E|M|S|A|C|G|O];name   MUST USE ;
 //          where x=E(event)|M(meeting)|S(show) for Event, or A(activity)|C(craft)|G(game)|O(other) for activity
@@ -18,7 +21,7 @@
 //      ACTIVITIES
 //      0101;0000;0000;E;year ....
 //      ... activities ...
-// this file is copied by getdailycache.php into dailycache.txt as:
+// this file is copied by getdailycache.php to the app as:
 //      COMINGEVENTS
 //       ... events ...
 //      ACTIVITIES
@@ -41,6 +44,7 @@
 //  03/31/2017 - fix to prevent illegal end dates like 0631
 //  10/02/2017 - fix for year rollover.  Also limit to 100 events and 100 activities.
 //  05/17/2018 - 6 month lookahead. Change event limit to 999 but leave activity limit at 100.
+//  02/13/2019 - set or clear "refresh.txt" file.
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -58,7 +62,7 @@ if($me > 12) {  // if year rollover
 if($me == 2 && $de > 28) $de = 28;  // prevent illegal feb  date
 if(($me == 9 || $me == 4 || $me == 6 || $me = 11) && ($de > 30)) $de = 30; // prevent illegal end date
 $timemax = $ye . "-" . sprintf("%02d", $me) . "-" .  $de . "T00:00:00-07:00"; //2016-08-01T00:00:00-07:00
-echo "Ver 051818.1033<br/>";
+echo "$m/$d/$y<br/>";
 echo "Events from $timemin to $timemax <br/>";
 
 $http = "https://www.googleapis.com/calendar/v3/calendars/orp3n7fmurrrdumicok4cbn5ds@group.calendar.google.com/events?singleEvents=True&key=AIzaSyDJWvozAfe-Evy-3ZR4d3Jspd0Ue5T53E0" .
@@ -96,6 +100,7 @@ $n = fcopy("xACGO", $y); // NOTE: if you change "xACGO", see line 110.
 echo $n . " Activities.<br/>";
 fclose($fce);
 
+SetRefresh(); // sets or clears the refresh.txt file
 exit;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -133,5 +138,24 @@ function fcopy($etype, $ys) {
         }
     }
     return $n;
+}
+
+/////////////////////////////////////////////////////////////////////////
+//  SetRefresh - sets or clears the refresh file
+//  if refresh=true in the GET header, writes a time stamp to the refresh.txt file
+//  This requests the app to call GetDailyCache immediately, which refreshes the calendar.
+//      The app remembers the refresh value and will not refresh until the value changes, or until the date changes.
+//  otherwise deletes the refresh.txt file.
+function SetRefresh() {
+    $refreshfile = "refresh.txt";
+    $refresh = "";
+    if(array_key_exists("refresh", $_GET)) {
+        $refresh = date("m/d/Y h:i:s");
+        file_put_contents($refreshfile,$refresh);
+        echo "<br/>Wrote $refreshfile: $refresh <br/>";
+    } else {
+        if(file_exists($refreshfile)) unlink($refreshfile);
+        echo "<br/>Removed $refreshfile.<br/>";
+    }
 }
 ?>
