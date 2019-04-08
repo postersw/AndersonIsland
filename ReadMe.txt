@@ -400,6 +400,9 @@ For OneSignal 5/31/18
 OneSignal test
 1. I have created a single test user named "Bob"
 2. To test: select Messages, New Push, Send to Test Device
+3. To test from the API, use the pushtest.php script, which sends to 'Test Devices', which is my phone. 4/8/19.
+
+Note: The OneSignal API Key is stored under root/private/OneSignal.php
 
 -------------------------------------------------------------------------------------------------------------------------
 
