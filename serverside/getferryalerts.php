@@ -214,8 +214,10 @@ function logalertlast($s) {
 //  Users curl library.
 //  https://documentation.onesignal.com/reference#create-notification
 //  7/9/18: ios_badgeCount set to 0
+//  4/7/19: Rest API Key moved from code to file in root after key was hacked.
 //
 function PushOSNotification($title, $msg) {
+    require ('../private/OneSignal.php');
     $fields = array(
         'app_id' => "a0619723-d045-48d3-880c-6028f8cc6006",
         'included_segments' => array('Active Users'),
@@ -231,9 +233,10 @@ function PushOSNotification($title, $msg) {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
-    // "Authorization: Basic YOUR_REST_API_KEY (from the OneSignal web site for my app).
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-                                               'Authorization: Basic YWQyZmE5OGUtNGY0MC00OTAyLWEyOTYtMTUyZjVjZjEyNzA0'));
+    // "Authorization: Basic YOUR_REST_API_KEY (from the OneSignal web site for my app). After 4/7/19 this key must be set
+    //  before the code is uploaded to the web site. 
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8', $RestAPIKey));
+    //                                           'Authorization: Basic YWQyZmE5OGUtNGY0MC00OTAyLWEyOTYtMTUyZjVjZjEyNzA0'));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_POST, TRUE);
