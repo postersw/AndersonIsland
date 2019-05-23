@@ -9,10 +9,12 @@
 <h1>EDIT FERRY SCHEDULE</h1>
     Ferry Schedule Editor.
     <p>Use this page to edit the ferry schedule. </p>
-    <button onclick="LoadSchedule()">Load from dailycache</button>
+    <button onclick="LoadSchedule()">Load Full Schedule from dailycache</button>
     <button onclick="CheckSchedule()"> Check </button>
-    <button onclick="TestSchedule()"> Test </button>
-    <button onclick="SaveSchedule()"> Save </button>
+    <button onclick="TestSchedule()"> Test all entries</button>
+    <button onclick="SaveSchedule()"> Save Full Schedule to Edit Box</button>
+    <p>To Use:<br/>
+    1 Click 'LOAD SCHEDULE'. 2 Make changes using Edit box. 3 Click 'Save Full Schedule'. 4 Select All in edit box, copy, and paste into dailycache.txt.</p>
     <p>Rules for ferry time expression:<br/>
     <ul>
         <li>Times are 2400, NO leading zero. 0=midnight. 1200=noon.</li>
@@ -31,7 +33,8 @@
     <input type="text" id="edittime" size="4" /> &nbsp;<input type="text" size="1" id="editSAK" /> &nbsp; &nbsp;
     <button onclick="CheckEdit()">Check</button> 
     <button onclick="PCountEdit()">() Count</button> 
-    <button onclick="SaveEdit()">Save</button><br/>
+    <button onclick="SaveEdit(0)">Save Edit box to 1 schedule</button>
+    <button onclick="SaveEdit(1)">Save Edit box to 3: ST/AI/KE</button><br/>
     <textarea cols="200" rows="4" id="editrule"></textarea>
 
     <h1>SCHEDULE TABLE</h1>
@@ -383,7 +386,9 @@
     ///////////////////////////////////////////////////////////////////
     // SaveEdit - move the edit cell back into the ferrytime array 
     //  and regen the display table
-    function SaveEdit() {
+    //  Entry   all = 0 to just save to current entry, 3 to save to Steiacoom, AI, and Ketron
+    function SaveEdit(all) {
+        if (all == 1) geditSAK = "SAK";
         if (geditSAK == "") return;
         var rule = document.getElementById("editrule").value;
         var ft = Number(document.getElementById("edittime").value);
@@ -412,6 +417,15 @@
                     ferrytimeK[gediti] = ft;
                     ferrytimeK[gediti + 1] = rule;
                     break;
+                case "SAK":
+                    ferrytimeS[gediti] = ft;
+                    ferrytimeS[gediti + 1] = rule;
+                    ferrytimeA[gediti] = ft;
+                    ferrytimeA[gediti + 1] = rule;
+                    ferrytimeK[gediti] = ft;
+                    ferrytimeK[gediti + 1] = rule;
+                    break;
+
         }
         clearTable(document.getElementById("ftable"));
         BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
