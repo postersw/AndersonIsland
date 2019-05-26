@@ -98,6 +98,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 01/03/19. Ver 1.23.121818 Google # 2242. Released to Production.
 01/18/19. Ver 1.23.119194 Approved for IOS app store production. (main menu service & church items reversed from Android)
 02/15/19. Ver 1.24.021519 Google # 2243 released to beta. Fix icon for Android 5. Also fix Tanner icon on power out. Add REFRESH request to alert.
+05/01/19. Ver 1.24.021519 Promoted to production. Android only. 
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
