@@ -63,7 +63,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
         </p>
 <form class="w3-container" name="business" method="post" action="dbupdate.php">
     <label class="w3-label">Business Name: (You may change your business name here. This name must be unique. ) </label><input class="w3-input w3-border" type="text" name="bname"  required="required" maxlength="40" value="{$row['business']}"/> <br/>
-    <label class="w3-label">DELETE Business: (Check to DELETE your listing. This removes your listing.) </label><input class="w3-check w3-border" type="checkbox" name="deleteme" /> <br/><br/>
+    <label class="w3-label">DELETE Business: (Check to DELETE your listing. This removes your listing.) </label><input class="w3-check w3-border" type="checkbox" name="deleteme" id="deleteme" value="yes" onclick="DeleteM()"/> <br/><br/>
     <label class="w3-label">Password: (Fill in only to CHANGE your password.) </label><input class="w3-input w3-border" type="text" name="password"  size="20" maxlength="20" /> <br/>
     <label class="w3-label">Business Category: (Required. One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required" maxlength="40" value="{$row['category']}" /><br/>
     <label class="w3-label">Optional 2nd Category: (Optional)</label><input class="w3-input w3-border" type="text" name="category2" maxlength="40" value="{$row['category2']}" /><br/>
@@ -84,9 +84,23 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
 
     <input type="submit" value="UPDATE"/>
 </form>
+</div>
+<script>
+    /////////////////////////////////////////////////////////////////////////
+    //  DeleteM - asks the user if they want to delete, and unchecks the box if they say no.
+        function DeleteM() {
+        if(document.getElementById('deleteme').checked == true) {
+           if (confirm("Are you sure you want to delete this business?") == false) {
+                document.getElementById('deleteme').checked = false;
+                return;
+            }
+        }
+
+    }
+</script>
 HEREDOC;
     echo $s;
         ?>
-</div>
+
 </body>
 </html>
