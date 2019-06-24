@@ -46,6 +46,7 @@ DOC;
     $password = trim($_POST['password']);
     $category = strtoupper (trim($_POST['category']));  // force upper case category
     $category2 = strtoupper (trim($_POST['category2']));  // force upper case category2
+    $category3 = strtoupper (trim($_POST['category3']));  // force upper case category2
     $services = trim($_POST['services']);
     $owner= trim($_POST['owner']);
     $address = trim($_POST['address']);
@@ -102,6 +103,7 @@ DOC;
         UpD("business", $business);
         UpD("category", $category);
         UpD("category2", $category2);
+        UpD("category3", $category3);
         if($password!="") UpD("password", $password);  // update password only if changed
         UpD("services", $services);
         UpD("owner", $owner);

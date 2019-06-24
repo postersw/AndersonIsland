@@ -67,6 +67,7 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     <label class="w3-label">Password: (Fill in only to CHANGE your password.) </label><input class="w3-input w3-border" type="text" name="password"  size="20" maxlength="20" /> <br/>
     <label class="w3-label">Business Category: (Required. One Category. Example: Landscaping)</label><input class="w3-input w3-border" type="text" name="category" required="required" maxlength="40" value="{$row['category']}" /><br/>
     <label class="w3-label">Optional 2nd Category: (Optional)</label><input class="w3-input w3-border" type="text" name="category2" maxlength="40" value="{$row['category2']}" /><br/>
+    <label class="w3-label">Optional 3rd Category: (Optional)</label><input class="w3-input w3-border" type="text" name="category3" maxlength="40" value="{$row['category3']}" /><br/>
     <label class="w3-label">Owner: (Required)</label><input class="w3-input w3-border" type="text" name="owner"  required="required" size="50" maxlength="40" value="{$row['owner']}"/><br/>
     <label class="w3-label">Services: (Required. A list of one or more services. Example: lawnmowing, trimming)</label><input class="w3-input w3-border" type="text" name="services"  required="required" size="50"  maxlength="100" value="{$row['services']}"/><br/>
     <label class="w3-label">Anderson Island Address: (Required.)</label><input class="w3-input w3-border" type="text"  name="address"  required="required" size="50" maxlength="50" value="{$row['address']}" /><br/>
