@@ -1,0 +1,2965 @@
+Blank file 2/21/18
+BRAINTREE ORDER
+02/23/2018 15:36:33
+
+product = P
+name1 = Jr Barron
+company = 
+addr1 = 214 Brewster Dr
+addr2 = 
+city = Lancaster
+state = PA
+zip = 17603
+country = United States of America
+phone = 7173141384
+email = striker92s@verizon.net
+ship = 
+price = 18
+orderid = 5180223153632
+transactionid = m2z4tfd0
+paymenttype = credit_card
+remaddr = 96.83.143.9
+host = 96-83-143-9-static.hfc.comcastbusiness.net
+domain = 
+billingname = Howard Barron
+billingaddr  = 214 Brewster Dr
+billingcity  = Lancaster
+billingstate  = PA
+billingzip  = 17603
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/01/2018 15:44:55
+
+product = U
+name1 = Michael Wren
+company = 
+addr1 = 6249 SW Timber Ridge Drive
+addr2 = 
+city = Corvallis
+state = OR
+zip = 97333
+country = United States
+phone = 5419299371
+email = mwren45@gmail.com
+ship = 
+price = 24
+orderid = 5180301154453
+transactionid = c9943zkr
+paymenttype = credit_card
+remaddr = 76.115.127.0
+host = c-76-115-127-0.hsd1.or.comcast.net
+domain = 
+billingname = Michael Wren
+billingaddr  = 6249 SW Timber Ridge Drive
+billingcity  = Corvallis
+billingstate  = OR
+billingzip  = 97333
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/03/2018 13:40:19
+
+product = G
+name1 = jack
+company = 
+addr1 = 330 US  Hwy. 46E
+addr2 = 
+city = Fairfield
+state = NJ
+zip = 07004
+country = United States of America
+phone = 9735751118
+email = jack@colorleasing.com
+ship = 
+price = 10
+orderid = 5180303134018
+transactionid = qnyybrnd
+paymenttype = credit_card
+remaddr = 50.254.85.146
+host = 50-254-85-146-static.hfc.comcastbusiness.net
+domain = 
+billingname = jack
+billingaddr  = 330 US  Hwy. 46E
+billingcity  = Fairfield
+billingstate  = NJ
+billingzip  = 07004
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/04/2018 15:29:50
+
+product = O
+name1 = Mike Ellis
+company = 
+addr1 = PO Box 906
+addr2 = 
+city = Spanaway
+state = WA
+zip = 98387
+country = United States of America
+phone = 253 204 9314
+email = mlellis337@comcast.net
+ship = 
+price = 39.35
+orderid = 5180304152948
+transactionid = 37reykez
+paymenttype = credit_card
+remaddr = 73.19.83.154
+host = c-73-19-83-154.hsd1.wa.comcast.net
+domain = 
+billingname = Mike Ellis
+billingaddr  = PO Box 906
+billingcity  = Spanaway
+billingstate  = WA
+billingzip  = 98387
+billingcountry  = United States of America
+
+version = 10
+
+special = How come I have to buy this every year?
+
+where = poster software, download.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/06/2018 23:28:01
+
+product = P
+name1 = Renato Nepomuceno
+company = 
+addr1 = 5166 W Montrose Ave
+addr2 = apt BE
+city = Chicago
+state = IL
+zip = 60641
+country = United States of America
+phone = 773 397 0066
+email = rrnepomuceno13@yahoo.com
+ship = 
+price = 18
+orderid = 5180306232759
+transactionid = d0zaanr2
+paymenttype = credit_card
+remaddr = 107.198.98.11
+host = 107-198-98-11.lightspeed.cicril.sbcglobal.net
+domain = 
+billingname = Renato Nepomuceno
+billingaddr  = 5166 W Montrose Ave
+billingcity  = Chicago
+billingstate  = IL
+billingzip  = 60641
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/08/2018 14:48:19
+
+product = U
+name1 = Ralph Young
+company = 
+addr1 = 612 Windmill Rd;
+addr2 = 
+city = Easton
+state = MD
+zip = 21601
+country = United States of America
+phone = (410) 819-0050
+email = rmyoung@goeaston.net
+ship = 
+price = 24
+orderid = 5180308144817
+transactionid = 8s2ssvx1
+paymenttype = credit_card
+remaddr = 76.72.133.87
+host = 87.133.72.76.cable.dhcp.goeaston.net
+domain = 
+billingname = Ralph Young
+billingaddr  = 612 Windmill Rd;
+billingcity  = Easton
+billingstate  = MD
+billingzip  = 21601
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = Staples (years ago)
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/09/2018 14:40:13
+
+product = P
+name1 = Mark Dahle
+company = 
+addr1 = 7111 La Jolla Blvd
+addr2 = 
+city = La Jolla
+state = CA
+zip = 92037
+country = United States of America
+phone = 8584546459
+email = lajollalutheran@gmail.com
+ship = 
+price = 18
+orderid = 5180309144012
+transactionid = rc0jzqqb
+paymenttype = credit_card
+remaddr = 173.244.48.163
+host = ip-163-48-244-173.california.us.northamericancoax.com
+domain = 
+billingname = Mark Dahle
+billingaddr  = 7111 La Jolla Blvd
+billingcity  = La Jolla
+billingstate  = CA
+billingzip  = 92037
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = cnet
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/14/2018 02:20:18
+
+product = P
+name1 = Stephanie Sarver
+company = 
+addr1 = 5816 Castle Ave Apt 1
+addr2 = 
+city = Dunsmuir
+state = CA
+zip = 96025
+country = United States
+phone = 6504551175
+email = stsarver@gmail.com
+ship = 
+price = 18
+orderid = 5180314022017
+transactionid = baaadq8t
+paymenttype = credit_card
+remaddr = 23.114.6.69
+host = 23.114.6.69
+domain = 
+billingname = Stephanie Sarver
+billingaddr  = 5816 Castle Ave Apt 1
+billingcity  = Dunsmuir
+billingstate  = CA
+billingzip  = 96025
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = postersw.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/14/2018 19:20:19
+
+product = Z
+name1 = noraini ruslan
+company = 
+addr1 = 41 edward street flats
+addr2 = s3 7gg
+city = sheffield
+state = 
+zip = 
+country = united kingdom
+phone = +447479999463
+email = ruslannoraini@gmail.com
+ship = checked
+price = 50
+orderid = 5180314192017
+transactionid = ksrddpwx
+paymenttype = credit_card
+remaddr = 90.197.98.4
+host = 5ac56204.bb.sky.com
+domain = 
+billingname = noraini ruslan
+billingaddr  = 41 edward street flats
+billingcity  = sheffield
+billingstate  = 
+billingzip  = 
+billingcountry  = united kingdom
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/16/2018 08:36:53
+
+product = G
+name1 = Jerome Morgan
+company = 
+addr1 = 7706 S. Quebec Ave
+addr2 = 
+city = Tulsa
+state = OK
+zip = 74136
+country = United States of America
+phone = 918-949-4533
+email = jeromemorgan@gmail.com
+ship = 
+price = 10
+orderid = 5180316083651
+transactionid = fhmbyd7x
+paymenttype = credit_card
+remaddr = 198.187.174.15
+host = cyrano.stdreg.com
+domain = 
+billingname = Jerome Morgan
+billingaddr  = 7706 S. Quebec Ave
+billingcity  = Tulsa
+billingstate  = OK
+billingzip  = 74136
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = download.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+03/21/2018 10:09:35
+
+product = Z
+name1 = chennakesavalu varadaraju
+company = 
+addr1 = 1/444-2, Karkana Street
+addr2 = State Bank Colony-2, Meyyanur
+city = Salem, Tamilnadu
+state = 
+zip = 636004
+country = India
+phone = 04272442488
+email = chennakesavalu@live.com
+ship = checked
+price = 50
+orderid = 5180321100933
+transactionid = 8fggx9j0
+paymenttype = credit_card
+remaddr = 157.50.203.203
+host = 157.50.203.203
+domain = 
+billingname = chennakesavalu varadaraju
+billingaddr  = 1/444-2, Karkana Street
+billingcity  = Salem, Tamilnadu
+billingstate  = 
+billingzip  = 636004
+billingcountry  = India
+
+version = 10
+
+special = Full version, Ads Free and Water mark free
+
+where = From www.posterw.com
+
+new = Easy to Creat, Design Posters and presentations
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+04/10/2018 21:14:07
+
+product = D
+name1 = Peter Cahill
+company = 
+addr1 = 117 Rossmoyne Street
+addr2 = Thornbury
+city = Melbourne
+state = 
+zip = 
+country = Australia
+phone = 0394846108
+email = chllptr@yahoo.com.au
+ship = 
+price = 18
+orderid = 5180410211405
+transactionid = ne0178jb
+paymenttype = credit_card
+remaddr = 124.149.156.177
+host = 124-149-156-177.dyn.iinet.net.au
+domain = 
+billingname = Peter Cahill
+billingaddr  = 117 Rossmoyne Street
+billingcity  = Melbourne
+billingstate  = 
+billingzip  = 
+billingcountry  = Australia
+
+version = 8
+
+special = 
+
+where = download
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+04/22/2018 13:18:52
+
+product = R
+name1 = Emil Goin
+company = 
+addr1 = 51 bras d&#39;or avenue
+addr2 = 
+city = pointe claire
+state = QC
+zip = H9r 1w6
+country = Canada
+phone = 5146977341
+email = emilgoin@gmail.com
+ship = 
+price = 15
+orderid = 5180422131851
+transactionid = e47s2jnm
+paymenttype = credit_card
+remaddr = 70.81.161.95
+host = modemcable095.161-81-70.mc.videotron.ca
+domain = 
+billingname = Emil Goin
+billingaddr  = 51 bras d'or avenue
+billingcity  = pointe claire
+billingstate  = QC
+billingzip  = H9r 1w6
+billingcountry  = Canada
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+04/22/2018 13:31:00
+
+product = P
+name1 = Emil Goin
+company = 
+addr1 = 51 bras d&#39;or avenue
+addr2 = 
+city = pointe claire
+state = QC
+zip = H9r 1w6
+country = Canada
+phone = 5146977341
+email = emilgoin@gmail.com
+ship = 
+price = 18
+orderid = 5180422133059
+transactionid = m3vt1ar0
+paymenttype = credit_card
+remaddr = 70.81.161.95
+host = modemcable095.161-81-70.mc.videotron.ca
+domain = 
+billingname = Emil Goin
+billingaddr  = 51 bras d'or avenue
+billingcity  = pointe claire
+billingstate  = QC
+billingzip  = H9r 1w6
+billingcountry  = Canada
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/02/2018 21:46:12
+
+product = P
+name1 = Eric Potter
+company = 
+addr1 = 553 North Mur-Len Road
+addr2 = Apt. 204
+city = Olathe
+state = KS
+zip = 66062
+country = United States of America
+phone = 913-262-7561
+email = ericvaughmagic@gmail.com
+ship = 
+price = 18
+orderid = 5180502214608
+transactionid = 07rt96fr
+paymenttype = credit_card
+remaddr = 108.65.97.177
+host = 108-65-97-177.lightspeed.mssnks.sbcglobal.net
+domain = 
+billingname = Eric Potter
+billingaddr  = 553 North Mur-Len Road
+billingcity  = Olathe
+billingstate  = KS
+billingzip  = 66062
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = download
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/06/2018 03:54:22
+
+product = P
+name1 = Wayne Klein
+company = 
+addr1 = 23515 Lyons Ave Unit 206
+addr2 = 
+city = Valencia
+state = CA
+zip = 91355
+country = United States of America
+phone = 6612546899
+email = kleinwayne@ca.rr.com
+ship = 
+price = 18
+orderid = 5180506035419
+transactionid = 570h9zrj
+paymenttype = credit_card
+remaddr = 172.91.201.247
+host = cpe-172-91-201-247.socal.res.rr.com
+domain = 
+billingname = Wayne Klein
+billingaddr  = 23515 Lyons Ave Unit 206
+billingcity  = Valencia
+billingstate  = CA
+billingzip  = 91355
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/07/2018 00:41:31
+
+product = P
+name1 = Andrea Browne
+company = 
+addr1 = 85 Balaclava Road
+addr2 = 
+city = BEECHWORTH
+state = 
+zip = 
+country = AUSTRALIA
+phone = 0357281264
+email = BROWNE.ANDREA.C@EDUMAIL.VIC.GOV.AU
+ship = 
+price = 18
+orderid = 5180507004128
+transactionid = 7dpyx00a
+paymenttype = credit_card
+remaddr = 202.45.119.69
+host = proxy-59-filtered.education.netspace.net.au
+domain = 
+billingname = Andrea Browne
+billingaddr  = 85 Balaclava Road
+billingcity  = BEECHWORTH
+billingstate  = 
+billingzip  = 
+billingcountry  = AUSTRALIA
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/16/2018 20:53:23
+
+product = P
+name1 = Dave Murdock DC
+company = 
+addr1 = 6028 West Hills Rd
+addr2 = 
+city = Fort Wayne
+state = IN
+zip = 46804
+country = United States
+phone = 2604142979
+email = davemurdockdc@gmail.com
+ship = 
+price = 18
+orderid = 5180516205319
+transactionid = phwvjec4
+paymenttype = credit_card
+remaddr = 184.18.136.178
+host = pool-184-18-136-178.ftwy.in.frontiernet.net
+domain = 
+billingname = Dave Murdock DC
+billingaddr  = 6028 West Hills Rd
+billingcity  = Fort Wayne
+billingstate  = IN
+billingzip  = 46804
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/21/2018 14:19:08
+
+product = P
+name1 = Gary L Griffiths
+company = 
+addr1 = 10681 N. Dogwood Rd.
+addr2 = 
+city = Florence
+state = AZ
+zip = 85132
+country = United States of America
+phone = 2147891119
+email = hypnog8r@gmail.com
+ship = 
+price = 18
+orderid = 5180521141905
+transactionid = 9hxqj1gx
+paymenttype = credit_card
+remaddr = 67.45.96.152
+host = host-67-45-96-152.hnremote.net
+domain = 
+billingname = Gary L Griffiths
+billingaddr  = 10681 N. Dogwood Rd.
+billingcity  = Florence
+billingstate  = AZ
+billingzip  = 85132
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = From Internet years ago
+
+new = Great as is!
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/23/2018 09:57:17
+
+product = P
+name1 = JERRY TULLOS
+company = 
+addr1 = P O BOX 184
+addr2 = 
+city = NEW CANEY
+state = TX
+zip = 77357
+country = United States of America
+phone = 2816892121
+email = DESPAINSINC@YAHOO.COM
+ship = 
+price = 18
+orderid = 5180523095714
+transactionid = mm8ppn9m
+paymenttype = credit_card
+remaddr = 47.221.104.2
+host = 47-221-104-2.kngwcmta02.res.dyn.suddenlink.net
+domain = 
+billingname = JERRY TULLOS
+billingaddr  = P O BOX 184
+billingcity  = NEW CANEY
+billingstate  = TX
+billingzip  = 77357
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/24/2018 12:29:22
+
+product = Z
+name1 = Mary Malone
+company = 
+addr1 = 1224 NE Walnut AVE
+addr2 = #366
+city = Roseburg
+state = OR
+zip = 97471
+country = United States of America
+phone = 5417848430
+email = info@wickerworks-aab.com
+ship = checked
+price = 50
+orderid = 5180524122919
+transactionid = ew4yrd1w
+paymenttype = credit_card
+remaddr = 206.192.224.197
+host = 206-192-224-197.douglasfast.net
+domain = 
+billingname = Mary Malone
+billingaddr  = 1224 NE Walnut AVE
+billingcity  = Roseburg
+billingstate  = OR
+billingzip  = 97471
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = online
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/30/2018 14:33:00
+
+product = D
+name1 = Doris MacLaren
+company = 
+addr1 = 245 Buland Drive
+addr2 = 
+city = castle Rock
+state = WA
+zip = 98611
+country = United States of America
+phone = 360-274-4365
+email = dorisbea@comcast.net
+ship = 
+price = 19.67
+orderid = 5180530143257
+transactionid = gn289xh9
+paymenttype = credit_card
+remaddr = 71.59.170.161
+host = c-71-59-170-161.hsd1.wa.comcast.net
+domain = 
+billingname = Doris MacLaren
+billingaddr  = 245 Buland Drive
+billingcity  = castle Rock
+billingstate  = WA
+billingzip  = 98611
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+05/30/2018 19:50:34
+
+product = P
+name1 = Jim Beichler
+company = 
+addr1 = PO Box 624
+addr2 = 
+city = Belpre
+state = OH
+zip = 45714
+country = United States of America
+phone = (740) 350-4555
+email = jebco1st@aol.com
+ship = 
+price = 18
+orderid = 5180530195031
+transactionid = 7kh0cf73
+paymenttype = credit_card
+remaddr = 75.109.55.29
+host = 75-109-55-29.pkbgcmtk02.com.dyn.suddenlink.net
+domain = 
+billingname = Jim Beichler
+billingaddr  = PO Box 624
+billingcity  = Belpre
+billingstate  = OH
+billingzip  = 45714
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = Free download on Internet
+
+new = Can&#39;t think of any
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/01/2018 13:57:05
+
+product = P
+name1 = Kathy Bickford
+company = 
+addr1 = 3430 Scenic Dr. S.E.
+addr2 = 
+city = Auburn
+state = WA
+zip = 98092
+country = United States of America
+phone = 253-939-7399
+email = bickford44@earthlink.net
+ship = 
+price = 19.67
+orderid = 5180601135701
+transactionid = 23gs2ed5
+paymenttype = credit_card
+remaddr = 71.231.3.87
+host = c-71-231-3-87.hsd1.wa.comcast.net
+domain = 
+billingname = Kathy Bickford
+billingaddr  = 3430 Scenic Dr. S.E.
+billingcity  = Auburn
+billingstate  = WA
+billingzip  = 98092
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = internet
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/01/2018 16:21:27
+
+product = P
+name1 = Duane Ullrich
+company = 
+addr1 = 2205 Richmond Rd.
+addr2 = 
+city = Staten Island
+state = NY
+zip = 10306
+country = United States of America
+phone = 7183510090
+email = dullrich@aol.com
+ship = 
+price = 18
+orderid = 5180601162124
+transactionid = 12hdv6a4
+paymenttype = credit_card
+remaddr = 100.33.17.15
+host = pool-100-33-17-15.nycmny.fios.verizon.net
+domain = 
+billingname = Duane Ullrich
+billingaddr  = 2205 Richmond Rd.
+billingcity  = Staten Island
+billingstate  = NY
+billingzip  = 10306
+billingcountry  = United States of America
+
+version = 10
+
+special = Lost Registration during Windows Update
+
+where = online
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/04/2018 14:50:39
+
+product = G
+name1 = Carol Magras
+company = 
+addr1 = 17115 SW 107th Ct
+addr2 = 
+city = Miami
+state = FL
+zip = 33157
+country = United States of America
+phone = 3055867920
+email = clmagras@yahoo.com
+ship = 
+price = 10
+orderid = 5180604145035
+transactionid = ks6cemzf
+paymenttype = credit_card
+remaddr = 199.107.16.130
+host = asbn11.gtwy.uscourts.gov
+domain = 
+billingname = Carol Magras
+billingaddr  = 17115 SW 107th Ct
+billingcity  = Miami
+billingstate  = FL
+billingzip  = 33157
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = ordered from website
+
+new = I can&#39;t think of anythink new to add.
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/12/2018 15:31:35
+
+product = U
+name1 = Jon Dodson
+company = 
+addr1 = 10160 Carnation CT
+addr2 = #5
+city = Florence
+state = KY
+zip = 41042
+country = United States
+phone = 9132275483
+email = jayjasp888@gmail.com
+ship = 
+price = 24
+orderid = 5180612153132
+transactionid = a52bym5w
+paymenttype = credit_card
+remaddr = 74.133.50.45
+host = cpe-74-133-50-45.kya.res.rr.com
+domain = 
+billingname = Jon Dodson
+billingaddr  = 10160 Carnation CT
+billingcity  = Florence
+billingstate  = KY
+billingzip  = 41042
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = download.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/14/2018 16:28:46
+
+product = P
+name1 = Keith Fayett
+company = 
+addr1 = 12530 Indian Rocks Rd
+addr2 = 
+city = Largo
+state = FL
+zip = 33774
+country = United States of America
+phone = 7273515214
+email = kkjewelers@tampabay.rr.com
+ship = 
+price = 18
+orderid = 5180614162845
+transactionid = js0e4z7c
+paymenttype = credit_card
+remaddr = 108.191.121.235
+host = 108-191-121-235.biz.bhn.net
+domain = 
+billingname = Keith Fayett
+billingaddr  = 12530 Indian Rocks Rd
+billingcity  = Largo
+billingstate  = FL
+billingzip  = 33774
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/20/2018 21:45:28
+
+product = O
+name1 = Linda Chapman
+company = 
+addr1 = 5030 N MAY AVE
+addr2 = 268
+city = OKLAHOMA CITY
+state = OK
+zip = 73112
+country = United States of America
+phone = 4054454332
+email = LINMACHA@GMAIL.COM
+ship = 
+price = 36
+orderid = 5180620214525
+transactionid = 0831amx9
+paymenttype = credit_card
+remaddr = 99.90.23.144
+host = 99-90-23-144.lightspeed.okcbok.sbcglobal.net
+domain = 
+billingname = Linda Chapman
+billingaddr  = 5030 N MAY AVE
+billingcity  = OKLAHOMA CITY
+billingstate  = OK
+billingzip  = 73112
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/23/2018 08:54:37
+
+product = P
+name1 = Gerald H. Griswold
+company = 
+addr1 = 302 Katherine St
+addr2 = 
+city = SUFFOLK
+state = VA
+zip = 23434
+country = United States of America
+phone = 7574386591
+email = g_griswold@msn.com
+ship = 
+price = 18
+orderid = 5180623085435
+transactionid = 5tjhvm4s
+paymenttype = credit_card
+remaddr = 141.152.159.94
+host = static-141-152-159-94.norf.east.verizon.net
+domain = 
+billingname = Gerald H. Griswold
+billingaddr  = 302 Katherine St
+billingcity  = SUFFOLK
+billingstate  = VA
+billingzip  = 23434
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = download
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/23/2018 15:37:25
+
+product = P
+name1 = Kayla Harnish
+company = 
+addr1 = 46 Ute Path
+addr2 = 
+city = Lake George
+state = CO
+zip = 80827
+country = United States of America
+phone = 719-748-1152
+email = kdh_35@hotmail.com
+ship = 
+price = 18
+orderid = 5180623153723
+transactionid = kq03ta1x
+paymenttype = credit_card
+remaddr = 72.168.176.169
+host = host7216800169176.direcway.com
+domain = 
+billingname = Kayla Harnish
+billingaddr  = 46 Ute Path
+billingcity  = Lake George
+billingstate  = CO
+billingzip  = 80827
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = poster software
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/25/2018 18:44:06
+
+product = P
+name1 = Laura Collins
+company = 
+addr1 = 401 S Holmes Street
+addr2 = 
+city = Wallowa
+state = OR
+zip = 97885
+country = United States of America
+phone = 5416669446
+email = mentallytilted@gmail.com
+ship = 
+price = 18
+orderid = 5180625184404
+transactionid = e7xbcme4
+paymenttype = credit_card
+remaddr = 104.169.157.202
+host = 104.169.157.202
+domain = 
+billingname = Laura A. Ledgett
+billingaddr  = PO Box 574
+billingcity  = Wallowa
+billingstate  = OR
+billingzip  = 97885
+billingcountry  = United States of America
+
+version = 10
+
+special = I bought this once, but my computer crashed and when I repaved it did not keep my Poster8.
+
+where = from Poster8
+
+new = More smoothing on the pictures...currently it does nothing that I can see
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+06/27/2018 17:34:55
+
+product = G
+name1 = NELLIE JAUJOU
+company = 
+addr1 = P.O. BOX 706
+addr2 = 
+city = GLENEDEN BEACH
+state = OR
+zip = 97388
+country = United States of America
+phone = 5417642994
+email = nelliejaujou@gmail.com
+ship = 
+price = 10
+orderid = 5180627173454
+transactionid = ad9ews57
+paymenttype = credit_card
+remaddr = 204.195.45.172
+host = 204-195-45-172.wavecable.com
+domain = 
+billingname = NELLIE JAUJOU
+billingaddr  = P.O. BOX 706
+billingcity  = GLENEDEN BEACH
+billingstate  = OR
+billingzip  = 97388
+billingcountry  = United States of America
+
+version = Win XP
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+07/11/2018 18:50:33
+
+product = P
+name1 = Nathaniel Bolos
+company = 
+addr1 = 57 Myers Ave
+addr2 = 
+city = Yorkville
+state = NY
+zip = 13495
+country = United States of America
+phone = 3153162565
+email = nbolos@live.com
+ship = 
+price = 18
+orderid = 5180711185031
+transactionid = 3ps87nfa
+paymenttype = credit_card
+remaddr = 162.221.193.175
+host = 162.221.193.175
+domain = 
+billingname = Nathaniel Bolos
+billingaddr  = 57 Myers Ave
+billingcity  = Yorkville
+billingstate  = NY
+billingzip  = 13495
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = download.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+07/18/2018 13:58:27
+
+product = P
+name1 = Dorsey R Stebbins
+company = 
+addr1 = 11625 Mount Holly Ct
+addr2 = 
+city = Cincinnati
+state = OH
+zip = 45240-2134
+country = United States of America
+phone = 5137424707
+email = drstebbins32@gmai.com
+ship = 
+price = 18
+orderid = 5180718135824
+transactionid = fq1xd48j
+paymenttype = credit_card
+remaddr = 208.102.222.2
+host = dsl-208-102-222-2.fuse.net
+domain = 
+billingname = Dorsey R Stebbins
+billingaddr  = 11625 Mount Holly Ct
+billingcity  = Cincinnati
+billingstate  = OH
+billingzip  = 45240-2134
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = fioptics.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+07/18/2018 21:21:37
+
+product = P
+name1 = Robin Humphreys
+company = 
+addr1 = 17 Ngahere Views
+addr2 = Orewa
+city = Auckland
+state = 
+zip = 
+country = New Zealand
+phone = 6421915237
+email = rhump@gardeningaids.co.nz
+ship = 
+price = 18
+orderid = 5180718212134
+transactionid = 7vh607qr
+paymenttype = credit_card
+remaddr = 222.154.46.203
+host = 222-154-46-203-adsl.sparkbb.co.nz
+domain = 
+billingname = Robin Humphreys
+billingaddr  = 17 Ngahere Views
+billingcity  = Auckland
+billingstate  = 
+billingzip  = 
+billingcountry  = New Zealand
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+07/21/2018 15:53:23
+
+product = G
+name1 = Andy Cohen
+company = 
+addr1 = 18 Whitlowe Rd
+addr2 = 
+city = Newton
+state = MA
+zip = 02465
+country = United States of America
+phone = 3392226930
+email = andycohen.email@gmail.com
+ship = 
+price = 10
+orderid = 5180721155320
+transactionid = 9agjzayj
+paymenttype = credit_card
+remaddr = 146.115.129.202
+host = 146-115-129-202.s456.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com
+domain = 
+billingname = Andrew Cohen
+billingaddr  = 18 Whitlowe Rd
+billingcity  = Newton
+billingstate  = MA
+billingzip  = 02465
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = postersw.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+07/26/2018 12:38:31
+
+product = D
+name1 = Cony L Upton
+company = 
+addr1 = 35 Gardner Ave.
+addr2 = 
+city = Machias
+state = ME
+zip = 04654
+country = United States of America
+phone = 207-263-6068
+email = c1upton@myfairpoint.net
+ship = 
+price = 18
+orderid = 5180726123829
+transactionid = 3x1717mc
+paymenttype = credit_card
+remaddr = 64.222.137.106
+host = static-64-222-137-106.man.east.myfairpoint.net
+domain = 
+billingname = Cony L Upton
+billingaddr  = 35 Gardner Ave.
+billingcity  = Machias
+billingstate  = ME
+billingzip  = 04654
+billingcountry  = United States of America
+
+version = 10
+
+special = This will be my 3rd purchase - Computer Crashed - Lost Registration Code
+
+where = Online - Your Web Site
+
+new = Very Satisfied - No Changes Required
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+07/30/2018 14:46:55
+
+product = O
+name1 = JOHN WEATHERLEY
+company = 
+addr1 = 2129 WEST NEWHAVEN AVE, APT.177
+addr2 = 
+city = WEST MELBOURNE
+state = FL
+zip = 32904
+country = United States of America
+phone = 3212583840
+email = AB4ET@CFL.RR.COM
+ship = 
+price = 36
+orderid = 5180730144652
+transactionid = m4yn3bn1
+paymenttype = credit_card
+remaddr = 97.102.170.3
+host = 97-102-170-3.res.bhn.net
+domain = 
+billingname = JOHN WEATHERLEY
+billingaddr  = 2129 WEST NEWHAVEN AVE, APT.177
+billingcity  = WEST MELBOURNE
+billingstate  = FL
+billingzip  = 32904
+billingcountry  = United States of America
+
+version = 10
+
+special = Reg code531267 Upgrade codes 66141775 or 700057
+
+where = poster software
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+08/01/2018 14:27:50
+
+product = P
+name1 = Bill Hubbard
+company = 
+addr1 = 6216 Beverly Drive
+addr2 = 
+city = Parma Hts.
+state = OH
+zip = 44130
+country = United States
+phone = 2162127386
+email = hubbardsign@sbcglobal.net
+ship = 
+price = 18
+orderid = 5180801142748
+transactionid = dc1h1ews
+paymenttype = credit_card
+remaddr = 184.59.153.148
+host = cpe-184-59-153-148.neo.res.rr.com
+domain = 
+billingname = Bill Hubbard
+billingaddr  = 6216 Beverly Drive
+billingcity  = Parma Hts.
+billingstate  = OH
+billingzip  = 44130
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = Download.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+08/09/2018 12:35:05
+
+product = P
+name1 = John A Lippert
+company = 
+addr1 = 176 Geronimo Blvd.
+addr2 = 
+city = Lake Havasu City
+state = AZ
+zip = 86404
+country = United States of America
+phone = 928 566-4655
+email = fenixsdad@suddenlink.net
+ship = 
+price = 18
+orderid = 5180809123503
+transactionid = 3tsppfs4
+paymenttype = credit_card
+remaddr = 24.121.252.229
+host = 24-121-252-229.lkhvcmtk01.res.dyn.suddenlink.net
+domain = 
+billingname = John A Lippert
+billingaddr  = 176 Geronimo Blvd.
+billingcity  = Lake Havasu City
+billingstate  = AZ
+billingzip  = 86404
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+08/13/2018 12:56:36
+
+product = P
+name1 = John Kashynski
+company = 
+addr1 = 403 Cheyenne Circle
+addr2 = 
+city = Fort Walton Beach
+state = FL
+zip = 32547
+country = United States of America
+phone = 8508641328
+email = jonikash@cox.net
+ship = 
+price = 18
+orderid = 5180813125635
+transactionid = g263jpzd
+paymenttype = credit_card
+remaddr = 68.109.12.6
+host = ip68-109-12-6.pn.at.cox.net
+domain = 
+billingname = John Kashynski
+billingaddr  = 403 Cheyenne Circle
+billingcity  = Fort Walton Beach
+billingstate  = FL
+billingzip  = 32547
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+08/17/2018 09:43:01
+
+product = G
+name1 = Nathan Powell
+company = 
+addr1 = 1314 NW 20th St
+addr2 = 
+city = Oklahoma City
+state = OK
+zip = 73106
+country = United States
+phone = 4055210165
+email = powell1100@cox.net
+ship = 
+price = 10
+orderid = 5180817094300
+transactionid = 80285jqg
+paymenttype = credit_card
+remaddr = 174.67.47.78
+host = ip174-67-47-78.ok.ok.cox.net
+domain = 
+billingname = Nathan Powell
+billingaddr  = 1314 NW 20th St
+billingcity  = Oklahoma City
+billingstate  = OK
+billingzip  = 73106
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = DOWNLOAD
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+08/20/2018 10:10:04
+
+product = P
+name1 = Lloyd A. Liles
+company = 
+addr1 = 603 Del Circle
+addr2 = 
+city = Lowell
+state = AR
+zip = 72745
+country = United States of America
+phone = +447880711751
+email = Liles@usa.com
+ship = 
+price = 18
+orderid = 5180820101002
+transactionid = p0vn65jc
+paymenttype = credit_card
+remaddr = 87.114.240.184
+host = 184.240.114.87.dyn.plus.net
+domain = 
+billingname = Lloyd A. Liles
+billingaddr  = 603 Del Circle
+billingcity  = Lowell
+billingstate  = AR
+billingzip  = 72745
+billingcountry  = United States of America
+
+version = 10
+
+special = Am currently using this at my GB location....
+
+where = Online order from you.....
+
+new = Works great for what I need as it is....
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+08/20/2018 10:20:17
+
+product = P
+name1 = Lloyd A. Liles
+company = 
+addr1 = 603 Del Circle
+addr2 = 
+city = Lowell
+state = AR
+zip = 72745
+country = United States of America
+phone = +447880711751
+email = Liles@usa.com
+ship = 
+price = 18
+orderid = 5180820102015
+transactionid = ddq4hg5m
+paymenttype = credit_card
+remaddr = 87.114.240.184
+host = 184.240.114.87.dyn.plus.net
+domain = 
+billingname = Lloyd A. Liles
+billingaddr  = 603 Del Circle
+billingcity  = Lowell
+billingstate  = AR
+billingzip  = 72745
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/01/2018 22:39:53
+
+product = P
+name1 = Florrie O&#39;Loughlin
+company = 
+addr1 = 555 Elizabeth Ave Apt. 10-C
+addr2 = 
+city = Newark
+state = NJ
+zip = 07112
+country = United States of America
+phone = 862-576-2882
+email = florrieo@optimum.net
+ship = 
+price = 18
+orderid = 5180901223951
+transactionid = qmnphem5
+paymenttype = credit_card
+remaddr = 24.188.232.155
+host = ool-18bce89b.dyn.optonline.net
+domain = 
+billingname = Florrie O'Loughlin
+billingaddr  = 555 Elizabeth Ave Apt. 10-C
+billingcity  = Newark
+billingstate  = NJ
+billingzip  = 07112
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/16/2018 11:36:08
+
+product = Z
+name1 = Robert Motion
+company = 
+addr1 = Box 985
+addr2 = 156 Lower Road
+city = Fort St James
+state = BC
+zip = V0J1P0
+country = Canada
+phone = 2509963752
+email = bobbus2783@gmail.com
+ship = checked
+price = 50
+orderid = 5180916113606
+transactionid = 0abf4cq5
+paymenttype = credit_card
+remaddr = 172.218.15.16
+host = d172-218-15-16.bchsia.telus.net
+domain = 
+billingname = Robert Motion
+billingaddr  = Box 985
+billingcity  = Fort St James
+billingstate  = BC
+billingzip  = V0J1P0
+billingcountry  = Canada
+
+version = 7
+
+special = 
+
+where = postersw.com
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/19/2018 15:35:55
+
+product = Z
+name1 = Justin Padawer
+company = 
+addr1 = 259 E. 7th Ave.
+addr2 = 
+city = Salt Lake City
+state = UT
+zip = 84103
+country = United States of America
+phone = 801-335-8301
+email = padawer@mac.com
+ship = checked
+price = 50
+orderid = 5180919153553
+transactionid = jwarnrnv
+paymenttype = credit_card
+remaddr = 67.163.88.156
+host = c-67-163-88-156.hsd1.ut.comcast.net
+domain = 
+billingname = Justin Padawer
+billingaddr  = 259 E. 7th Ave.
+billingcity  = Salt Lake City
+billingstate  = UT
+billingzip  = 84103
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/24/2018 07:34:27
+
+product = P
+name1 = Robert Booth
+company = 
+addr1 = 702 Fernald Street
+addr2 = 
+city = Edgewater
+state = FL
+zip = 32132
+country = United States of America
+phone = 386-424-9749
+email = bbooth702@icloud.com
+ship = 
+price = 18
+orderid = 5180924073424
+transactionid = 21jejm52
+paymenttype = credit_card
+remaddr = 184.91.244.127
+host = 184-091-244-127.res.spectrum.com
+domain = 
+billingname = Robert Booth
+billingaddr  = 702 Fernald Street
+billingcity  = Edgewater
+billingstate  = FL
+billingzip  = 32132
+billingcountry  = United States of America
+
+version = 10
+
+special = Like it! Was a bit tricky to figure out how some of the options work
+
+where = Your site
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/24/2018 20:02:49
+
+product = G
+name1 = Joseph Nelson
+company = 
+addr1 = 29 N Chenango St
+addr2 = Suite 2
+city = Greene
+state = NY
+zip = 13778-1197
+country = United States of America
+phone = 6076564664
+email = jnelson5@stny.rr.com
+ship = 
+price = 10
+orderid = 5180924200247
+transactionid = petyg14x
+paymenttype = credit_card
+remaddr = 198.255.130.101
+host = cpe-198-255-130-101.stny.res.rr.com
+domain = 
+billingname = Joseph Nelson
+billingaddr  = 29 N Chenango St
+billingcity  = Greene
+billingstate  = NY
+billingzip  = 13778-1197
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = original copy v6.66 from internet. Don&#39;t know where.  Poster v8  from poster website
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/25/2018 15:00:52
+
+product = U
+name1 = Gerald Paravicini
+company = 
+addr1 = 49 Estate Crescent
+addr2 = 
+city = St Albert
+state = AB
+zip = T8N5X2
+country = Canada
+phone = 7807176223
+email = tenorpower@shaw.ca
+ship = 
+price = 24
+orderid = 5180925150050
+transactionid = h4266we3
+paymenttype = credit_card
+remaddr = 68.150.106.176
+host = S01067cb21b2363a9.ed.shawcable.net
+domain = 
+billingname = Gerald Paravicini
+billingaddr  = 49 Estate Crescent
+billingcity  = St Albert
+billingstate  = AB
+billingzip  = T8N5X2
+billingcountry  = Canada
+
+version = 7
+
+special = 
+
+where = purchased it years ago
+
+new = would like to be able to print programs for conceerts
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/25/2018 15:00:10
+
+product = R
+name1 = Gerald Paravicini
+company = 
+addr1 = 49 Estate Crescent
+addr2 = 
+city = St Albert
+state = AB
+zip = T8N5X2
+country = Canada
+phone = 7807176223
+email = tenorpower@shaw.ca
+ship = 
+price = 15
+orderid = 5180925150008
+transactionid = 37211gxn
+paymenttype = credit_card
+remaddr = 68.150.106.176
+host = S01067cb21b2363a9.ed.shawcable.net
+domain = 
+billingname = Gerald Paravicini
+billingaddr  = 49 Estate Crescent
+billingcity  = St Albert
+billingstate  = AB
+billingzip  = T8N5X2
+billingcountry  = Canada
+
+version = Win XP
+
+special = 
+
+where = purchased it years ago
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+09/27/2018 13:11:47
+
+product = G
+name1 = Ken
+company = 
+addr1 = 1401 Manzanita Ave
+addr2 = 
+city = Santa Rosa
+state = CA
+zip = 95404
+country = United States of America
+phone = 7075441791
+email = iburntoast@yahoo.com
+ship = 
+price = 10
+orderid = 5180927131145
+transactionid = chwwmp0f
+paymenttype = credit_card
+remaddr = 24.130.47.144
+host = c-24-130-47-144.hsd1.ca.comcast.net
+domain = 
+billingname = Ken
+billingaddr  = 1401 Manzanita Ave
+billingcity  = Santa Rosa
+billingstate  = CA
+billingzip  = 95404
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = download,com
+
+new = ability to use color in banners and other
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/05/2018 02:20:33
+
+product = P
+name1 = Claude Crepeault
+company = 
+addr1 = 463 Royale
+addr2 = 
+city = St-Tite-des-Caps
+state = QC
+zip = G0A 4J0
+country = Canada
+phone = 4188232820
+email = ccrepeault@hotmail.com
+ship = 
+price = 18
+orderid = 5181005022031
+transactionid = kpfn7kwb
+paymenttype = credit_card
+remaddr = 74.59.100.171
+host = modemcable171.100-59-74.mc.videotron.ca
+domain = 
+billingname = Claude Crepeault
+billingaddr  = 463 Royale
+billingcity  = St-Tite-des-Caps
+billingstate  = QC
+billingzip  = G0A 4J0
+billingcountry  = Canada
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/05/2018 13:27:43
+
+product = U
+name1 = Louis Pinga
+company = 
+addr1 = 20 Woodland dr.
+addr2 = Apt. 335
+city = Coventry
+state = RI
+zip = 02816
+country = United States of America
+phone = 4012502810
+email = gicoins@gmail.com
+ship = 
+price = 24
+orderid = 5181005132741
+transactionid = cny8z6em
+paymenttype = credit_card
+remaddr = 72.200.187.236
+host = ip72-200-187-236.ri.ri.cox.net
+domain = 
+billingname = Louis Pinga
+billingaddr  = 20 Woodland drive
+billingcity  = Coventry
+billingstate  = RI
+billingzip  = 02816
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/05/2018 19:54:31
+
+product = R
+name1 = Louis Pinga
+company = 
+addr1 = 20 Woodland drive
+addr2 = Apt. 335
+city = Coventry
+state = RI
+zip = 02816
+country = United States of America
+phone = 4012502810
+email = gicoins@gmail.com
+ship = 
+price = 15
+orderid = 5181005195429
+transactionid = 0qqccs1f
+paymenttype = credit_card
+remaddr = 72.200.187.236
+host = ip72-200-187-236.ri.ri.cox.net
+domain = 
+billingname = Louis Pinga
+billingaddr  = 20 Woodland drive
+billingcity  = Coventry
+billingstate  = RI
+billingzip  = 02816
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/05/2018 23:37:03
+
+product = R
+name1 = Brenda Morales
+company = 
+addr1 = Ignacio Zaragoza 14 Apatlaco
+addr2 = 
+city = Ciudad de México
+state = 
+zip = 
+country = Mexico
+phone = 005215525355177
+email = bregisp@hotmail.com
+ship = 
+price = 15
+orderid = 5181005233700
+transactionid = cvyjr02x
+paymenttype = credit_card
+remaddr = 189.216.99.88
+host = customer-189-216-99-88.cablevision.net.mx
+domain = 
+billingname = Brenda Morales
+billingaddr  = Ignacio Zaragoza 14 Apatlaco
+billingcity  = Ciudad de México
+billingstate  = 
+billingzip  = 
+billingcountry  = Mexico
+
+version = 10
+
+special = I like this software to make newspapers, I wish you can add a translate to spanish
+
+where = download at softonic
+
+new = More options to newspapers
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/16/2018 23:44:17
+
+product = P
+name1 = Patricia Mason
+company = 
+addr1 = 5565 E Baywood Ave
+addr2 = 
+city = Mesa
+state = AZ
+zip = 85206
+country = United States of America
+phone = 4804990130
+email = patmason88@hotmail.com
+ship = 
+price = 18
+orderid = 5181016234416
+transactionid = r6pncw1w
+paymenttype = credit_card
+remaddr = 98.165.88.53
+host = ip98-165-88-53.ph.ph.cox.net
+domain = 
+billingname = Patricia Mason
+billingaddr  = 5565 E Baywood Ave
+billingcity  = Mesa
+billingstate  = AZ
+billingzip  = 85206
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = download
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/17/2018 11:43:27
+
+product = D
+name1 = Linda Siler
+company = 
+addr1 = 452 Alamosa Av
+addr2 = 
+city = Palmdale
+state = CA
+zip = 93551
+country = United States of America
+phone = 6613821787
+email = lindaviv5@aol.com
+ship = 
+price = 18
+orderid = 5181017114326
+transactionid = qggwqdwt
+paymenttype = credit_card
+remaddr = 99.182.18.61
+host = 99-182-18-61.lightspeed.irvnca.sbcglobal.net
+domain = 
+billingname = Linda Siler
+billingaddr  = 452 Alamosa Av
+billingcity  = Palmdale
+billingstate  = CA
+billingzip  = 93551
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/17/2018 17:10:19
+
+product = P
+name1 = Dorothy Goodin
+company = 
+addr1 = PO Box 104687
+addr2 = 
+city = Jefferson City
+state = MO
+zip = 65110
+country = United States of America
+phone = 5733537651
+email = dorothygoodin@gmail.com
+ship = 
+price = 18
+orderid = 5181017171018
+transactionid = 73ykha4n
+paymenttype = credit_card
+remaddr = 104.237.105.212
+host = 104-237-105-212.client.radiowire.net
+domain = 
+billingname = Dorothy Goodin
+billingaddr  = PO Box 104687
+billingcity  = Jefferson City
+billingstate  = MO
+billingzip  = 65110
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = download 2016
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/20/2018 20:24:18
+
+product = P
+name1 = Wesley Hayes
+company = 
+addr1 = 502 Gooswe Creek Resort
+addr2 = 
+city = Newport
+state = NC
+zip = 28570
+country = United States of America
+phone = 252-646-9501
+email = homefurnishingsinfo@yahoo.com
+ship = 
+price = 18
+orderid = 5181020202416
+transactionid = 3r6zyynw
+paymenttype = credit_card
+remaddr = 69.133.136.85
+host = cpe-69-133-136-85.ec.res.rr.com
+domain = 
+billingname = Wesley Hayes
+billingaddr  = 502 Gooswe Creek Resort
+billingcity  = Newport
+billingstate  = NC
+billingzip  = 28570
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+10/29/2018 19:11:49
+
+product = P
+name1 = Susan Rosenberg
+company = 
+addr1 = 231 Bolla Avenue
+addr2 = 
+city = Alamo
+state = CA
+zip = 94507
+country = United States of America
+phone = 9259842833
+email = suechef3@comcast.net
+ship = 
+price = 18
+orderid = 5181029191148
+transactionid = reh0rsnh
+paymenttype = credit_card
+remaddr = 76.126.193.236
+host = c-76-126-193-236.hsd1.ca.comcast.net
+domain = 
+billingname = Susan Rosenberg
+billingaddr  = 231 Bolla Avenue
+billingcity  = Alamo
+billingstate  = CA
+billingzip  = 94507
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+11/04/2018 20:36:15
+
+product = P
+name1 = Svitlana Boudreaux
+company = 
+addr1 = 2008 Squirrel Run Drive
+addr2 = 
+city = New Iberia
+state = LA
+zip = 70560
+country = United States of America
+phone = 13372562700
+email = sybreaux7@gmail.com
+ship = 
+price = 18
+orderid = 5181104203613
+transactionid = hbyey9q8
+paymenttype = credit_card
+remaddr = 45.20.146.177
+host = 45-20-146-177.lightspeed.jcsnms.sbcglobal.net
+domain = 
+billingname = Svitlana Boudreaux
+billingaddr  = 2008 Squirrel Run Drive
+billingcity  = New Iberia
+billingstate  = LA
+billingzip  = 70560
+billingcountry  = United States of America
+
+version = 8
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+11/23/2018 11:41:46
+
+product = P
+name1 = George Jazich
+company = 
+addr1 = 716 Blossom Road
+addr2 = 
+city = Warminster
+state = PA
+zip = 18974
+country = United States of America
+phone = 215-355-4696
+email = jazich@verizon.net
+ship = 
+price = 18
+orderid = 5181123114145
+transactionid = exaenctg
+paymenttype = credit_card
+remaddr = 72.78.101.183
+host = pool-72-78-101-183.phlapa.fios.verizon.net
+domain = 
+billingname = George Jazich
+billingaddr  = 716 Blossom Road
+billingcity  = Warminster
+billingstate  = PA
+billingzip  = 18974
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+11/26/2018 08:13:53
+
+product = P
+name1 = Raymond Maggi
+company = 
+addr1 = 18980 Seabiscuit Run
+addr2 = 
+city = Yorba Linda
+state = CA
+zip = 92886
+country = United States of America
+phone = 7146323026
+email = geoteammaggi@gmail.com
+ship = 
+price = 18
+orderid = 5181126081350
+transactionid = j63s7qdg
+paymenttype = credit_card
+remaddr = 70.93.187.143
+host = cpe-70-93-187-143.natsow.res.rr.com
+domain = 
+billingname = Raymond Maggi
+billingaddr  = 18980 Seabiscuit Run
+billingcity  = Yorba Linda
+billingstate  = CA
+billingzip  = 92886
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/03/2018 19:55:31
+
+product = O
+name1 = dave kramer
+company = 
+addr1 = 3646 Giddings Ave SE
+addr2 = 
+city = Grand Rapids
+state = MI
+zip = 49508
+country = United States of America
+phone = 6162990341
+email = supertoyrc@aol.com
+ship = 
+price = 36
+orderid = 5181203195530
+transactionid = 56sk6avd
+paymenttype = credit_card
+remaddr = 68.49.215.24
+host = c-68-49-215-24.hsd1.mi.comcast.net
+domain = 
+billingname = dave kramer
+billingaddr  = 3646 Giddings Ave SE
+billingcity  = Grand Rapids
+billingstate  = MI
+billingzip  = 49508
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/09/2018 19:18:20
+
+product = P
+name1 = Donna Sisneros
+company = 
+addr1 = 480 W Broadway
+addr2 = 
+city = Lincoln
+state = ME
+zip = 04457
+country = United States of America
+phone = 207-794-4804
+email = Ikenoqueen@gmail.com
+ship = 
+price = 18
+orderid = 5181209191817
+transactionid = 90y9xxrc
+paymenttype = credit_card
+remaddr = 24.93.135.246
+host = cpe-24-93-135-246.maine.res.rr.com
+domain = 
+billingname = Donna Sisneros
+billingaddr  = 480 W Broadway
+billingcity  = Lincoln
+billingstate  = ME
+billingzip  = 04457
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = Online
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/11/2018 17:59:51
+
+product = P
+name1 = Sharon Jeter
+company = 
+addr1 = 19427 W McNichols Rd
+addr2 = 
+city = Detroit
+state = MI
+zip = 48219
+country = United States of America
+phone = 3132128875
+email = pctutornow2@yahoo.com
+ship = 
+price = 18
+orderid = 5181211175949
+transactionid = r9zkt9r0
+paymenttype = credit_card
+remaddr = 73.144.36.195
+host = c-73-144-36-195.hsd1.mi.comcast.net
+domain = 
+billingname = Sharon Jeter
+billingaddr  = 19427 W McNichols Rd
+billingcity  = Detroit
+billingstate  = MI
+billingzip  = 48219
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/14/2018 05:19:37
+
+product = P
+name1 = Michael L. Lash
+company = 
+addr1 = 8022 Leavenworth rd
+addr2 = 
+city = Kansas city
+state = KS
+zip = 66109
+country = United States of America
+phone = 913-796-6470
+email = vlash1@centurylink.net
+ship = 
+price = 18
+orderid = 5181214051935
+transactionid = depbfssh
+paymenttype = credit_card
+remaddr = 75.163.46.201
+host = 75-163-46-201.ksca.qwest.net
+domain = 
+billingname = Michael L. Lash
+billingaddr  = 8022 Leavenworth rd
+billingcity  = Kansas city
+billingstate  = KS
+billingzip  = 66109
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = download
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/14/2018 19:04:43
+
+product = P
+name1 = LAURIE BURNABY
+company = 
+addr1 = 59 BROOKLINE AVE
+addr2 = 
+city = HULL
+state = MA
+zip = 02045-2244
+country = United States of America
+phone = 7817499102
+email = LKBURNABY@VERIZON.NET
+ship = 
+price = 18
+orderid = 5181214190441
+transactionid = nbf0d8sj
+paymenttype = credit_card
+remaddr = 100.0.3.72
+host = pool-100-0-3-72.bstnma.fios.verizon.net
+domain = 
+billingname = LAURIE BURNABY
+billingaddr  = 59 BROOKLINE AVE
+billingcity  = HULL
+billingstate  = MA
+billingzip  = 02045-2244
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/19/2018 13:00:48
+
+product = D
+name1 = John Chojnacki
+company = 
+addr1 = 6010 South 25th Court
+addr2 = 
+city = Milwaukee
+state = WI
+zip = 53221
+country = United States of America
+phone = 4143226652
+email = johnrchojnacki@gmail.com
+ship = 
+price = 18
+orderid = 5181219130047
+transactionid = jr66qwz6
+paymenttype = credit_card
+remaddr = 173.89.55.189
+host = cpe-173-89-55-189.wi.res.rr.com
+domain = 
+billingname = John Chojnacki
+billingaddr  = 6010 South 25th Court
+billingcity  = Milwaukee
+billingstate  = WI
+billingzip  = 53221
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = poster software
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+12/21/2018 13:56:32
+
+product = P
+name1 = bob blaydes
+company = 
+addr1 = 1606 scott ct.
+addr2 = 
+city = clovis
+state = CA
+zip = 93611
+country = United States of America
+phone = 559-298-5046
+email = bncblaydes@yahoo.com
+ship = 
+price = 18
+orderid = 5181221135630
+transactionid = 3g82g0ne
+paymenttype = credit_card
+remaddr = 76.217.188.174
+host = 76-217-188-174.lightspeed.frsnca.sbcglobal.net
+domain = 
+billingname = bob blaydes
+billingaddr  = 1606 scott ct.
+billingcity  = clovis
+billingstate  = CA
+billingzip  = 93611
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+01/02/2019 13:38:46
+
+product = P
+name1 = ashley dismukes
+company = 
+addr1 = 4432 u.s. hwy 98
+addr2 = 
+city = santa rosa beach
+state = FL
+zip = 32459
+country = United States of America
+phone = 8506990723
+email = ashley@regionalutilities.net
+ship = 
+price = 18
+orderid = 5190102133844
+transactionid = 4dd8pb54
+paymenttype = credit_card
+remaddr = 170.249.129.66
+host = 170.249.129.66
+domain = 
+billingname = ashley dismukes
+billingaddr  = 4432 u.s. hwy 98
+billingcity  = santa rosa beach
+billingstate  = FL
+billingzip  = 32459
+billingcountry  = United States of America
+
+version = 10
+
+special = my computer upgraded and lost my poster 8 program  can you help me?
+
+where = poster software long ago
+
+new = upgrade if possible to the latest version or send me the old one  i am old school and will take to long to learn 10 if is totally changed
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+01/05/2019 10:51:58
+
+product = P
+name1 = Miss Booty Goldsberry
+company = 
+addr1 = 10 Windsor Place
+addr2 = 
+city = Poland
+state = ME
+zip = 04274
+country = United States of America
+phone = 2079985711
+email = gunner44@roadrunner.com
+ship = 
+price = 18
+orderid = 5190105105157
+transactionid = r3464bcg
+paymenttype = credit_card
+remaddr = 67.255.24.241
+host = cpe-67-255-24-241.twcny.res.rr.com
+domain = 
+billingname = Miss Booty Goldsberry
+billingaddr  = 10 Windsor Place
+billingcity  = Poland
+billingstate  = ME
+billingzip  = 04274
+billingcountry  = United States of America
+
+version = 7
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+01/10/2019 13:28:12
+
+product = P
+name1 = Pati Bennett
+company = 
+addr1 = 303 N. Fruitland St.
+addr2 = 
+city = Kennewick
+state = WA
+zip = 99336
+country = United States of America
+phone = 5095866203
+email = bennettrentals@frontier.com
+ship = 
+price = 19.67
+orderid = 5190110132809
+transactionid = ptvmvsm6
+paymenttype = credit_card
+remaddr = 50.35.159.3
+host = 50.35.159.3
+domain = 
+billingname = Pati Bennett
+billingaddr  = 303 N. Fruitland St.
+billingcity  = Kennewick
+billingstate  = WA
+billingzip  = 99336
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = online
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+01/10/2019 19:07:30
+
+product = G
+name1 = Carole Spencer
+company = 
+addr1 = 2488 San Marino Drive
+addr2 = 
+city = Brownsville
+state = TX
+zip = 78526
+country = United States of America
+phone = 956-554-8284
+email = zoe6198@aol.com
+ship = 
+price = 10
+orderid = 5190110190729
+transactionid = f6ytav1v
+paymenttype = credit_card
+remaddr = 72.180.178.183
+host = 072-180-178-183.res.spectrum.com
+domain = 
+billingname = Carole Spencer
+billingaddr  = 2488 San Marino Drive
+billingcity  = Brownsville
+billingstate  = TX
+billingzip  = 78526
+billingcountry  = United States of America
+
+version = 10
+
+special = 
+
+where = poster software
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+01/18/2019 17:59:39
+
+product = Z
+name1 = JAMES ROCHELLE
+company = 
+addr1 = 7301 RANCH ROAD 620N
+addr2 = 
+city = AUSTIN
+state = TX
+zip = 78726
+country = United States of America
+phone = 5125299595
+email = alexroche@austin.rr.com
+ship = checked
+price = 50
+orderid = 5190118175938
+transactionid = 6nvmbqjg
+paymenttype = credit_card
+remaddr = 73.26.148.59
+host = c-73-26-148-59.hsd1.nm.comcast.net
+domain = 
+billingname = JAMES ROCHELLE
+billingaddr  = 7301 RANCH ROAD 620N
+billingcity  = AUSTIN
+billingstate  = TX
+billingzip  = 78726
+billingcountry  = United States of America
+
+version = 10
+
+special = 64
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------
+BRAINTREE ORDER
+01/23/2019 12:09:11
+
+product = O
+name1 = Craig D. McNair
+company = 
+addr1 = 744 Silversmith Cir
+addr2 = 
+city = Lake Mary
+state = FL
+zip = 32746
+country = United States
+phone = 4075793318
+email = craigmcnair@cfl.rr.com
+ship = 
+price = 36
+orderid = 5190123120909
+transactionid = 84cxntgt
+paymenttype = credit_card
+remaddr = 108.189.227.238
+host = 108-189-227-238.biz.bhn.net
+domain = 
+billingname = Craig D. McNair
+billingaddr  = 744 Silversmith Cir
+billingcity  = Lake Mary
+billingstate  = FL
+billingzip  = 32746
+billingcountry  = United States
+
+version = 10
+
+special = 
+
+where = 
+
+new = 
+
+-------------------------------------------------------------------------

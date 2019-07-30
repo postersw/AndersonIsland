@@ -51,6 +51,7 @@
              081818. Moon phases added to weather.
         1.22 101318. Text to Speech and Big Text for main screen entries.
         1.23.112418. Keep ferry display up for ferry delay time.  Fix android icons.
+        1.24.021218. Add REFRESH request to Alert.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -72,7 +73,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.23.121818";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.24.021518";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
 
@@ -172,6 +173,7 @@ var gFocusCounter = 0;
 var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
 var gResumeTime = 0;// saved value in sec
+var gDailyCacheLoadedms = 0;
 
 // Location set by gelocation for phone only
 gLatitude = 0.0; // NS
@@ -225,15 +227,13 @@ var BIGTX = {
     TannerOutageStatus: ""
 };
 
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-// return true if a holiday for the ferry schedule. input = month*100+day
-function IsHoliday(md) {
-    if (md == 1231 || md == 1232 || md == 101) return true;
-    if (md == memorialday || md == 703 || md == 704 || md == laborday || md == thanksgiving || md == 1224 || md == 1225) return true;
-    return false;
+////////////////////////////////////////////////////////////////////////////////////////
+//  DebugLog writes message to console, with time stamp
+function DebugLog(msg) {
+    console.log(GetTimeMS() + ": " + msg);
 }
+
+
 /////////////////////////////////////////////////////////////////////////////////////////
 // initilize all date variables.  
 // entry: dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1 and reset time).
@@ -263,6 +263,14 @@ function InitializeDates(dateincr) {
     if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
     // compute holidays
     holiday = IsHoliday(gMonthDay);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// return true if a holiday for the ferry schedule. input = month*100+day
+function IsHoliday(md) {
+    if (md == 1231 || md == 1232 || md == 101) return true;
+    if (md == memorialday || md == 703 || md == 704 || md == laborday || md == thanksgiving || md == 1224 || md == 1225) return true;
+    return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -958,6 +966,11 @@ function RemoveTags(str) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayAlertInfo()  - sets the alerttext and sets the alertdiv = display:block if there is an alert
 //  NOTE: if 'alerthide' exists, the alert will NOT be displayed.
+//  Entry: Local Storage:
+//          alerttext = ferry and emergency alert
+//          alerthide = switch to hide alert
+//          burnbanalert = burn ban alert text
+//          tanneroutagealert = tanner outage text.
 //  Also processes the burnban and tanner alerts.
 function DisplayAlertInfo() {
     if (IsEmpty(localStorage.getItem("alerttext")) || localStorage.getItem("alerthide") != null) {
@@ -979,8 +992,13 @@ function DisplayAlertInfo() {
     if (IsEmpty(s)) s = "Tap for outage status.";
     document.getElementById("tanneroutagealert").innerHTML = s;
     var tt = document.getElementById("tannertitle").innerHTML; // tanner title
-    if (s.indexOf("No Outages") > 0) document.getElementById("tannertitle").innerHTML = tt.replace("flash_off", "flash_on");  // if no outage
-    else document.getElementById("tannertitle").innerHTML = tt.replace("flash_on", "flash_off"); // if an outage
+    if (s.indexOf("No Outages") > 0) {
+        document.getElementById("tannertitle").innerHTML = tt.replace("flash_off", "flash_on");  // if no outage
+        document.getElementById("tannertitle").style.color = "#802b00";
+    } else {
+        document.getElementById("tannertitle").innerHTML = tt.replace("flash_on", "flash_off"); // if an outage
+        document.getElementById("tannertitle").style.color = "red";
+    }
 }
 
 
@@ -988,15 +1006,25 @@ function DisplayAlertInfo() {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // getAlertInfo - without jQuery- gets the alert info from the server every minute via php and save it in 
 //      alerttext and alertdetail and ...
+//  Minimum alert interal: 1 minute, timed in this routine.
+//
+//      file format:
+//          ALERT\n emergency and ferry messages \nENDALERT
+//          BURNBAN\n burn ban text \nENDBURNBAN
+//          TANNER\n tanner text \nTANNEREND
+//          REFRESH\n refresh time stamp \nREFRESHEND
+//
 //  Entry   'alerthide' = true to hide the alert in 'alerttext'
 //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
 //          'burnbanalert' = burn ban alert info
 //          'tanneralert' = tanner alert info
+//          'refreshrequest' = last force- refresh request stamp. REFRESH\n unique stamp\n REFRESHEND. 
 function getAlertInfo() {
     //var alerttimeout = 480; // alert timeout in sec 8 minutes
     var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
     //var timestamp = Date.now() / 1000; // time in sec
     if ((Date.now() - gAlertTime) < alerttimeout) return; // gets alert async every min.
+    //DebugLog("getAlertInfo");
     var myurl = FixURL('getalerts.php');
     // ajax request without jquery
     MarkOffline(false);
@@ -1016,7 +1044,12 @@ function getAlertInfo() {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+// HandleAlertReplay - parse the alert file which is checked every minute
+//  NOTE: if REFRESH is set and has not been processed, this calls ReloadCachedData. 
+//      It then remembers the refresh value so it doesn't call it again till it changes.  
 function HandleAlertReply(r) {
+    //DebugLog("HandleAlertReply ")
     MarkOffline(false);
     gAlertTime = Date.now(); // time in ms
     //localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
@@ -1025,13 +1058,19 @@ function HandleAlertReply(r) {
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+    var oldrefreshrequest = LSget('refreshrequest'); // current value of refresh request
+    var newrefreshrequest = parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
     WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary.
+    if ((newrefreshrequest != "") && (oldrefreshrequest != newrefreshrequest)) {  
+        if ((gTimeStampms - gDailyCacheLoadedms) > 3*60000) GetDailyCache(); // if >3 min since last reload, reload daily cache, including calendar & ferry sch, 
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-//  SaveFerryAlert 
+//  SaveFerryAlert  - saves the alert in localStorage alerttext, alertdetail
 //  entry r = the alert text, "" if none
+//  exit    sets alerttext, alertdetail, alerthide
 function SaveFerryAlert(r) {
     if (r == "") {  // if the alert is gone, clear it
         localStorage.setItem("alerttext", "");
@@ -1049,7 +1088,7 @@ function SaveFerryAlert(r) {
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// MENU ////////////////////////////////////////////////////////
 //  side menu
 /* Set the width of the side navigation to 150px */
 function OpenMenu() {
@@ -1122,7 +1161,8 @@ function DegToCompassPointsTTS(d) {
 //        success: function (data) {
 //}
 function GetDailyCache() {
-
+    //DebugLog("GetDailyCache");
+    gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
     // mark state of switches for stats on icons, text to speech, bigtext
     var pagehits = LSget("pagehits").substr(0, 30) + ((gIconSwitch == 1) ? "5" : "6") + (TXTS.OnOff ? "7" : "") +
         (BIGTX.OnOff ? "8" : "") + (gFerryHighlight ? "9" : "");
@@ -1143,6 +1183,7 @@ function GetDailyCache() {
 }
 function HandleDailyCacheReply(data) {
     InitializeDates(0);
+    //DebugLog("HandleDailyCacheReply");
     localStorage.setItem("Cmain", "0");  // clear page count
     localStorage.setItem("pagehits", "");
     ParseDailyCache(data);

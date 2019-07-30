@@ -36,6 +36,7 @@ $hd=<<<'DOC'
 DOC;
 
     echo $hd; // send the header
+    $deleteme = false;
 
     // unpack request
     $id = preg_replace('/\D/', '', $_POST["id"]);// allow only numbers by deleting all non numbers /\D/ to prevent sql injection
@@ -45,6 +46,7 @@ DOC;
     $password = trim($_POST['password']);
     $category = strtoupper (trim($_POST['category']));  // force upper case category
     $category2 = strtoupper (trim($_POST['category2']));  // force upper case category2
+    $category3 = strtoupper (trim($_POST['category3']));  // force upper case category2
     $services = trim($_POST['services']);
     $owner= trim($_POST['owner']);
     $address = trim($_POST['address']);
@@ -86,29 +88,38 @@ DOC;
         $approved = true;
     }
 
-    // now build the change request for each field
-    $sql = "UPDATE business SET ";
-    $updatecount = 0; // field count
-    $msg = "";
-    UpD("business", $business);
-    UpD("category", $category);
-    UpD("category2", $category2);
-    if($password!="") UpD("password", $password);  // update password only if changed
-    UpD("services", $services);
-    UpD("owner", $owner);
-    UpD("address", $address);
-    UpD("phone", $phone);
-    UpD("phone2", $phone2);
-    UpD("email", $email);
-    UpD("website", $website);
-    UpD("notes", $notes);
-    UpD("contractor", $contractor);
-    UpD("ok", $ok);  // approval flag
-    if($updatecount == 0) {
-        echo "No fields have changed. The business will not be updated.<br/>";
-        exit();
-    }
+    // delete special case
+   if($_POST['deleteme']=='yes') {
+        $deleteme = true;
+        $sql = "DELETE from business   ";
+        $msg = "$business permanently deleted.<br/>";
 
+    } else {
+
+        // now build the change request for each field
+        $sql = "UPDATE business SET ";
+        $updatecount = 0; // field count
+        $msg = "";
+        UpD("business", $business);
+        UpD("category", $category);
+        UpD("category2", $category2);
+        UpD("category3", $category3);
+        if($password!="") UpD("password", $password);  // update password only if changed
+        UpD("services", $services);
+        UpD("owner", $owner);
+        UpD("address", $address);
+        UpD("phone", $phone);
+        UpD("phone2", $phone2);
+        UpD("email", $email);
+        UpD("website", $website);
+        UpD("notes", $notes);
+        UpD("contractor", $contractor);
+        UpD("ok", $ok);  // approval flag
+        if($updatecount == 0) {
+            echo "No fields have changed. The business will not be updated.<br/>";
+            exit();
+        }
+    }
     // display info
     $emailbody= "AIA Business Listing update request for: <br/><b>" . $oldbusiness .":</b><br/>The following changes have been made:<br/>" . $msg . "<br/>";
     $emailaddr = "postersw@comcast.net,robertbedoll@gmail.com," . $email;
@@ -122,10 +133,11 @@ DOC;
         }
     };
 
-    // update it
+    // update it or delete it
 
     $sql = substr($sql, 0, strlen($sql)-1) . " WHERE id=$id";
-    //echo "<br/>" . $sql . "<br/>";
+    //echo "<br/>" . $sql . "<br/>"; exit(0);
+
     if ($myconn->query($sql) === TRUE) {  // update successful
         echo $emailbody;
         echo "Record updated successfully<br/>";
@@ -203,5 +215,6 @@ function UpD($fieldname, $newvalue) {
     $msg = $msg . $fieldname . ": " . $newvalue . "<br/>";
     $updatecount++;
 }
+
 
 ?>
