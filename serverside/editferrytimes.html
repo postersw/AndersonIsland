@@ -14,7 +14,8 @@
     <button onclick="TestSchedule()"> Test all entries</button>
     <button onclick="SaveSchedule()"> Save Full Schedule to Edit Box</button>
     <p>To Use:<br/>
-    1 Click 'LOAD SCHEDULE'. 2 Make changes using Edit box. 3 Click 'Save Full Schedule'. 4 Select All in edit box, copy, and paste into dailycache.txt.</p>
+    1 Click 'LOAD SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3 Make changes using Edit box. 
+    4 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 4. When done, select Save Full Schedule, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
     <p>Rules for ferry time expression:<br/>
     <ul>
         <li>Times are 2400, NO leading zero. 0=midnight. 1200=noon.</li>
@@ -34,7 +35,7 @@
     <button onclick="CheckEdit()">Check</button> 
     <button onclick="PCountEdit()">() Count</button> 
     <button onclick="SaveEdit(0)">Save Edit box to 1 schedule</button>
-    <button onclick="SaveEdit(1)">Save Edit box to 3: ST/AI/KE</button><br/>
+    <button onclick="SaveEdit(1)">Save Edit box to ST/AI, adding 30 min to AI time:</button><br/>
     <textarea cols="200" rows="4" id="editrule"></textarea>
 
     <h1>SCHEDULE TABLE</h1>
@@ -132,7 +133,7 @@
         //    "&P=" + LSget("pagehits").substr(0, 30));
         //var myurl = FixURL("getdailycachetest.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         //   "&P=" + LSget("pagehits").substr(0, 30));
-        var myurl = "http://www.anderson-island.org/dailycache.txt";
+        var myurl = "http://www.anderson-island.org/dailycache.txt?" + Date.now(); // add date to turn off cache
         // ajax request without jquery
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -386,9 +387,9 @@
     ///////////////////////////////////////////////////////////////////
     // SaveEdit - move the edit cell back into the ferrytime array 
     //  and regen the display table
-    //  Entry   all = 0 to just save to current entry, 3 to save to Steiacoom, AI, and Ketron
+    //  Entry   all = 0 to just save to current entry, 1 to save to Steiacoom, AI
     function SaveEdit(all) {
-        if (all == 1) geditSAK = "SAK";
+        if (all == 1) geditSAK = "SA";
         if (geditSAK == "") return;
         var rule = document.getElementById("editrule").value;
         var ft = Number(document.getElementById("edittime").value);
@@ -417,13 +418,16 @@
                     ferrytimeK[gediti] = ft;
                     ferrytimeK[gediti + 1] = rule;
                     break;
-                case "SAK":
+                case "SA":
                     ferrytimeS[gediti] = ft;
                     ferrytimeS[gediti + 1] = rule;
-                    ferrytimeA[gediti] = ft;
+                    var fta = timeAdd(ft, 30);
+                    ferrytimeA[gediti] = fta;
                     ferrytimeA[gediti + 1] = rule;
-                    ferrytimeK[gediti] = ft;
-                    ferrytimeK[gediti + 1] = rule;
+                    alert("value saved for S " + ft.toFixed() + " A:" + fta.toFixed());
+
+                    //ferrytimeK[gediti] = ft;
+                    //ferrytimeK[gediti + 1] = rule;
                     break;
 
         }
@@ -519,6 +523,14 @@
         return false;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////
+//  timeAdd - increments time by nn minutes. Use -nn to decrement time.
+//  Entry   timehhmm as hhmm, addmm as minutes (positive or negative);
+//  Exit    new time
+function timeAdd(timehhmm, addmm) {
+    var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100) + addmm; // time in min
+    return Math.floor(tm / 60) *100 + (tm % 60);
+}
 
     </script>
 

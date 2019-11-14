@@ -45,6 +45,7 @@
 //  10/02/2017 - fix for year rollover.  Also limit to 100 events and 100 activities.
 //  05/17/2018 - 6 month lookahead. Change event limit to 999 but leave activity limit at 100.
 //  02/13/2019 - set or clear "refresh.txt" file.
+//  09/14/2019 - ignore \n in event description 
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -127,9 +128,10 @@ function fcopy($etype, $ys) {
                 fwrite($fce, "0101;0000;0000;E;$ys Happy New Year\r\n");  // write year
                 echo "0101;0000;0000;E;$ys Happy New Year generated for event year change<br/>";
             }
+            $desc = str_replace("\n", " ", $event->description); // remove line feeds
             $r = substr($event->start->dateTime,5,2) . substr($event->start->dateTime,8,2) . ";" . substr($event->start->dateTime,11,2) . substr($event->start->dateTime,14,2) . ";" .
                 substr($event->end->dateTime,11,2) . substr($event->end->dateTime,14,2)  . ";" .
-                $k . ";" . substr($event->summary, 2) . ";" . $event->location . ";" . $event->description ;
+                $k . ";" . substr($event->summary, 2) . ";" . $event->location . ";" . $desc ;
             $n++;
             if($n > $nlimit) break;  // limit to 100 activities to prevent too much data on phone.  (5/18/18).
             // now write it to the file
