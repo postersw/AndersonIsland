@@ -1,11 +1,13 @@
 <?php
 /////////////////////////////////////////////////////////////
-//  getmooncron - gets the moon json structure from http://api.usno.navy.mil
+//  getnavymooncron - gets the moon json structure from http://api.usno.navy.mil
 //  web site and writes it to moon.txt.
 //  this file is picked up by the the app directly.
 //  Called by cron every morning at 1am.
 //  Bob Bedoll. 8/18/18.
 //  9/1/18. reissue request for tomorrow if necessary to get set time.
+//  10/20/19. Delay 1 minute between requests because web site gets overloaded.
+//  10/31/19. Replaced by getheremooncron because the navy site was deactivated.
 //
 //  API REST CALL: http://api.usno.navy.mil/rstt/oneday?date=today&loc=Seattle,%20WA
 //  API RETURN:

@@ -181,7 +181,6 @@
     <Content Include="serverside\getferryalerts.php" />
     <Content Include="serverside\getgooglecalendarcron.php" />
     <Content Include="serverside\getgooglecalendarcron1002.txt" />
-    <Content Include="serverside\getmooncron.php" />
     <Content Include="serverside\gettanneralerts.php" />
     <Content Include="serverside\gettidescron.php" />
     <Content Include="serverside\makecomingevents.php" />
@@ -231,17 +230,17 @@
       <UserProperties />
     </VisualStudio>
   </ProjectExtensions>
-  <ItemGroup >
+  <ItemGroup>
     <ProjectCapability Include="UseFileGlobs" />
   </ItemGroup>
-  <PropertyGroup >
+  <PropertyGroup>
     <!-- Customize which folders are not shown by default -->
     <ExcludedItems>bin;bld;platforms;node_modules;simulation;plugins</ExcludedItems>
   </PropertyGroup>
-  <ItemGroup >
+  <ItemGroup>
     <Content Include="**\**" Exclude="**\platforms\**;**\bin\**;**\bld\**;**\node_modules\**;**\simulation\**;**\plugins\**;.gitignore;AndersonIsland.*" />
   </ItemGroup>
-  <ItemGroup >
+  <ItemGroup>
     <Content Update="config.xml">
       <SubType>Designer</SubType>
     </Content>
