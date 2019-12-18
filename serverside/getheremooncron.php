@@ -53,22 +53,23 @@ function FormatHtml($reply) {
     $times = str_replace("PM", "p", $times);
     echo " TIMES: $times ***";// debug //
     // get phase and icon
-    $pct =  number_format($jreply->astronomy->astronomy[0]->moonPhase * 100);
+    $pct =  number_format(abs($jreply->astronomy->astronomy[0]->moonPhase * 100));
     $icon = "";
     $mp = "";
+    $arrow = " ";
     switch (strtolower($jreply->astronomy->astronomy[0]->moonPhaseDesc)) {
-        case "first quarter": $mp = "First"; $icon = "moon_firstqtr";break;
-        case "new moon": $mp = "New"; $icon = "moon_new"; break;
-        case "waxing crescent": $mp = "Waxing"; $icon = "moon_waxcres"; break;
-        case "waxing gibbous": $mp = "Waxing"; $icon = "moon_waxgib"; break;
-        case "full moon": $mp = "Full"; $icon = "moon_full"; break;
-        case "waning gibbous": $mp = "Waning"; $icon = "moon_wangib"; break;
-        case "last quarter": $mp = "Last"; $icon = "moon_lastqtr"; break;
-        case "waning crescent": $mp = "Waning"; $icon = "moon_wancres"; break;
+        case "first quarter": $mp = "First"; $icon = "moon_firstqtr";$arrow = "<i class='material-icons'>&#xe5d8;</i>"; break;// up arrow
+        case "new moon": $mp = "New"; $icon = "moon_new";$arrow = "<i class='material-icons'>&#xe5d8;</i>"; break;
+        case "waxing crescent": $mp = "Waxing"; $icon = "moon_waxcres";$arrow = "<i class='material-icons'>&#xe5d8;</i>"; break;
+        case "waxing gibbous": $mp = "Waxing"; $icon = "moon_waxgib";$arrow = "<i class='material-icons'>&#xe5d8;</i>"; break;
+        case "full moon": $mp = "Full"; $icon = "moon_full";$arrow="<i class='material-icons'>&#xe5db;</i>"; break;
+        case "waning gibbous": $mp = "Waning"; $icon = "moon_wangib";$arrow="<i class='material-icons'>&#xe5db;</i>"; break;//down arrow
+        case "last quarter": $mp = "Last"; $icon = "moon_lastqtr";$arrow="<i class='material-icons'>&#xe5db;</i>"; break;
+        case "waning crescent": $mp = "Waning"; $icon = "moon_wancres";$arrow="<i class='material-icons'>&#xe5db;</i>"; break;
     }
     //  final return;
     if($pct == "") $pct = $mp; // if no pct, use the phase
-    $s = "<br/>Moon:<span style='font-weight:normal'> <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> $pct%, $times</span> ";
+    $s = "<br/>Moon:<span style='font-weight:normal'> <img style='vertical-align:middle' src='img/$icon.png' width=30 height=30> $pct% $arrow $times</span> ";
     // fix times
     return $s;
 }
