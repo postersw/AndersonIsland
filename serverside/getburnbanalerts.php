@@ -15,12 +15,13 @@
 //      Rev 3/26/19: Look for: Current Fire Safety Burn Ban Status:</p><p>No Burn Ban
 //      Rev 4/4/19: Look for alt="FS No Burn Ban"
 //      Rev 11/25/19: Air Quality alert address change.
+//      Rev 01/17/20: Burn Ban address change
         //<div class="area-row">        //    <div class="area-name sub-area">Peninsula</div>
         //        <div class="status-text no-ban">No Ban</div>
         //</div>                                 12345678
 //
     $burnbanlink = "https://secure.pscleanair.org/AirQuality/BurnBan";
-    $firebblink = "http://www.co.pierce.wa.us/982/Burn-Bans";
+    $firebblink = "http://www.co.pierce.wa.us/982/Outdoor-Burning";//  1/17/20
     $burnbanfile = "burnban.txt";
     chdir("/home/postersw/public_html");  // move to web root
 
