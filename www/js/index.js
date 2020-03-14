@@ -632,7 +632,7 @@ function ShowBurnBan() {
 function ShowTannerOutage() {
     MarkPage("r");
     var link = GetLink("tanneroutagelink", "http://www.tannerelectric.coop/andersonisland");  // default
-    window.open(link, "_blank");
+    window.open(link, "_system");
 }
 
 function ShowParks() {
