@@ -53,6 +53,7 @@
         1.23.112418. Keep ferry display up for ferry delay time.  Fix android icons.
         1.24.021219. Add REFRESH request to Alert.
         1.25.091419. Handle line feeds in calendar details.
+        1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -74,9 +75,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.25.091419";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.25.031420";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -1248,7 +1249,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
     parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
     parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry location - internal browser link
+    parseCacheRemove(data, "ferrylocextlink", "FERRYLOCEXTLINK", "\n"); // ferry location - external browser link
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "pierceferryticketlink", "PIERCEFERRYTICKETLINK", "\n"); // ferry ticket ios internal URI
@@ -1922,8 +1924,8 @@ function ShowFerrySchedule() {
 }
 function ShowFerryLocation() {
     MarkPage("s");
-    var myurl = GetLink("ferrylocationlink", "http://matterhorn11.co.pierce.wa.us/FerryStatus/");
-    window.open(myurl, "_blank");
+    var myurl = GetLink("ferrylocextlink", "https://matterhornwab.co.pierce.wa.us/ferrystatus/");
+    window.open(myurl, "_system");
 }
 
 
