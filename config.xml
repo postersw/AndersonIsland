@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.24.021519"
-        android-versionCode="2243"
-        android:versionName="1.24.021519">
+        version="1.25.031420"
+        android-versionCode="2244"
+        android:versionName="1.25.031420">
   <!-- on 1/27/19 this was reformatted by vs2017-->
+  <!-- versionCode 2244 for 1.25 3/14/20 -->
   <!-- versionCode 2243 for 1.24 1/27/19 -->
   <!-- versionCode 2242 for 1.23 11/24/18 -->
   <!-- versionCode 2240 for 1.22 10/13/18 -->
