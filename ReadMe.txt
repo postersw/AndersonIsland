@@ -101,6 +101,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 05/01/19. Ver 1.24.021519 Promoted to production. Android only. 
 05/30/19. Ver 1.24.021519 successful IOS build with CLI 7.1, builder=1. 
 08/01/19. Ver 1.25 Branch Ver 125 created.
+03/15/20. Ver 1.25.031420 Promoted to production. Android only. #2244. Fix FERRY LOCATION link to call external browser.
+
+----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
