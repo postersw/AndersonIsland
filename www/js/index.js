@@ -54,6 +54,7 @@
         1.24.021219. Add REFRESH request to Alert.
         1.25.091419. Handle line feeds in calendar details.
         1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
+        1.26.032020. Add cleartext plugin. Still on branch 125.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -75,7 +76,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.25.031420";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.26.032020";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
