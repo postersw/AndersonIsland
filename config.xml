@@ -106,7 +106,7 @@
   <!-- Plugins -->
   <!-- Core plugins -->
   <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
-  <plugin name="cordova-plugin-cleartext" source="npm"/>  <!-- Added 3/20/20 ver 1.26 for android 9 support of cleartext web requests-->
+  <!-- <plugin name="cordova-plugin-cleartext" source="npm"/> --> <!-- Deleted 3/23/20 to test https: access. Added 3/20/20 ver 1.26 for android 9 support of cleartext web requests-->
   <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
   <!--<gap:plugin name="org.apache.cordova.camera" />-->
   <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
