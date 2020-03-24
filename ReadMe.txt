@@ -100,6 +100,10 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 02/15/19. Ver 1.24.021519 Google # 2243 released to beta. Fix icon for Android 5. Also fix Tanner icon on power out. Add REFRESH request to alert.
 05/01/19. Ver 1.24.021519 Promoted to production. Android only. 
 05/30/19. Ver 1.24.021519 successful IOS build with CLI 7.1, builder=1. 
+08/01/19. Ver 1.25 Branch Ver 125 created.
+03/15/20. Ver 1.25.031420 Promoted to production. Android only. #2244. Fix FERRY LOCATION link to call external browser.
+
+----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -256,6 +260,10 @@ IOS CERTIFICATES  updated 5/31/18.
 Certificates last 3 years. Provisioning profiles last 1 year. 
 HISTORY
 These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
+3/18/20 New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
+	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
+	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
+	P12 files exported using the new dev and distribution certs.
 5/31/18 New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
 	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
@@ -277,7 +285,8 @@ These files are on the desktop of the virtual mac. They are duplicated in OneDri
 
 HOW TO Create new Development/Production Certificate:
 	The overall process is: 
-		1. Generate a Certificate Signing Request (CSR) xxxx.certSigningRequest. using Keychain.
+		1. Generate a Certificate Signing Request (CSR) xxxx.certSigningRequest. using Keychain. You can use an existing one.
+		   posterswdev.certSigningRequest or posterswprod...
 		2. Use that to generate the Certificate on the developer.apple.com web site.
 		3. Import that certificate back into Keychain on the Mac. Then export the Public key to a P12 file.
 		4. Create a Provisioning Profile using the Certificate from #2 on the developer.apple.com web site. 
@@ -289,9 +298,10 @@ HOW TO Create new Development/Production Certificate:
 	From Safari:
 		Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
 		Go to Certificate.  
-		Click on '+' to create a new certificate.  Select 'iOS App Development'. Click on Continue.
-		PRODUCTION: click on 'App Store and Ad Hoc'.
- 	Back to the Mac. 
+		Click on '+' to create a new certificate.  
+		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.
+		PRODUCTION: click on 'Apple Distribution. Sign for App Store and Ad Hoc'.
+ 	Back to the Mac only if you don't already have a certSigningRequest file (you one for dev and a different one for prod). 
 		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
 		NOTE: I can use the existing CSR files for dev and prod that I created on 3/17.
 		
@@ -310,14 +320,16 @@ HOW TO Create new Development/Production Certificate:
 			I used the file names posterswdev and posterswprod.certSigningRequest
 	Back to Safari.
 		developer.apple.com:
-		Upload the CSR file (from above): xxxx.certSigningRequest.  Note that I can always use 
+		Upload the CSR file (from above): posterswdev.certSigningRequest. or posterswprod.certSigningRequest.
+		Note that I can always use 
 		  the original posterswdev.certSigningRequest or posterswprod.certSigningRequest from 3/17.
 		Now your certificate is done.
 		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
+		Rename it to AIADevmmyy.cer or AIAProdmmyy.cer.
 	Back to the Mac.
 		Then double click the .cer file to install in Keychain Access.
 		It now shows up in Keychain Access- Certificates as
-			 'iPhone Developer Robert Bedoll' or iPhone Distribution: Robert Bedoll.
+			 'Apple Development: Robert Bedoll' or Apple Distribution: Robert Bedoll.
 	    KEYCHAIN ACCESS:
 		select Certificates (not Keys), and the certificate just added (iPhone Developer or iPhone Distribution).  
 		right click on Export.  Select the P12 File Format.
@@ -330,10 +342,10 @@ HOW TO Create new Development/Production Certificate:
 		developer.apple.com:
 		Now select correct Provisioning Profile: AIADistributionPush or AndersonIslandDevPush. 
 		click Edit.
-		Add the new iOS Development or iOS Distribution (code signing) certificate.
-		Click on 'Generate.'
+		Add the new iOS Development or iOS Distribution (code signing) certificate. It should show up in the list of certificates.
+		Click on 'Save.'
 		Download it to the desktop. It will be called AndersonIslandDevPush.mobileprovision.
-		NOTE: THE APP PROVISIONING PROFILE ONLY HAS THE iOS App Development Code Signing certificate.  
+		NOTE: THE APP PROVISIONING PROFILE ONLY HAS THE iOS App Development (or Distribution) Code Signing certificate.  
 			IT DOESNT HAVE THE PUSH CERTIFICATE. 
 			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
 		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.24.021519"
-        android-versionCode="2243"
-        android:versionName="1.24.021519">
+        version="1.26.032020"
+        android-versionCode="2245"
+        android:versionName="1.26.032020">
   <!-- on 1/27/19 this was reformatted by vs2017-->
+  <!-- versionCode 2245 for 1.26 3/20/20 cleartext -->
+  <!-- versionCode 2244 for 1.25 3/14/20 -->
   <!-- versionCode 2243 for 1.24 1/27/19 -->
   <!-- versionCode 2242 for 1.23 11/24/18 -->
   <!-- versionCode 2240 for 1.22 10/13/18 -->
@@ -71,7 +73,8 @@
   <preference name="disable-cursor" value="false" />
   <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
   <preference name="android-minSdkVersion" value="16" />
-  <!-- android: changed from 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. MAX version is blank by default. -->
+  <!-- android: changed from 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. -->
+  <preference name="android-targetSdkVersion" value="28" /><!-- added 3/14/2020 to meet new google requirement. OR could try PG build CLI=9-->
   <preference name="android-installLocation" value="auto" />
   <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
   <preference name="android-build-tool" value="gradle" />
@@ -92,16 +95,18 @@
       <string>ttpapps.pcf</string>
     </array>
   </config-file>
-  <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build?-->
+  <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build-->
   <!-- Still required with builder=1 for IOS as of May 2019-->
-  <preference name="phonegap-version" value="cli-7.1.0" />
-  <preference name="pgb-builder-version" value="1" />-->
-  <!--<preference name="phonegap-version" value="cli-8.0.0" />
+  <!--<preference name="phonegap-version" value="cli-7.1.0" />-->
+   <!--<preference name="pgb-builder-version" value="1" />-->
+  <!--FOR ANDROID: cli 8, builder 2-->
+  <preference name="phonegap-version" value="cli-8.0.0" />
   <preference name="pgb-builder-version" value="2" /> -->
   <!-- 2 for android, 1 for ios as of 5/31-->
   <!-- Plugins -->
   <!-- Core plugins -->
   <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
+  <plugin name="cordova-plugin-cleartext" source="npm"/>  <!-- Added 3/20/20 ver 1.26 for android 9 support of cleartext web requests-->
   <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
   <!--<gap:plugin name="org.apache.cordova.camera" />-->
   <!--<gap:plugin name="org.apache.cordova.media-capture" />-->

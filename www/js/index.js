@@ -51,7 +51,10 @@
              081818. Moon phases added to weather.
         1.22 101318. Text to Speech and Big Text for main screen entries.
         1.23.112418. Keep ferry display up for ferry delay time.  Fix android icons.
-        1.24.021218. Add REFRESH request to Alert.
+        1.24.021219. Add REFRESH request to Alert.
+        1.25.091419. Handle line feeds in calendar details.
+        1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
+        1.26.032020. Add cleartext plugin. Still on branch 125.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -73,9 +76,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.24.021518";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.26.032020";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2019 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -630,7 +633,7 @@ function ShowBurnBan() {
 function ShowTannerOutage() {
     MarkPage("r");
     var link = GetLink("tanneroutagelink", "http://www.tannerelectric.coop/andersonisland");  // default
-    window.open(link, "_blank");
+    window.open(link, "_system");
 }
 
 function ShowParks() {
@@ -1247,7 +1250,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
     parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
     parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry location - internal browser link
+    parseCacheRemove(data, "ferrylocextlink", "FERRYLOCEXTLINK", "\n"); // ferry location - external browser link
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "pierceferryticketlink", "PIERCEFERRYTICKETLINK", "\n"); // ferry ticket ios internal URI
@@ -1921,8 +1925,8 @@ function ShowFerrySchedule() {
 }
 function ShowFerryLocation() {
     MarkPage("s");
-    var myurl = GetLink("ferrylocationlink", "http://matterhorn11.co.pierce.wa.us/FerryStatus/");
-    window.open(myurl, "_blank");
+    var myurl = GetLink("ferrylocextlink", "https://matterhornwab.co.pierce.wa.us/ferrystatus/");
+    window.open(myurl, "_system");
 }
 
 
@@ -2795,7 +2799,7 @@ function DisplayComingEventsList(CE) {
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE] == "") continue; // skip blank lines
         aCE = CE[iCE].split(';');  // split the string
-        if (BadEvent(aCE)) continue; // must have 6 entries
+        if (BadEvent(aCE)) continue; // if ill-formatted event
         if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
         var CEyymmdd = Number(aCE[0]); // yymmdd
@@ -2908,7 +2912,7 @@ function FormatEvent(aCE, fontsize) {
 
 ///////////////////////////////////////////
 //  tabletext - display all details for the row or item that was clicked. Works for list, week, and month views.
-//  tc = cell id: date (mmdd) time (hhmm) as a string. mmdd9999 to match all times on mmdd. mmddhh99 to match all minutes
+//  tc = cell id: yymmddhhmm = date (yymmdd) time (hhmm) as a string, eg . yymmdd9999 to match all times on yymmdd. yymmddhh99 to match all minutes
 //  The date and time are used to look up the entry in the CE array.
 //  Each table entry has an id which is the index into the CE array, and onclick=AddToCal.
 function tabletext(tc) {
@@ -2926,7 +2930,8 @@ function tabletext(tc) {
         CE[iCE] = CE[iCE].replace("&gt;", ">"); // remove html special >
         CE[iCE] = CE[iCE].replace("&amp;", "&"); // remove html special &
         var aCE = CE[iCE].split(';');  // split the string
-        if (d < aCE[0]) break;
+        if (BadEvent(aCE)) continue; // must have 6 entries
+        if (d < aCE[0]) break;  // if past requested time and date, quit
         if (d != aCE[0]) continue;
         var t99 = aCE[1].substr(0, 2) + '99'; // hh99
         if ((t == aCE[1]) || (t == '9999') || (t == t99)) {
@@ -3208,7 +3213,7 @@ function DisplayComingMonth(CE) {
             for (; iCE < CE.length; iCE++) {
                 if (CE[iCE] == "") continue; // skip blank lines
                 aCE = CE[iCE].split(';');  // split the string
-                if (BadEvent(aCE)) continue; // must have 6 entries
+                if (BadEvent(aCE)) continue; // skip any ill-formatted event
                 //  advance schedule date to today
                 var dateCE = Number(aCE[0]); // yymmdd
                 if (dateCE > yymmdd) break; // if past today, exit
@@ -3228,14 +3233,18 @@ function DisplayComingMonth(CE) {
 
 //////////////////////////////////////////////////////////////////////////////////////
 //  BadEvent - returns true if the event is bad.
-//  Entry   aCE = arry of form: mmdd;hhmm;hhmm;t;title;location;sponsor;info;icon object
+//  Entry   aCE = arry of form: yymmdd;hhmm;hhmm;t;title;location;sponsor;info;icon object
 //  Exit    true if bad, false if good
 function BadEvent(aCE) {
+    if (aCE.length < 6) return true; // must have at least 6 entries
+    if (aCE[0].length != 6) return true;
+    if (aCE[1].length != 4) return true;
+    if (aCE[2].length != 4) return true;
+    if (aCE[3].length != 1) return true; //type must be 1 letter
     if (isNaN(aCE[0])) return true;
     if (isNaN(aCE[1])) return true;
     if (isNaN(aCE[2])) return true;
-    if (aCE.length < 6) return true; // must have 6 entries
-    if (aCE.length > 9) return true; // must have 6 entries
+    if (aCE.length > 9) return true; // cant have >9 entries
     return false;
 }
 
