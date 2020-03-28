@@ -102,7 +102,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 05/30/19. Ver 1.24.021519 successful IOS build with CLI 7.1, builder=1. 
 08/01/19. Ver 1.25 Branch Ver 125 created.
 03/15/20. Ver 1.25.031420 Promoted to production. Android only. #2244. Fix FERRY LOCATION link to call external browser.
-
+03/22/20. Ver 1.26.032020 Promoted to production. Android only. #2245. Add Cleartext plugin for Android 9.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
