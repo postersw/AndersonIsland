@@ -127,11 +127,12 @@
   <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
   <plugin name="onesignal-cordova-plugin" platform="android" spec="^2.4.0" source="npm" />
-  <plugin name="onesignal-cordova-plugin" platform="ios" spec="2.1.0" source="npm" />
+  <plugin name="onesignal-cordova-plugin" platform="ios" source="npm" />
   <!--keep IOS at 2.1 per ionic zupport 1/14/19-->
   <!--OneSignal added 5/23/18-->
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->--&gt;
-  <plugin name="cordova-plugin-calendar" source="npm" /><!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18--><plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" /><plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18--><!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> --><!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
+  <plugin name="cordova-plugin-calendar" source="npm" /><!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18--><plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
+  <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18--><!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> --><!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
       and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17--><!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 --><!-- Define app icon for each platform. --><!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad--><!-- END OF PLUGINS --><platform name="ios">
     <icon src="www/res/icon/ios/icon-29.png" width="29" height="29" />
