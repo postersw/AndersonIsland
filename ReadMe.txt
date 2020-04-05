@@ -391,7 +391,7 @@ See OneSignal Test below
 
 OBSOLETE: Original instructions. DO NOT USE
 
-  1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
+  1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as pwd pw= pwd29837
   2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
     3. Click 'App IDs', then select the expiring id which is org.andersonisland.andersonislandassistant.
   4. Click Edit and Scroll to 'Push Notifications' section and click on 'Create Certificate...'.
