@@ -134,11 +134,16 @@
   <plugin name="cordova-plugin-calendar" source="npm" /><!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18--><plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" />
   <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18--><!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> --><!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
-      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17--><!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 --><!-- Define app icon for each platform. --><!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad--><!-- END OF PLUGINS --><platform name="ios">
+      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17--><!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 -->
+  <!-- Define app icon for each platform. -->
+  <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad--><!-- END OF PLUGINS -->
+  <platform name="ios">
+    <icon src="www/res/icon/ios/icon-20.png" width="20" height="20" />
     <icon src="www/res/icon/ios/icon-29.png" width="29" height="29" />
     <!--29x29-->
     <icon src="www/res/icon/ios/icon-58.png" width="58" height="58" />
     <!--29x29 2x =58x58-->
+    <icon src="www/res/icon/ios/icon-60.png" width="60" height="60" />
     <icon src="www/res/icon/ios/icon-87.png" width="87" height="87" />
     <!--29x29 3x =87x87 Added 3/13/17 for ver 1.9 -->
     <icon src="www/res/icon/ios/icon-40.png" width="40" height="40" />
@@ -169,7 +174,7 @@
     <!-- 76x76 2x =152x152 WORKS FOR IPAD-->
     <icon src="www/res/icon/ios/icon-167.png" width="167" height="167" />
     <!-- iPad Pro -->
-    <icon src="icon1024.png" width="1024" height="1024" />
+    <icon src="www/res/icon/ios/icon-1024.png" width="1024" height="1024" />
     <!-- App Store -->
   </platform>
   <!-- Define app splash screen for each platform. -->
