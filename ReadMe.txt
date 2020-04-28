@@ -101,11 +101,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 05/01/19. Ver 1.24.021519 Promoted to production. Android only. 
 05/30/19. Ver 1.24.021519 successful IOS build with CLI 7.1, builder=1. 
 08/01/19. Ver 1.25 Branch Ver 125 created.
-03/15/20. Ver 1.25.031420 Android only.Promoted to production. #2244. Fix FERRY LOCATION link to call external browser.
-03/22/20. Ver 1.26.032020 Android only.Promoted to production. Android only. #2245. Add Cleartext plugin for Android 9.
-04/11/20. Ver 1.27.041120 IOS TestFlight ONLY. (Internally labelled as 1.27.032320).
-					      1st IOS build on LA952 MacinCloud using XCode11. For IOS 13.  Fix FERRY LOCATION. Change all links to https.
-04/28/20. Ver 1.27.041120 IOS App store submit. (Internally 1.27.032320).
+03/15/20. Ver 1.25.031420 Promoted to production. Android only. #2244. Fix FERRY LOCATION link to call external browser.
+03/22/20. Ver 1.26.032020 Promoted to production. Android only. #2245. Add Cleartext plugin for Android 9.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -198,12 +195,71 @@ ANDROID ADAPTIVE ICONS.
 
 ------------------------------------------------------------------------------------------------------------
 IOS DEBUG/BUILD 
-	DEBUG
+	4/15/20: DEBUG Build on MacinCloud LA952. PG Build has been deprecated for IOS 13, so it is no longer used. 
+	1. Get latest source using desktop GIT.
+	2. Manually copy the source from the GIT repositiory to aia/aia/www/index.html  and js/index.js.
+	   if there are config.xml changes, copy them to aia/aia/config.xml, but note that the config.xml has been customized for IOS.
+	3. If there are no significant changes, try just starting Xcode, selecting the Anderson Island Assistant project,
+	   and then run the test in the simulator:  Anderson Island Assistant > Iphone 11, and click the Run button.
+	   The project should build, then start the simulator and do the install.
+	4. If there are new versions of plugins or cordova needed, close Xcode. Then run Cordova:
+	   from aia/aia, enter 'cordova build ios -d' (equivalent to cordova prepare followed by cordova compile).
+       Build the project:  cd aia/aia (directory with config.xml); 'cordova build ios -d'  (equivalent to 'cordova prepare' followed by 'cordova compile'). 
+       prepare: Transforms config.xml metadata to platform-specific manifest files, copies icons & splashscreens, copies plugin files for specified platforms
+         so that the project is ready to build with each native SDK.
+      NOTE: when I ran this it moved the plugins into the 'plugins' folder
+      This builds in the platforms subdirectory. It does not touch the main www folder.
+	  
+5. To preview the app in the IOS simulator, open the workspace file in platforms/ios/AIA.xcworkspace.  This will start Xcode.   
+    Select the AIA project, then click on the Run arrow in the upper left hand corner of the Xcode screen. To stop it, click the Stop button.
+   But NOTE: you MUST have a <name> tag or the build aborts with "null attribute" error.
+   Note that you can always do this without running 'cordova build'. 
+
+6. Items in config.xml should get copied into Anderson Island Assistant.pinfo.   If there don't end up there you will have to add them
+	yourself.  Don't edit pinfo directly. Instead use the XCode mechanism. Ensure you have keys for 
+	NSlocationwheninuseusagedescription, NSLocationAlwaysUsageDescription ? 
+ NSCalendarsUsageDescription, LSApplicationQueriesSchemes (array of 1 string: "ttpapps.pcf"). See the file 'WorkingPlist0418.png' in Documents/Phonegap.
+ 7. SPLASHSCREEN - Created SplashScreen.stroyboard.  Added an image control. Moved a screen.PNG file into the xcassets. Added that file to the image control. Set margins to 0.  Works ok now.
+    This may have to be redone when 'Cordova build' is run, because it throws this stuff away. I'm not sure how to get Cordova config.xml to do this.
+  8. 
+
+
+--- USING XCODE TO GENERATE THE DEBUG VERSION FOR THE TEST PHONES.
+    a. open Anderson Island Assistant.xcworkspace.
+	b. select the project and target.
+	c. select the scheme of Anderson Island Assistant > Generic IOS Device.
+	d. XCODE -> Product -> Archive.  This generates an archive.
+	e. Window -> Organizer.
+	f. Select Archives -> Distribute App.
+	g. select Development. Next. 
+	h. no app thinning or aditional options. Next.
+	i. make sure it has the Distribution certificate is set to Apple Developemnt, and the mobil provisioning profile is set to the AndersonIslandDevPush profile is set. NEXT. 
+	j. You will be prompted to EXPORT. you will be prompted twice for keychain passwords. Use the login password, pxt77203. Eventually a folder will be created that contains the ipa file.
+	   Note: I selected 'always allow' on this, so now it no longer prompts for the keychain password.
+	k. upload the ipa file directly to www.diawi.com
+	l. from my iPhone7,  then download using the link I got from diawi when I uploaded it. Something like i.diawi.com/xxxxxx
+	m. You will be asked to install the app. install it. 
+	n. toggle back to the main screen, find the AIA icon, watch it install, and then double click on it.   OBSOLETE: USING PhoneGap Build, which seems to be deprecated as of 4/15/20 and will NOT support IOS 13:
 	 in pg build, select the IOS 'AIADevMMDD' certificate (pw=dd). then build.  Then download to the device.
 	This is done by going to build.phonegap.com on the phone in safari, and clicking on the ipa icon.
-	This works on the registered devices in developer.apple.com. Currently Sue's iPad and Ester's iPhone 5.
+	This works on the registered devices in developer.apple.com. 
 
-	To register a new device: 1. log in to developer.apple.com -> certificates -> Devices -> iPhone -> + -> enter the device UDID. 
+---CREATING A BETA TEST VERSION USING TESTFLIGHT:
+    To upload to Apple App Store.
+	Repeat a-f above.
+	Select Upload
+	Step through the whole upload process. Be sure that Distribution certificate is selected, and then 
+        just click on 'Profile' to select the 'Distribution' profile.
+	The app will upload to the app store.
+	After the upload is done, wait for an email saying that the build has processed. The build won't appear until you get that email.
+	This usually takes less than an hour. 
+        Go to the app store: developer.apple.com, log in to robertbedoll@gmail.com (apple dev account)
+	then to go Testfilght. The build should appear.
+ 	Or add a new version to the app on the app page. The build should appear.
+	Note you will get an email link for testers that you can send out - but they have to use TestFlight.
+
+	REGISTER A NEW iPHONE FOR DEBUG (added iPhone7 on 4/20/20): 
+	1. log in to developer.apple.com -> certificates -> Devices -> iPhone -> + -> enter the device UDID. 
 	2. You will need the UDID.  To get the UDID:   on the iphone safari browser, enter get.udid.io.  Accept the certificate. 
 	  then it gives you the UDID.  
 	3. copy the UDID into the udid  you got above when you hit the + .  Then click on Register.
@@ -392,57 +448,17 @@ For OneSignal 6/11/2019. Elapsed time 48 minutes.
 TESTING:
 See OneSignal Test below
 
-OBSOLETE: Original instructions. DO NOT USE
-
-  1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as pwd pw= pwd29837
-  2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
-    3. Click 'App IDs', then select the expiring id which is org.andersonisland.andersonislandassistant.
-  4. Click Edit and Scroll to 'Push Notifications' section and click on 'Create Certificate...'.
-  5. https://www.pushbots.help/install-pushbots-in-your-app-or-website/ios/the-apple-part-certificate-and-provisioning-profile
-  Steps 6-9 ARE NOT NECESSARY for renewal. Usse the existing AIAAPN2018.certSigningRequest file.
-  6. Open Applications -> Utilities -> Keychain Access.
-  7. Within KeychainAccess dropdown menu which is at the very top of the main screen, 
-		select Keychain Access->Certificate Assistant->Request a Certificate from a Certificate Authorit
-  8. In the Certificate Info window, enter: my email address(robertbedoll@gmail.com), a name for the private key (AIAAPN20xx to indicate the year).
-   Leave the CA email address empty. 
-   In the "Request Is"  group, select the Saved to Disk option.
-   Click Continue within Keychain Access to complete the CSR generating process.
-  9. Save as AIAAPN20xx.certSigningRequest to the desktop.
-  10. Choose the existing AIAAPN20xx.certSigningRequest file just generated. Click Continue.
-  11.Download the file just generated by clicking the Download button.
-  12.Bring up finder and go to Downloads.  You will see the file as aps_development-x.cer.
-  13.Double click on the cer file just created.  This installs it in Keychain under 'My Certificates'.
-  14.NOW YOU NEED TO CREATE THE P12 FILE. 	
-  15.In Keychain Access: Select My Certificates -> certificate just created. Look for the expiration date of 1 year from now. Expand it and check the private key to make sure it is the     correct one you just created.
-  16.Right click, then export 
-  17.Save as AIAAPN20xx, file format .p12.
-	When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
-	You will be prompted for the login  password pwd29837
-	The file will be generated as AIAAPN20xx.p12.
-  19.Open safari to www.pushbots.com. Log in.
-  20.Select Anderson Island Assistant -> Settings -> Push.
-  21.Upload P12 file to Pushbots.
-
 I have never bothered to Revoke old certificate, and it seems to work fine.
-
-OBSOLETE: For OneSignal 5/31/18;  
-  1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
-  2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
-  1. I selected App->AndersonIslandAssistant->edit.
-  2. Under Push Notifications-Distribution certificate I selected Create New Certificate
-  3. I used the existing AIAAPN2018.certSigningRequest instead of creating a new one. This one is used by pushbots dev cert.
-  4. I uploaded it, and then created a new certificate.
-  5. I downloaded the new cert and named it apsPushProd0518.cer. Apple name is:Apple Push Services:org.anderson-island.andersonislandassistant, type: ApplePushServices, exp 6/30/19.
-  6. I double clicked on it which installed it in KeyChainAccess under MyCertificates.
-  7. I immediately right clicked on that certificate in KeychainAccess and exported it to a P12 file I called APNProd0518.p12
-  8. I emailed it to me. then I uploaded it to OneSignal.
 
 
 ---------------------------------------------------------------------------------------------------------------------
 OneSignal test
-1. I have created a single test user named "Bob"
-2. To test: select Messages, New Push, Send to Test Device
+1. See the Audiance segment called "TEST". You can add users to this.  Look them up in the All Users segment, and right click
+   and add them to the TEST segment.  You can pick them out by the "Player ID", which is 
+2. To test: select Messages, New Push, Segment "TEST". Enter the message. THen click on CONFIRM. Note the number of users it will send to.
 3. To test from the API, use the pushtest.php script, which sends to 'Test Devices', which is my phone. 4/8/19.
+
+New iPhone7 added 4/21/20.
 
 Note: The OneSignal API Key is stored under root/private/OneSignal.php
 
