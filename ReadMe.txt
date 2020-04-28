@@ -103,6 +103,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/01/19. Ver 1.25 Branch Ver 125 created.
 03/15/20. Ver 1.25.031420 Promoted to production. Android only. #2244. Fix FERRY LOCATION link to call external browser.
 03/22/20. Ver 1.26.032020 Promoted to production. Android only. #2245. Add Cleartext plugin for Android 9.
+04/11/20. Ver 1.27.041120 IOS Testflight only. Internally 1.27.032320. Fix Ferry Location. Use https for all links.
+                          1st Build on LA952 MacInCloud with XCode 11, for IOS 13. See separate IOS Build document.
+04/28/20.                 Submitted to App Store.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -244,7 +247,7 @@ IOS DEBUG/BUILD
 	This is done by going to build.phonegap.com on the phone in safari, and clicking on the ipa icon.
 	This works on the registered devices in developer.apple.com. 
 
----CREATING A BETA TEST VERSION USING TESTFLIGHT:
+---CREATING A BETA TEST VERSION USING TESTFLIGHT: (first done 4/11/20 on ver 1.27.041120)
     To upload to Apple App Store.
 	Repeat a-f above.
 	Select Upload
@@ -453,8 +456,8 @@ I have never bothered to Revoke old certificate, and it seems to work fine.
 
 ---------------------------------------------------------------------------------------------------------------------
 OneSignal test
-1. See the Audiance segment called "TEST". You can add users to this.  Look them up in the All Users segment, and right click
-   and add them to the TEST segment.  You can pick them out by the "Player ID", which is 
+1. See the Audience segment called "TEST". You can add users to this.  Look them up in the All Users segment, and right click
+   and add them to the TEST segment.  You can pick them out by the "Player ID", but easier to use App Version. 
 2. To test: select Messages, New Push, Segment "TEST". Enter the message. THen click on CONFIRM. Note the number of users it will send to.
 3. To test from the API, use the pushtest.php script, which sends to 'Test Devices', which is my phone. 4/8/19.
 
@@ -540,7 +543,7 @@ DATA FORMAT: WEATHER  (not part of daily cache. direct return from www.openweath
     parseCacheRemove(data, "currentweatherlink", "CURRENTWEATHERLINK", "\n"); // weather data
     parseCacheRemove(data, "weatherforecastlink", "WEATHERFORECASTLINK", "\n"); // forecast data
     parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "ferrylocextlink", "FERRYLOCEXTLINK", "\n"); // ferry location link. calls external browser.
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
@@ -613,10 +616,3 @@ Small icon should be called ic_stat_pushbots_sicon.png, white & transaparant, in
 config.xml for Cordova: https://cordova.apache.org/docs/en/latest/config_ref/index.html#resource-file
 <resource-file src="FooPluginStrings.xml" target="res/values/FooPluginStrings.xml" />
 -----------------------------------------------------------------------------------------------------
-iPhone 10.
-Display changes:
-https://blog.phonegap.com/displaying-a-phonegap-app-correctly-on-the-iphone-x-c4a85664c493
-
----------------------
-test of push for 1.19
-Test of push 6/16.
