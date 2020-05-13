@@ -6,23 +6,24 @@
     <title>AIA: Edit Ferry Schedule</title>
 </head>
 <body>
-<h1>EDIT FERRY SCHEDULE</h1>
-    Ferry Schedule Editor.
-    <p>Use this page to edit the ferry schedule. </p>
-    <button onclick="LoadSchedule()">Load Full Schedule from dailycache</button>
+<h1>EDIT FERRY SCHEDULE  5/12/20</h1>
+    <p>To Use:
+    1. Click 'LOAD FULL SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3. Click on Format (). 4. Make changes using Edit box. 
+    5 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 5. When done, select SAVE FULL SCHEDULE, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
+    <button onclick="LoadSchedule()">LOAD FULL SCHEDULE from dailycache</button><br/>
     <button onclick="CheckSchedule()"> Check </button>
     <button onclick="TestSchedule()"> Test all entries</button>
-    <button onclick="SaveSchedule()"> Save Full Schedule to Edit Box</button>
-    <p>To Use:<br/>
-    1 Click 'LOAD SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3 Make changes using Edit box. 
-    4 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 4. When done, select Save Full Schedule, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
+    <button onclick="DisplayFerrySchedule()">DISPLAY Schedule</button>
+    <button onclick="SaveSchedule()"> SAVE FERRYS/A/K to Edit Box</button>
+    <button onclick="SaveDailyCache()"> SAVE DAILYCACHE.txt to Edit Box</button>
+
     <p>Rules for ferry time expression:<br/>
     <ul>
         <li>Times are 2400, NO leading zero. 0=midnight. 1200=noon.</li>
         <li>* = runs every day.</li>
         <li>0123456 = day of week to run. 0=Sunday. 6=Saturday. Multiple days are allowed, e.g. 135</li>
         <li>(xxxxx) = a javascript expression that evaluates to TRUE/FALSE. TRUE = run.  FALSE = skip.</li>
-        <li>Allowable variables: mmdd, mmddyear, dayofmonth, weekofmonth, month, dayofweek</li>
+        <li>Allowable variables: mmdd (101-1231), mmddyear (1012020), dayofmonth (1-31), weekofmonth (1-5), month (1-12), dayofweek (0-6)</li>
         <li>Allowable functions: any javascript function, plus any function in AIA.</li>
         <li>Most useful function:  InList(variabletotest, l1, l2, ...).  Returns TRUE if variabletotest is l1 or l2 or ... Can take any number of list elements.</li>
         <li>RFB. 6/3/18.</li>              
@@ -32,6 +33,7 @@
     <label>dayofweek</label><input type="number" id="dayofweek" size="1"/>
     <label>weekofmonth</label><input type="number" id="weekofmonth" size="1"/><br />
     <input type="text" id="edittime" size="4" /> &nbsp;<input type="text" size="1" id="editSAK" /> &nbsp; &nbsp;
+    <button onclick="PFormat()">Format by ()</button> 
     <button onclick="CheckEdit()">Check</button> 
     <button onclick="PCountEdit()">() Count</button> 
     <button onclick="SaveEdit(0)">Save Edit box to 1 schedule</button>
@@ -40,13 +42,22 @@
 
     <h1>SCHEDULE TABLE</h1>
     <table id="ftable">
-            <tr><td>STEIL</td><td>rule</td><td>status</td><td>AI</td><td>Rule</td><td>Status</td><td>KETR</td><td>Rule</td><td>Status</td></
+            <tr><td>STEIL</td><td>rule</td><td>S</td><td>AI</td><td>Rule</td><td>S</td><td>KETR</td><td>Rule</td><td>S</td></tr>
 
     </table>
-    
+  <hr/>
+        <h1>RESULTS TABLE</h1>
+    <table id="ferrytable">
+
+    </table>
+
 
 <script>
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  HISTORY
+    //  ?   Initial version.
+    //  05/12/20 Add schedule display, format(), save to dailycache.txt clipboard
+    
     // Ferry run times and flags. 
     //  These values are valid as of 9/2016 - but are immediately overridden by data in dailycache.txt:
     //  FERRYTS,FERRYTA,FERRYTK,FERRYTS2,FERRYTA2,FERRYTK2   (read in by ParseDailyCache)Heirarchy is:
@@ -60,18 +71,34 @@
     var ferrytimeS2 = [445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1230, 50, 1350, 50, 1420, "*", 1450, 50, 1520, "*", 1550, 50, 1620, "*", 1650, 50, 1730, "*", 1800, 50, 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
     var ferrytimeA2 = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1300, 50, 1420, 50, 1450, "*", 1520, 50, 1550, "*", 1620, 50, 1650, "*", 1730, 50, 1800, "*", 1840, 50, 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
     var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+    var gDayofWeekName = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 
     var gFerryDate2 = 0;  // cutover time to ferrytimex2
     var geditSAK = "";
     var gediti = 0;
 
+    var gdailycache = "";  // global data read in from dailycache.txt
+    var gdailycachenew = "";
+
     // global dates
     var gDayofWeek = 1;
     var gMonthDay = 202;
     var gWeekofMonth = 2;
-    var laborday = 901;
+    var gDateString; 
+    var gTimeStampms; // milisec since 1970
+    var gLetterofWeek; // letter for day of week
+    var gTimehh;
+    var gTimemm;
+    var gTimehhmm;  // hhmm in 24 hour format
+    var gMonth;  // month 1-12. IMPORTANT: note starts with 1
+    var gDayofMonth; // day of month 1-31
+    var gYear;
+    var gYYmmdd; // yymmdd
+
+    var laborday = 0;
     var memorialday = 531;
     var thanksgiving = 1122;
+    var gDateString
    
 
     //////////////////////////////////////////////////////////////////////////
@@ -142,8 +169,10 @@
         xhttp.open("GET", myurl, true);
         xhttp.send();
     }
+    /////////////////////////////////////////////////////////////////////////////
+    // HandleDailyCacheReply - process the dailycache.txt file
     function HandleDailyCacheReply(data) {
-        
+        gdailycache = data;// save the data
         ParseDailyCache(data);
     }
 
@@ -174,7 +203,7 @@
         parseCache(data, "ferrytimesk", "FERRYTK", "\n");
         // fill ferry arrays
         ParseFerryTimes();
-        BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+        BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK);
         alert("Loaded " + ferrytimeA.length + " entries.");
         
     }
@@ -254,7 +283,7 @@
     //         ferrytimesS, A, K = array of ferry times for Steilacoom, AI, and Ketron
     //         global gYYmmdd = date
     //  Exit: builds table of run times. Note: cell id = YYmmddhhmmX where X=S/A/K
-    function BuildFerrySchedule(ferrytimesS, ferrytimesA, ferrytimesK) {
+    function BuildFerryScheduleToEdit(ferrytimesS, ferrytimesA, ferrytimesK) {
         var i;
         var ft;
         var amcolor = "#f0ffff";
@@ -355,7 +384,7 @@
     //  returns true if ok, false if bad
     function CheckEdit() {
         var rule = document.getElementById("editrule").value;
-        if (CheckRule(rule, true)) return;
+        if (CheckRule(rule, true)) return alert("ok");
         alert("invalid expression");
     }
 
@@ -392,6 +421,8 @@
         if (all == 1) geditSAK = "SA";
         if (geditSAK == "") return;
         var rule = document.getElementById("editrule").value;
+        rule = rule.replace(/ /g, ""); // remove spaces
+        rule = rule.replace(/\n/g, ""); // remove new line
         var ft = Number(document.getElementById("edittime").value);
         if (Number.isNaN(ft) == true) {
             alert("invalid time");
@@ -432,7 +463,7 @@
 
         }
         clearTable(document.getElementById("ftable"));
-        BuildFerrySchedule(ferrytimeS, ferrytimeA, ferrytimeK);
+        BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK);
         alert("value saved for " + geditSAK + " " + ft.toFixed())
     }
 
@@ -459,6 +490,43 @@
 
      }
 
+    ///////////////////////////////////////////////////////////////////////////////
+    // PFormat - Break up into multiple lines based on level 0 closing parenthesis
+     function PFormat() {
+        var rule = document.getElementById("editrule").value;
+        var i;
+        var pcount = 0;
+         var p = "";
+         var sprev = "";
+         var prev4 = "";
+         var s = "";
+         if (rule.substr(0, 2) == "((") rule = rule.substr(1, rule.length - 2);  // strip first and last ()
+         // loop through and insert a crlf at each level 0 paren
+         for (i = 0; i < rule.length; i++) {
+             sprev = s;
+             s = rule.substr(i, 1);
+             if (s == "(") {
+                 pcount++;
+                 p = p + "(";
+             } else if (s == ")") {
+                var lf = "";
+                if (pcount == 1) lf = "\n";
+                p = p + ")" + lf;
+                pcount--;
+             } else {
+                p = p + s;
+             }
+         }
+         p = p.replace(/\)\&\&\(/g, ") && (");
+         p = p.replace(/\)\|\|\(/g, ") || (");
+         p = p.replace(/\n\|\|\(/g, "\n|| (");
+         p = p.replace(/\n\&\&\(/g, "\n&& (");
+         p = p.replace(/\)\)/g, ") )");
+         p = p.replace(/\(\(/g, "( (");
+         document.getElementById("editrule").value = p;
+         if(pcount != 0) alert(p + "\nMissing Parens = " + pcount.toFixed()); // display paren count;
+
+     }
     
     ////////////////////////////////////////////////////////////////////////////////
     //  CheckSchedule() - lchecks entire schedule and sets status
@@ -484,12 +552,15 @@
          return ok;
      }
      ////////////////////////////////////////////////////////////////////////////////
-     //  SaveSchedule() - saves entire schedule 
+     //  SaveSchedule() - saves entire schedule to edit box
+    //  entry: ferrytimeA/S/K array = edited schedule
+    //  exit: true if no error, document.editrule = formatted schedule values for dailycache.txt,
+    //          false if an error
      function SaveSchedule() {
          var i;
          if (CheckSchedule() == false) {
              alert("can not save while there are errors.");
-             return;
+             return false;
          }
          var FTA = "FERRYTA\n";
          var FTS = "FERRYTS\n";
@@ -501,7 +572,40 @@
          }
          document.getElementById("editrule").value = FTS.substr(0, FTS.length - 1) + "\n" + FTA.substr(0, FTA.length - 1) + "\n" + FTK.substr(0, FTK.length - 1) + "\n";
          alert("saved " + ferrytimeA.length.toFixed() + " rows to the edit box.");
-     }
+         return true;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //  UpdateDailyCache() Replaces the ferry info in DailyCache with the edited Ferry values
+    //  entry: ferrytimeA/S/K array = edited schedule
+    //  exit: true if no error, 
+    //        clipboard and document.editrule = entire formatted dailycache.txt contents.
+    //
+    function SaveDailyCache() {
+        if (!SaveSchedule()) return false;
+        InitializeDates(0);
+        // schedule is now in the editrule.value
+        var editrule = document.getElementById("editrule");
+        var newferryschedule = editrule.value;
+        if (gdailycache.length == 0) return alert("no daily cache data");
+        if (newferryschedule.length == 0) return alert("no new ferry schedule data");
+        // find and replace
+        var fs = gdailycache.indexOf("FERRYTS\n");
+        if (fs < 10) return alert("cannot find FERRYTS in dailycache");
+        var fs2 = gdailycache.indexOf("FERRYTS2\n");
+        if (fs2 < fs) return alert("cannot find FERRYTS2 in dailycache, or it is not before FERRYTS");
+        gdailycachenew = gdailycache.substr(0, fs) + "//Ferry Schedule Edited " + gYYmmdd + "\n" + newferryschedule + gdailycache.substr(fs2);  // build new daily cache
+        // move to the edit box
+        editrule.value = gdailycachenew;
+        /* Get the text field */
+          /* Select the text field */
+        editrule.select();
+        editrule.setSelectionRange(0, 99999); /*For mobile devices*/
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+        alert("replacement for dailycache.txt is now in the clipboard")
+    }
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // clear table. Deletes all rows but the first.
@@ -532,6 +636,296 @@ function timeAdd(timehhmm, addmm) {
     return Math.floor(tm / 60) *100 + (tm % 60);
 }
 
+//============================================== FROM AIA index.js ========================================================//
+//============================================== FROM AIA index.js ========================================================//
+// AIA ONLY GLOBALS
+    var gFerryHighlight = 0;
+////////////////////////////////////////////////////////////////
+//  FROM AIA index.js
+// DisplayFerrySchedule build and displays the grid 'ferrytable'
+//  entry userdate = "" for today, else mm/dd
+function DisplayFerrySchedule() {
+    var row1, row1col1;
+    var userdate = prompt("enter date as empty, or mm/dd/yyyy");
+    if (userdate == "") InitializeDates(0);
+    else InitializeDates(userdate);
+    //document.getElementById("ferrymessage").innerHTML = localStorage.getItem("ferrymessage");
+
+    var table = document.getElementById("ferrytable");
+    //gTableToClear = "ferrytable";
+    clearTable(table);
+    if(table.rows.length>0) table.deleteRow(0);  // clear 1st row
+
+    row1 = table.insertRow(-1);
+    row1col1 = row1.insertCell(0);
+    row1col1.style.backgroundColor = "blue";
+    row1col1.style.color = "white";
+    if (userdate == "") row1col1.innerHTML = 'TODAY';
+    else row1col1.innerHTML = gDayofWeekName[gDayofWeek];
+    row1col1 = row1.insertCell(1);
+    row1col1.style.backgroundColor = "blue";
+    row1col1.style.color = "white";
+    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") ;
+    row1col1 = row1.insertCell(2);
+    row1col1.style.backgroundColor = "blue";
+
+    InsertStAI(table);
+    BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
+ 
+    gTimehhmm = 0;  // ignore current time
+    var i;
+    for (i = 0; i < 7; i++) {
+        InitializeDates(1);  // tomorrow
+        row1 = table.insertRow(-1);
+        row1col1 = row1.insertCell(0);
+        row1col1.colSpan = "3";
+        row1col1.style.backgroundColor = "blue";
+        row1col1.style.color = "white";
+        row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
+        InsertStAI(table);
+        BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
+    }
+
+    InitializeDates(0);  // reset dates back
+    }
+    /////////////////////////////////////////////////////////////////////////////////////////
+// Loads the next ferry times into the global 'table' as a row for each run. 
+// ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
+//  Entry: table = table to add to
+//         ferrytimesS, A, K = array of ferry times for Steilacoom, AI, and Ketron
+//         global gYYmmdd = date
+//  Exit: builds table of run times. Note: cell id = YYmmddhhmmX where X=S/A/K
+function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
+    var i;
+    var ft;
+    var amcolor = "#f0ffff";
+    const extrat = 29; // extra time in display 29 minutes
+    var boldS = false, boldA = false, boldK = false;
+    var validS = false, validA = false, validK = false; // true if runs are valid
+    var adjustedcurrenttime = 0; // time adjusted for ferry delays (time adjusted backwards)
+    //if (gTimehhmm > 0) adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat + gFerryDelayMin)); // adjust current time backwards for the ferry sailing test
+
+    // roll through the ferry times, skipping runs that are not valid for today
+    for (i = 0; i < ferrytimesS.length; i = i + 2) {
+        if ((adjustedcurrenttime >= ferrytimesS[i]) && (adjustedcurrenttime >= ferrytimesA[i]) && (adjustedcurrenttime > ferrytimesK[i]))continue;  // skip ferrys that have alreaedy run
+        // now determine if the next run will run today.  If it is a valid run, break out of loop.
+        validS = (ferrytimesS[i] != 0) &&  ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
+        validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
+        validK = (ferrytimesK[i] != 0) && ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i]);
+        if (validS||validA||validK) {
+            // Steelacoom
+            var row1, row1col1, row1col2;
+            row1 = table.insertRow(-1);
+            row1col1 = row1.insertCell(0);
+            row1col1.style.border.width = 1;
+            row1col1.style.border = "thin solid black";
+            if (validS) {
+                row1col1.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesS[i]);
+                if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
+                if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
+                row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
+                row1col1.onclick = function () { ferryclick(this.id) };
+            } else {
+                row1col1.innerHTML = "&nbsp;&nbsp;"
+            }
+
+            // Anderson Island;
+            row1col2 = row1.insertCell(1);
+            row1col2.style.border = "thin solid black";
+            if (validA) {
+                row1col2.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesA[i]);
+                if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
+                else row1col2.style.color = "darkblue";
+                if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
+                row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
+                row1col2.onclick = function () { ferryclick(this.id) };
+            } else {
+                row1col2.innerHTML = "&nbsp;&nbsp;";
+            }
+
+            // Ketron
+            var row1col3 = row1.insertCell(2);
+            row1col3.style.border = "thin solid black";
+            if (validK) {
+                row1col3.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesK[i]);
+                if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
+                else row1col3.style.color = "brown";
+                row1col3.style.border = "thin solid black";
+                if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
+                row1col3.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesK[i]) + "K"; // id = yymmddhhmmS
+                row1col3.onclick = function () { ferryclick(this.id) };
+            }
+            // make the next run bold
+            if (row1.rowIndex <= 3) { // row 3 or 4 (index=2 or 3) is the next run
+                if (gTimehhmm <= ferrytimesS[i] && !boldS) {
+                    row1col1.style.fontWeight = "bold";  // bold 
+                    boldS = true;
+                }
+                if (gTimehhmm <= ferrytimesA[i] && !boldA){
+                    row1col2.style.fontWeight = "bold";  // bold
+                    boldA = true;
+                }
+                if (gTimehhmm <= ferrytimesK[i] && !boldK) {
+                    row1col3.style.fontWeight = "bold";  // bold 
+                    boldK = true;
+                }
+            }
+
+        }
+    }
+    return;
+}
+// formathhmm - ensure 4 digit hhmm
+function formathhmm(hhmm) {
+    var s = hhmm.toFixed(0);
+    if (s.length == 4) return s;
+    else return "0" + s;
+}
+
+// build steilacoom/ai label
+function InsertStAI(table) {
+    row1 = table.insertRow(-1);
+    row1.style.color = "darkblue";
+    row1col1 = row1.insertCell(0);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    if (gFerryHighlight == 1 && gLocationOnAI == 0) row1col1.style.backgroundColor = "#ffff80";
+    else row1col1.style.backgroundColor = "lightblue";
+    row1col1.style.color = "black";
+    row1col1.innerHTML = "&nbsp; Steilacoom &nbsp;";
+    row1col1 = row1.insertCell(1);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    if (gFerryHighlight == 1 && gLocationOnAI == 1) row1col1.style.backgroundColor = "#ffff80";
+    else row1col1.style.backgroundColor = "lightblue";
+    row1col1.style.color = "darkblue";
+    row1col1.innerHTML = "&nbsp;Anderson&nbsp;";
+    row1col1 = row1.insertCell(2);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    row1col1.style.backgroundColor = "lightblue";
+    row1col1.style.color = "maroon";
+    row1col1.innerHTML = "&nbsp; Ketron &nbsp;";
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// ValidFerryRun return true if a valid ferry time, else false.
+//  alternate to having the rules special cased
+// flag: *=always, 0-6=days of week, (xxxx) = eval rules in javascript
+// ferrytime: ferry run time, used only for error message
+//  eval rules are javascript, returning true for a valid run, else false
+//    can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
+//    e.g. ((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123))
+
+function ValidFerryRun(flag, ferrytime) {
+    if (flag == undefined || flag == "") return false;
+    if (flag.indexOf("*") > -1) return true; // good every day
+    if (flag.substr(0, 1) != "(") {
+        if (flag.indexOf(gLetterofWeek) > -1) return true;  // if day of week is encoded
+        return false;
+    }
+
+    // (eval rules ).
+    try {
+        var t = eval(flag);
+    } catch (err) {
+        var msg = "Invalid Ferry Eval Rule for " + ferrytime + "\n" + flag + "\n" + err.message;
+        alert(msg);
+        t = false;
+    }
+    return t;
+    }
+//////////////////////////////////////////////////////////////////////////////////////
+//  timeAdd - increments time by nn minutes. Use -nn to decrement time.
+//  Entry   timehhmm as hhmm, addmm as minutes (positive or negative);
+//  Exit    new time
+function timeAdd(timehhmm, addmm) {
+    var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100) + addmm; // time in min
+    return Math.floor(tm / 60) *100 + (tm % 60);
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+// initilize all date variables.  
+// entry: dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1 and reset time).
+//          mm/dd/yyyy for an arbitrary date
+// sets the date globals above
+function InitializeDates(dateincr) {
+    if (dateincr == 0) Gd = new Date();
+    else if (dateincr == 1) {
+        Gd.setDate(Gd.getDate() + 1); // bump by 1
+        Gd.setHours(0); Gd.setMinutes(0); Gd.setSeconds(0);
+    } else {
+        Gd = new Date(dateincr);
+    }
+    gDateString = Gd.toString(); 
+    gTimeStampms = Gd.getTime(); // milisec since 1970
+    gDayofWeek = Gd.getDay();  // day of week in 0-6
+    gLetterofWeek = "0123456".charAt(gDayofWeek); // letter for day of week
+    gTimehh = Gd.getHours();
+    gTimemm = Gd.getMinutes();
+    gTimehhmm = gTimehh * 100 + gTimemm;  // hhmm in 24 hour format
+    gMonth = Gd.getMonth() + 1;  // month 1-12. IMPORTANT: note starts with 1
+    gDayofMonth = Gd.getDate(); // day of month 1-31
+    gMonthDay = gMonth * 100 + gDayofMonth;
+    gYear = Gd.getFullYear();
+    gYYmmdd = gMonthDay + (gYear-2000)*10000; // yymmdd
+    gWeekofMonth = Math.floor((gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
+    // build holidays once only
+    if (laborday == 0) BuildHoliday(gYear);
+    // compute holidays
+    holiday = IsHoliday(gMonthDay);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// return true if a holiday for the ferry schedule. input = month*100+day
+function IsHoliday(md) {
+    if (md == 1231 || md == 1232 || md == 101) return true;
+    if (md == memorialday || md == 703 || md == 704 || md == laborday || md == thanksgiving || md == 1224 || md == 1225) return true;
+    return false;
+    }
+//////////////////////////////////////////////////////////////////////////////////////
+//  BuildHolidays - calculate laborday, memorial day, thanksgiving.  rev 1/5/18.
+//  entry: year = year.   
+//  exit: sets laborday, memorialday, thansgiving to mmdd.
+function BuildHoliday(year) {
+    // laborday // first monday in sept.  we need to compute this dyanmically
+    var dlabordate, dlabor;
+    dlabordate = new Date(year, 8, 1); // earlies possible date
+    dlabor = dlabordate.getDay();
+    if (dlabor > 1) laborday = 909 - dlabor;  // monday = 1... Sat=6
+    else if (dlabor == 0) laborday = 902;  // monday = 1... Sat=6
+    else laborday = 901;
+    // memorial day last monday in may
+    var dmemdate, memdate;
+    dmemdate = new Date(year, 4, 25); // earliest possible date memorial day
+    memday = dmemdate.getDay();
+    if (memday > 1) memorialday = 525 + 8 - memday;  // monday = 1... Sat=6
+    else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
+    else memorialday = 525;
+    // thanksgiving calculation.  Fixed on 01/05/18.
+    // thanksgiving = 11/22 – 11/28
+    var dthanksdate, dthanks;
+    dthanksdate = new Date(year, 10, 1);// 1st day of nov
+    dowthanks = dthanksdate.getDay(); // 0 – 6, thur=4
+    if (dowthanks <= 4) thanksgiving = 1126 - dowthanks;//  4 = 22,3=23,2=24,1=25,0=26
+    else thanksgiving = 1133 - dowthanks;;//  5 ->1128,  6->11/27
+    }
+/////////////////////////////////////////////////////////////////////////
+//  GetFerryTimeArray - select proper ferry time array (S or A) NO DATE TEST
+//  entry   SA = "S" for Steilacoom, A for Anderson, K for Ketron
+//  exit    returns if SA=A: ferrytimeA, S: ferrytimeS,
+function UseFerryTime(SA) {
+    switch (SA) {
+        case "S":
+            return ferrytimeS;
+            break;
+        case "A":
+            return ferrytimeA;
+            break;
+        case "K":
+            return ferrytimeK;
+            break;
+    }
+}
     </script>
 
 </body>
