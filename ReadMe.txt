@@ -105,7 +105,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/22/20. Ver 1.26.032020 Promoted to production. Android only. #2245. Add Cleartext plugin for Android 9.
 04/11/20. Ver 1.27.041120 IOS Testflight only. Internally 1.27.032320. Fix Ferry Location. Use https for all links.
                           1st Build on LA952 MacInCloud with XCode 11, for IOS 13. See separate IOS Build document.
-04/28/20.                 Submitted to App Store.
+04/29/20. Ver 1.27.032320 App Store approved for sale i.e. IOS Production.   
+05/21/20. Ver 1.27.032320 Merged to Master.
+05/21/20. Ver 1.28		  Branch Ver128 created.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
