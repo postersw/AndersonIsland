@@ -55,6 +55,7 @@
         1.25.091419. Handle line feeds in calendar details.
         1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
         1.26.032020. Add cleartext plugin. Still on branch 125.
+        1.27.032330. Use https for all web requests per google requirements for android 9.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -76,7 +77,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.26.032020";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.27.032320";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -614,8 +615,8 @@ OpenHours = [{  // single preload for testing and if there is no connectivity
 // load web pages
 function ShowFerry() {
     MarkPage("x");
-    var link = GetLink("ferrypagelink", "http://www.co.pierce.wa.us/index.aspx?NID=1793");
-    window.open("http://www.co.pierce.wa.us/index.aspx?NID=1793", "_system");
+    var link = GetLink("ferrypagelink", "https://www.co.pierce.wa.us/index.aspx?NID=1793");
+    window.open("https://www.co.pierce.wa.us/index.aspx?NID=1793", "_system");
 }
 
 function ShowMap() {
@@ -632,13 +633,13 @@ function ShowBurnBan() {
 
 function ShowTannerOutage() {
     MarkPage("r");
-    var link = GetLink("tanneroutagelink", "http://www.tannerelectric.coop/andersonisland");  // default
+    var link = GetLink("tanneroutagelink", "https://www.tannerelectric.coop/andersonisland");  // default
     window.open(link, "_system");
 }
 
 function ShowParks() {
     MarkPage("p");
-    var link = GetLink("parkslink", 'http://www.anderson-island.org/parks/parks.html');
+    var link = GetLink("parkslink", 'https://www.anderson-island.org/parks/parks.html');
     //window.open(link, '_blank', 'EnableViewPortScale=yes');
     window.open(link, '_blank'); // no viewport scaling
 
@@ -646,7 +647,7 @@ function ShowParks() {
 
 function ShowNews() {
     MarkPage("n");
-    var link = GetLink("newslink", 'http://www.anderson-island.org/news.html');
+    var link = GetLink("newslink", 'https://www.anderson-island.org/news.html');
     window.open(link, "_blank");
 }
 
@@ -663,7 +664,7 @@ function UpdateApp() {
         }
     } else {
         window.location.reload(true);
-        //window.open('http://www.anderson-island.org/?' + Date.now(), '_parent');
+        //window.open('https://www.anderson-island.org/?' + Date.now(), '_parent');
     }
 }
 
@@ -808,7 +809,7 @@ function FixURL(url) {
     if (url.indexOf("?") < 0) url += "?" + Date.now(); // turn off cache if no '?'
     if (isPhoneGap() == false) return url;
     if (url.indexOf("//") > -1) return url;  // if it already is qualified
-    return 'http://anderson-island.org/' + url;
+    return 'https://anderson-island.org/' + url;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1160,7 +1161,7 @@ function DegToCompassPointsTTS(d) {
 //     ajax async request
 //    var myurl = FixURL("dailycache.txt"); 
 //    $.ajax({
-//        url: myurl, // for phone use fully qualified url http://anderson-island.org/
+//        url: myurl, // for phone use fully qualified url https://anderson-island.org/
 //        success: function (data) {
 //}
 function GetDailyCache() {
@@ -1920,7 +1921,7 @@ function ValidFerryRun(flag, ferrytime) {
 ///////////////////////////////////////////////////////////////////////////
 // loads the ferry schedule at pierce web page
 function ShowFerrySchedule() {
-    var myurl = GetLink("ferryschedulelink", "http://www.co.pierce.wa.us/index.aspx?NID=2200");
+    var myurl = GetLink("ferryschedulelink", "https://www.co.pierce.wa.us/index.aspx?NID=2200");
     window.open(myurl, "_blank");
 }
 function ShowFerryLocation() {
@@ -2993,7 +2994,7 @@ function AddToCal(id) {
     var eventLocation = aCE[5];
     var notes = "";
 
-    // NOT PHONEGAP - use google calendar  http://www.google.com/calendar/event?
+    // NOT PHONEGAP - use google calendar  https://www.google.com/calendar/event?
     //    action=TEMPLATE&text=title&dates=yyyymmddThhmmssZ/yyyymmddThhmmssZ&details=xxx&location=xxx
     //      NOTE: for google link: convert to UTC, change spaces to %20.
     //if (!isPhoneGap() || isAndroid()) { //NOT PHONEGAP  OR   Phonegap and Andriod
@@ -3001,8 +3002,8 @@ function AddToCal(id) {
         title = title.replace(/ /g, '%20');
         eventLocation = eventLocation.replace(/ /g, '%20');
         //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
-        //           var link = "http://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
-        var link = "http://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
+        //           var link = "https://www.google.com/calendar/event?action=TEMPLATE&text=" + title + 
+        var link = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
             "&dates=" + y + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
             'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
              gYear + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
@@ -4030,7 +4031,7 @@ function NOAAtoAERIS(json) {
 // ShowNOAA - query NOAA for the tide page
 function ShowNOAA() {
     InitializeDates(0);
-    var link = GetLink("noaalink", "http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705");
+    var link = GetLink("noaalink", "https://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/response.jsp?stationId=9446705");
     link = link & "beginDate=" + gYear + gMonth + gDayofMonth + "&endDate=" + gYear + gMonth + gDayofMonth + "&datum=MLLW&unit=0& =0&format=html&Submit=Submit";
     window.open(link, "_blank");
 }
@@ -4082,9 +4083,9 @@ function getCurrentWeather() {
     if (t != null && ((timestamp - t) < (15 * 60))) return; // gets weather async every 15 min.
 
     //$.ajax({
-    //    url: 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
+    //    url: 'https://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
     //    dataType: 'jsonp',
-    var myurl = GetLink("currentweatherlink", 'http://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
+    var myurl = GetLink("currentweatherlink", 'https://api.openweathermap.org/data/2.5/weather?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCurrentWeatherReply(xhttp.responseText);
@@ -4168,11 +4169,11 @@ function getForecast() {
     var t = localStorage.getItem("forecasttime");
     if (t != null && ((timestamp - t) < (60 * 60))) return; // gets weather forecast async every 60 min.
     //$.ajax({
-    //    url: 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
+    //    url: 'https://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
 
     //    dataType: 'jsonp',
     //    success: function (json) {
-    var myurl = GetLink("weatherforecastlink", 'http://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
+    var myurl = GetLink("weatherforecastlink", 'https://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0');
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -4328,13 +4329,13 @@ function ShowFerryWebCam() {
     ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
     // steilacoom link from local storage
-    var link = GetLink("ferrycams","http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
+    var link = GetLink("ferrycams","https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
     document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
     document.getElementById("scamera").innerHTML="Steilacoom: next @ " + FindNextSingleFerryTime(UseFerryTime("S"));
     // anderson link from local storage
-    link = GetLink("ferrycama","http://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg");
+    link = GetLink("ferrycama","https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
     document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
