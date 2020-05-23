@@ -1,0 +1,885 @@
+﻿<!DOCTYPE html>
+<!--
+    Anderson Island Assistant.  Single page version.
+    Robert Bedoll. 2/23/16. 
+	ver 1.1.319: Web. fix weather forecast gmt time conversion
+	ver 1.2: Web. add weather icons
+	ver 1.3.0414: Web add pushbots3
+    ver 1.3.0422: Android & IOS release. add pushbots.resetBadge
+    ver 1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel. 
+                  Remove App Store message from non-mobile devices.
+    ver 1.5.0509: add OpenHours object (multiple date ranges and time ranges).  Fix weather month.
+            0515: Sunrise/Sunset in tide graph, add other days. Color code activities. Local version of jquery. 
+                  Onclick support for events and add-to-google-calendar.
+                  My own dialog box div. Formatting improvements.
+                  Menu. (moved about, update, to menu)
+            0524: Full page for each business on click.
+            0527: call getalerts.php for ferry, burnban, tanner alers.
+            0529: jquery removed.  remove it from git.
+            0530: moved all javascript to index.js.
+            0604: fix for ios status line.
+    ver 
+    1.7.0702.2300: Created branch Ver17 for dev. Branch 16Prod captures the prod 1.6.0614 branch.
+            0705: Fishing Link.
+    1.9.031017:  Added Ferry ticket link.
+    1.10.031417: Made ferry ticket link narrower for smaller screens.
+    1.13.0519: Ferry schedule: 3/line, time till, table, highlight by location.
+               Make menu smaller
+    1.15:0623: IOS version. Add sliders to menu.
+    1.16:012218: Add main page rows in daily cache.
+    1.23:011419: Add services before churches
+	
+    Copyright (c) 2016-2018 Robert Bedoll, Poster Software LLC.
+
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  
+-->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Instant access to up-to-the-minute Anderson Island (WA) information (ferry, tides, weather, events,...)" />
+    <meta name="keywords" content="Anderson Island, ferry" />
+    <meta name="author" content="Robert Bedoll, Poster Software LLC" />
+    <meta property="og:title" content="Anderson Island Assistant" />
+    <meta property="og:description" content="Instant access to up-to-the-minute Anderson Island information (ferry, tides, weather, events,...)" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <!-- removed user-scalable=no, maximum-scale=1 -->
+    <meta name="viewport" content="initial-scale=1, width=device-width,height=device-height,target-densitydpi=medium-dpi,user-scalable=no" /> <!--device-dpi" />-->
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>AIA - Anderson Island Assistant</title>
+    <!-- GOOGLE ICONS hosted locally in css directory woff font-->
+    <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> Hosted locally in css directory -->
+
+        <style>
+            button {
+                font-size: 14px;
+                text-align: left;
+            }
+
+            .buttonback {
+                background-color: blue;
+                border: none;
+                color: white;
+                float: left;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            tr {
+                border-style: solid;
+                border-width: thin;
+                border-color: gray;
+                padding-top: 6px;
+                padding-bottom: 6px;
+            }
+
+            td {
+                padding-top: 6px;
+                padding-bottom: 6px;
+            }
+
+            li {
+                border-style: solid;
+                border-width: thin;
+                border-color: gray;
+                padding-top: 6px;
+                padding-bottom: 6px;
+                padding-left: 6px;
+            }
+
+            h1 {
+                font-size: 18px;
+                font-weight: normal;
+                overflow: visible;
+                padding: 8px;
+                padding-top: 12px;
+                margin: 0px;
+                text-align: center;
+                background-color: blue;
+                color: white;
+            }
+
+            i {
+                vertical-align:text-bottom;
+            }
+
+            /* menu */
+            td.menu {
+                font-size: 14px;
+                font-weight: bold;
+                color: white;
+                padding: 12px
+            }
+
+            tr.menu {
+                border: none;
+                border-bottom: thin solid white
+            }
+
+            .auto-style1 {
+                height: 32px;
+            }
+
+    
+        </style>
+
+
+    </head>
+    <body style="margin:0;padding:0">
+        <div class="app">
+            <div style="position:fixed;margin-top:-42px;width:100%;">
+                <div id="ipfix1" style="width:100%;color:white;background-color:blue;font-size:small;display:none">&nbsp;</div> <!--for iphone header -->
+    <h1 id="appheader" style="overflow:auto;width:100%;height:25px">
+        <span id="h1menu" style='float:left;' onclick="OpenMenu()">&#9776;&nbsp;&nbsp;</span>
+        <span id="h1title" style="font-weight:bold;margin-left:-40px;">Anderson Island Assistant</span>
+    </h1> <!-- why do i need to set width fixed? -->
+    </div>
+    <div style="margin-top:40px">
+        <!-- scrollable area -->
+        <div id="ipfix2" style="width:100%;font-size:small;display:none">&nbsp;</div>  <!-- for iphone header -->
+        <!-- --------------------------------------------------------------------------------------------------- -->
+        <div id="mainpage" style="display:block;">
+            <span id="topline" style="font-size:small;margin-top:0px;margin-bottom:0px;margin-left:6px;text-align:center">Tap LEFT for speech.   Tap RIGHT for details.</span>
+            <!--App message-->
+            <div id='androidapp' style="display:none;background-color:lightgray;margin-top:0;" onclick="window.open('https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant', '_system');">
+                <strong>Tap for free Install from Google Play Store</strong><br />
+            </div>
+            <div id='iphoneapp' style="display:none;background-color:lightgray;margin-top:0;" onclick="window.open('https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8', '_system');">
+                <strong>Tap for free Install from Apple App Store</strong><br />
+            </div>
+
+            <!--Alerts-->
+            <div id='alertdiv' onclick="DisplayAlertDetail()" style="display:none;padding-left: 6px">
+                <span style="font-size:18px;font-weight:bold;color:red;padding-left: 6px;">ALERT</span>
+                <span id='alerttext' style="font-size:small;font-weight:bold;color:red;">alert information goes here</span>
+                <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
+            </div>
+
+            <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse" ;>
+                <tr id='ferryrow' style="background-color:azure;" ">
+                    <td id="ferrytitle" style="padding-left:6px;font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" onclick="TTSFerrySchedule()">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe532;</i><span class='mptext'>Ferry</span></span>
+                    </td>
+                    <td id="ferrytimes" style="font-size:small;margin-top:0px;margin-bottom:0px;" onclick="DisplayFerrySchedulePage()"> </td>
+                </tr>
+
+                <tr style="background-color:azure;">
+                    <td style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;padding-top:2px;padding-bottom:2px" colspan="2">
+                        <table align="center" style="width:100%;padding:0;border-collapse:collapse;border:0px" ;>
+                            <tr style="font-size:18px;font-weight:bold;color:darkblue;padding-left:0;border:0px">
+                                <td id="webcamtitle" style="text-align:center;" onclick="ShowFerryWebCam()">
+                                    <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe04b;</i><span class='mptext'>Camera</span></span>
+                                </td>
+                                <td id="loctitle" style="text-align:center;border-right:1px solid lightgray;border-left:1px solid lightgray" onclick="ShowFerryLocation()">
+                                    <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe55e;</i><span class='mptext'>Location</span></span>
+                                </td>
+                                <td id="tickettitle" style="text-align:center" onclick="StartTicketApp()">
+                                    <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe638;</i><span class='mptext'>Tickets</span></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr style="background-color:lightcyan">
+                    <td id="tidestitle" style="font-size:18px;font-weight:bold;color:blue;padding-left:6px" onclick="TTSTidesData();">
+                        TIDES
+                    </td>
+                    <td id="tides" style="font-size:small;margin-top:2px;margin-bottom:4px" onclick="TidesDataPage();"> </td>
+                </tr>
+
+                <tr style="background-color:honeydew">
+                    <td id="weathertitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px;text-wrap:avoid" onclick="TTSShowWeather();">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe2c2;</i><span class='mptext'>Weather</span></span>
+                    </td>
+                    <td style="font-size:small;margin-top:4px;margin-bottom:0px" onclick="ShowWeatherPage();">
+                        <span id="weather"><br />Current weather:</span><br />
+                        <span id="forecast" style="font-size:small;margin-top:4px;margin-bottom:0px">Forecast: </span>
+                    </td>
+
+                </tr>
+
+                <tr style="background-color:floralwhite;">
+                    <td id="eventtitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px" onclick="TTSShowEvent()">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe878;</i><span class='mptext'>Events</span></span>
+                    </td>
+                    <td id="nextevent" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;" onclick="DisplayComingEventsPage('events');"> </td>
+                </tr>
+                <tr style="background-color:floralwhite;">
+                    <td id="activitytitle" style="font-size:18px;font-weight:bold;color:darkmagenta;padding-left:6px" onclick="TTSShowActivity();">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe566;</i><span class='mptext'>Activity</span></span>
+                    </td>
+                    <td id="nextactivity" style="font-size:small;margin-top:4px;margin-bottom:4px;overflow:hidden;" onclick="DisplayComingEventsPage('activity');"> </td>
+                </tr>
+
+                <tr style="background-color:#f0f0f5">
+                    <td id="opentitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" onclick="TTSShowOpen();">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe8b5;</i><span class='mptext'>Open</span></span>
+                    </td>
+                    <td id="openhours" style="font-size:small;margin-top:4px;margin-bottom:4px" onclick="ShowOpenHoursPage();"> </td>
+                </tr>
+
+                <tr style="background-color:lightyellow">
+                    <td id="burnbantitle" style="font-size:18px;font-weight:bold;color:darkorange;padding-left:6px" onclick="TTSBurnBan();">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe80e;</i><span class='mptext'>Burnban</span></span>
+                    </td>
+                    <td id="burnbanalert" style="font-size:small;margin-top:2px;margin-bottom:4px" onclick="ShowBurnBan();">Tap for burn ban status.<br /></td>
+                </tr>
+
+                <tr style="background-color:#fff4b3;">
+                    <td id="tannertitle" style="font-size:18px;font-weight:bold;color:#802b00;padding-left:6px" onclick="TTSTannerOutage()">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>flash_on</i><span class='mptext'>Tanner</span></span>
+                    </td>
+                    <td id="tanneroutagealert" style="font-size:small;margin-top:2px;margin-bottom:4px" onclick="ShowTannerOutage()">Tap for outage status.<br /></td>
+                </tr>
+
+                <tr style="background-color:#ccffcc" onclick="ShowParks()">
+                    <td id="parkstitle" style="font-size:18px;font-weight:bold;color:darkgreen;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe407;</i><span class='mptext'>Parks</span></span>
+                    </td>
+                </tr>
+
+               <tr style="background-color:#f0f0f5;" onclick="window.open('http://www.anderson-island.org/services.html', '_system');">
+                    <td id="servicestitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe869;</i><span class='mptext'>Island Services</span></span>
+                    </td>
+                </tr>
+                <tr style="background-color:#f0f0f5;" onclick="window.open('http://www.anderson-island.org/churches.html', '_system');" >
+                    <td id="churchtitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe145;</i><span class='mptext'>Churches</span></span>
+                    </td>
+                </tr>
+
+                <tr style="background-color:#cce4ff;" onclick="ShowLinksPage('fishing', 'island');">
+                    <td id="fishtitle" style="font-size:18px;font-weight:bold;color:darkblue;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe921;</i><span class='mptext'>Fishing</span></span>
+                    </td>
+                </tr>
+
+                <tr style="background-color:#cce4ff" onclick="ShowMap();">
+                    <td id="maptitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe55b;</i><span class='mptext'>Map</span></span>
+                    </td>
+                </tr>
+
+                <tr style="background-color:azure;" onclick="ShowLinksPage('island', 'fishing');">
+                    <td id="linkstitle" style="font-size:18px;color:darkblue;font-weight:bold;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe157;</i><span class='mptext'>Island Information Links</span></span>
+                    </td>
+                </tr>
+
+                <tr style="background-color:antiquewhite;" onclick="ShowEmergencyPage();">
+                    <td id="contactstitle" style="font-size:18px;font-weight:bold;color:darkred;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe0cd;</i><span class='mptext'>Emergency Contacts</span></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td id="voluntitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px;background-color:#fff4b3" colspan="2" onclick="window.open('http://www.anderson-island.org/volunteers.html', '_system');">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe7ef;</i><span class='mptext'>Volunteering</span></span>
+                </tr>
+
+                <tr style="background-color:#f0f0f5;" onclick="ShowNews()" >
+                    <td id="newstitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe0b7;</i><span class='mptext'>News</span></span>
+                    </td>
+                </tr>
+
+                <tr id="maintablerows"></tr>
+
+                <tr>
+                    <td id="helptitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px" colspan="2" onclick="ShowHelpPage()">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe887;</i><span class='mptext'>Help</span></span>
+                </tr>
+
+                <tr>
+                    <td id="feedbacktitle" style="font-size:18px;font-weight:bold;color:gray;padding-left:6px" colspan="2">
+                        <a style="text-decoration:none;color:gray" href="mailto:AIAfeedback@anderson-island.org?Subject=AIAFeedback">
+                            <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe0be;</i><span class='mptext'>Feedback</span></span>
+                        </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td id="abouttitle" style="font-size:18px;font-weight:bold;color:gray;padding-left: 6px" colspan="2" onclick="ShowAboutPage();">
+                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe88f;</i><span class='mptext'>About</span></span>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+
+
+    <!------------------------------------------------------------------------------------------------------------------------------------------>
+    <!-- FERRY ------------------------------------------------------------------------------------------>
+    <div id="ferryschedulepage" style="display:none;">
+
+        <!--<h1 > <button class="buttonback" onclick="ShowMainPage()">&larr;BACK</button>Ferry Schedule</h1>-->
+        <div style="margin:10px;padding-top:10px">
+            <button style="width:30%;" onclick="ScheduleByDate();">Dates</button>
+            <button style="width:30%;" onclick="ShowFerry();">Web Site</button>
+            <button style="width:30%;" onclick="OpenFerryMenu();">Settings</button>
+            <p id="ferrymessage"> </p>
+            Tap a time to add an automatic reminder to your phone calendar.
+            <table id='ferrytable' style="border:thin solid black;border-collapse:collapse;padding-left:10px"></table>
+            <hr />
+            <p id="schdate"></p>
+            <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+
+    <!-- OPEN HOURS ------------------------------------------------------------------------------------------>
+    <div id="openhourspage" style="display:none">
+        <!--<h1>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+            Open Hours
+        </h1>-->
+        <div style="margin:10px;padding-top:10px">
+
+            Tap a business for details.&nbsp;&nbsp;<button onclick="ShowYRHours()">Show more...</button><br />
+            <table id='openhourstable' style="border:none;border-collapse:collapse">
+                <tr style="background-color:black;color:white">
+                    <td>Location</td>
+                </tr>
+            </table>
+            <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+
+    <!-- COMING EVENTS ------------------------------------------------------------------------------------------>
+
+    <div id="comingeventspage" style="display:none">
+
+        <div style="margin:10px;padding-top:10px">
+            <div id="othercalendars" style="display:none">
+                <p>
+                    CALENDARS:<br />
+                    <button onclick="window.open('http://www.andersonislandcc.org/calendar/', '_blank');">Comm Club</button>
+                    <button onclick="window.open('http://rivieracommunityclub.com/event-calendar', '_blank');">Riviera</button>
+                    <button onclick="window.open('http://andersonislandhs.org', '_blank');">Hist Society</button>
+                </p>
+            </div>
+
+            <button style="width:22%" onclick="DisplayComingEventsList( GetEvents())">List</button>
+            <button style="width:22%" onclick="DisplayComingWeek( GetEvents())">Week</button>
+            <button style="width:22%" onclick="DisplayComingMonth( GetEvents())">Month</button>
+            <p></p>
+            Tap item to copy to your calendar.<br />
+            <div id="showevents" style="display:none">
+                These items occur monthy or less. <br />
+                <strong>SHOW: </strong><span id='eventA' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |
+                <span id='eventM' style="color:black" onclick="SetEventFilter('M')">Meeting</span> |
+                <span id='eventE' style="color:blue" onclick="SetEventFilter('E')">Event</span> |
+                <span id='eventS' style="color:darkred" onclick="SetEventFilter('S')">Entertain</span>
+            </div>
+            <div id="showactivities" style="display:none">
+                These items occur multiple times/month. <br />
+                <strong>SHOW: </strong><span id='eventAAll' style="color:DarkGreen" onclick="SetEventFilter('')">All</span> |
+                <span id='eventAA' style="color:blue" onclick="SetEventFilter('A')">Active</span> |
+                <span id='eventAC' style="color:darkred" onclick="SetEventFilter('C')">Crafts</span> |
+                <span id='eventAG' style="color:darkgreen" onclick="SetEventFilter('G')">Games</span> |
+                <span id='eventAO' style="color:black" onclick="SetEventFilter('O')">Other</span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table id='comingeventstable' style="border:thin solid black;border-collapse:collapse">
+                    <tr style="background-color:black;color:white">
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <br />
+            <div id="locations"></div>
+            <br />
+            <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+    <!--TIDES ------------------------------------------------------------------------------------------>
+
+    <div id="tidespage" style="display:none">
+        <!-- <h1> <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button> Tides at Yoman Point (ferry) </h1>-->
+        <div style="margin:10px;padding-top:2px">
+            <span id="tidepagecurrent">Please wait for tide data .... </span>
+            <br />
+            <div style='text-align:center;width:300px'>
+                <span style='background:lightgray;font-weight:bold;float:left' onclick='ShowTidePrevious()'>&nbsp; < &nbsp;</span>
+                <span style='background:lightgray;font-weight:bold;float:right' onclick='ShowTideNext()'>&nbsp; > &nbsp;</span>
+            </div>
+            <br />
+
+            <div style="text-align:left;width:900px;overflow-x: scroll; margin: 0;  white-space: nowrap">
+                <canvas id="tidecanvas" width="900" height="300"></canvas>
+            </div>
+
+            <div style="width:100%;overflow-x:hidden;">
+                <hr />
+                <table id='tidestable' style="border:thin solid gray;border-collapse:collapse;padding-left:10px">
+                    <tr style="background-color:blue;color:white">
+                        <td>Date</td>
+                        <td>| Time&nbsp;</td>
+                        <td>| Type&nbsp;</td>
+                        <td>| Feet&nbsp;</td>
+                        <td>| Range*&nbsp;</td>
+                    </tr>
+                </table>
+                <strong>Tap a row to graph it.</strong>
+                <hr />
+                <p id="demo">
+                    <button id="tideButton" onclick="ShowCustom();">Get Tides for other days</button>
+                </p>
+
+                <p style="font-size:smaller">
+                    Tide predictions are provided for station id 9446705 by NOAA.<br />
+                    *'Range' is the total difference (in feet) between a high or low tide and the NEXT low or high tide.
+                    Higher ranges imply faster tidal currents. Balch Passage max. tidal currents are typically 1 - 3 knots.
+                    <br /><button onclick='window.open("http://tides.mobilegeographics.com/locations/345.html", "_system")'>Balch Passage Tidal Current Predictions.</button>
+
+                </p>
+                <p><button onclick='window.open("http://opendap.co-ops.nos.noaa.gov/axis/webservices/highlowtidepred/", "_system")'>NOAA tides for any station and date.</button><br />
+            </div>
+
+            <!--</p><button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+
+    <!--EMERGENCY ------------------------------------------------------------------------------------------>
+
+    <div id="emergencypage" style="display:none">
+        <!--<h1><button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+           Emergency Contacts</h1>-->
+        <div style="margin:10px;padding-top:2px">
+            <p>Tap a phone number to dial it.</p>
+            <table id="emergencytable"></table>
+            <!--<button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+    <!--WEATHER -------------------------------------------------------------------------------------------->
+    <div id="weatherpage" style="display:none">
+        <!-- <h1>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+            Anderson Island Weather
+        </h1>-->
+        <div style="margin:10px;padding-top:1px">
+            <p id="currentweatherpage" , style="font-size:12pt; font-weight:bold">Current weather: </p>
+            <table id='forecasttable' style="border:thin solid black;border-collapse:collapse">
+                <tr style="background-color:black;color:white;">
+                    <td>DAY TIME</td>
+                    <td>TEMP&nbsp;</td>
+                    <td>FORECAST</td>
+                    <td>RAIN in. </td>
+                    <td>WIND mph</td>
+                </tr>
+            </table>
+            <p id="forecastpage">Please wait for the forecast.</p>
+            Forecast data provided by OpenWeatherMap.com.<br />
+
+            <!-- <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+
+    <!-- FERRY WEBCAMS ------------------------------------------------------------------------------------->
+    <div id="mferrywebcampage" style="display:none">
+        <!-- <h1>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+            FERRY WEBCAMS
+        </h1> -->
+        <div style="margin:10px;padding-top:10px">
+            Refreshes every minute. Tap to zoom.<br />
+            <span id="scamera" style="font-weight:bold">Steilacoom: </span><br>
+            <br />
+            <img id="steilacoomcam" alt="Steilacoom Camera " src="icon.png" onclick="window.open('icon.png','_blank')">
+            <hr />
+            <span id="aicamera" style="font-weight:bold">Anderson Island: </span><br /><br>
+            <img id="aicam" src="icon.png" onclick="window.open('icon.png','_blank')"><br />
+            <!--   <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
+        </div>
+    </div>
+    <!-- ABOUT ------------------------------------------------------------------------------------->
+    <div id="aboutpage" style="display:none;padding-left:10px">
+        <!-- <h1>
+          <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+          About
+        </h1> -->
+        <p style="margin:10px;padding-top:10px">
+            Hi, I'm Bob Bedoll, Anderson Island resident and software developer.
+            I've put the <strong>Anderson Island Assistant</strong> together to give all of us
+            instant access to a wealth of time-sensitive, up-to-the-minute island info.
+            I hope you give it a try and find it as useful as I have.  Thanks.<br />
+            <em>Bob</em>
+        </p>
+        <div style="width:100%;background-color:darkgray;padding:10px">INSTALLATION</div>
+        <p style="margin:10px">
+            <strong>iPhone/iPad users:</strong>  Install the free iPhone/iPad app from the
+            <a href="https://itunes.apple.com/us/app/anderson-island-assistant/id1092687892?ls=1&mt=8"> Apple App Store.</a>
+        <p style="margin:10px">
+            <strong>Android phone users:</strong> Install the free Android phone app from
+            <a href="https://play.google.com/store/apps/details?id=org.anderson_island.andersonislandassistant">Google Play.</a><br />
+        </p>
+
+        <div style="width:100%;background-color:darkgray;padding:10px">SUPPORT AND FEEDBACK</div>
+        <p style="margin:10px">The Anderson Island Assistant is created and maintained by island resident Bob Bedoll at Poster Software, LLC. (www.postersw.com).</p>
+        <p style="margin:10px">
+            <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="mailto:support@anderson-island.org">&nbsp; Send Email</a>
+            <a style="text-decoration:none;background-color:lightgray;width:50%;padding:12px" href="tel:253-267-4936">Call Us</a>
+        </p>
+        <p style="margin:10px">Email: support@anderson-island.org<br />  Phone: 253-267-4936</p>
+
+        <div style="width:100%;background-color:darkgray;padding:10px">LEGAL AND LICENSING</div>
+        <p style="margin:10px">This app and data are provided with no guarantees, conditions or warranties, and the correctness, accuracy, or reliability of its data is not guaranteed.</p>
+        <p style="font-size:small;margin:10px">
+            Anderson Island Assistant" Copyright (c) 2016-2018 Robert Bedoll, Poster Software LLC.
+            <br />"PhoneGap/Cordova" libraries Copyright (c) 2012-2018 Adobe Systems Incorporated. All rights reserved.<br />
+            Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. <br />
+            Weather data provided by <a href="www.openweathermap.com">OpenWeatherMap.com.</a>  <br />
+            Tides data provided by <a href="www.noaa.gov">NOAA.</a> <br />
+            Notifications provided through <a href="OneSignal.com">OneSignal.com.</a><br />
+            Ferry Schedules and Alerts provided by Pierce County Ferry System. <br />
+            Island Events collected from all AI organizations including: AIA, AIHS, AICC, Riviera, Island Arts, PCFD27.
+        </p>
+
+        <div style="width:100%;background-color:darkgray;padding:10px">TECHNICAL</div>
+        <div style="font-size:x-small;margin:10px">
+            Created using Adobe PhoneGap/Cordova, HTML5, and Javascript, with OneSignal, Geolocation, Calendar, and Launcher plugins. <br />
+            Telemetry: <br />
+            <span id="phoneweb">Web version.</span>
+            <span id="reloadtime">Data reload time.</span>
+            <span id="reloadreason"></span>
+            <span id="currentweathertime"></span>
+            <br /><button style="font-size:x-small;" onclick="ClearCacheandExit()">Clear Cache and Exit</button><br />
+        </div>
+
+    </div>
+    <!-- ISLAND INFORMATION LINKS  (loaded from dailycache.txt LINKS - LINKSEND --------------------------------------------------------->
+    <div id="linkspage" style="display:none">
+        <!-- <h1>
+            <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+            ISLAND INFORMATION LINKS
+        </h1> -->
+        <div id="islandlinks" style="margin:10px;padding-top:10px">
+            <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.aicab.org', '_system');">Citizens Advisory Board</button><br />
+            <button style="width:100%;padding:6px" onclick="window.open('http://www.andersonislandcc.org', '_system');">Community Club</button><br />
+        </div>
+    </div>
+
+    <!--------------------- OPEN HOURS FULL PAGE FOR 1 BUSINESS ------------------------------------->
+    <div id="businesspage" style="display:none">
+        <!--<h1 id="businesspageh1" style="padding:12px;font-weight:bold">
+          <button class="buttonback" onclick="ShowOpenHoursPage();">&larr;BACK</button>x</h1> -->
+        <div id="businesspagediv" style="padding-top:2px">
+        </div>
+    </div>
+
+    <!-- BigText page ----------------------------------------------------------------------------------->
+     <div id="bigtextpage" style="display:none;font-size:48px">
+     </div>
+
+    <!-- HELP ------------------------------------------------------------------------------------->
+    <div id="helppage" style="display:none">
+        <!--<h1>
+          <button class="buttonback" onclick="ShowMainPage();">&larr;BACK</button>
+          Help
+        </h1>-->
+        <div style="margin:10px;padding-top:10px">
+
+            <a style="color:darkblue;font-weight:bold" href="#hferry">FERRY</a><br />
+            <a style="color:darkblue;font-weight:bold" href="#hwebcam">WEBCAM</a><br />
+            <a style="color:darkblue;font-weight:bold" href="#hlocation">LOCATION</a><br />
+            <a style="color:blue;font-weight:bold" href="#htides">TIDES</a><br />
+            <a style="color:darkgreen;font-weight:bold" href="#hweather">WEATHER</a><br />
+            <a style="color:darkmagenta;font-weight:bold" href="#hevents">EVENTS</a><br />
+            <a style="color:darkmagenta;font-weight:bold" href="#hactivities">ACTIVITIES</a><br />
+            <a style="color:black;font-weight:bold" href="#hopenhours">OPEN HOURS</a><br />
+            <a style="color:#ff3300;font-weight:bold" href="#hburnban">BURNBAN</a><br />
+            <a style="color:brown;font-weight:bold" href="#htanner">TANNER</a><br />
+            <a style="color:green;font-weight:bold" href="#hparks">PARKS</a><br />
+            <a style="color:black;font-weight:bold" href="#hnews">NEWS</a><br />
+            <a style="color:darkred;font-weight:bold" href="#hcontacts">EMERGENCY CONTACTS</a><br />
+            <a style="color:black;font-weight:bold" href="#hlinks">ISLAND INFORMATION LINKS</a><br />
+            <a style="color:blue;font-weight:bold" href="#hmap">MAP</a><br />
+            <a style="color:darkgray;font-weight:bold" href="#hreload">MENU: RELOAD DATA</a><br />
+            <a style="color:darkgray;font-weight:bold" href="#hnotify">MENU: NOTIFY</a><br />
+            <a style="color:darkgray;font-weight:bold" href="#hferrycountdown">MENU: FERRY TIMES</a><br />
+            <hr />
+            <h3 id="hferry" style="color:darkblue;font-weight:bold"><br />FERRY</h3>
+            Displays the time of next 2 or 3 ferrys to arrive at Anderson Island and Steilacoom, and the 'countdown' time remaining till the next sailing.
+            (The countdown time becomes red within 15 minutes of the departure time.)
+            <br />The AI row will be highlighted if you are currently on AI, otherwise the Steilacoom row will be highlighted.
+            <br />The schedule is based on the <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">Pierce County PUBLISHED ferry schedule.</a>.
+            It is NOT updated if the ferry is late or out of service.
+            (Use the LOCATION button to see where the ferry actually is.)
+            <br />- Use the MENU button (upper left-hand corner of the screen) to change between 2 and 3 ferry times.
+            <br />- Use the Menu button to turn on/off the countdown time till the next sailing.
+            <br />- Use the Menu button to turn on/off the highlighting of the Anderson Island or Steilacoom rows.
+
+            <br />- TAP to display the ferry schedule computed for the next 7 days, based on the
+            <a href="http://www.co.pierce.wa.us/index.aspx?NID=2200">published ferry schedule.</a>
+            The schedule automatically factors in day-of-the-week, holidays, and other unique rules.
+            However, it is NOT updated if the ferry is late or out of service.
+            <br />"DATES" lets you get the ferry schedule for an arbitrary date. You will be prompted for the date.
+            <br />"FERRY WEB SITE" brings up the full Pierce County Ferry web site, including fares, schedule, ticket purchase, etc.
+            <br />"SETTINGS" lets you change the main-screen ferry time display.
+
+
+            <h3 id="hwebcam" style="color:darkblue;font-weight:bold"><br /><br />WEBCAM</h3>
+            Displays the Pierce County Ferry web cams showing the ferry lines. These pictures are automatically updated every minute.
+
+            <h3 id="hlocation" style="color:darkblue;font-weight:bold"><br /><br />LOCATION</h3>
+            Displays the actual current location of the ferry in real time. This information is maintained by Pierce County and is updated every 5 seconds.
+            <hr />
+            <h3 id="htides" style="color:blue;font-weight:bold"><br /><br />TIDES</h3>
+            Displays the computed current tide, and estimated next high and low tides, at Yoman Point (the ferry dock,
+            station id 9446705).  This information is updated every minute.
+            The current tide is interpolated using a sine function.
+            <br />TAP to display the projected tides for the next 7 days. Tides are provided by Aeris.com.
+            'Range' (column 4) is the difference between the low and high tide.
+            <br />TAP on any row in the tide table to display a graph of that tide.
+            <br />"GET TIDES FOR DATE" will prompt you for a date, and return the projected tides.
+            <br />Scroll to the bottom of the screen to get the tidal currents for Balch passage.
+
+            <h3 id="hweather" style="color:darkgreen;font-weight:bold"><br /><br />WEATHER</h3>
+            Displays the current weather at Steilacoom, and the forcasted weather for the next few hours.
+            Forecasted highs and lows are for the next 24 hours. This information is updated every 15 minutes.
+            <br />TAP to display the forecast for the next 5 days, in 3 hour increments. Data is provided by 'OpenWeatherMap.com'.
+            <br />'yellow' rows represent daytime periods; 'gray' rows represent nighttime periods.
+
+            <h3 id="hevents" style="color:darkmagenta;font-weight:bold"><br /><br />EVENTS</h3>
+            Displays all the coming events for today, or the next coming event for any later day.<br />
+            TAP to display all the coming events for the next 6 months, in a scrolling list.
+            <br />"WEEK" will show the coming events for this week in a one-week grid.
+            <br />"MONTH" will show the coming events for the next 6 weeks in a monthly-calendar format.
+            <br />'Events' generally occur once/month or less frequently, and are usually meetings, entertainment,
+            or special events.
+            <br />Events are color coded. Click on a color on the 'SHOW' row to show only those type of events.
+            <br /> Tap on an event to show more detail, and to add it to your calendar.
+            <br /><a href="email:support@anderson-island.org">Organizations: To add your events to the AIA calendar, email us.</a>
+
+
+            <h3 id="hactivities" style="color:darkmagenta;font-weight:bold"><br /><br />ACTIVITIES</h3>
+            Activities are similar to EVENTS, but generally occur multiple times/month, often weekly.
+
+            <h3 id="hopenhours" style="color:black;vertical-align:text-top"><br /><br />OPEN HOURS</h3>
+            Displays the 'open' status for the major island businesses.
+            <br />TAP to display the full weekly hours for each business.
+            <br />TAB on a business to display a full page with contact and map information.
+            <br /><a href="email:support@anderson-island.org">To update your business hours, email us.</a>
+
+            <h3 id="hburnban" style="color:#ff3300;font-weight:bold"><br /><br />BURNBAN</h3>
+            Displays the current PS Clean Air Agency burn-ban status (Anderson Island is part of "Peninsula")
+            and the current Pierce County fire-danger burn ban (for outdoor burning).
+            <br />TAP do display the full sites.
+            <a href="www.pscleanair.org">Click here for PS Clean Air.</a>
+
+            <h3 id="htanner" style="color:brown;font-weight:bold"><br /><br />TANNER</h3>
+            TAP to display the current Anderson Island Outage status as maintained by TANNER Electric.
+            The first part of the tanner outage message is usually shown in the bar on the main page. This is updated every 10 minutes.
+            This takes you to the Tanner web site.
+
+            <h3 id="hnews" style="color:black;vertical-align:text-top"><br /><br />NEWS</h3>
+            Displays news items for Anderson Island.  To submit a news article, send it to
+            support@anderson-island.org.
+
+            <h3 id="hparks" style="color:green;vertical-align:text-top"><br /><br />PARKS</h3>
+            Displays a map of all Anderson Island Parks, and information about each park.
+
+            <h3 id="hcontacts" style="color:darkred;vertical-align:text-top"><br /><br />EMERGENCY CONTACTS</h3>
+            TAP to display a list of emergency contacts.  Tap an entry to dial the phone number.
+            <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
+
+            <h3 id="hmap" style="color:blue;vertical-align:text-top"><br /><br />MAP</h3>
+            TAP to display a Google map of Anderson Island.
+
+            <h3 id="links" style="color:black;vertical-align:text-top"><br /><br />ISLAND INFORMATION LINKS</h3>
+            TAP to display a list of links to important Anderson Island web sites.
+            Taping on a link opens that web site in your phone's browser.
+            <br /><a href="email:support@anderson-island.org">To update this list, email us.</a>
+
+            <h3 id="hreload" style="color:gray;vertical-align:text-top"><br /><br />MENU: Reload Data</h3>
+            TAP to reload the following data from the servers: Tides, Events, Activities, Open Hours, and the Weather.
+
+            <h3 id="hnotify" style="color:black;vertical-align:text-top"><br /><br />MENU: Notify</h3>
+            Controls the PC Ferry Alert messages that show up on your phone's main screen. Tap 'OFF' to
+            turn these messages off. The ferry alerts will still show at the top of the screen for the AI App.
+
+            <h3 id="hferrycountdown" style="color:black;vertical-align:text-top"><br /><br />MENU: Ferry (in nn)</h3>
+            Controls the countdown timer till the next ferry run, that shows next to the ferry time on your phone's main screen. Tap 'OFF' to
+            turn the countdown timer off.
+            <h3 style="color:black;vertical-align:text-top"><br /><br />MENU: Ferry Times</h3>
+            Controls the number of ferry times that show on each row on your phone's main screen. Tap '2' to
+            display 2 times/line. Tap '3' to display 3 times/line.
+            <h3 style="color:black;vertical-align:text-top"><br /><br />MENU: Ferry Highlight</h3>
+            Controls the yellow highlighting of the ferry times based on your location. If you are on Anderson Island the
+            'Anderson' times will be highlighted. If not, the 'Steilacoom' times will be highlighted. Tap 'Off' to turn this
+            feature off. This feature only works on phones.
+
+        </div>
+    </div>
+
+    <!-- version message ----------------------------------------------------------------------------------->
+
+    <div id="offlinemsg" style="display:none;color:magenta;margin-top:2px;margin-bottom:2px;margin-left:6px;">No network connection. </div>
+
+    <div id="vermsg" style="display:none">
+        <p>
+            &nbsp;  Updates every minute.&nbsp;
+            <span id="updatetime">Screen update time.</span><br />
+            <span id="versionnumber" style="font-size:x-small"> &nbsp; &nbsp; AIA Ver: 1.9.030917	</span>
+            <span style="font-size:x-small"> [011419]</span>
+        </p>
+    </div>
+
+
+    <!-- Modal dialog ----------------------------------------------------------------------------------------------------->
+
+    <div id="modaldialog" style="display:none;position:fixed;z-index:1;padding-top:20px;left:0;top:0;
+    width:100%;height: 100%;overflow:auto;background-color:#000000;background-color: rgba(0,0,0,0.5); ">
+        <div id="modalcontent" style="background-color: #fefefe;margin:auto;padding:20px;border:1px solid #888;width:80%;">
+            <p id="modaltext">×</p>
+            <button style="align-self:center" onclick="ModalClose()">OK</button>
+        </div>
+    </div>
+
+    <!-- Side Menu ----------------------------------------------------------------------------------------------------->
+    <!-- <div id="sidemenubackground" style="display:none;position:fixed;padding-top:20px;left:0;top:0;
+        width:100%;height: 100%;overflow-x: hidden; background-color:#000000;background-color: rgba(0,0,0,0.5);transition: 0.3s; "> -->
+    <div id="sidemenu" class="sidenav" style="height: 100%; width: 0; position: fixed; top: 40px;
+    left: 0; background-color: #111; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" >
+        <table style="width:100%;border-collapse:collapse;border-style:none">
+            <tr class="menu" id="tm1"><td class="menu" onclick="ReloadCachedDataButton();">Reload Data</td></tr>
+            <tr class="menu" id="tm2"> <td id="updateappswitch" class="menu" onclick="UpdateApp()">Update App</td></tr>
+            <tr class="menu" id="menunotify">
+                <td class="menu">
+                    Notifications:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="notifytog" onclick="NotifyToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+            <tr class="menu">
+                <td class="menu">
+                    Ferry Departure Countdown:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ferrycdtog" onclick="FerryShowCDToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+            <tr class="menu">
+                <td id="ferry3times" class="menu">
+                    Ferry Show 3 Times/row:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ferry3ttog" onclick="FerryShow3Toggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+            <tr class="menu">
+                <td class="menu">
+                    Ferry Location Highlight:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ferryhltog" onclick="FerryHighlightToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+            <tr class="menu">
+                <td class="menu">
+                    Icons:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="showiconstog" onclick="ShowIconsToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+            <tr class="menu" id="menuspeech">
+                <td class="menu">
+                    Speech:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="ttstog" onclick="TTSToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+            <tr class="menu" >
+                <td class="menu">
+                    Big Text:
+                </td>
+                <td class="menu">
+                    <label class="switch"> <input type="checkbox" id="bigtog" onclick="BigTextToggle()"> <span class="slider round"></span> </label>
+                </td>
+            </tr>
+
+
+        </table>
+        <p style="text-align:center">
+            <button style="font-size: 24px" onclick="CloseMenu()">Close</button>
+        </p>
+    </div>
+    <!-- </div> -->
+    <!-- Location Dialog ----------------------------------------------------------------------------------------------------->
+    <div id="locationdialog" class="sidenav" style="height: 50%; width: 0; position: fixed; top: 40px;
+    left: 0; background-color: white; color: black; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" onclick="CloseDialog()">
+        <p style="text-align:center;margin:20px;font-size: 18px">
+            The Anderson Island Assistant wants to use your current location to automatically highlight either the Steilacoom or Anderson Island ferry schedule row.
+        <p style="text-align:center;margin:20px">
+            <button style="font-size: 24px" onclick="LocationAllow()">Allow</button> &nbsp;&nbsp;&nbsp;
+            <button style="font-size: 24px" onclick="LocationPrevent()">Deny</button>
+        </p>
+    </div>
+    <!-- speech Dialog ----------------------------------------------------------------------------------------------------->
+    <div id="speechdialog" class="sidenav" style="display:none;height: 50%; width: 100%; position: fixed; top: 40px;
+    left: 0; background-color: white; color: black; overflow-x: hidden; padding-top: 60px; transition: 0.3s;z-index:1" onclick="Hide('speechdialog')">
+        <p style="text-align:center;margin:20px;font-size: 18px">
+            This app now has SPEECH and BIG TEXT.<br />
+            For speech or big text, tap the LEFT side of a row.<br />For details, tap the RIGHT side.<br />
+            To turn off SPEECH tap:<br /> &#9776; -> Speech -> Off<br />
+            To turn on BIG TEXT tap:<br /> &#9776; -> Big Text -> On
+            <p style="text-align:center;margin:20px">
+            <button style="font-size: 24px" onclick="Hide('speechdialog')">OK</button> &nbsp;&nbsp;&nbsp;
+        </p>
+    </div>
+    <!-- </div> -->
+    <!--Get Date-->
+
+    <div id="getdatediv" style="display:none;position:fixed;z-index:1;padding-top:20px;left:0;top: 40px;
+    width:100%;height: 100%;overflow:auto;background-color: rgba(0,0,0,0.5); ">
+        <div style="background-color: #fefefe;margin:auto;padding:20px;border:1px solid #888;width:80%;">
+            <p style="text-align:center;margin:10px;font-size: 18px">
+                Tap to Select Date<br />
+                <input id='getdate' type="date" style="font-size: 18px;width:50%" />
+            </p><br /><br />
+            <p style="text-align:center;margin:20px">
+                <button style="font-size: 24px" onclick="GetDateOK()">OK</button> &nbsp;&nbsp;&nbsp;
+                <button style="font-size: 24px" onclick="GetDateCancel()">Cancel</button>
+            </p>
+        </div>
+    </div>
+    <!-- Device Ready ----------------------------------------------------------------------------------------------------->
+    <div id="deviceready" style="display:none">
+        <!-- removed class="blink"-->
+        <p class="event listening">Connecting to Device</p>
+        <p class="event received">Device is Ready</p>
+    </div>
+    </div>
+
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/indextest.js"></script>
+    <!--<script type="text/javascript" src="js/indextest.js"></script>-->
+    <!-- JQUERY removed and replaced with native javascript to speed up loading -->
+    <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>-->
+    <!--<script type="text/javascript" src="js/jquery.min.js"></script> --><!-- try including the library with phonegap 5/15 -->
+    <!-- <script type="text/javascript" src="js/AIA.js"></script> Moved to index.js on 4/25/16 -->
+    <script>
+        StartApp();
+    </script>
+    </body>
+</html>
+
