@@ -56,6 +56,7 @@
         1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
         1.26.032020. Add cleartext plugin. Still on branch 125.
         1.27.032330. Use https for all web requests per google requirements for android 9.
+        1.28.052220. Rewrite Events to use an array of event objects.
  * 
  *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -77,7 +78,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.27.032320";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.052220";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -1271,11 +1272,13 @@ function ParseDailyCache(data) {
 
     // coming events (added 6/6/16). from the file comingevents.txt, pulled by getdailycache.php
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
+    // revised 5/22/20 to create EvtA and ActA event arrays;
     parseCache(data, "comingevents", "COMINGEVENTS", "ACTIVITIES");
     parseCache(data, "comingactivities", "ACTIVITIES", "COMINGEVENTSEND");
     localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
-    FixDates("comingevents");
-    FixDates("comingactivities");
+    ParseEventsList(localStorage.getItem("comingevents", EvtA);
+    ParseEventsList(localStorage.getItem("comingactivities"), ActA);
+
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
 
@@ -2603,58 +2606,75 @@ function ParseOpenHours() {
 //<!-- COMING EVENTS ------------------------------------------------------------------------------------->
 //<script>
 //========= COMING EVENTS ===========================================================================
+// EvtA = array of event objects; 
+// {date (yymmdd), startt (hhmm), endt (hhmm), key (), title, loc, sponsor, info, icon}
+// Filled by ParseEventsList
+var EvtA = []; // event array. From COMINGEVENTS string
+var ActA = []; // activity array. From COMINGACTIVITIES string
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// Event constructor
+// {date (yymmdd) number, startt (hhmm) number, end (hhmm) number, key (), title, loc, sponsor, info, icon}
+//
+function NewEvt(date, startt, endt, key, title, loc, sponsor, info, icon) {
+    this.date = date;
+    this.startt = startt;
+    this.endt = endt;
+    this.title = title;
+    this.key = key;
+    this.sponsor = sponsor;
+    this.info = info;
+    this.icon = icon;
+}
 
 ///////////// COMING EVENTS MAIN PAGE /////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingEvents MAIN PAGE - display the events in the 'comingevents'  or 'comingactivities' 
 //          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
-//  Entry   CE = string of coming events: rows (separated by \n) 1 for each event or activity
+//  Entry   CE = array of coming event objects:  {date (yymmdd), start (hhmm), end (hhmm), type (), title, loc, sponsor, info, icon}
 //              mmdd;hhmm;hhmm;t;title;location;sponsor;info
 //          label = "event" or "activity"
 //  Exit    returns the information to display on the main screen
+//
 function DisplayNextEvents(CE) {
     var datefmt = ""; // formatted date and event list
     var iCE; // iterator through CE
-    var aCE; // CE split array 
     var aCEyymmdd; // yymmdd of Calendar Entry
     var DisplayDate = 0; // event date we are displaying
     var nEvents = 0; // number of events displayed
     var CEvent = "";
 
     if (CE === null) return;
-    // break CE up into rows
-    CE = CE.split("\n");  // break it up into rows
-    if (CE == "") return;
+    if (CE.length == 0) return;
+
     var yymmddP6 = IncrementDate(6); // add 6 to date
 
     // roll through the next 30 days
     for (iCE = 0; iCE < CE.length; iCE++) {
-        if (CE[iCE] == "") continue; // skip blank lines
-        aCE = CE[iCE].split(';');  // split the string
-        if (BadEvent(aCE)) continue; // must have 6 entries
-
+        if (CE[iCE].date == 0) continue; // skip blank lines
+        var Evt = CE[iCE];  // EVT = the current event
         //  advance schedule date to today
-        aCEyymmdd = Number(aCE[0]);
+        aCEyymmdd = Evt.date;
         if (aCEyymmdd < gYYmmdd) continue; // not there yet.
         // if the entry is for today and it is done, skip it
-        if (aCEyymmdd == gYYmmdd && Number(aCE[2]) < gTimehhmm) continue; // if today and it is done, skip it
+        if (aCEyymmdd == gYYmmdd && Number(Evt.endt) < gTimehhmm) continue; // if today and it is done, skip it
         // found it
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
-        if (gIconSwitch == 1) CEvent = FormatEvent(aCE, "14");
-        else CEvent = aCE[4];
+        if (gIconSwitch == 1) CEvent = FormatEvent(Evt, "14");
+        else CEvent = Evt.title;
 
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(aCE[1]) <= gTimehhmm) {
-                datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</span>: " + CEvent + " @ " + aCE[5] + "<br/>";
-                TXTS.Next = " now, " + aCE[4] + " at " + aCE[5] + ".";
+            if (Number(Evt.startt) <= gTimehhmm) {
+                datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</span>: " + CEvent + " @ " + Evt.loc + "<br/>";
+                TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
             } else {
-                datefmt += "&nbsp;<strong>" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + "</strong>&nbsp;" + CEvent + " @ " + aCE[5] + "<br/>";
-                if (nEvents < 1) TXTS.Next = " at " + FormatTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
+                datefmt += "&nbsp;<strong>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</strong>&nbsp;" + CEvent + " @ " + Evt.loc + "<br/>";
+                if (nEvents < 1) TXTS.Next = " at " + FormatTime(Evt.startt) + ", " + Evt.title + " at " + Evt.loc + "."; // text to speech
             }
             //nEvents = 99; // ensure only today
             nEvents++;  // count it
@@ -2665,13 +2685,13 @@ function DisplayNextEvents(CE) {
         if (aCEyymmdd != DisplayDate) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
-            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(aCE[0])] + "</strong><br/>";  // fails on month chagne
+            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</strong><br/>";  // fails on month chagne
             //else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
             else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
-        datefmt += "&nbsp;" + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ": " + CEvent + " @ " + aCE[5] + "<br/>";
-        if (nEvents < 1) TXTS.Next = gDayofWeekName[GetDayofWeek(aCE[0])] + " at " + FormatTime(aCE[1]) + ", " + aCE[4] + " at " + aCE[5] + "."; // text to speech
+        datefmt += "&nbsp;" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "<br/>";
+        if (nEvents < 1) TXTS.Next = gDayofWeekName[GetDayofWeek(Evt.date)] + " at " + FormatTime(Evt.startt) + ", " + Evt.title + " at " + Evt.loc + "."; // text to speech
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
         //if (nEvents >= 3) break; // only exit after full days
@@ -2719,9 +2739,9 @@ function DisplayComingEventsPage(type) {
 // GetEvents gets the events and returns them, based on the activities parameter in the url
 function GetEvents() {
     if (localStorage.getItem("eventtype") == "events") {
-        return localStorage.getItem("comingevents");  //display stored data in case we can't successfully reload the comingevents cache
+        return EvtA;  //display coming events array
     } else {
-        return localStorage.getItem("comingactivities");  //display stored data in case we can't successfully reload the comingevents cache\
+        return ActA;  //display activity array
     }
 }
 
@@ -2751,10 +2771,11 @@ function SetEventFilter(f) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingEventsList - display the events in the CE string, which is a copy of the comingevents txt file
+// DisplayComingEventsList - display the events in the EvtA or ActA array of Event objects. string, which is a copy of the comingevents txt file
 //  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
 // or 'comingactivities' localStorage items. 
-//  entry   CE is a single big string containing multiple lines, so we split the string by \n.
+//  entry   CE is an array of Evt objects. EvtA for events. ActA for activities.
+//          it used to be a single big string containing multiple lines, so we split the string by \n.
 //          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
 //                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
 function DisplayComingEventsList(CE) {
@@ -2773,10 +2794,8 @@ function DisplayComingEventsList(CE) {
     gTableToClear = "comingeventstable";
     var iCE; // iterator through CE
     iCE = 0;
-    var aCE; // CE split array 
     if (CE == null) return;
-    CE = CE.split("\n");  // break it up into rows
-    if (CE == "") return;
+    if (CE.length == 0) return;
     clearTable(table); // clear table
     table.deleteRow(-1);
 
@@ -2798,21 +2817,18 @@ function DisplayComingEventsList(CE) {
 
     // roll through the CE array.  Dates are yymmdd
     for (iCE = 0; iCE < CE.length; iCE++) {
-        if (CE[iCE] == "") continue; // skip blank lines
-        aCE = CE[iCE].split(';');  // split the string
-        if (BadEvent(aCE)) continue; // if ill-formatted event
-        if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
+        if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
-        var CEyymmdd = Number(aCE[0]); // yymmdd
+        var CEyymmdd = Evt.date; // yymmdd
             // ALTERNATE on the fly year addition
             // if(CE[iCE].substr(0,15) == "0101;0000;0000;") CEyear = Number(aCE[4]);
             // CEyymmdd = CEYear*10000;
         //if (CEyymmdd > endyymmdd) return; // past end date (one month)  list the entire table now
         if (CEyymmdd < gYYmmdd) continue; // if before today
-        if ((CEyymmdd == gYYmmdd) && (Number(aCE[2]) < (gTimehhmm + 10))) continue; // end time not reached.
+        if ((CEyymmdd == gYYmmdd) && (Evt.endt < (gTimehhmm + 10)))) continue; // end time not reached.
         // found it
-        datefmt = aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6);
-
+        var t = CEyymmdd.toFixed(0);
+        datefmt = t.substring(2, 4) + "/" +t.substring(4, 6);
         //var dd = new Date(datefmt + "/" + (CEyymmdd%10000));  // date object for Calendar Entry WHY?????
         iweek = GetWeekofYear(CEyymmdd);
         idayofweek = GetDayofWeek(CEyymmdd);
@@ -2831,9 +2847,9 @@ function DisplayComingEventsList(CE) {
         // add a new table row
         row = table.insertRow(-1);
         row.style.border = "thin solid gray";//
-        if ((CEyymmdd == gYYmmdd) && (Number(aCE[2]) > (gTimehhmm + 10))) row.style.fontWeight = "bold"; // end time not reached.
+        if ((CEyymmdd == gYYmmdd) && (Evt.endt > (gTimehhmm + 10))) row.style.fontWeight = "bold"; // end time not reached.
         col = row.insertCell(0);
-        if (aCE[0] != previouseventdate) col.innerHTML = gDayofWeekShort[idayofweek] + " " + datefmt; // day of week
+        if (CEyymmdd != previouseventdate) col.innerHTML = gDayofWeekShort[idayofweek] + " " + datefmt; // day of week
         else {
             col.innerHTML = "";
             oldrow.style.borderBottomColor = "lightblue";
@@ -2841,48 +2857,48 @@ function DisplayComingEventsList(CE) {
         col.style.backgroundColor = "azure";
         col.style.fontWeight = "bold";
         col = row.insertCell(1);
-        col.innerHTML = ShortTime(aCE[1]) + "-" + ShortTime(aCE[2]); // compressed tim
+        col.innerHTML = ShortTime(Evt.startt) + "-" + ShortTime(Evt.endt); // compressed tim
         var col2 = row.insertCell(2);
-        col2.innerHTML = FormatEvent(aCE, "16");//event
+        col2.innerHTML = FormatEvent(Evt, "16");//event
         //col.onclick = function(){tabletext(this);}
-        col = row.insertCell(3); col.innerHTML = aCE[5];//where
+        col = row.insertCell(3); col.innerHTML = Evt.loc;//where
         var color;
-        color = eventcolor(aCE[3]);
+        color = eventcolor(Evt.key);
         col2.style.color = color;
         col.style.color = color;
-        row.id = aCE[0] + aCE[1];  // id = 1602141300  i.e. yymmddhhmm
+        row.id = (CEyymmdd * 10000 + Evt.startt).toFixed(0);  // id = 1602141300  i.e. yymmddhhmm
         row.onclick = function () { tabletext(this.id) }
         oldrow = row; 
         lastweek = iweek;
-        previouseventdate = aCE[0];
+        previouseventdate = CEyymmdd;
     } // end loop through CE
     document.getElementById("locations").innerHTML = LSget("locations");
 }
 
 //////////////////////////////////////////////////////////////////////
 //  FormatEvent - add icon if switch is on
-//  Entry   event array, font size in pixels
+//  Entry   event object, font size in pixels
 //          each array   is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
 //                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
 //  Exit    html for event, includes icon if switch is on
-function FormatEvent(aCE, fontsize) {
+function FormatEvent(Evt, fontsize) {
     // iconlist:   keyword, iconname, ...
     var iconlist = ["meeting", "people", "film", "theaters","music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
         "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", 
         "fitness", "fitness_center", "craft", "palette", "art", "palette", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
     ];
-    var ev = aCE[4];
+    var ev = Evt.key;
     if (ev == null || ev == "") {
-        alert("Event error - no type: " + aCE[1] + " " + aCE[2] + aCE[3]);
+        alert("Event error - no key: " + Evt.date + " " + Evt.startt + " " + Evt.endt);
         return "";
     }
     var icon;
     if (!gEventIcons) return ev;  // if no icons
     // 1. look for user specified icon in aCE[8]
-    if (aCE.length >= 9) {
-        if (aCE[8].substr(0, 1) == "{") {
+    if (Evt.icon != "") {
+        if (Evt.icon.substr(0, 1) == "{") {
             try {
-                var us = JSON.parse(aCE[8]); // parse it
+                var us = JSON.parse(Evt.icon); // parse it
                 if (us.i != null) return '<i class="material-icons">' + us.i + '</i> ' + ev;
             } catch (err) {
             }
@@ -2890,7 +2906,7 @@ function FormatEvent(aCE, fontsize) {
     }
     
     // default icon based on the key: E, S, A, C, G, M
-    switch (aCE[3]) {
+    switch (ev) {
         case "E": icon = "mood"; break; // special events
         case "S": icon = "music_note"; break; // show
         case "A": icon = "directions_run"; break; // activity
@@ -2924,25 +2940,28 @@ function tabletext(tc) {
     var as = "Tap button to add to your ";
     if (!isPhoneGap()) as += "Google ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
-    var CE = GetEvents().split("\n");
+    var CE = GetEvents();???????????????????????????????????????????????????????????????????????????
     for (iCE = 0; iCE < CE.length; iCE++) {
-        if (CE[iCE] == "") continue; // skip blank lines
-        CE[iCE] = CE[iCE].replace("&lt;", "<"); // remove html special <
-        CE[iCE] = CE[iCE].replace("&gt;", ">"); // remove html special >
-        CE[iCE] = CE[iCE].replace("&amp;", "&"); // remove html special &
-        var aCE = CE[iCE].split(';');  // split the string
-        if (BadEvent(aCE)) continue; // must have 6 entries
-        if (d < aCE[0]) break;  // if past requested time and date, quit
-        if (d != aCE[0]) continue;
-        var t99 = aCE[1].substr(0, 2) + '99'; // hh99
-        if ((t == aCE[1]) || (t == '9999') || (t == t99)) {
+        //if (CE[iCE] == "") continue; // skip blank lines
+        //CE[iCE] = CE[iCE].replace("&lt;", "<"); // remove html special <
+        //CE[iCE] = CE[iCE].replace("&gt;", ">"); // remove html special >
+        //CE[iCE] = CE[iCE].replace("&amp;", "&"); // remove html special &
+        //var aCE = CE[iCE].split(';');  // split the string
+        //if (BadEvent(aCE)) continue; // must have 6 entries
+        var Evt = CE[iCE];
+        if (d < CE[iCE].date) break;  // if past requested time and date, quit
+        if (d != CE[iCE].date) continue;
+        //var t99 = aCE[1].substr(0, 2) + '99'; // hh99 ?????????????????????????????????????????????????????????????????????????
+        var t99 = (Evt.startt / 100 * 100 + 99).toFixed(0);
+        if ((t == Evt.startt) || (t == '9999') || (t == t99)) {
             nc++;
             // create table entry. id = the numeric index into the CE array
             as += "<tr id='" + iCE.toFixed() + "'><td style='border:thin solid black'><strong>" +
-                formatDate(aCE[0]) + " " + VeryShortTime(aCE[1]) + "-" + VeryShortTime(aCE[2]) + ":</strong> " +
-                 aCE[4] + " at " + aCE[5] + "<br/>Sponsor: " + CreateLink(aCE[6]) + "<br/>";
+                formatDate(Evt.date) + " " + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ":</strong> " +
+                 Evt.title + " at " + Evt.loc + "<br/>Sponsor: " + Evt.sponsor + " " + CreateLink(Evt.info) + "<br/>";
             // to include a link: must start with http and be at the end of the element and not have ' or "
-            if (aCE.length >= 8) as += CreateLink(aCE[7]) + "<br>";
+            //if (aCE.length >= 8) as += CreateLink(aCE[7]) + "<br>";
+            if (Evt.info != "") as += CreateLink(Evt.info) + "<br>";
             as += "<button onclick='AddToCal(" + iCE.toFixed() + ")'>Add to Calendar</button></td></tr>";
         }
 
@@ -2978,20 +2997,28 @@ function CreateLink(s) {
 //  Add to Cal -  Add to a calendar
 //  Non-phonegap: use link to google calendar.
 //  Phonegap:  call plugin.
-//  Entry: id = the index into the CE array of the selected event
+//  Entry: id = the index into the EvtA or ActA array of the selected event
 function AddToCal(id) {
     ModalClose();
     MarkPage("d");
-    var CE = GetEvents().split("\n");
-    var aCE = CE[Number(id)].split(';');
+    var CE = GetEvents();
+    var Evt = CE[id];
+
     // prep some variables  Date(year, m, d, h, m, 0, 0
-    var y = Number(aCE[0].substring(0, 2)) + 2000; // year
-    var m = Number(aCE[0].substring(2, 4)) - 1; // month
-    var d = Number(aCE[0].substring(4, 6)); // day
-    var startDate = new Date(y, m, d, Number(aCE[1].substring(0, 2)), Number(aCE[1].substring(2, 4)), 0, 0); // beware: month 0 = january, 11 = december
-    var endDate = new Date(y, m, d, Number(aCE[2].substring(0, 2)), Number(aCE[2].substring(2, 4)), 0, 0);
-    var title = aCE[4];
-    var eventLocation = aCE[5];
+    //var d = Evt.date.toFixed(0);
+    //var y = Number(d.substring(0, 2)) + 2000; // year
+    //var m = Number(d.substring(2, 4)) - 1; // month
+    //var d = Number(d.substring(4, 6)); // day
+    // or:
+    var y = Evt.date / 10000;
+    var m = (Evt.date - (y * 10000)) / 100;
+    var d = Evt.date % 100;
+    y = y + 2000;
+    var startDate = new Date(y, m, d, Evt.startt/100, (Evt.startt%100), 0, 0); // beware: month 0 = january, 11 = december
+    //var endDate = new Date(y, m, d, Number(aCE[2].substring(0, 2)), Number(aCE[2].substring(2, 4)), 0, 0);
+    var endDate =   new Date(y, m, d, Evt.endt/100, (Evt.endt%100), 0, 0);
+    var title = Evt.title;
+    var eventLocation = Evt.loc;
     var notes = "";
 
     // NOT PHONEGAP - use google calendar  https://www.google.com/calendar/event?
@@ -3022,7 +3049,7 @@ function AddToCal(id) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingWeek - display the events in the CE structure in a 1 week form
-// CE = string of events, \n separated.
+// CE = Array of event objects
 // changed to include year. 9/29/16.
 function DisplayComingWeek(CE) {
 
@@ -3036,11 +3063,8 @@ function DisplayComingWeek(CE) {
     table = document.getElementById("comingeventstable");
     var iCE; // iterator through CE
     iCE = 0;
-    var aCE; // CE split array 
-    var CE;
 
     if (CE == null) return;
-    CE = CE.split("\n");  // break it up into rows
 
     // build table
     clearTable(table);
@@ -3100,31 +3124,33 @@ function DisplayComingWeek(CE) {
         // roll through the CE array for 7 days and populate the week table with events from CE
         var endyymmdd = yymmdd;  // end day + 1j
         for (iCE = 0; iCE < CE.length; iCE++) {
-            if (CE[iCE] == "") continue; // skip blank lines
-            aCE = CE[iCE].split(';');  // split the string
-            if (BadEvent(aCE)) continue; // must have 6 entries
-            var dateCE = Number(aCE[0]); // yymmdd
+            var Evt = CE[iCE];
+            var dateCE = Evt.date; // yymmdd
             if (dateCE >= endyymmdd) break; // past one week
             if (dateCE < startyymmdd) continue; // if before today
-            if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
+            if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
             // add to entry. entries have an id of: yymmddhh99
             var e = "";
             if (dateCE == gYYmmdd) e = "<strong>";
-            if (aCE[1].substring(2, 4) != "00") e = ShortTime(aCE[1]) + " "; // add time if not one the hour
-            e += "<span style=color:" + eventcolor(aCE[3]) + ">" + aCE[4] + "</span>";
-            var id = aCE[0] + aCE[1].substring(0, 2) + "99"; //id = yymmddhh99
+            //if (aCE[1].substring(2, 4) != "00") e = ShortTime(aCE[1]) + " "; // add time if not on the hour
+            if ((Evt.startt % 100) != 0) e = ShortTime(Evt.startt) + " "; // add time if not on the hour
+            e += "<span style=color:" + eventcolor(Evt.key) + ">" + Evt.title + "</span>";
+            //var id = aCE[0] + aCE[1].substring(0, 2) + "99"; //id = yymmddhh99
+            var id = (dateCE * 10000 + (Evt.startt / 100 * 100) + 99).toFixed(0); //id = yymmddhh99////////////////////???????????????????????????????????????????
             var c = document.getElementById(id);
             if (dateCE == gYYmmdd) e = "<strong>" + e + "</strong>";
             c.innerHTML += e + "<br/>";
             c.style.backgroundColor = "azure";
             // now the fancy part:  if end time is > 1 hour more than start time, color next blocks if they exist
-            var sh = Number(aCE[1].substring(0, 2));  //start hour
+            var sh = Evt.startt/100;  //start hour
             if (sh < 7) sh = 7;
-            var eh = Number(aCE[2].substring(0, 2));  //end hour
+            //var eh = Number(aCE[2].substring(0, 2));  //end hour
+            var eh = Evt.endt / 100; // end hour
             if (eh < 7) eh = 7; if (eh > 22) eh = 22;
             // if > 1 hour, color next cell
             for (var i = sh + 1; i < eh; i++) {
-                var id = aCE[0] + Leading0(i) + "99";//id = yymmddhh99
+                //var id = aCE[0] + Leading0(i) + "99";//id = yymmddhh99
+                var id = (Evt.date * 10000 + i * 100 + 99).toFixed(0);//id = yymmddhh99
                 document.getElementById(id).style.backgroundColor = "azure";
             }
 
@@ -3143,7 +3169,8 @@ function Leading4(n) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingMonth - display the events in the CE structure in a 1 month form
-// CE = string of events, \n separated.
+// CE = EvtA or ActA array of Events
+//
 function DisplayComingMonth(CE) {
     var i, w;
     var row;
@@ -3154,11 +3181,8 @@ function DisplayComingMonth(CE) {
     table = document.getElementById("comingeventstable");
     var iCE; // iterator through CE
     iCE = 0;
-    var aCE; // CE split array 
-    var CE;
 
     if (CE == null) return;
-    CE = CE.split("\n");  // break it up into rows
     if((CE.length) < 2) return; // not enough data
     var startyymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek); // back up to beginning of month
     var yymmdd = startyymmdd;
@@ -3212,17 +3236,15 @@ function DisplayComingMonth(CE) {
             // add elements
             var e = "";
             for (; iCE < CE.length; iCE++) {
-                if (CE[iCE] == "") continue; // skip blank lines
-                aCE = CE[iCE].split(';');  // split the string
-                if (BadEvent(aCE)) continue; // skip any ill-formatted event
+                var Evt = CE[iCE]; // event
                 //  advance schedule date to today
-                var dateCE = Number(aCE[0]); // yymmdd
+                var dateCE = Evt.date; // yymmdd
                 if (dateCE > yymmdd) break; // if past today, exit
                 if (dateCE < yymmdd) continue; // if before today, continue
-                if ((EventFilter != "") && (EventFilter != aCE[3])) continue;  // skip entry if it doesnt match
+                if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
                 // add to entry 
-                e += "<span style=color:" + eventcolor(aCE[3]) + "><strong>" + VeryShortTime(aCE[1]) + "</strong> " +
-                      aCE[4] + "</span><br/>";// add time 
+                e += "<span style=color:" + eventcolor(Evt.key) + "><strong>" + VeryShortTime(Evt.startt) + "</strong> " +
+                      Evt.title + "</span><br/>";// add time 
             } // end for
             if (e != "") col.innerHTML = e ;
             if (iCE >= CE.length) numofweeks = 0;  // stop week loop
@@ -3238,10 +3260,10 @@ function DisplayComingMonth(CE) {
 //  Exit    true if bad, false if good
 function BadEvent(aCE) {
     if (aCE.length < 6) return true; // must have at least 6 entries
-    if (aCE[0].length != 6) return true;
+    if (aCE[0].length != 4 && aCE[0].length != 6) return true;
     if (aCE[1].length != 4) return true;
     if (aCE[2].length != 4) return true;
-    if (aCE[3].length != 1) return true; //type must be 1 letter
+    if (aCE[3].length != 1) return true; //key must be 1 letter
     if (isNaN(aCE[0])) return true;
     if (isNaN(aCE[1])) return true;
     if (isNaN(aCE[2])) return true;
@@ -3264,6 +3286,49 @@ function eventcolor(key) {
         default: return "#000000";
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ParseEventsList Parse Input event or activity string and fill the EvtA or ActA array with Event objects, 1/event
+//  ALSO adds the year to the date, so the date becomes yymmdd.\
+//  Runs only when Dailycache is loaded. Usually once/day, or when 'Reload Data' is requested.
+//  So this converts the Event or Activity text stream from Google calendar to an internal object structure.
+// 
+//  entry   CE is an input string of Events or Activities. 
+//          it is a single big string containing multiple lines, so we split the string by \n.
+//          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
+//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
+//          EvtA = EvtA for events, ActA for activities.
+//  exit    is an array of Evt objects. EvtA for events. ActA for activities.
+function ParseEventsList(CE, EvtA) {
+    var iCE; // iterator through CE
+    iCE = 0;
+    var iEvtA = 0;
+    var aCE; // CE split array 
+    if (CE == null) return;
+    if (CE.length == 0) return;
+    var year = (gYear - 2000).toFixed(0); //yy
+    CE = CE.split("\n"); // break the string into an array of strings.
+
+    // roll through the CE array.  create new object for each row.
+    for (iCE = 0; iCE < CE.length; iCE++) {
+        if (CE[iCE] == "") continue; // skip blank lines
+        var aCE = CE[iCE].split(";");  // split the line
+        if (BadEvent(aCE)) {
+            alert("Bad Event: " + CE[iCE]);
+            return; // if ill-formatted event
+        }
+        // add year to date. Note that "0101;0000;0000;E;20nn" is used to change the year to 20nn
+        if (CE[iCE].charAt(4) == ";") { // if nnnn; insert a year at the beginning
+            if (CE[iCE].substr(0, 19) == "0101;0000;0000;E;20") year = CE[iCE].substr(19, 2); // new year flag
+            aCE[0] = year + aCE[0]; // insert year
+        }
+        for (i = aCE.length; i < 9; i++) aCE[i] = ""; // fill out array to 8 entries
+        EvtA[iEvtA] = new NewEvt(number(aCE[0]), number(aCE[1]), number(aCE[2]), aCE[3], aCE[4], aCE[5], aCE[6], aCE[7], aCE[8]);
+        iEvtA++;
+    } // end loop through CE
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 //  Bumpyymmdd  add DAYS to yymmdd and adjust mm and dd and yyyy
@@ -4709,6 +4774,7 @@ function StartApp() {
     if(LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
+        ParseEventList();
         ShowCachedData();
     } else gForceCacheReload = true;
     
