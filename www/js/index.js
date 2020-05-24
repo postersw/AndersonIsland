@@ -103,7 +103,7 @@ var app = {
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-            switch(gNotification) {
+            switch (gNotification) {
                 case 1: // pushbots
                     //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
                     //window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
@@ -262,7 +262,7 @@ function InitializeDates(dateincr) {
     gDayofMonth = Gd.getDate(); // day of month 1-31
     gMonthDay = gMonth * 100 + gDayofMonth;
     gYear = Gd.getFullYear();
-    gYYmmdd = gMonthDay + (gYear-2000)*10000; // yymmdd
+    gYYmmdd = gMonthDay + (gYear - 2000) * 10000; // yymmdd
     gWeekofMonth = Math.floor((gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
     // build holidays once only
     if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
@@ -293,7 +293,7 @@ function IncrementDate(dateincr) {
             mm = 1; yy = yy + 1;
         }
     }
-    return (mm*100) + dd + (yy - 2000) * 10000; // yymmdd
+    return (mm * 100) + dd + (yy - 2000) * 10000; // yymmdd
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -327,16 +327,16 @@ function BuildHoliday(year) {
 //////////////////////////////////////////////////////////////////////////////////
 // tests for correct calculation of holidays.  Only used for debugging.
 function BuildHolidayTest() {
-    var testy = [2018, 2019, 2020, 2021, 2022, 2023,2024];
-    var testm = [528, 527,525,531,530,529,527];
-    var testl = [903, 902,907,906,905,904,902];
-    var testt = [1122, 1128, 1126, 1125,1124,1123,1128];
+    var testy = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
+    var testm = [528, 527, 525, 531, 530, 529, 527];
+    var testl = [903, 902, 907, 906, 905, 904, 902];
+    var testt = [1122, 1128, 1126, 1125, 1124, 1123, 1128];
     var i;
     for (i = 0; i < 4; i++) {
         BuildHoliday(testy[i]);
         if (memorialday != testm[i]) alert(String(testy[i]) + String(memorialday));
-        if (laborday != testl[i]) alert(String(testy[i])+ String(laborday));
-        if (thanksgiving != testt[i]) alert(String(testy[i])+ String(thanksgiving));
+        if (laborday != testl[i]) alert(String(testy[i]) + String(laborday));
+        if (thanksgiving != testt[i]) alert(String(testy[i]) + String(thanksgiving));
     }
     alert("test done");
 }
@@ -365,8 +365,8 @@ function GetWeekofYear(mmdd) {
         yyyy = Math.floor(mmdd / 10000) + 2000; // extract year
         mmdd = mmdd % 10000;
     }
-    var januaryFirst = new Date(yyyy, 0, 1,0,0,0,0);
-    var thedate = new Date(yyyy, Math.floor(mmdd / 100) - 1, mmdd % 100,0,0,0,0);
+    var januaryFirst = new Date(yyyy, 0, 1, 0, 0, 0, 0);
+    var thedate = new Date(yyyy, Math.floor(mmdd / 100) - 1, mmdd % 100, 0, 0, 0, 0);
     return Math.floor((Math.ceil((thedate - januaryFirst) / 86400000) + januaryFirst.getDay()) / 7);
 }
 
@@ -402,7 +402,7 @@ function GetTimeMS() {
 //  returns true if a = a1 or a2 or a3, ...; e.g. InList(3,0,1,2,3,4) returns true because 3 is in the list
 function InList(a) {
     var i;
-    for (i=1; i < arguments.length; i++) { if (arguments[0] == arguments[i]) return true; }
+    for (i = 1; i < arguments.length; i++) { if (arguments[0] == arguments[i]) return true; }
     return false;
 }
 
@@ -498,7 +498,7 @@ function timeDiffTTS(diffm) {
 //  Exit    new time
 function timeAdd(timehhmm, addmm) {
     var tm = (Math.floor(timehhmm / 100) * 60) + (timehhmm % 100) + addmm; // time in min
-    return Math.floor(tm / 60) *100 + (tm % 60);
+    return Math.floor(tm / 60) * 100 + (tm % 60);
 }
 
 //////////////////////////////////////   UTILITY ////////////////////////////////////////////
@@ -526,7 +526,7 @@ function getGeoLocation() {
     if ((gTimeStampms - gLocationTime) < 30000) return; // update every 30 sec at most
     gLocationTime = gTimeStampms;
     navigator.geolocation.getCurrentPosition
-    (onGeoSuccess, onGeoError, { enableHighAccuracy: true, timeout: 5000});
+        (onGeoSuccess, onGeoError, { enableHighAccuracy: true, timeout: 5000 });
 }
 // Success callback.
 //  Exit: sets gLatitude, gLongitude, 
@@ -585,12 +585,12 @@ var gDaysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 //  2. 0-6 = day of week that run is valid on.
 //  3. Starts with a '(': it is the special case rules run with 'eval'
 
-var ferrytimeS = [445,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",545,"123456",645,"*",800,"*",900,"*",1000,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1200,"*",1420,"*",1520,"*",1620,"*",1730,"*",1840,"*",2040,"*",2200,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2300,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeA = [515,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",615,"123456",730,"*",830,"*",930,"*",1030,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1230,"*",1450,"*",1550,"*",1650,"*",1800,"*",1910,"*",2110,"*",2230,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2330,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeK = [0,"",0,"",655,"*",0,"",0,"",1010,"((gDayofWeek==2)&&InList(gWeekofMonth,1,3))",1255,"*",0,"",0,"",0,"",0,"",1935,"*",0,"",2250,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2350,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeS2 = [445,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",545,"123456",645,"*",800,"*",900,"*",1000,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1200,"*",1230,50,1350,50,1420,"*",1450,50,1520,"*",1550,50,1620,"*",1650,50,1730,"*",1800,50,1840,"*",2040,"*",2200,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2300,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeA2 = [515,"((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))",615,"123456",730,"*",830,"*",930,"*",1030,"((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))",1230,"*",1300,50,1420,50,1450,"*",1520,50,1550,"*",1620,50,1650,"*",1730,50,1800,"*",1840,50,1910,"*",2110,"*",2230,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2330,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeK2 = [0,"",0,"",655,"*",0,"",0,"",1010,"((gDayofWeek==2)&&InList(gWeekofMonth,1,3))",1255,"*",0,"",0,"",0,"",0,"",0,"",0,"",0,"",0,"",0,"",0,"",1935,"*",0,"",2250,"( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))",2350,"((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeS = [445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1420, "*", 1520, "*", 1620, "*", 1730, "*", 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeA = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1450, "*", 1550, "*", 1650, "*", 1800, "*", 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeK = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeS2 = [445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1230, 50, 1350, 50, 1420, "*", 1450, 50, 1520, "*", 1550, 50, 1620, "*", 1650, 50, 1730, "*", 1800, 50, 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeA2 = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1300, 50, 1420, 50, 1450, "*", 1520, 50, 1550, "*", 1620, 50, 1650, "*", 1730, 50, 1800, "*", 1840, 50, 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
 
 var gFerryDate2 = 0;  // cutover time to ferrytimex2
 
@@ -779,12 +779,12 @@ function isMobile() {
 }
 
 //isMobile - Initialize the switches gisMobile, gisPhoneGap, gisAndroid
-function initializeMobile(){
+function initializeMobile() {
     gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
     gisPhoneGap = /^file:\/{3}[^\/]/i.test(window.location.href)
-    && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+        && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
     gisAndroid = ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
-    (navigator.userAgent.toLowerCase().indexOf('android') > -1));
+        (navigator.userAgent.toLowerCase().indexOf('android') > -1));
 }
 
 
@@ -933,7 +933,7 @@ function MarkOffline(offline) {
     var tle = document.getElementById("topline");
     var topline = tle.innerHTML;
     if (offline) {
-        Show("offlinemsg"); 
+        Show("offlinemsg");
         if (topline.substr(0, 9) == ofl) return;
         tle.innerHTML = ofl + topline; // set it offline
     } else {  // not offline
@@ -1038,7 +1038,7 @@ function getAlertInfo() {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleAlertReply(xhttp.responseText);
         if (xhttp.readyState == 4 && xhttp.status == 0) MarkOffline(true); // this one works when net is disconnected
     }
-    try{
+    try {
         xhttp.open("GET", myurl, true);
         xhttp.timeout = 12000;  // 12 second timeout; this doesn't seem to work
         xhttp.ontimeout = function () { MarkOffline(true); }  // after 12 seconds, show the offline msg
@@ -1067,8 +1067,8 @@ function HandleAlertReply(r) {
     var newrefreshrequest = parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
     WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary.
-    if ((newrefreshrequest != "") && (oldrefreshrequest != newrefreshrequest)) {  
-        if ((gTimeStampms - gDailyCacheLoadedms) > 3*60000) GetDailyCache(); // if >3 min since last reload, reload daily cache, including calendar & ferry sch, 
+    if ((newrefreshrequest != "") && (oldrefreshrequest != newrefreshrequest)) {
+        if ((gTimeStampms - gDailyCacheLoadedms) > 3 * 60000) GetDailyCache(); // if >3 min since last reload, reload daily cache, including calendar & ferry sch, 
     }
 }
 
@@ -1173,9 +1173,9 @@ function GetDailyCache() {
         (BIGTX.OnOff ? "8" : "") + (gFerryHighlight ? "9" : "");
     // gFerryShowIn = 1; // 1 to show (in nnm) on 1st time. Set from "gferryshowin". Defaults to 1.
     // gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
-  
+
     // ajax async request to get cache and upload stats
-    var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") + 
+    var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         "&P=" + pagehits);
 
     // ajax request without jquery
@@ -1274,17 +1274,17 @@ function ParseDailyCache(data) {
     // format: COMINGEVENTS ...events...ACTIVITIES...activities...COMINGEVENTSEND
     // revised 5/22/20 to create EvtA and ActA event arrays;
     parseCache(data, "comingevents", "COMINGEVENTS", "ACTIVITIES");
+    ParseEventsList(localStorage.getItem("comingevents"), EvtA);
     parseCache(data, "comingactivities", "ACTIVITIES", "COMINGEVENTSEND");
-    localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
-    ParseEventsList(localStorage.getItem("comingevents", EvtA);
     ParseEventsList(localStorage.getItem("comingactivities"), ActA);
+    localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
 
-    document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+    document.getElementById("nextevent").innerHTML = DisplayNextEvents(EvtA);
+    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
 
     // tides (added 6/6/16);
     s = parseCache(data, "", "TIDES", "TIDESEND");
-    try{
+    try {
         var json = JSON.parse(s);
     } catch (err) {
         alert("ERROR: Can't decode tide data: " + err.message + "\n" + s);
@@ -1356,14 +1356,14 @@ function parseCacheRemove(data, localstoragename, startstr, endstr) {
 //  entry   itemname = name of storage item
 //  exit    year added to all dates to become yymmdd
 function FixDates(itemname) {
-    var year = (gYear - 2000).toFixed(0) ; //yy
+    var year = (gYear - 2000).toFixed(0); //yy
     var data = localStorage.getItem(itemname);
     var CE = data.split("\n");  // break it up into an array of rows
     // run through each row, add date
     for (var i = 0; i < CE.length; i++) {
         if (CE[i] == "") continue;
         if (CE[i].charAt(4) != ";") continue; // if not nnnn; skip because it will be a year
-        if (CE[i].substr(0, 19) == "0101;0000;0000;E;20")  year = CE[i].substr(19, 2); // new year flag
+        if (CE[i].substr(0, 19) == "0101;0000;0000;E;20") year = CE[i].substr(19, 2); // new year flag
         CE[i] = year + CE[i]; // insert year
     }
     CE = CE.join("\n");  // reassemble the string
@@ -1374,7 +1374,7 @@ function FixDates(itemname) {
 //  ClearCacheandExit   a debug aid to simulate initial startup by removing all elements from cache
 function ClearCacheandExit() {
     localStorage.clear();
-    if(isPhoneGap()) navigator.app.exitApp();
+    if (isPhoneGap()) navigator.app.exitApp();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1483,7 +1483,7 @@ function onResume() {
 //  backKeyDown: when back key is pressed, return to main page. If on main page (and not menu) exit.
 function backKeyDown() {
     // Call my back key code here.
-    if (gDisplayPage == 'mainpage' && isPhoneGap()  && !gMenuOpen) navigator.app.exitApp();
+    if (gDisplayPage == 'mainpage' && isPhoneGap() && !gMenuOpen) navigator.app.exitApp();
     ShowMainPage();
 }
 
@@ -1496,8 +1496,8 @@ function ShowCachedData() {
     ShowNextTides(); // show cached tide data
     DisplayAlertInfo();
     ShowOpenHours(); //  open hours
-    document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
-    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+    document.getElementById("nextevent").innerHTML = DisplayNextEvents(EvtA);
+    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
     var s = localStorage.getItem("message");
     if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
 
@@ -1506,7 +1506,7 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-    
+
     //s = localStorage.getItem("maintablerows"); // additional main page rows. Removed 9/1/18 because of issue with icons.
     //if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
@@ -1551,7 +1551,7 @@ function DisplayLoadTimes() {
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
         ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit:" + (isPhoneGap()? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
+        ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
         ", CurrentWeather:" + DispElapsedMin("currentweathertime") + " #" + gWeatherCurrentCount.toFixed(0) +
@@ -1567,12 +1567,12 @@ function DisplayLoadTimes() {
 //  oldtime = saved millisec (ms) value 
 function DispElapsedSec(oldtime) {
     if (oldtime == 0) return "";
-    return ((Date.now() - oldtime)/1000).toFixed(0) + " sec ago";
+    return ((Date.now() - oldtime) / 1000).toFixed(0) + " sec ago";
 }
 //  DispElapsedMin = calculate  & display elapsed time between now and the time stored in the tag
 //  localstoragetag = local storage saved seconds value 
 function DispElapsedMin(localstoragetag) {
-    return ((Date.now()/1000 - Number(localStorage.getItem(localstoragetag))) / 60).toFixed(0) + " min ago";
+    return ((Date.now() / 1000 - Number(localStorage.getItem(localstoragetag))) / 60).toFixed(0) + " min ago";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1583,7 +1583,7 @@ function DispElapsedMin(localstoragetag) {
 function ShowPage(newpage) {
     if (gMenuOpen) CloseMenu();  // close the menu
     if (gDisplayPage == newpage) return;
-    if(newpage != "mainpage") MarkPage(newpage.substr(0, 1)); // ADD PAGE LETTER
+    if (newpage != "mainpage") MarkPage(newpage.substr(0, 1)); // ADD PAGE LETTER
     // clear out rows of table for former page
     if (gTableToClear != null) {
         var table = document.getElementById(gTableToClear);
@@ -1780,7 +1780,7 @@ function FindNextSingleFerryTime(ferrytimes) {
     var i = 0;
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        if (gTimehhmm > (ferrytimes[i]+extrat)) continue;  // skip ferrys that have alreaedy run but allow 5 min
+        if (gTimehhmm > (ferrytimes[i] + extrat)) continue;  // skip ferrys that have alreaedy run but allow 5 min
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             if (gTimehhmm > (ferrytimes[i])) return "<span style='color:gray'>" + ShortTime(ferrytimes[i]) + "</span>"
@@ -1947,7 +1947,7 @@ function StartTicketApp() {
                 window.open(link, '_system');
             };
             var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
-            window.plugins.launcher.launch({packageName: pkg }, successCallback, errorCallback);
+            window.plugins.launcher.launch({ packageName: pkg }, successCallback, errorCallback);
 
             ////  com.lampa.startapp
             //var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
@@ -2005,12 +2005,12 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
 
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimesS.length; i = i + 2) {
-        if ((adjustedcurrenttime >= ferrytimesS[i]) && (adjustedcurrenttime >= ferrytimesA[i]) && (adjustedcurrenttime > ferrytimesK[i]))continue;  // skip ferrys that have alreaedy run
+        if ((adjustedcurrenttime >= ferrytimesS[i]) && (adjustedcurrenttime >= ferrytimesA[i]) && (adjustedcurrenttime > ferrytimesK[i])) continue;  // skip ferrys that have alreaedy run
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
-        validS = (ferrytimesS[i] != 0) &&  ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
+        validS = (ferrytimesS[i] != 0) && ValidFerryRun(ferrytimesS[i + 1], ferrytimesS[i]);
         validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
         validK = (ferrytimesK[i] != 0) && ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i]);
-        if (validS||validA||validK) {
+        if (validS || validA || validK) {
             // Steelacoom
             var row1, row1col1, row1col2;
             row1 = table.insertRow(-1);
@@ -2059,7 +2059,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
                     row1col1.style.fontWeight = "bold";  // bold 
                     boldS = true;
                 }
-                if (gTimehhmm <= ferrytimesA[i] && !boldA){
+                if (gTimehhmm <= ferrytimesA[i] && !boldA) {
                     row1col2.style.fontWeight = "bold";  // bold
                     boldA = true;
                 }
@@ -2095,7 +2095,7 @@ function ferryclick(tc) {
         case "A": el = "Anderson Island"; to = "Steilacoom"; break;
         case "K": el = "Ketron"; to = "Steilacoom"; break;
     }
-    if (confirm("Add ferry run from " + el + " at " + FormatTime(tc.substring(6,10)) + " on " + M + "/" + d + " to your calendar?\n(Your phone will remind you before departure)") != true) return;
+    if (confirm("Add ferry run from " + el + " at " + FormatTime(tc.substring(6, 10)) + " on " + M + "/" + d + " to your calendar?\n(Your phone will remind you before departure)") != true) return;
     M = M - 1;
     var startDate = new Date(y, M, d, h, m, 0, 0); // beware: month 0 = january, 11 = december
     m = m + 30; // allow for 30 minute sailing
@@ -2142,7 +2142,7 @@ function DisplayFerrySchedule(userdate) {
     table = document.getElementById("ferrytable");
     gTableToClear = "ferrytable";
     clearTable(table);
-    if(table.rows.length>0) table.deleteRow(0);  // clear 1st row
+    if (table.rows.length > 0) table.deleteRow(0);  // clear 1st row
 
     row1 = table.insertRow(-1);
     row1col1 = row1.insertCell(0);
@@ -2153,13 +2153,13 @@ function DisplayFerrySchedule(userdate) {
     row1col1 = row1.insertCell(1);
     row1col1.style.backgroundColor = "blue";
     row1col1.style.color = "white";
-    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "") ;
+    row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
     row1col1 = row1.insertCell(2);
     row1col1.style.backgroundColor = "blue";
 
     InsertStAI(table);
     BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
- 
+
     gTimehhmm = 0;  // ignore current time
     var i;
     for (i = 0; i < 7; i++) {
@@ -2258,9 +2258,9 @@ function ShowOpenHours() {
 function GetOpenStatus(Oh, mmdd, hhmm) {
     var i, j;
     var opentime, closetime, opentime2, closetime2;
-    var TClosed = "Closed"; var TClosedAW = "Closed"; var TOpen = "Open"; var TOpens = "Opens"; 
+    var TClosed = "Closed"; var TClosedAW = "Closed"; var TOpen = "Open"; var TOpens = "Opens";
     // for garbage pickup, change wording to 'pickup'
-    if (Oh.Pickup == "on") { TClosed = "No Pickup today"; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup";}  
+    if (Oh.Pickup == "on") { TClosed = "No Pickup today"; TClosedAW = "No Pickup"; TOpen = "Pickup"; TOpens = "Pickup"; }
 
     if (IsClosed(Oh.Closed, mmdd)) return " <span style='color:red;font-weight:bold'> " + TClosedAW + " today. </span>"
     // loop through the oh.Sch entries. Each entry is for 1 date range.
@@ -2487,10 +2487,10 @@ function ShowOneBusinessFullPage(id) {
     var showicon = "<i class='material-icons bizicon'>store</i> ";
     if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + "</i> ";
     var openlist = "<p style='font-weight:bold;font-size:medium'>&nbsp;&nbsp;&nbsp; " + showicon + t + ": " + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </p>";
-    openlist += "<p style='margin:10px'><img src='" + Oh.Img + "' width='" + ((window.screen.width>1000) ? "40" : "100" ) + "%'></p>";
-    openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>" + 
+    openlist += "<p style='margin:10px'><img src='" + Oh.Img + "' width='" + ((window.screen.width > 1000) ? "40" : "100") + "%'></p>";
+    openlist += "<div style='font-size:small'><div style='width:100%;background-color:lightblue;padding:6px'>DESCRIPTION</div><p style='margin:10px'>" +
         Oh.Desc +
-        "<br/><button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp; Call " + Oh.Phone + "&nbsp;</a></button>&nbsp;&nbsp; " +   
+        "<br/><button><a style='display:normal;text-decoration:none;' href='tel:" + Oh.Phone + "'>&nbsp; Call " + Oh.Phone + "&nbsp;</a></button>&nbsp;&nbsp; " +
         "</p><div style='width:100%;background-color:lightblue;padding:6px'>ADDRESS</div><p style='margin:10px'>" +
         "<button onclick='window.open(\"" + Oh.Map + "\", \"_blank\");'>&nbsp; Map &nbsp;</button>&nbsp;&nbsp; " +
         Oh.Addr + "</p>" +
@@ -2519,9 +2519,9 @@ function ShowOneBusinessFullPage(id) {
 
         // print date range if there is > 1  (Oh.Sc.length>1)
         var H = Oh.Sc[i].H; // H is the hours array, indexed by day of week*2
-       // if all days are closed (open time = 0), just say 'closed' once for the entire time.
+        // if all days are closed (open time = 0), just say 'closed' once for the entire time.
         if (H[0] == 0 && H[2] == 0 && H[4] == 0 && H[6] == 0 && H[8] == 0 && H[10] == 0 && H[12] == 0) {
-            openlist += "Closed " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + "</span><br/>" 
+            openlist += "Closed " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + "</span><br/>"
             continue;
         }
         openlist += "Open " + formatDate(Oh.Sc[i].From) + " - " + formatDate(Oh.Sc[i].To) + ":</span><br/>" + rangespan;
@@ -2606,25 +2606,28 @@ function ParseOpenHours() {
 //<!-- COMING EVENTS ------------------------------------------------------------------------------------->
 //<script>
 //========= COMING EVENTS ===========================================================================
-// EvtA = array of event objects; 
-// {date (yymmdd), startt (hhmm), endt (hhmm), key (), title, loc, sponsor, info, icon}
+// EvtA = array of event objects; ActA = array of activity event objects (the same object).    5/22/20 1.28
+// {date (yymmdd), startt (hhmm), endt (hhmm), key (), title, loc, sponsor, info, icon, cancelled}
 // Filled by ParseEventsList
 var EvtA = []; // event array. From COMINGEVENTS string
 var ActA = []; // activity array. From COMINGACTIVITIES string
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // Event constructor
-// {date (yymmdd) number, startt (hhmm) number, end (hhmm) number, key (), title, loc, sponsor, info, icon}
+// {date (yymmdd) number, startt (hhmm) number, end (hhmm) number, key (E|S|M|A|G|O), title, loc, sponsor, info, icon, cancelled (T/F)}
 //
 function NewEvt(date, startt, endt, key, title, loc, sponsor, info, icon) {
     this.date = date;
     this.startt = startt;
     this.endt = endt;
-    this.title = title;
     this.key = key;
+    this.title = title;
+    this.loc = loc;
     this.sponsor = sponsor;
     this.info = info;
     this.icon = icon;
+    if (title.substr(0, 6) == "CANCEL") this.cancelled = true;
+    else this.cancelled = false;
 }
 
 ///////////// COMING EVENTS MAIN PAGE /////////////////////////////////////////////////////////////////////////////////////
@@ -2632,9 +2635,8 @@ function NewEvt(date, startt, endt, key, title, loc, sponsor, info, icon) {
 // DisplayComingEvents MAIN PAGE - display the events in the 'comingevents'  or 'comingactivities' 
 //          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
-//  Entry   CE = array of coming event objects:  {date (yymmdd), start (hhmm), end (hhmm), type (), title, loc, sponsor, info, icon}
-//              mmdd;hhmm;hhmm;t;title;location;sponsor;info
-//          label = "event" or "activity"
+//  Entry   CE = array of coming event objects, either EvtA or ActA:
+//              {date (yymmdd), start (hhmm), end (hhmm), type (), title, loc, sponsor, info, icon}
 //  Exit    returns the information to display on the main screen
 //
 function DisplayNextEvents(CE) {
@@ -2650,7 +2652,7 @@ function DisplayNextEvents(CE) {
 
     var yymmddP6 = IncrementDate(6); // add 6 to date
 
-    // roll through the next 30 days
+    // roll through the entire event array
     for (iCE = 0; iCE < CE.length; iCE++) {
         if (CE[iCE].date == 0) continue; // skip blank lines
         var Evt = CE[iCE];  // EVT = the current event
@@ -2669,7 +2671,10 @@ function DisplayNextEvents(CE) {
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
-            if (Number(Evt.startt) <= gTimehhmm) {
+            if (Evt.cancelled) {
+                datefmt += "&nbsp;<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span><br/>";
+                TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
+            } else if (Number(Evt.startt) <= gTimehhmm) {
                 datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</span>: " + CEvent + " @ " + Evt.loc + "<br/>";
                 TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
             } else {
@@ -2686,11 +2691,14 @@ function DisplayNextEvents(CE) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
             else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</strong><br/>";  // fails on month chagne
-            //else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
             else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
-        datefmt += "&nbsp;" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "<br/>";
+        if (Evt.cancelled) {
+            datefmt += "&nbsp;<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span><br/>";
+        } else {
+            datefmt += "&nbsp;" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "<br/>";
+        }
         if (nEvents < 1) TXTS.Next = gDayofWeekName[GetDayofWeek(Evt.date)] + " at " + FormatTime(Evt.startt) + ", " + Evt.title + " at " + Evt.loc + "."; // text to speech
         DisplayDate = aCEyymmdd;
         nEvents++; // count the events
@@ -2708,7 +2716,7 @@ function DisplayNextEvents(CE) {
 var EventFilter = ""; //letter to filter for
 var EventDisp = ""; // event display type, L, W, M
 
-function DisplayComingEventsPageE() { DisplayComingEventsPage("events");}
+function DisplayComingEventsPageE() { DisplayComingEventsPage("events"); }
 function DisplayComingEventsPageA() { DisplayComingEventsPage("activity"); }
 
 function DisplayComingEventsPage(type) {
@@ -2771,13 +2779,11 @@ function SetEventFilter(f) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingEventsList - display the events in the EvtA or ActA array of Event objects. string, which is a copy of the comingevents txt file
-//  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
-// or 'comingactivities' localStorage items. 
+// DisplayComingEventsList - display a list of the events in the EvtA or ActA array of Event objects. 
 //  entry   CE is an array of Evt objects. EvtA for events. ActA for activities.
-//          it used to be a single big string containing multiple lines, so we split the string by \n.
-//          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
-//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
+//          each Evt is: date yymmdd,startt hhmm,endt hhmm,key,title,location,sponsor,info,{i=icon,...}
+//  exit    builds a DOM table of events
+//
 function DisplayComingEventsList(CE) {
     var i;
     var row;
@@ -2817,19 +2823,16 @@ function DisplayComingEventsList(CE) {
 
     // roll through the CE array.  Dates are yymmdd
     for (iCE = 0; iCE < CE.length; iCE++) {
+        var Evt = CE[iCE];
         if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
         var CEyymmdd = Evt.date; // yymmdd
-            // ALTERNATE on the fly year addition
-            // if(CE[iCE].substr(0,15) == "0101;0000;0000;") CEyear = Number(aCE[4]);
-            // CEyymmdd = CEYear*10000;
         //if (CEyymmdd > endyymmdd) return; // past end date (one month)  list the entire table now
         if (CEyymmdd < gYYmmdd) continue; // if before today
-        if ((CEyymmdd == gYYmmdd) && (Evt.endt < (gTimehhmm + 10)))) continue; // end time not reached.
+        if ((CEyymmdd == gYYmmdd) && (Evt.endt < (gTimehhmm + 10))) continue; // end time not reached.
         // found it
         var t = CEyymmdd.toFixed(0);
-        datefmt = t.substring(2, 4) + "/" +t.substring(4, 6);
-        //var dd = new Date(datefmt + "/" + (CEyymmdd%10000));  // date object for Calendar Entry WHY?????
+        datefmt = t.substring(2, 4) + "/" + t.substring(4, 6);  // date string: mm/dd
         iweek = GetWeekofYear(CEyymmdd);
         idayofweek = GetDayofWeek(CEyymmdd);
 
@@ -2863,12 +2866,13 @@ function DisplayComingEventsList(CE) {
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = Evt.loc;//where
         var color;
-        color = eventcolor(Evt.key);
+        if (Evt.cancelled) color = "gray";  // if cancelled, gray it out
+        else color = eventcolor(Evt.key);
         col2.style.color = color;
         col.style.color = color;
         row.id = (CEyymmdd * 10000 + Evt.startt).toFixed(0);  // id = 1602141300  i.e. yymmddhhmm
         row.onclick = function () { tabletext(this.id) }
-        oldrow = row; 
+        oldrow = row;
         lastweek = iweek;
         previouseventdate = CEyymmdd;
     } // end loop through CE
@@ -2878,18 +2882,18 @@ function DisplayComingEventsList(CE) {
 //////////////////////////////////////////////////////////////////////
 //  FormatEvent - add icon if switch is on
 //  Entry   event object, font size in pixels
-//          each array   is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
+//          each object   is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
 //                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
 //  Exit    html for event, includes icon if switch is on
 function FormatEvent(Evt, fontsize) {
     // iconlist:   keyword, iconname, ...
-    var iconlist = ["meeting", "people", "film", "theaters","music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
-        "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart", 
+    var iconlist = ["meeting", "people", "film", "theaters", "music", "music_note", "golf", "golf_course", "drop-off", "file_download", "market", "shopping_cart",
+        "concert", "music_note", "karaoke", "mic", "sale", "shopping_cart", "bazaar", "shopping_cart",
         "fitness", "fitness_center", "craft", "palette", "art", "palette", "dinner", "restaurant_menu", "luncheon", "restaurant_menu"
     ];
-    var ev = Evt.key;
+    var ev = Evt.title;
     if (ev == null || ev == "") {
-        alert("Event error - no key: " + Evt.date + " " + Evt.startt + " " + Evt.endt);
+        alert("Event error - no title: " + Evt.date + " " + Evt.startt + " " + Evt.endt);
         return "";
     }
     var icon;
@@ -2904,7 +2908,7 @@ function FormatEvent(Evt, fontsize) {
             }
         }
     }
-    
+
     // default icon based on the key: E, S, A, C, G, M
     switch (ev) {
         case "E": icon = "mood"; break; // special events
@@ -2927,7 +2931,7 @@ function FormatEvent(Evt, fontsize) {
 }
 
 
-///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  tabletext - display all details for the row or item that was clicked. Works for list, week, and month views.
 //  tc = cell id: yymmddhhmm = date (yymmdd) time (hhmm) as a string, eg . yymmdd9999 to match all times on yymmdd. yymmddhh99 to match all minutes
 //  The date and time are used to look up the entry in the CE array.
@@ -2935,33 +2939,26 @@ function FormatEvent(Evt, fontsize) {
 function tabletext(tc) {
     //alert(tc);
     var nc = 0;
-    var d = tc.substr(0, 6);  // yymmdd part of id
-    var t = tc.substr(6, 4); // hhhmm part of id. could be hh99 or 9999
+    var d = Number(tc.substr(0, 6));  // yymmdd part of id
+    var t = Number(tc.substr(6, 4)); // hhhmm part of id. could be hh99 or 9999
     var as = "Tap button to add to your ";
     if (!isPhoneGap()) as += "Google ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
-    var CE = GetEvents();???????????????????????????????????????????????????????????????????????????
+    var CE = GetEvents();//
     for (iCE = 0; iCE < CE.length; iCE++) {
-        //if (CE[iCE] == "") continue; // skip blank lines
-        //CE[iCE] = CE[iCE].replace("&lt;", "<"); // remove html special <
-        //CE[iCE] = CE[iCE].replace("&gt;", ">"); // remove html special >
-        //CE[iCE] = CE[iCE].replace("&amp;", "&"); // remove html special &
-        //var aCE = CE[iCE].split(';');  // split the string
-        //if (BadEvent(aCE)) continue; // must have 6 entries
         var Evt = CE[iCE];
-        if (d < CE[iCE].date) break;  // if past requested time and date, quit
-        if (d != CE[iCE].date) continue;
+        if (d < Evt.date) break;  // if past requested time and date, quit
+        if (d != Evt.date) continue;
         //var t99 = aCE[1].substr(0, 2) + '99'; // hh99 ?????????????????????????????????????????????????????????????????????????
-        var t99 = (Evt.startt / 100 * 100 + 99).toFixed(0);
-        if ((t == Evt.startt) || (t == '9999') || (t == t99)) {
+        var t99 = Math.floor(Evt.startt / 100) * 100 + 99;  // hh99
+        if ((t == Evt.startt) || (t == 9999) || (t == t99)) {
             nc++;
             // create table entry. id = the numeric index into the CE array
             as += "<tr id='" + iCE.toFixed() + "'><td style='border:thin solid black'><strong>" +
                 formatDate(Evt.date) + " " + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ":</strong> " +
-                 Evt.title + " at " + Evt.loc + "<br/>Sponsor: " + Evt.sponsor + " " + CreateLink(Evt.info) + "<br/>";
+                Evt.title + " at " + Evt.loc + "<br/>Sponsor: " + Evt.sponsor + ". " + CreateLink(Evt.info) + "<br/>";
             // to include a link: must start with http and be at the end of the element and not have ' or "
             //if (aCE.length >= 8) as += CreateLink(aCE[7]) + "<br>";
-            if (Evt.info != "") as += CreateLink(Evt.info) + "<br>";
             as += "<button onclick='AddToCal(" + iCE.toFixed() + ")'>Add to Calendar</button></td></tr>";
         }
 
@@ -2977,6 +2974,7 @@ function tabletext(tc) {
 //  Entry   string with http in it
 //  Exit    string with hyperlink
 function CreateLink(s) {
+    if (s == "") return s;  // if no string
     if (s.indexOf("<a") > 0) return s;  // don't touch if it has an a already
     var i = s.indexOf("http");
     if (i > 0) {
@@ -3010,13 +3008,13 @@ function AddToCal(id) {
     //var m = Number(d.substring(2, 4)) - 1; // month
     //var d = Number(d.substring(4, 6)); // day
     // or:
-    var y = Evt.date / 10000;
-    var m = (Evt.date - (y * 10000)) / 100;
+    var y = Math.floor(Evt.date / 10000); //yymmdd ->
+    var m = Math.floor((Evt.date - (y * 10000)) / 100);
     var d = Evt.date % 100;
     y = y + 2000;
-    var startDate = new Date(y, m, d, Evt.startt/100, (Evt.startt%100), 0, 0); // beware: month 0 = january, 11 = december
+    var startDate = new Date(y, m, d, Math.floor(Evt.startt / 100), (Evt.startt % 100), 0, 0); // beware: month 0 = january, 11 = december
     //var endDate = new Date(y, m, d, Number(aCE[2].substring(0, 2)), Number(aCE[2].substring(2, 4)), 0, 0);
-    var endDate =   new Date(y, m, d, Evt.endt/100, (Evt.endt%100), 0, 0);
+    var endDate = new Date(y, m, d, Math.floor(Evt.endt / 100), (Evt.endt % 100), 0, 0);
     var title = Evt.title;
     var eventLocation = Evt.loc;
     var notes = "";
@@ -3025,7 +3023,7 @@ function AddToCal(id) {
     //    action=TEMPLATE&text=title&dates=yyyymmddThhmmssZ/yyyymmddThhmmssZ&details=xxx&location=xxx
     //      NOTE: for google link: convert to UTC, change spaces to %20.
     //if (!isPhoneGap() || isAndroid()) { //NOT PHONEGAP  OR   Phonegap and Andriod
-    if (!isPhoneGap() ) { //NOT PHONEGAP 
+    if (!isPhoneGap()) { //NOT PHONEGAP 
         title = title.replace(/ /g, '%20');
         eventLocation = eventLocation.replace(/ /g, '%20');
         //https://calendar.google.com/calendar/render?action=TEMPLATE&text=Farm+Work+Party&dates=20160525T160000Z/20160525T190000Z&location=A
@@ -3033,13 +3031,13 @@ function AddToCal(id) {
         var link = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title +
             "&dates=" + y + Leading0(startDate.getUTCMonth() + 1) + Leading0(startDate.getUTCDate()) +
             'T' + Leading0(startDate.getUTCHours()) + Leading0(startDate.getUTCMinutes()) + "00Z/" +
-             gYear + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
+            gYear + Leading0(endDate.getUTCMonth() + 1) + Leading0(endDate.getUTCDate()) +
             'T' + Leading0(endDate.getUTCHours()) + Leading0(endDate.getUTCMinutes()) + "00Z" +
             "&location=" + eventLocation;
         //alert(link);
         window.open(link, "_blank");
-    return;
-   }
+        return;
+    }
 
     // PHONEGAP: IOS create an event interactively using the phonegap plugin
     var success = function (message) { };
@@ -3049,8 +3047,8 @@ function AddToCal(id) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingWeek - display the events in the CE structure in a 1 week form
-// CE = Array of event objects
-// changed to include year. 9/29/16.
+// CE = Array of event objects, EvtA or ActA
+// Does not display cancelled events due to limited screen space.
 function DisplayComingWeek(CE) {
 
     var i, h;
@@ -3070,7 +3068,7 @@ function DisplayComingWeek(CE) {
     clearTable(table);
     table.deleteRow(-1);
 
-    var yymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek) ;  // reset mmdd to 1st day of week
+    var yymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek);  // reset mmdd to 1st day of week
 
     // loop for each week
     for (var nw = 0; nw < 2; nw++) {
@@ -3129,6 +3127,7 @@ function DisplayComingWeek(CE) {
             if (dateCE >= endyymmdd) break; // past one week
             if (dateCE < startyymmdd) continue; // if before today
             if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
+            if (Evt.cancelled) continue;// skip cancelled entries
             // add to entry. entries have an id of: yymmddhh99
             var e = "";
             if (dateCE == gYYmmdd) e = "<strong>";
@@ -3136,16 +3135,15 @@ function DisplayComingWeek(CE) {
             if ((Evt.startt % 100) != 0) e = ShortTime(Evt.startt) + " "; // add time if not on the hour
             e += "<span style=color:" + eventcolor(Evt.key) + ">" + Evt.title + "</span>";
             //var id = aCE[0] + aCE[1].substring(0, 2) + "99"; //id = yymmddhh99
-            var id = (dateCE * 10000 + (Evt.startt / 100 * 100) + 99).toFixed(0); //id = yymmddhh99////////////////////???????????????????????????????????????????
+            var id = (dateCE * 10000 + (Math.floor(Evt.startt / 100) * 100) + 99).toFixed(0); //id = yymmddhh99////////////////////???????????????????????????????????????????
             var c = document.getElementById(id);
             if (dateCE == gYYmmdd) e = "<strong>" + e + "</strong>";
             c.innerHTML += e + "<br/>";
             c.style.backgroundColor = "azure";
             // now the fancy part:  if end time is > 1 hour more than start time, color next blocks if they exist
-            var sh = Evt.startt/100;  //start hour
+            var sh = Evt.startt / 100;  //start hour
             if (sh < 7) sh = 7;
-            //var eh = Number(aCE[2].substring(0, 2));  //end hour
-            var eh = Evt.endt / 100; // end hour
+            var eh = Math.floor(Evt.endt / 100); // end hour
             if (eh < 7) eh = 7; if (eh > 22) eh = 22;
             // if > 1 hour, color next cell
             for (var i = sh + 1; i < eh; i++) {
@@ -3168,9 +3166,9 @@ function Leading4(n) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingMonth - display the events in the CE structure in a 1 month form
+// DisplayComingMonth - display the events in the EvtA or ActA structure in a 1 month form
 // CE = EvtA or ActA array of Events
-//
+// Does not display cancelled events due to limited screen space
 function DisplayComingMonth(CE) {
     var i, w;
     var row;
@@ -3183,7 +3181,7 @@ function DisplayComingMonth(CE) {
     iCE = 0;
 
     if (CE == null) return;
-    if((CE.length) < 2) return; // not enough data
+    if ((CE.length) < 2) return; // not enough data
     var startyymmdd = Bumpyymmdd(gYYmmdd, -gDayofWeek); // back up to beginning of month
     var yymmdd = startyymmdd;
     var yymm = (gYear - 2000) * 100 + gMonth;
@@ -3232,7 +3230,7 @@ function DisplayComingMonth(CE) {
             col.id = yymmdd.toFixed(0) + '9999';  // id = yymmdd9999
             col.onclick = function () { tabletext(this.id) }
             if (yymmdd == gYYmmdd) col.style.backgroundColor = "lightyellow";  // make today yellow
- 
+
             // add elements
             var e = "";
             for (; iCE < CE.length; iCE++) {
@@ -3241,12 +3239,13 @@ function DisplayComingMonth(CE) {
                 var dateCE = Evt.date; // yymmdd
                 if (dateCE > yymmdd) break; // if past today, exit
                 if (dateCE < yymmdd) continue; // if before today, continue
+                if (Evt.cancelled) continue;// skip cancelled entries
                 if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
                 // add to entry 
                 e += "<span style=color:" + eventcolor(Evt.key) + "><strong>" + VeryShortTime(Evt.startt) + "</strong> " +
-                      Evt.title + "</span><br/>";// add time 
+                    Evt.title + "</span><br/>";// add time 
             } // end for
-            if (e != "") col.innerHTML = e ;
+            if (e != "") col.innerHTML = e;
             if (iCE >= CE.length) numofweeks = 0;  // stop week loop
             yymmdd = Bumpyymmdd(yymmdd, 1); // quick bump of yymmdd//
         }
@@ -3259,7 +3258,7 @@ function DisplayComingMonth(CE) {
 //  Entry   aCE = arry of form: yymmdd;hhmm;hhmm;t;title;location;sponsor;info;icon object
 //  Exit    true if bad, false if good
 function BadEvent(aCE) {
-    if (aCE.length < 6) return true; // must have at least 6 entries
+    if (aCE.length < 5) return true; // must have at least 6 entries
     if (aCE[0].length != 4 && aCE[0].length != 6) return true;
     if (aCE[1].length != 4) return true;
     if (aCE[2].length != 4) return true;
@@ -3288,12 +3287,12 @@ function eventcolor(key) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  ParseEventsList Parse Input event or activity string and fill the EvtA or ActA array with Event objects, 1/event
-//  ALSO adds the year to the date, so the date becomes yymmdd.\
+//  ParseEventsList Parse COMINGEVENTS event or COMINGACTIVITIES activity string and fill the EvtA or ActA array with Event objects, 1/event
+//  ALSO adds the year to the date, so the date becomes yymmdd.
 //  Runs only when Dailycache is loaded. Usually once/day, or when 'Reload Data' is requested.
 //  So this converts the Event or Activity text stream from Google calendar to an internal object structure.
 // 
-//  entry   CE is an input string of Events or Activities. 
+//  entry   CE is an input STRING of Events or Activities. 
 //          it is a single big string containing multiple lines, so we split the string by \n.
 //          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
 //                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
@@ -3323,7 +3322,7 @@ function ParseEventsList(CE, EvtA) {
             aCE[0] = year + aCE[0]; // insert year
         }
         for (i = aCE.length; i < 9; i++) aCE[i] = ""; // fill out array to 8 entries
-        EvtA[iEvtA] = new NewEvt(number(aCE[0]), number(aCE[1]), number(aCE[2]), aCE[3], aCE[4], aCE[5], aCE[6], aCE[7], aCE[8]);
+        EvtA[iEvtA] = new NewEvt(Number(aCE[0]), Number(aCE[1]), Number(aCE[2]), aCE[3], aCE[4], aCE[5], aCE[6], aCE[7], aCE[8]);
         iEvtA++;
     } // end loop through CE
 
@@ -3337,7 +3336,7 @@ function ParseEventsList(CE, EvtA) {
 //  exit    returns new mmdd.   Note than 1231 rolls to 0101;
 function Bumpyymmdd(mmdd, n) {
     if (n == 0) return mmdd;
-    var yyyy = gYear - 2000;   
+    var yyyy = gYear - 2000;
     if (mmdd > 9999) {
         yyyy = Math.floor(mmdd / 10000);
         mmdd = mmdd % 10000;
@@ -3346,7 +3345,7 @@ function Bumpyymmdd(mmdd, n) {
     var dd = mmdd % 100;
     dd = dd + n;
     if (dd > 0) {  // increasing to next month
-        if (dd <= gDaysInMonth[mm]) return mmdd + n  + yyyy*10000;
+        if (dd <= gDaysInMonth[mm]) return mmdd + n + yyyy * 10000;
         else {
             dd = dd - gDaysInMonth[mm];
             mm++;
@@ -3354,7 +3353,7 @@ function Bumpyymmdd(mmdd, n) {
                 mm = 1; // dec rolls to jan
                 yyyy++;
             }
-            return mm * 100 + dd  + yyyy*10000;
+            return mm * 100 + dd + yyyy * 10000;
         }
     }
 
@@ -3427,7 +3426,7 @@ var gTideTitleIcon; // title for tide, with up or down arrow
 
 function ShowNextTides() {
     var hilow;
-    var ttshilow;  
+    var ttshilow;
     var nextTides;
     var oldtide = -1;
     var newtidetime, oldtidetime, newtideheight, oldtideheight;
@@ -3586,7 +3585,7 @@ function ShowTideDataPage(periods, showcurrent) {
     var showingtidei = 0;  // row id of tide to display
 
     // roll through the reply in jason.response.periods[i] and find next tide row
-    if(showcurrent) {
+    if (showcurrent) {
         for (i = 1; i < periods.length; i++) {
             var thisperiod = periods[i];
             var m = Number(thisperiod.dateTimeISO.substring(5, 7));
@@ -3661,13 +3660,13 @@ function ShowTideDataPage(periods, showcurrent) {
                 if (showcurrent) {
                     var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
                     //var tiderate = CalculateCurrentTideRate(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                    var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight)-tideheight) * 6;
+                    var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight) - tideheight) * 6;
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Date:" + formatDate(gMonthDay) +
                         "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" +
                         "Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
                         currentTide;
-                        //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
+                    //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
                     currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
                     nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
@@ -3725,13 +3724,13 @@ function TideClick(id) {
     var hilo = "HIGH tide: ";
     if (gPeriods[i].heightFT < gPeriods[i - 1].heightFT) hilo = "Low tide: ";
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
-      gPeriods[i].dateTimeISO.substring(5, 7) + "/" + gPeriods[i].dateTimeISO.substring(8, 10) +
-      "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" + 
-      hilo + gPeriods[i].heightFT + " ft. at " + ShortTime(tidehhmm);
+        gPeriods[i].dateTimeISO.substring(5, 7) + "/" + gPeriods[i].dateTimeISO.substring(8, 10) +
+        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" +
+        hilo + gPeriods[i].heightFT + " ft. at " + ShortTime(tidehhmm);
 }
 
 function ShowTideNext() {
-    TideClick(showingtidei + 1);   
+    TideClick(showingtidei + 1);
 }
 function ShowTidePrevious() {
     TideClick(showingtidei - 1);
@@ -3846,7 +3845,7 @@ function GraphTideData(ix, showtoday) {
     }
 
     // draw the  sine waves
-    for (i = 0; i < 7; i++) DrawCurve(ctx, tideh[i], tideh[i+1], t[i], t[i+1], pixelsfoot, pixelshour, h, tLB, LB);
+    for (i = 0; i < 7; i++) DrawCurve(ctx, tideh[i], tideh[i + 1], t[i], t[i + 1], pixelsfoot, pixelshour, h, tLB, LB);
 
 
     // draw vertical for t2 which is next high/low
@@ -3903,7 +3902,7 @@ function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, ti
 
     var c;
     // loop througth time from t1 to t2 by .25 hour (15 min)
-    for (t = t1; t < (t2 + .25) ; t = t + .25) {
+    for (t = t1; t < (t2 + .25); t = t + .25) {
         if (t > t2) t = t2;
         c = (t - t1) / dt * Math.PI;
         /////if (tide2 > tide1) c = Math.cos(Math.PI - c);
@@ -3929,7 +3928,7 @@ function ShowCustom() {
     InitializeDates(0);
     GetDateFromUser(ShowCustomCallback);
 }
-function ShowCustomCallback(tidedate){
+function ShowCustomCallback(tidedate) {
     if (tidedate == "") return;
     gUserTideSelection = true;
     MarkPage("1");
@@ -4023,13 +4022,13 @@ function getCustomTideData(fromdate) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // build link
-    if (gCustomTides==1) { // NOAA direct
-        fromdate = fromdate.substr(6, 4) + fromdate.substr(0, 2) + fromdate.substr(3,2);  //  mm/dd/yyyy -> yyyymmdd
+    if (gCustomTides == 1) { // NOAA direct
+        fromdate = fromdate.substr(6, 4) + fromdate.substr(0, 2) + fromdate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
         var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
             + fromdate + '%2000:00&range=72';
     } else {  //customtidelink or AERIS
         var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
-        myurl = myurl + '&from=' + fromdate + '&to=+48hours';   
+        myurl = myurl + '&from=' + fromdate + '&to=+48hours';
     }
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -4070,11 +4069,11 @@ function HandleCustomTidesReply(reply) {
 function NOAAtoAERIS(json) {
     var periods = []; //Array of Aeris Periods
     var i; var t; var d; var h;
-    for(i=0; i<json.predictions.length; i++) {
+    for (i = 0; i < json.predictions.length; i++) {
         d = json.predictions[i].t.substr(0, 10) + "T" + json.predictions[i].t.substr(11, 16) + ":00-07:00";
         t = json.predictions[i].type.toLowerCase();  // type -> type
         h = Number(json.predictions[i].v).toFixed(1);  // v -> heightFT
-        periods[i] = {dateTimeISO: d, heightFT: h, type: t };  // new object
+        periods[i] = { dateTimeISO: d, heightFT: h, type: t };  // new object
         //        periods[i] = new AERISPeriod(d, h, t);
 
     }
@@ -4181,7 +4180,7 @@ function HandleCurrentWeatherReply(responseText) {
     var current = icon + " " + StripDecimal(r.main.temp) + "&degF, " + r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " +
         StripDecimal(r.wind.speed) + " mph" + ((rain != "0") ? (", " + rain + " rain") : "");
     TXTS.WeatherCurrent = "The current weather is " + StripDecimal(r.main.temp) + "degrees, " + r.weather[0].description + ", " +
-        (isAndroid()? "wind ":"win ") + DegToCompassPointsTTS(r.wind.deg) + " " +  StripDecimal(r.wind.speed) + " mph. ";
+        (isAndroid() ? "wind " : "win ") + DegToCompassPointsTTS(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph. ";
     localStorage.setItem("TXTSWeatherCurrent", TXTS.WeatherCurrent);
     localStorage.setItem("currentweather", current);
     document.getElementById("weather").innerHTML = current; // jquery equivalent. Is this really easier?
@@ -4299,7 +4298,7 @@ function ShowWeatherPage() {
 //
 function generateWeatherForecastPage() {
     if (localStorage.getItem("forecastjson") == null) return;
-    try{
+    try {
         var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
     } catch (err) {
         document.getElementById("forecastpage").innerHTML = "Forecast data error: " + err.message;
@@ -4394,17 +4393,17 @@ function ShowFerryWebCam() {
     ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
     // steilacoom link from local storage
-    var link = GetLink("ferrycams","https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
+    var link = GetLink("ferrycams", "https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("steilacoomcam").setAttribute("src", link);
     document.getElementById("steilacoomcam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
-    document.getElementById("scamera").innerHTML="Steilacoom: next @ " + FindNextSingleFerryTime(UseFerryTime("S"));
+    document.getElementById("scamera").innerHTML = "Steilacoom: next @ " + FindNextSingleFerryTime(UseFerryTime("S"));
     // anderson link from local storage
-    link = GetLink("ferrycama","https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg");
+    link = GetLink("ferrycama", "https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/AndersonIsland.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
     document.getElementById("aicam").setAttribute("src", link);
     document.getElementById("aicam").setAttribute("onclick", "window.open('" + link + "', '_blank', 'EnableViewPortScale=yes')");
-    document.getElementById("aicamera").innerHTML="Anderson Island: next @ " + FindNextSingleFerryTime(UseFerryTime("A"));
+    document.getElementById("aicamera").innerHTML = "Anderson Island: next @ " + FindNextSingleFerryTime(UseFerryTime("A"));
 
 }
 
@@ -4424,7 +4423,7 @@ function ShowAboutPage() {
 //  Entry should contain <span id='x'>  and <span id='y'>. then use showme and hideme to show and hide sections.
 //  entry   showme = id to show
 //          hideme = id to hide
-function ShowLinksPage(showme,hideme) {
+function ShowLinksPage(showme, hideme) {
     ShowPage("linkspage");
     SetPageHeader("Island Information Links");
     document.getElementById("islandlinks").innerHTML = localStorage.getItem("links");
@@ -4480,7 +4479,7 @@ TXTS.TopMessage = function () {
 //  Entry: local storage "TTS" = stored state, null if 1st call.
 //  Exit:   TXTS.OnOff set.
 //      If first time call, display message and set "TTS".
-TXTS.InitializeSpeechMessage  = function () {
+TXTS.InitializeSpeechMessage = function () {
     var itts;
     if (!isPhoneGap()) itts = 0; // 0 if not phonegap
     else itts = localStorage.getItem("TTS"); // 
@@ -4498,9 +4497,9 @@ TXTS.InitializeSpeechMessage  = function () {
 /////////////////////////////////////////////////////////////
 //  FirstTimeMsg - issue first time message, which is a DIV in index.html. This prevents timeouts from the alert.
 TXTS.FirstTimeMsg = function () {
-        Show("speechdialog");
-        //alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
-        TXTS.FirstTime = false;
+    Show("speechdialog");
+    //alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
+    TXTS.FirstTime = false;
 }
 
 BIGTX.InitializeBigText = function () {
@@ -4519,7 +4518,7 @@ BIGTX.InitializeBigText = function () {
 //  TTSSpeak - Speak the text (if speech is on)
 //  Entry: speech = text string to talk
 //          displayfunction = function to call if TXTS. = 0 (off)
-TXTS.Speak = function(speech, displayfunction, bigtext) {
+TXTS.Speak = function (speech, displayfunction, bigtext) {
     var reason;
 
     if (BIGTX.OnOff) {
@@ -4531,7 +4530,7 @@ TXTS.Speak = function(speech, displayfunction, bigtext) {
 
     switch (TXTS.OnOff) {
         // 0 = ignore. behave in the default way.
-        case 0: 
+        case 0:
             displayfunction();
             break;
 
@@ -4542,8 +4541,8 @@ TXTS.Speak = function(speech, displayfunction, bigtext) {
             TTS
                 .speak({ text: speech, rate: srate },
                     function () { },
-                    function (reason) {alert(reason);}
-                    );
+                    function (reason) { alert(reason); }
+                );
             break;
 
         // 2 = large text. Not used. controlled separately by BIGTX.
@@ -4578,13 +4577,13 @@ function TTSShowWeather() {
 //  TTSShowEvent - announce the next event
 //  Entry: TXTS.NextEvent = text string to speak.  Built by 
 function TTSShowEvent() {
-    document.getElementById("nextevent").innerHTML = DisplayNextEvents(localStorage.getItem("comingevents"));
+    document.getElementById("nextevent").innerHTML = DisplayNextEvents(EvtA);
     TXTS.Speak("The next event is " + TXTS.Next + ".", DisplayComingEventsPageE, document.getElementById("nextevent").innerHTML);
 }
 
 ///////// TTS Next Activity /////////////////////////////////////////////////////////////////////
 function TTSShowActivity() {
-    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(localStorage.getItem("comingactivities"));
+    document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
     TXTS.Speak("The next activity is " + TXTS.Next + ".", DisplayComingEventsPageA, document.getElementById("nextactivity").innerHTML);
 }
 
@@ -4595,7 +4594,7 @@ function TTSShowOpen() {
 
 ///////// TTS Burn Ban /////////////////////////////////////////////////////////////////////
 function TTSBurnBan() {
-    TXTS.Speak(RemoveTags(document.getElementById("burnbanalert").innerHTML), ShowBurnBan, document.getElementById("burnbanalert").innerHTML );
+    TXTS.Speak(RemoveTags(document.getElementById("burnbanalert").innerHTML), ShowBurnBan, document.getElementById("burnbanalert").innerHTML);
 }
 
 ///////// TTS Tanner Outage /////////////////////////////////////////////////////////////////////
@@ -4693,7 +4692,7 @@ function ShowIcons(nt) {
     SetTideTitle();
     if (gIconSwitch == 1) {  // if icons
         document.getElementById("weathertitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>" + gWeatherIcon + "</i><span class='mptext'>Weather</span></span>";
-    } 
+    }
 }
 
 // ShowIconsToggle - toggle the icon status between 1 and 4.
@@ -4771,13 +4770,14 @@ function StartApp() {
     BIGTX.InitializeBigText(); // initial big text
     TXTS.TopMessage(); // set top line correctly
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
-    if(LSget("myver") == gMyVer) {
+    if (LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
         ParseOpenHours();
-        ParseEventList();
+        ParseEventsList(localStorage.getItem("comingevents"), EvtA);
+        ParseEventsList(localStorage.getItem("comingactivities"), ActA);
         ShowCachedData();
     } else gForceCacheReload = true;
-    
+
     //// show the page
     //Show("mainpage");  // now display the main page
     //Show("vermsg"); // display the version
@@ -4792,9 +4792,6 @@ function StartApp() {
     } else if (Number(dailycacheloaded) != gMonthDay) {
         reloadreason = "dailycacheloaded != monthday";
         gForceCacheReload = true;
-    } else if (localStorage.getItem("comingevents").charAt(4) == ";") {
-        gForceCacheReload = true; // reload cache if coming events does not have a year as yymmdd
-        reloadreason = "comingevents year";
     }
 
     if (gForceCacheReload) {

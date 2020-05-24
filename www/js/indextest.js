@@ -2606,15 +2606,15 @@ function ParseOpenHours() {
 //<!-- COMING EVENTS ------------------------------------------------------------------------------------->
 //<script>
 //========= COMING EVENTS ===========================================================================
-// EvtA = array of event objects; 
-// {date (yymmdd), startt (hhmm), endt (hhmm), key (), title, loc, sponsor, info, icon}
+// EvtA = array of event objects; ActA = array of activity event objects (the same object).    5/22/20 1.28
+// {date (yymmdd), startt (hhmm), endt (hhmm), key (), title, loc, sponsor, info, icon, cancelled}
 // Filled by ParseEventsList
 var EvtA = []; // event array. From COMINGEVENTS string
 var ActA = []; // activity array. From COMINGACTIVITIES string
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // Event constructor
-// {date (yymmdd) number, startt (hhmm) number, end (hhmm) number, key (), title, loc, sponsor, info, icon}
+// {date (yymmdd) number, startt (hhmm) number, end (hhmm) number, key (E|S|M|A|G|O), title, loc, sponsor, info, icon, cancelled (T/F)}
 //
 function NewEvt(date, startt, endt, key, title, loc, sponsor, info, icon) {
     this.date = date;
@@ -2626,6 +2626,8 @@ function NewEvt(date, startt, endt, key, title, loc, sponsor, info, icon) {
     this.sponsor = sponsor;
     this.info = info;
     this.icon = icon;
+    if (title.substr(0, 6) == "CANCEL") this.cancelled = true;
+    else this.cancelled = false;
 }
 
 ///////////// COMING EVENTS MAIN PAGE /////////////////////////////////////////////////////////////////////////////////////
@@ -2633,9 +2635,8 @@ function NewEvt(date, startt, endt, key, title, loc, sponsor, info, icon) {
 // DisplayComingEvents MAIN PAGE - display the events in the 'comingevents'  or 'comingactivities' 
 //          local storage object on the MAIN PAGE
 //      Displays all activities or events for a day.
-//  Entry   CE = array of coming event objects:  {date (yymmdd), start (hhmm), end (hhmm), type (), title, loc, sponsor, info, icon}
-//              mmdd;hhmm;hhmm;t;title;location;sponsor;info
-//          label = "event" or "activity"
+//  Entry   CE = array of coming event objects, either EvtA or ActA:
+//              {date (yymmdd), start (hhmm), end (hhmm), type (), title, loc, sponsor, info, icon}
 //  Exit    returns the information to display on the main screen
 //
 function DisplayNextEvents(CE) {
@@ -2670,7 +2671,7 @@ function DisplayNextEvents(CE) {
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
-            if (Evt.title.substr(0, 6) == "CANCEL") {
+            if (Evt.cancelled) {
                 datefmt += "&nbsp;<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span><br/>";
                 TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
             } else if (Number(Evt.startt) <= gTimehhmm) {
@@ -2690,11 +2691,10 @@ function DisplayNextEvents(CE) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
             if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
             else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</strong><br/>";  // fails on month chagne
-            //else datefmt += "<strong>" + gDayofWeekShort[GetDayofWeek(aCEyymmdd)] + " " + aCE[0].substring(2, 4) + "/" + aCE[0].substring(4, 6) + "</strong><br/>";
             else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
-        if (Evt.title.substr(0, 6) == "CANCEL") {
+        if (Evt.cancelled) {
             datefmt += "&nbsp;<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span><br/>";
         } else {
             datefmt += "&nbsp;" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "<br/>";
@@ -2779,13 +2779,11 @@ function SetEventFilter(f) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingEventsList - display the events in the EvtA or ActA array of Event objects. string, which is a copy of the comingevents txt file
-//  or the 'ACTIVITIES' section of the comingevents text file. These are cached in the 'comingevents' 
-// or 'comingactivities' localStorage items. 
+// DisplayComingEventsList - display a list of the events in the EvtA or ActA array of Event objects. 
 //  entry   CE is an array of Evt objects. EvtA for events. ActA for activities.
-//          it used to be a single big string containing multiple lines, so we split the string by \n.
-//          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
-//                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
+//          each Evt is: date yymmdd,startt hhmm,endt hhmm,key,title,location,sponsor,info,{i=icon,...}
+//  exit    builds a DOM table of events
+//
 function DisplayComingEventsList(CE) {
     var i;
     var row;
@@ -2829,16 +2827,12 @@ function DisplayComingEventsList(CE) {
         if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
         //  advance schedule date to today
         var CEyymmdd = Evt.date; // yymmdd
-            // ALTERNATE on the fly year addition
-            // if(CE[iCE].substr(0,15) == "0101;0000;0000;") CEyear = Number(aCE[4]);
-            // CEyymmdd = CEYear*10000;
         //if (CEyymmdd > endyymmdd) return; // past end date (one month)  list the entire table now
         if (CEyymmdd < gYYmmdd) continue; // if before today
         if ((CEyymmdd == gYYmmdd) && (Evt.endt < (gTimehhmm + 10))) continue; // end time not reached.
         // found it
         var t = CEyymmdd.toFixed(0);
-        datefmt = t.substring(2, 4) + "/" +t.substring(4, 6);
-        //var dd = new Date(datefmt + "/" + (CEyymmdd%10000));  // date object for Calendar Entry WHY?????
+        datefmt = t.substring(2, 4) + "/" +t.substring(4, 6);  // date string: mm/dd
         iweek = GetWeekofYear(CEyymmdd);
         idayofweek = GetDayofWeek(CEyymmdd);
 
@@ -2872,7 +2866,8 @@ function DisplayComingEventsList(CE) {
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = Evt.loc;//where
         var color;
-        color = eventcolor(Evt.key);
+        if (Evt.cancelled) color = "gray";  // if cancelled, gray it out
+        else color = eventcolor(Evt.key);
         col2.style.color = color;
         col.style.color = color;
         row.id = (CEyymmdd * 10000 + Evt.startt).toFixed(0);  // id = 1602141300  i.e. yymmddhhmm
@@ -2936,7 +2931,7 @@ function FormatEvent(Evt, fontsize) {
 }
 
 
-///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  tabletext - display all details for the row or item that was clicked. Works for list, week, and month views.
 //  tc = cell id: yymmddhhmm = date (yymmdd) time (hhmm) as a string, eg . yymmdd9999 to match all times on yymmdd. yymmddhh99 to match all minutes
 //  The date and time are used to look up the entry in the CE array.
@@ -2944,33 +2939,26 @@ function FormatEvent(Evt, fontsize) {
 function tabletext(tc) {
     //alert(tc);
     var nc = 0;
-    var d = tc.substr(0, 6);  // yymmdd part of id
-    var t = tc.substr(6, 4); // hhhmm part of id. could be hh99 or 9999
+    var d = Number(tc.substr(0, 6));  // yymmdd part of id
+    var t = Number(tc.substr(6, 4)); // hhhmm part of id. could be hh99 or 9999
     var as = "Tap button to add to your ";
     if (!isPhoneGap()) as += "Google ";
     as += "calendar.<br/> <table style='border:thin solid black;border-collapse:collapsed'>";
     var CE = GetEvents();//
     for (iCE = 0; iCE < CE.length; iCE++) {
-        //if (CE[iCE] == "") continue; // skip blank lines
-        //CE[iCE] = CE[iCE].replace("&lt;", "<"); // remove html special <
-        //CE[iCE] = CE[iCE].replace("&gt;", ">"); // remove html special >
-        //CE[iCE] = CE[iCE].replace("&amp;", "&"); // remove html special &
-        //var aCE = CE[iCE].split(';');  // split the string
-        //if (BadEvent(aCE)) continue; // must have 6 entries
         var Evt = CE[iCE];
-        if (d < CE[iCE].date) break;  // if past requested time and date, quit
-        if (d != CE[iCE].date) continue;
+        if (d < Evt.date) break;  // if past requested time and date, quit
+        if (d != Evt.date) continue;
         //var t99 = aCE[1].substr(0, 2) + '99'; // hh99 ?????????????????????????????????????????????????????????????????????????
-        var t99 = (Evt.startt / 100 * 100 + 99).toFixed(0);
-        if ((t == Evt.startt) || (t == '9999') || (t == t99)) {
+        var t99 = Math.floor(Evt.startt / 100) * 100 + 99;  // hh99
+        if ((t == Evt.startt) || (t == 9999) || (t == t99)) {
             nc++;
             // create table entry. id = the numeric index into the CE array
             as += "<tr id='" + iCE.toFixed() + "'><td style='border:thin solid black'><strong>" +
                 formatDate(Evt.date) + " " + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ":</strong> " +
-                 Evt.title + " at " + Evt.loc + "<br/>Sponsor: " + Evt.sponsor + " " + CreateLink(Evt.info) + "<br/>";
+                 Evt.title + " at " + Evt.loc + "<br/>Sponsor: " + Evt.sponsor + ". " + CreateLink(Evt.info) + "<br/>";
             // to include a link: must start with http and be at the end of the element and not have ' or "
             //if (aCE.length >= 8) as += CreateLink(aCE[7]) + "<br>";
-            if (Evt.info != "") as += CreateLink(Evt.info) + "<br>";
             as += "<button onclick='AddToCal(" + iCE.toFixed() + ")'>Add to Calendar</button></td></tr>";
         }
 
@@ -2986,6 +2974,7 @@ function tabletext(tc) {
 //  Entry   string with http in it
 //  Exit    string with hyperlink
 function CreateLink(s) {
+    if (s == "") return s;  // if no string
     if (s.indexOf("<a") > 0) return s;  // don't touch if it has an a already
     var i = s.indexOf("http");
     if (i > 0) {
@@ -3019,13 +3008,13 @@ function AddToCal(id) {
     //var m = Number(d.substring(2, 4)) - 1; // month
     //var d = Number(d.substring(4, 6)); // day
     // or:
-    var y = Evt.date / 10000;
-    var m = (Evt.date - (y * 10000)) / 100;
+    var y = Math.floor(Evt.date / 10000); //yymmdd ->
+    var m = Math.floor((Evt.date - (y * 10000)) / 100);
     var d = Evt.date % 100;
     y = y + 2000;
-    var startDate = new Date(y, m, d, Evt.startt/100, (Evt.startt%100), 0, 0); // beware: month 0 = january, 11 = december
+    var startDate = new Date(y, m, d, Math.floor(Evt.startt/100), (Evt.startt%100), 0, 0); // beware: month 0 = january, 11 = december
     //var endDate = new Date(y, m, d, Number(aCE[2].substring(0, 2)), Number(aCE[2].substring(2, 4)), 0, 0);
-    var endDate =   new Date(y, m, d, Evt.endt/100, (Evt.endt%100), 0, 0);
+    var endDate = new Date(y, m, d, Math.floor(Evt.endt/100), (Evt.endt%100), 0, 0);
     var title = Evt.title;
     var eventLocation = Evt.loc;
     var notes = "";
@@ -3058,8 +3047,8 @@ function AddToCal(id) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayComingWeek - display the events in the CE structure in a 1 week form
-// CE = Array of event objects
-// changed to include year. 9/29/16.
+// CE = Array of event objects, EvtA or ActA
+// Does not display cancelled events due to limited screen space.
 function DisplayComingWeek(CE) {
 
     var i, h;
@@ -3138,6 +3127,7 @@ function DisplayComingWeek(CE) {
             if (dateCE >= endyymmdd) break; // past one week
             if (dateCE < startyymmdd) continue; // if before today
             if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
+            if (Evt.cancelled) continue;// skip cancelled entries
             // add to entry. entries have an id of: yymmddhh99
             var e = "";
             if (dateCE == gYYmmdd) e = "<strong>";
@@ -3145,7 +3135,7 @@ function DisplayComingWeek(CE) {
             if ((Evt.startt % 100) != 0) e = ShortTime(Evt.startt) + " "; // add time if not on the hour
             e += "<span style=color:" + eventcolor(Evt.key) + ">" + Evt.title + "</span>";
             //var id = aCE[0] + aCE[1].substring(0, 2) + "99"; //id = yymmddhh99
-            var id = (dateCE * 10000 + (Evt.startt / 100 * 100) + 99).toFixed(0); //id = yymmddhh99////////////////////???????????????????????????????????????????
+            var id = (dateCE * 10000 + (Math.floor(Evt.startt / 100) * 100) + 99).toFixed(0); //id = yymmddhh99////////////////////???????????????????????????????????????????
             var c = document.getElementById(id);
             if (dateCE == gYYmmdd) e = "<strong>" + e + "</strong>";
             c.innerHTML += e + "<br/>";
@@ -3153,8 +3143,7 @@ function DisplayComingWeek(CE) {
             // now the fancy part:  if end time is > 1 hour more than start time, color next blocks if they exist
             var sh = Evt.startt/100;  //start hour
             if (sh < 7) sh = 7;
-            //var eh = Number(aCE[2].substring(0, 2));  //end hour
-            var eh = Evt.endt / 100; // end hour
+            var eh = Math.floor(Evt.endt / 100); // end hour
             if (eh < 7) eh = 7; if (eh > 22) eh = 22;
             // if > 1 hour, color next cell
             for (var i = sh + 1; i < eh; i++) {
@@ -3177,9 +3166,9 @@ function Leading4(n) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// DisplayComingMonth - display the events in the CE structure in a 1 month form
+// DisplayComingMonth - display the events in the EvtA or ActA structure in a 1 month form
 // CE = EvtA or ActA array of Events
-//
+// Does not display cancelled events due to limited screen space
 function DisplayComingMonth(CE) {
     var i, w;
     var row;
@@ -3250,6 +3239,7 @@ function DisplayComingMonth(CE) {
                 var dateCE = Evt.date; // yymmdd
                 if (dateCE > yymmdd) break; // if past today, exit
                 if (dateCE < yymmdd) continue; // if before today, continue
+                if (Evt.cancelled) continue;// skip cancelled entries
                 if ((EventFilter != "") && (EventFilter != Evt.key)) continue;  // skip entry if it doesnt match
                 // add to entry 
                 e += "<span style=color:" + eventcolor(Evt.key) + "><strong>" + VeryShortTime(Evt.startt) + "</strong> " +
@@ -3297,12 +3287,12 @@ function eventcolor(key) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  ParseEventsList Parse Input event or activity string and fill the EvtA or ActA array with Event objects, 1/event
-//  ALSO adds the year to the date, so the date becomes yymmdd.\
+//  ParseEventsList Parse COMINGEVENTS event or COMINGACTIVITIES activity string and fill the EvtA or ActA array with Event objects, 1/event
+//  ALSO adds the year to the date, so the date becomes yymmdd.
 //  Runs only when Dailycache is loaded. Usually once/day, or when 'Reload Data' is requested.
 //  So this converts the Event or Activity text stream from Google calendar to an internal object structure.
 // 
-//  entry   CE is an input string of Events or Activities. 
+//  entry   CE is an input STRING of Events or Activities. 
 //          it is a single big string containing multiple lines, so we split the string by \n.
 //          each CE line is: mmdd,starthhmm,endhhmm,key,title,location,sponsor,info,{i=icon,...}
 //                              0,    1    ,    2  , 3 ,  4  ,    5   ,   6   ,  7 ,  8
