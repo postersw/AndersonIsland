@@ -56,9 +56,9 @@
         1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
         1.26.032020. Add cleartext plugin. Still on branch 125.
         1.27.032330. Use https for all web requests per google requirements for android 9.
-        1.28.052220. Rewrite Events to use an array of event objects.
+        1.28.052220. Refactor Events to use an array of 'event' objects. Refactor Tides to use an array of 'period' objects.
  * 
- *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
+ * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -3410,7 +3410,7 @@ function BumpyymmddByMonths(yymmdd, m) {
 //===== TIDES =======================================================================================
 var gUserTideSelection = true; // true when user sets tides with custom date (not today)
 var gPeriods = [];  // Array of Period objects.  All displays and graphs show this array.
-// Period Object = { mmdd, hhmm, type, height }
+// Period Object = { mmdd, hhmm, type h|l, height in ft. }
 
 /////////////////////////////////////////////////////// added 5/24/20 v1.28
 // Constructor for Period Object = {hhmm, HL, height}
@@ -3426,15 +3426,14 @@ function NewPeriod(mmdd, hhmm, type, height) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// ParseTides - parse the tides reply in localStorage "jsontides" and build the gPeriods tide array
+// ParseTides - parse the tides reply in localStorage "jsontides" AERIS json format, and build the gPeriods tide array
 //  Note: if the tide return string changes (or we switch vendors), change this code but leave the gPeriods array the same
 //  Note: we get tide data using NOAA web site and return a json structure in the aeris json format.
 //  Original AERIS call changed to get NOAA data on the server, but still return an AERIS format.
-//  entry: localStorage "jsontides" = tide data  (refreshed nightly) as part of the getdailycache.php feed.
+//  entry: localStorage "jsontides" = tide data in AERIS json format  (refreshed nightly) as part of the getdailycache.php feed.
 //  exit    gPeriods array of Period objects, 1/period
 //          gUserTideSelection = false
 function ParseTides() {
-    var iTideA = 0;  // iterator
     var json = localStorage.getItem("jsontides");
     // get tide data
     if (json === null) {
@@ -3450,6 +3449,7 @@ function ParseTides() {
         return;
     }
     // roll through the reply in json.response.periods[i]
+    gPeriods = []; // clear the global object array
     var i;
     for (i = 0; i < periods.length; i++) {
         var thisperiod = periods[i];
@@ -3588,6 +3588,8 @@ function CalculateCurrentTideHeight10(t2, t1, tide2, tide1) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // TidesDataPage - display the detailed tide table and graph on the Tides Detail page
 //  Always forces gPeriods to contain the current jsontides data, and draws the page from gPeriods
+//
+//  entry gPeriods = array of period objects to display the tides
 //
 function TidesDataPage() {
     InitializeDates(0);
