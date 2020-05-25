@@ -1155,16 +1155,12 @@ function DegToCompassPointsTTS(d) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //  GetDailyCache - retrieves the daily cache into the local storage objects and also uploads app stats
-//  Load from server using ajax async request.  Retrieves dailycache.txt, tides.txt, comingevents.txt.
+//  Load from server using ajax async request. 
+//  calls getdailycache.php, which returns dailycache.txt, tides.txt, comingevents.txt.
+//  also sends usage statistics to the server as parameters to the getdailycache.php request.
 //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND, etc. 
 //  Entry gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
-//function GetDailyCache() {
-//     ajax async request
-//    var myurl = FixURL("dailycache.txt"); 
-//    $.ajax({
-//        url: myurl, // for phone use fully qualified url https://anderson-island.org/
-//        success: function (data) {
-//}
+//
 function GetDailyCache() {
     //DebugLog("GetDailyCache");
     gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
@@ -1186,6 +1182,11 @@ function GetDailyCache() {
     xhttp.open("GET", myurl, true);
     xhttp.send();
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+//  HandleDailyCacheReply - parse dailycache.php data stream and save it in local storage and on main page
+//  entry   data = dailycache.php data stream
+//  exit    data saved in separate localstorage locations
 function HandleDailyCacheReply(data) {
     InitializeDates(0);
     //DebugLog("HandleDailyCacheReply");
@@ -1198,6 +1199,7 @@ function HandleDailyCacheReply(data) {
     // now update stuff on mainpage that uses daily cache data
     ShowOpenHours();
     WriteNextFerryTimes();
+    document.getElementById("parksinfo").innerHTML = LSget("parksinfo");  // parks info
     DisplayLoadTimes();
 }
 
@@ -1254,18 +1256,20 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry location - internal browser link
     parseCacheRemove(data, "ferrylocextlink", "FERRYLOCEXTLINK", "\n"); // ferry location - external browser link
+    parseCacheRemove(data, "ferrydockcamlink", "FERRYDOCKCAMLINK", "\n"); // ferry dock camera page - external browser link
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "pierceferryticketlink", "PIERCEFERRYTICKETLINK", "\n"); // ferry ticket ios internal URI
-    parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry ticket
+    parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // 
+    parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // 
+    parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry page
+    parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // google maps
+    parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // app store
+    parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // parks link
+    parseCacheRemove(data, "parksinfo", "PARKSINFO", "\n"); // parks info - goes on main page parks line
+    parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // news link
+    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // custom tide link
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
     //parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
     parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
@@ -1506,7 +1510,8 @@ function ShowCachedData() {
 
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
-    
+
+    document.getElementById("parksinfo").innerHTML = LSget("parksinfo");  // parks info  
     //s = localStorage.getItem("maintablerows"); // additional main page rows. Removed 9/1/18 because of issue with icons.
     //if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
@@ -4383,6 +4388,8 @@ function generateWeatherForecastPage() {
 function ShowFerryWebCam() {
     ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
+    // dock cam link
+    document.getElementById("ferrydockcamlink").innerHTML = LSget("ferrydockcamlink");
     // steilacoom link from local storage
     var link = GetLink("ferrycams","https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
