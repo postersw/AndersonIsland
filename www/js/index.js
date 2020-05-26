@@ -3960,9 +3960,12 @@ function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, ti
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ShowStationDropdown - builds the dropdown station list
-//  entry   none
-//  exit    returns html <select...> selection list
-var stationlist = ["..New Location..", "", "Yoman Point-Balch Passage", "9446705", "Sandy Point-AI", "9446804", "Gig Harbor", "9446369", "Commencement Bay", "9446484", "Tacoma Narrows Bridge", "9446486", "Arletta-Hale Passage", "9446491", "Horsehead Bay-Carr Inlet", "9446451", "Steilacoom-Cormorant Passage", "9446714", "Dupont Wharf-Nisqually Reach", "9446828", "Longbranch-Filucy Bay", "9446638", "Devils Head-Drayton Passage", "9446671", "Henderson Inlet", "9446752", "McMicken Island-Case Inlet", "9446583", "Rocky Point-Eld Inlet", "TWC1115", "Olympia-Budd Inlet", "9446969"];
+//  entry   gCustomTideStation = user selected station. Can be "".
+//  exit    returns html <select...><option..>... selection list with selected entry marked
+var stationlist = ["..New Location..", "", "Arletta-Hale Passage", "9446491", "Commencement Bay", "9446484",
+    "Devils Head-Drayton Passage", "9446671", "Dupont Wharf-Nisqually Reach", "9446828", "Gig Harbor", "9446369", "Henderson Inlet", "9446752", "Horsehead Bay-Carr Inlet", "9446451",
+    "Longbranch-Filucy Bay", "9446638", "McMicken Island-Case Inlet", "9446583", "Olympia-Budd Inlet", "9446969", "Rocky Point-Eld Inlet", "TWC1115",
+    "Sandy Point-AI", "9446804", "Steilacoom-Cormorant Passage", "9446714", "Tacoma Narrows Bridge", "9446486", "Yoman Point-Balch Passage", "9446705"];
 function ShowStationDropdown() {
     var dd = "<select name='station' id='station' onchange='ShowCustomTideLocation()' >";
     //if (gCustomTideStationName == "") dd += "New location...'> ";
