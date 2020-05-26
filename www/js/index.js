@@ -56,9 +56,10 @@
         1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
         1.26.032020. Add cleartext plugin. Still on branch 125.
         1.27.032330. Use https for all web requests per google requirements for android 9.
-        1.28.052220. Rewrite Events to use an array of event objects.
+        1.28.052220. Refactor Events to use an array of 'event' objects. Refactor Tides to use an array of 'period' objects.
+                     Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
  * 
- *  copyright 2016-2018, Robert Bedoll, Poster Software, LLC
+ * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -78,7 +79,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.052220";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.052520";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -143,17 +144,17 @@ var app = {
 var table; // the schedule table as a DOM object
 var Gd; // date object
 var gTimeStampms; // unix ms since 1970
-var gDayofWeek;  // day of week in 0-6
-var gWeekofMonth; // week of the month
+var gDayofWeek;  // day of week: 0-6 NOTE starts with 0
+var gWeekofMonth; // week of the month: 1-5
 var gLetterofWeek; // letter for day of week
-var gTimehhmm;  // hhmm in 24 hour format
-var gTimehh; // time in hours
-var gTimemm; // time in seconds
-var gYear; // year 
-var gMonth;  // month 1-12. note starts with 1
-var gDayofMonth; // day of month 1-31
-var gMonthDay; // mmdd
-var gYYmmdd; // yymmdd
+var gTimehhmm;  // hhmm in 24 hour format: 0000-2359.   
+var gTimehh; // time in hours hh: 00-23
+var gTimemm; // time in minutes mm: 00-59
+var gYear; // year yyyy: 2016-2030
+var gMonth;  // month: 1-12. note starts with 1
+var gDayofMonth; // day of month: 1-31
+var gMonthDay; // mmdd: 0101-1231
+var gYYmmdd; // yymmdd: 160101 - 301231
 var laborday = 0; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
@@ -1155,16 +1156,12 @@ function DegToCompassPointsTTS(d) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //  GetDailyCache - retrieves the daily cache into the local storage objects and also uploads app stats
-//  Load from server using ajax async request.  Retrieves dailycache.txt, tides.txt, comingevents.txt.
+//  Load from server using ajax async request. 
+//  calls getdailycache.php, which returns dailycache.txt, tides.txt, comingevents.txt.
+//  also sends usage statistics to the server as parameters to the getdailycache.php request.
 //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND, etc. 
 //  Entry gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
-//function GetDailyCache() {
-//     ajax async request
-//    var myurl = FixURL("dailycache.txt"); 
-//    $.ajax({
-//        url: myurl, // for phone use fully qualified url https://anderson-island.org/
-//        success: function (data) {
-//}
+//
 function GetDailyCache() {
     //DebugLog("GetDailyCache");
     gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
@@ -1186,6 +1183,11 @@ function GetDailyCache() {
     xhttp.open("GET", myurl, true);
     xhttp.send();
 }
+
+////////////////////////////////////////////////////////////////////////////////////
+//  HandleDailyCacheReply - parse dailycache.php data stream and save it in local storage and on main page
+//  entry   data = dailycache.php data stream
+//  exit    data saved in separate localstorage locations
 function HandleDailyCacheReply(data) {
     InitializeDates(0);
     //DebugLog("HandleDailyCacheReply");
@@ -1198,6 +1200,7 @@ function HandleDailyCacheReply(data) {
     // now update stuff on mainpage that uses daily cache data
     ShowOpenHours();
     WriteNextFerryTimes();
+    document.getElementById("parksinfo").innerHTML = LSget("parksinfo");  // parks info
     DisplayLoadTimes();
 }
 
@@ -1254,18 +1257,20 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "ferryschedulelink", "FERRYSCHEDULELINK", "\n"); // ferry schedule
     parseCacheRemove(data, "ferrylocationlink", "FERRYLOCATIONLINK", "\n"); // ferry location - internal browser link
     parseCacheRemove(data, "ferrylocextlink", "FERRYLOCEXTLINK", "\n"); // ferry location - external browser link
+    parseCacheRemove(data, "ferrydockcamlink", "FERRYDOCKCAMLINK", "\n"); // ferry dock camera page - external browser link
     parseCacheRemove(data, "androidpackageticketlink", "ANDROIDPAKAGETICKETLINK", "\n"); // ferry ticket android package
     parseCacheRemove(data, "iosinternalticketlink", "IOSINTERNALTICKETLINK", "\n"); // ferry ticket ios internal URI
     parseCacheRemove(data, "pierceferryticketlink", "PIERCEFERRYTICKETLINK", "\n"); // ferry ticket ios internal URI
-    parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // ferry schedule
-    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // ferry schedule
+    parseCacheRemove(data, "googleplayticketlink", "GOOGLEPLAYTICKETLINK", "\n"); // ferry ticket
+    parseCacheRemove(data, "googleplaylink", "GOOGLEPLAYLINK", "\n"); // 
+    parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // 
+    parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry page
+    parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // google maps
+    parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // app store
+    parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // parks link
+    parseCacheRemove(data, "parksinfo", "PARKSINFO", "\n"); // parks info - goes on main page parks line
+    parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // news link
+    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // custom tide link
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
     //parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
     parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
@@ -1507,6 +1512,7 @@ function ShowCachedData() {
     s = localStorage.getItem("currentweather"); // cached current weather
     if (s != null) document.getElementById("weather").innerHTML = s;
 
+    document.getElementById("parksinfo").innerHTML = LSget("parksinfo");  // parks info  
     //s = localStorage.getItem("maintablerows"); // additional main page rows. Removed 9/1/18 because of issue with icons.
     //if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
@@ -3405,32 +3411,35 @@ function BumpyymmddByMonths(yymmdd, m) {
 //    **    ****  ***     ******
 
 
-//<!-- TIDES ------------------------------------------------------------------------------------------->
+//<!-- TIDES SECTION----------------------------------------------------------------------------------->
 //<script>
 //===== TIDES =======================================================================================
-var gUserTideSelection = false; // true when user sets tides
-var gPeriods;  // parsed data
+var gUserTideSelection = true; // true when user sets tides with custom date (not today)
+var gPeriods = [];  // Array of Period objects.  All displays and graphs show this array.
+// Period Object = { mmdd, hhmm, type h|l, height in ft. }
 
-//////////////// TIDES MAIN PAGE //////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////// added 5/24/20 v1.28
+// Constructor for Period Object = {hhmm, HL, height}
+//  entry   mmdd = numeric date
+//          hhmm = numeric time
+//          type = 'h' or 'l' for high or low tide
+//          height = height in feet, numeric fp
+function NewPeriod(mmdd, hhmm, type, height) {
+    this.mmdd = mmdd;  //date, number
+    this.hhmm = hhmm; // time, number
+    this.type = type; // 'h' or 'l'
+    this.height = height; // height in feet, number
+}
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// ShowNextTides MAIN PAGE - read json tide data and build main page tide info
+//////////////////////////////////////////////////////////////////////////////
+// ParseTides - parse the tides reply in localStorage "jsontides" AERIS json format, and build the gPeriods tide array
+//  Note: if the tide return string changes (or we switch vendors), change this code but leave the gPeriods array the same
 //  Note: we get tide data using NOAA web site and return a json structure in the aeris json format.
-// Original AERIS call changed to get NOAA data on the server, but still return an AERIS format.
-//  entry: localStorage "jsontides" = tide data  (refreshed nightly)
-//  exit: gForceCacheReload = true to reload tide data.  
-//          html populated.
-//          TXTS.TideData = TTS tide string
-var gTideTitleNoIcon; // title for tide, with up or down arrow
-var gTideTitleIcon; // title for tide, with up or down arrow
-
-function ShowNextTides() {
-    var hilow;
-    var ttshilow;
-    var nextTides;
-    var oldtide = -1;
-    var newtidetime, oldtidetime, newtideheight, oldtideheight;
-    var curtidespeech = "";
+//  Original AERIS call changed to get NOAA data on the server, but still return an AERIS format.
+//  entry: localStorage "jsontides" = tide data in AERIS json format  (refreshed nightly) as part of the getdailycache.php feed.
+//  exit    gPeriods array of Period objects, 1/period
+//          gUserTideSelection = false
+function ParseTides() {
     var json = localStorage.getItem("jsontides");
     // get tide data
     if (json === null) {
@@ -3446,6 +3455,7 @@ function ShowNextTides() {
         return;
     }
     // roll through the reply in json.response.periods[i]
+    gPeriods = []; // clear the global object array
     var i;
     for (i = 0; i < periods.length; i++) {
         var thisperiod = periods[i];
@@ -3453,7 +3463,48 @@ function ShowNextTides() {
         var d = Number(thisperiod.dateTimeISO.substring(8, 10));
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
-        var tidehhmm = ((h) * 100) + (mi);
+        // create new tide period entry
+        gPeriods[i] = new NewPeriod((m * 100 + d), ((h * 100) + mi), thisperiod.type, Number(thisperiod.heightFT));
+    }
+    gUserTideSelection = false; // standard tide
+}
+
+//////////////// TIDES MAIN PAGE //////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// ShowNextTides MAIN PAGE - read gPeriods tide data and build main page tide info
+//  entry: gPeriods = array of Period objects, each for 1 period
+//  exit: gForceCacheReload = true to reload tide data.  
+//          html populated on main screen only.
+//          TXTS.TideData = TTS tide string
+var gTideTitleNoIcon; // title for tide, with up or down arrow
+var gTideTitleIcon; // title for tide, with up or down arrow
+
+function ShowNextTides() {
+    var hilow;
+    var ttshilow;
+    var nextTides;
+    var oldtide = -1;
+    var newtidetime, oldtidetime, newtideheight, oldtideheight;
+    var curtidespeech = "";
+
+    // force gPeriods to have current tides
+    if (gUserTideSelection) ParseTides();
+    // get tide data
+    if (gPeriods.length == 0) {
+        gForceTideReload = true;
+        document.getElementById("tides").innerHTML = "Tide data not available.";
+        return;
+    }
+    // roll through the gPeriods structure
+    var i;
+    for (i = 0; i < gPeriods.length; i++) {
+        var thisperiod = gPeriods[i]; // tide oabject
+        //var m = Number(thisperiod.dateTimeISO.substring(5, 7));
+        //var d = Number(thisperiod.dateTimeISO.substring(8, 10));
+        //var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
+        //var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
+        var tidehhmm = thisperiod.hhmm;
         if (thisperiod.type == 'h') {
             hilow = "<i class='material-icons'>&#xe255;</i> High";
             ttshilow = " high ";
@@ -3462,12 +3513,13 @@ function ShowNextTides() {
             ttshilow = " low ";
         }
         // if tide is past, color row gray
-        if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
+        //if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
+        if ((gMonthDay > thisperiod.mmdd) || ((gMonthDay == thisperiod.mmdd) && (gTimehhmm > tidehhmm))) {
             oldtide = 0;
-            oldtidetime = tidehhmm; oldtideheight = thisperiod.heightFT;
+            oldtidetime = tidehhmm; oldtideheight = thisperiod.height;
         } else if (oldtide != 1) {
-            var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight);
-            var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, thisperiod.heightFT, oldtideheight) - cth) * 6;
+            var cth = CalculateCurrentTideHeight(tidehhmm, oldtidetime, thisperiod.height, oldtideheight);
+            var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, thisperiod.height, oldtideheight) - cth) * 6;
             if (thisperiod.type == 'h') {
                 nextTides = "<i class='material-icons'>&#xe5d8;</i> Rising ";
                 curtidespeech = " Rising. "
@@ -3488,13 +3540,13 @@ function ShowNextTides() {
             var tdx = "<td style='padding:0;margin:0'>";
             nextTides = "<table border-collapse: collapse; style='padding:0;margin:0;' ><tr>" + tdx + "<strong>Now:</strong></td>" + tdx + cth.toFixed(1) +
                 " ft.</td>" + tdx + nextTides + Math.abs(tiderate2).toFixed(1) + " ft/hr</td></tr> " +
-                "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow +
+                "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.height + " ft.</td>" + tdx + hilow +
                 " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr>";
-            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + ttshilow + " tide is " + thisperiod.heightFT + " feet at " + ShortTime(tidehhmm, 1);
+            TXTS.TideData = "The current tide is " + cth.toFixed(1) + " feet " + curtidespeech + " The next " + ttshilow + " tide is " + thisperiod.height + " feet at " + ShortTime(tidehhmm, 1);
             oldtide = 1;
         } else if (oldtide == 1) {  // save next tide
             //nextTides += hilow + " " + thisperiod.heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
-            nextTides += "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.heightFT + " ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
+            nextTides += "<tr>" + tdx + "<strong>" + ShortTime(tidehhmm) + ":&nbsp;</strong></td>" + tdx + thisperiod.height + " ft.</td>" + tdx + hilow + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")</td></tr></table>";
             document.getElementById("tides").innerHTML = nextTides;
             return;
         }
@@ -3540,21 +3592,20 @@ function CalculateCurrentTideHeight10(t2, t1, tide2, tide1) {
 //////////////// TIDES DETAIL PAGE /////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-// TidesDataPage
+// TidesDataPage - display the detailed tide table and graph on the Tides Detail page
+//  Always forces gPeriods to contain the current jsontides data, and draws the page from gPeriods
+//
+//  entry gPeriods = array of period objects to display the tides
+//
 function TidesDataPage() {
     InitializeDates(0);
     ShowPage("tidespage");
     SetPageHeader("Tides at Yoman Point");
-    // show the tide data in the jsontides global
-    gUserTideSelection = false;
-    var json = localStorage.getItem("jsontides");
-    if (IsEmpty(json)) return;
-    try {
-        gPeriods = JSON.parse(json);
-    } catch (err) {
-        alert("ERROR parsing Tides data: " + err.message + "\n" + json)
-    }
-    if (gPeriods == null) return;
+    gCustomTideFromDate = "";  // reset custom tide settings
+    gCustomTideStation = "";
+    gCustomTideStationName = "";
+    // show the tide data in the gPeriods array (from the localstorage.jsontides);
+    if (gUserTideSelection) ParseTides();  // force display of data in jsontides for today
     var i = ShowTideDataPage(gPeriods, true);
     showingtidei = i;
     //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
@@ -3564,8 +3615,8 @@ function TidesDataPage() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ShowTideData - show the data in the gPeriods array
-//  entry periods = array of data returned by aeris. Each array entry is one tide period.
+// ShowTideData - show the data in the gPeriods array in a table on the Tides page
+//  entry periods = array of Period objects. Each array entry is one tide period.
 //        showcurrent = true to show current tides, else false
 //  exit  returns periods index of NEXT tide
 //        fills the tidestable
@@ -3575,7 +3626,7 @@ function ShowTideDataPage(periods, showcurrent) {
     var table = document.getElementById("tidestable");
     gTableToClear = "tidestable";
     clearTable(table);
-    var olddate = periods[0].dateTimeISO.substring(5, 10);
+    var olddate = periods[0].mmdd;
     var oldtide = -1;
     var i;
     var nexttidei;
@@ -3588,30 +3639,26 @@ function ShowTideDataPage(periods, showcurrent) {
     if (showcurrent) {
         for (i = 1; i < periods.length; i++) {
             var thisperiod = periods[i];
-            var m = Number(thisperiod.dateTimeISO.substring(5, 7));
-            var d = Number(thisperiod.dateTimeISO.substring(8, 10));
-            var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
-            var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
-            var tidehhmm = ((h) * 100) + (mi);
-            // if tide is past, move on to next row
-            if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) continue;
+            var tidehhmm = thisperiod.hhmm;
+            // if tide is past (current date/time is > tide), move on to next row
+            if ((gMonthDay > thisperiod.mmdd) || ((gMonthDay == thisperiod.mmdd) && (gTimehhmm > tidehhmm))) continue;
             starti = i - 1; // back up one row
             break;  // exit loop
         }
     }
 
-
-    // roll through the reply in jason.response.periods[i]
+    // roll through the period object array in periods[i]
     for (i = starti; i < periods.length; i++) {
+        var period = periods[i];  // single object
         // if date changed, add a blank row
-        newdate = periods[i].dateTimeISO.substring(5, 10);
-        if (newdate != olddate) {
+        var tidemmdd = period.mmdd;
+        if (tidemmdd != olddate) {
             var row1; row1 = table.insertRow(-1);
             var row1col1; row1.insertCell(0).innerHTML = " ";
             row1.insertCell(1).innerHTML = " ";
             row1.insertCell(2).innerHTML = " ";
             row1.insertCell(3).innerHTML = " ";
-            olddate = newdate;
+            olddate = tidemmdd;
         }
         // Insert New Row for table at end of table.
 
@@ -3621,18 +3668,14 @@ function ShowTideDataPage(periods, showcurrent) {
 
         // Insert New Column for date
         var row1col1 = row1.insertCell(0);
-        var m = Number(periods[i].dateTimeISO.substring(5, 7));
-        var d = Number(periods[i].dateTimeISO.substring(8, 10));
-        row1col1.innerHTML = gDayofWeekShort[GetDayofWeek(m * 100 + d)] + " " + m + "/" + d + '&nbsp;';
+        row1col1.innerHTML = gDayofWeekShort[GetDayofWeek(period.mmdd)] + " " + formatDate(period.mmdd) + '&nbsp;';
         row1col1.style.border = "thin solid gray";
         // time
         row1col1 = row1.insertCell(1);
-        var h = Number(periods[i].dateTimeISO.substring(11, 13)); // tide hour
-        var mi = Number(periods[i].dateTimeISO.substring(14, 16));  // time min
-        tidehhmm = (Number(h) * 100) + Number(mi);
+        tidehhmm = period.hhmm;
         row1col1.innerHTML = "&nbsp;" + ShortTime(tidehhmm);
         row1col1.style.border = "thin solid gray";
-        if (periods[i].type == 'h') {
+        if (period.type == 'h') {
             hilow = 'HIGH';
             row1.style.background = "azure";
         } else {
@@ -3641,13 +3684,13 @@ function ShowTideDataPage(periods, showcurrent) {
         }
         // if tide is past, color row gray and show current tide info
         if (showcurrent) {
-            if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
+            if ((gMonthDay > tidemmdd) || ((gMonthDay == tidemmdd) && (gTimehhmm > tidehhmm))) {
                 row1.style.color = "gray";
                 //currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
-                if (periods[i].type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
+                if (period.type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
                 else currentTide = "Incoming since: ";
                 currentTide += ShortTime(tidehhmm) + " (for " + timeDiffhm(tidehhmm, gTimehhmm) + ")";
-                oldtideheight = Number(periods[i].heightFT);
+                oldtideheight = period.height;
                 oldtidetime = tidehhmm;
                 oldtide = 0;
             } else if ((oldtide < 1)) {
@@ -3658,23 +3701,22 @@ function ShowTideDataPage(periods, showcurrent) {
                 nexttidei = i;
                 // calculate current tide height
                 if (showcurrent) {
-                    var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                    //var tiderate = CalculateCurrentTideRate(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight);
-                    var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, Number(periods[i].heightFT), oldtideheight) - tideheight) * 6;
+                    var tideheight = CalculateCurrentTideHeight(tidehhmm, oldtidetime, period.height, oldtideheight);
+                    var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, period.height, oldtideheight) - tideheight) * 6; // multiply 10 minute delta by 6 to get delta/hour
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Date:" + formatDate(gMonthDay) +
-                        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" +
-                        "Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
+                        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button> at " + ShowStationDropdown() +
+                        "<br/>Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
                         currentTide;
                     //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
-                    currentTide += "<br/>" + hilow + " tide: " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
-                    nextTides = "Tides: " + hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    currentTide += "<br/>" + hilow + " tide: " + period.height + " ft. at " + ShortTime(tidehhmm) + " (in " + timeDiffhm(gTimehhmm, tidehhmm) + ")";
+                    nextTides = "Tides: " + hilow + " " + period.height + " ft. at " + ShortTime(tidehhmm) + ";";
                 }
             } else if (oldtide == 1) {  // save next tide
                 oldtide = 2;
                 if (showcurrent) {
-                    nextTides += hilow + " " + periods[i].heightFT + " ft. at " + ShortTime(tidehhmm) + ";";
+                    nextTides += hilow + " " + period.height + " ft. at " + ShortTime(tidehhmm) + ";";
                     localStorage.setItem("nextTides", nextTides); // save tide
                 }
             }
@@ -3686,18 +3728,19 @@ function ShowTideDataPage(periods, showcurrent) {
         row1col1.style.border = "thin solid gray";
         // height
         row1col1 = row1.insertCell(3);
-        row1col1.innerHTML = periods[i].heightFT;
+        row1col1.innerHTML = period.height.toFixed(1);
         row1col1.style.border = "thin solid gray";
         //// range ()
         if (i < periods.length - 1) {
             row1col1 = row1.insertCell(-1);
-            row1col1.innerHTML = "<span style='color:#bfbfbf'>" + Math.abs(periods[i].heightFT - periods[i + 1].heightFT).toFixed(1) + "</span>";
+            row1col1.innerHTML = "<span style='color:#bfbfbf'>" + Math.abs(period.height - periods[i + 1].height).toFixed(1) + "</span>";
             row1col1.style.border = "thin solid lightgray";
         }
-    }
+    }  // for i (periods) loop end
+
     // now save the current tide
     if (!showcurrent) currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
-        periods[0].dateTimeISO.substring(5, 7) + "/" + periods[0].dateTimeISO.substring(8, 10) +
+        formatDate(periods[0].mmdd) +
         "<span style='color:darkgray' onclick='ShowCustom()'>&nbsp;&nbsp;&nbsp; [Change...]";
     document.getElementById("tidepagecurrent").innerHTML = currentTide + "</span>";
     //$("#tideButton").show();
@@ -3716,17 +3759,13 @@ function TideClick(id) {
     showingtidei = i;
     gUserTideSelection = true;
     window.scroll(0, 0);  // force scroll to top
-    //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
-    //    gPeriods[i - 1].dateTimeISO, gPeriods[i].dateTimeISO, gPeriods[i + 1].dateTimeISO, false);
     GraphTideData(i, false);
-    var h = Number(gPeriods[i].dateTimeISO.substring(11, 13)); // tide hour
-    var tidehhmm = (h * 100) + Number(gPeriods[i].dateTimeISO.substring(14, 16));
     var hilo = "HIGH tide: ";
-    if (gPeriods[i].heightFT < gPeriods[i - 1].heightFT) hilo = "Low tide: ";
+    if (gPeriods[i].height < gPeriods[i - 1].height) hilo = "Low tide: ";
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
-        gPeriods[i].dateTimeISO.substring(5, 7) + "/" + gPeriods[i].dateTimeISO.substring(8, 10) +
-        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" +
-        hilo + gPeriods[i].heightFT + " ft. at " + ShortTime(tidehhmm);
+        formatDate(gPeriods[i].mmdd) +
+        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button> at " + ShowStationDropdown() + "<br/>" +
+        hilo + gPeriods[i].height + " ft. at " + ShortTime(gPeriods[i].hhmm);
 }
 
 function ShowTideNext() {
@@ -3737,11 +3776,13 @@ function ShowTidePrevious() {
 }
 
 /////////////////////////////////////////////////////////////////////////
-//  GraphTideData
-//  Entry: tide1t, tide2t, tide3t, tide4t, tide5t, tide6t, tide7t = successive tide points in feet, text (HLH or LHL)
-//         t1, t2, t3, t4t,t5t,t6t, t7t = corresponding times in dateTimeISO text format: 2016-05-15T19:55:00-07:00
-//         NOTE: current tide must be between t1 and t2
+//  GraphTideData - draws a canvas graph of the tide data in the gPeriods array
+//
+//  Entry: ix = index into gPeriods array of Period objects
+//         Always displays the tide period objects in the gPeriods array.
+//         showtoday = true to draw vertical red line for current time
 //  modified 6/29/18 to draw on a 720px wide canvas and show 7 tide points (6 curves)
+//
 function GraphTideData(ix, showtoday) {
     var i;
     var canvas = document.getElementById("tidecanvas");
@@ -3752,15 +3793,18 @@ function GraphTideData(ix, showtoday) {
 
     // convert tides to numbers
     var tideh = [7]; // tide height
-    var tt = [7]; // tide time string
+    var thhmm = [7]; // tide time string as hhmm
     var t = [7]; // tide time fp
+    var tdate = [7]; // tide date as mmdd;
     var LB = 999; var UB = -999;
     for (i = 0; i < 8; i++) {
-        tideh[i] = Number(gPeriods[ix - 1 + i].heightFT);
+        tideh[i] = gPeriods[ix - 1 + i].height;
         if (tideh[i] < LB) LB = tideh[i];
         if (tideh[i] > UB) UB = tideh[i];
-        tt[i] = gPeriods[ix - 1 + i].dateTimeISO;
-        t[i] = tHours(tt[i]);
+        tdate[i] = gPeriods[ix - 1 + i].mmdd; // mmdd number
+        thhmm[i] = gPeriods[ix - 1 + i].hhmm; // hhmm number
+        t[i] = Math.floor(gPeriods[ix - 1 + i].hhmm / 100) + (gPeriods[ix - 1 + i].hhmm % 100) / 60;// hours.minutes in floating point.  tHours(thhmm[i]); 
+        // Below - try just comparing the date string and then add 24 hrs if diff date
         if (i > 0) {
             if (t[i] < t[i - 1]) t[i] += 24;
             if (t[i] < t[i - 1]) t[i] += 24;
@@ -3771,10 +3815,8 @@ function GraphTideData(ix, showtoday) {
     var tLB = Math.floor(t[0] - 1); // time lower bound
     var tUB = Math.floor(t[7] + .99); // time upper bound
     var pixelsfoot = h / (UB - LB);  // pixels per foot
-
-    // convert time to numbers as fp hours from 0 to 48.
-    var t1hhmm = Number(tt[0].substring(11, 13)) * 100 + Number(tt[0].substring(14, 16));
-    var t2hhmm = Number(tt[1].substring(11, 13)) * 100 + Number(tt[1].substring(14, 16));
+    var t1hhmm = thhmm[0];  // hhmm
+    var t2hhmm = thhmm[1];  // hhmm
 
     var pixelshour = w / (tUB - tLB);
     var x0 = 0; // x offset to 0
@@ -3875,8 +3917,8 @@ function GraphTideData(ix, showtoday) {
 
     // label the date using the date for tide2 
     ctx.fillStyle = "#0000ff";
-    ctx.fillText(tt[2].substring(5, 7) + "/" + tt[2].substring(8, 10), w * 0.3, 14);
-    ctx.fillText(tt[6].substring(5, 7) + "/" + tt[6].substring(8, 10), w * 0.8, 14);
+    ctx.fillText(formatDate(tdate[2]), w * 0.3, 14);
+    ctx.fillText(formatDate(tdate[6]), w * 0.8, 14);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -3915,14 +3957,25 @@ function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, ti
     ctx.stroke();
 }
 
-// tHours: convert ISO datetime to floating point hours
-function tHours(tISO) {
-    return Number(tISO.substring(11, 13)) + Number(tISO.substring(14, 16)) / 60;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ShowStationDropdown - builds the dropdown station list
+//  entry   none
+//  exit    returns html <select...> selection list
+var stationlist = ["..New Location..", "", "Yoman Point-Balch Passage", "9446705", "Sandy Point-AI", "9446804", "Gig Harbor", "9446369", "Commencement Bay", "9446484", "Tacoma Narrows Bridge", "9446486", "Arletta-Hale Passage", "9446491", "Horsehead Bay-Carr Inlet", "9446451", "Steilacoom-Cormorant Passage", "9446714", "Dupont Wharf-Nisqually Reach", "9446828", "Longbranch-Filucy Bay", "9446638", "Devils Head-Drayton Passage", "9446671", "Henderson Inlet", "9446752", "McMicken Island-Case Inlet", "9446583", "Rocky Point-Eld Inlet", "TWC1115", "Olympia-Budd Inlet", "9446969"];
+function ShowStationDropdown() {
+    var dd = "<select name='station' id='station' onchange='ShowCustomTideLocation()' >";
+    //if (gCustomTideStationName == "") dd += "New location...'> ";
+    //dd+= gCustomTideStation + "'>"; // set value to selected station
+    var i;
+    for (i = 0; i < stationlist.length; i = i + 2) {
+        dd += "<option value='" + stationlist[i + 1] + "' " + ((stationlist[i + 1] == gCustomTideStation) ? "selected" : "") + ">" + stationlist[i] + "</option>";
+    }
+    return dd + "</select>";
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ShowCustom - get date for custom tides, call the aeris query, and display the result.
+// ShowCustom - get date for custom tides, call the NOAA query, and display the result.
 //
 function ShowCustom() {
     InitializeDates(0);
@@ -3930,10 +3983,15 @@ function ShowCustom() {
 }
 function ShowCustomCallback(tidedate) {
     if (tidedate == "") return;
-    gUserTideSelection = true;
     MarkPage("1");
-    getCustomTideData(tidedate);
+    getCustomTideData(tidedate, "");
 }
+function ShowCustomTideLocation() {
+    MarkPage("1");
+    var station = document.getElementById("station").value;
+    getCustomTideData("", station);
+}
+
 
 //////////////////////////////////////////////////////////////////
 // GetDateFromUser (callback function on success or failure)
@@ -3960,58 +4018,42 @@ function GetDateCancel() {
     gDateCallback(""); // return null
 }
 
-///////////////////////////////////////////////////////////////////
-// GetDateFromUser - asks user for date and returns as mm/dd/yy
-//  return mm/dd/yy or ""
-//function GetDateFromUser() {
-
-//    var tidedate = prompt("Please enter the date as mm/dd or mm/dd/yyyy", gMonth + "/" + gDayofMonth);
-//    if (tidedate == null) return "";
-//    // validate the date
-//    var tda = tidedate.split("/");
-//    if (tda.length != 2 && tda.length != 3) {
-//        alert("Invalid date. An example of a valid date is: 1/22");
-//        return "";
-//    }
-//    var m = Number(tda[0]); // month
-//    var d = Number(tda[1]);  // day
-//    if (isNaN(m) || isNaN(d) || (m < 1) || (m > 12) || (d < 1) || (d > 31)) {
-//        alert("Invalid date. An example of a valid date is: 1/22");
-//        return;
-//    }
-//    m = Leading0(m);
-//    d = Leading0(d);
-//    var y = gYear;
-//    // handle year as nn or 20nn
-//    if (tda.length == 3) {
-//        y = tda[2];
-//        if (isNaN(tda[2])) {
-//            alert("Invalid year.");
-//            return;
-//        }
-//        y = Number(y); // make numeric
-//        if (y < 2000) y += 2000;
-//        if ((y < gYear) || (y - gYear > 4)) {
-//            alert("Invalid year.");
-//            return;
-//        }
-//    }
-//    return Leading0(m) + "/" + Leading0(d) + "/" + y;
-//}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
 // This is used to get custom tide data from NOAA, via my web site.
 // used only for custom date queries, not for normal tides.
-//  fromdate =  starting date for the tides as: mm/dd/yyyy
+//  Entry   fromdate =  starting date for the tides as: mm/dd/yyyy
+//          stationname = NOAA tide station name (not the number)
 //  gCustomTides = 0 for customtidelink or AERIS
 //                  1 for NOAA direct link
 //  data is used to display tide data. It is not stored.
 const gCustomTides = 1; // NOAA direct tide request
+const YomanPointStation = "9446705"; // NOAA Yoman point station
+var gCustomTideFromDate = ""; // custom tide date mm/dd/yyyy
+var gCustomTideStation = ""; // custom tide Station id
+var gCustomTideStationName = ""; // custom tide station name
 
-function getCustomTideData(fromdate) {
+function getCustomTideData(fromdate, station) {
+    var i;
+    // use user provided station name. If none, use previous, or use default station = Yoman Point
+    if (station != "") gCustomTideStation = station;// if user provided a station
+    else station = gCustomTideStation;
+    if (gCustomTideStation == "") gCustomTideStation = YomanPointStation;
+    for (i = 1; i < stationlist.length; i = i + 2) if (stationlist[i] == gCustomTideStation) break;  // look up name
+    gCustomTideStationName = stationlist[i - 1];
+    SetPageHeader("Tides at " + gCustomTideStationName);  //set header to station name
+
+    // default date = today
+    if (fromdate != "") gCustomTideFromDate = fromdate;
+    else if (gCustomTideFromDate == "") {
+        fromdate = formatDate(gMonthDay) + "/" + gYear.toFixed(0);  // mm/dd/yyyy
+        if (fromdate.length == 9) fromdate = "0" + fromdate; // correct for case of single digit month;
+        gCustomTideFromDate = fromdate;
+    }
+
     // clear the old data display
-    document.getElementById("tidepagecurrent").innerHTML = "...Retrieving tide data for " + fromdate + "...";
+    document.getElementById("tidepagecurrent").innerHTML = "...Retrieving tide data for " + gCustomTideFromDate + " at " + gCustomTideStationName + "...";
     var table = document.getElementById("tidestable");
     gTableToClear = "tidestable";
     clearTable(table);
@@ -4023,11 +4065,11 @@ function getCustomTideData(fromdate) {
 
     // build link
     if (gCustomTides == 1) { // NOAA direct
-        fromdate = fromdate.substr(6, 4) + fromdate.substr(0, 2) + fromdate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
-        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
+        fromdate = gCustomTideFromDate.substr(6, 4) + gCustomTideFromDate.substr(0, 2) + gCustomTideFromDate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
+        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=" + gCustomTideStation + "&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
             + fromdate + '%2000:00&range=72';
-    } else {  //customtidelink or AERIS
-        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
+    } else {  //customtidelink for AERIS
+        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/' + gCustomTideStation + '?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
         myurl = myurl + '&from=' + fromdate + '&to=+48hours';
     }
     var xhttp = new XMLHttpRequest();
@@ -4037,7 +4079,9 @@ function getCustomTideData(fromdate) {
     xhttp.open("GET", myurl, true);
     xhttp.send();
 }
-
+///////////////////////////////////////////////////////////////////
+// HandleCustomTidesReply - handle the NOAA reply and load the gPeriods array
+//  entry   reply = the reply from NOAA
 function HandleCustomTidesReply(reply) {
     try {
         var json = JSON.parse(reply);
@@ -4045,39 +4089,34 @@ function HandleCustomTidesReply(reply) {
         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + err.message;
         return;
     }
-    if (gCustomTides == 1) {
-        // Convert NOAA Direct Reply -> AERIS format
-        gPeriods = NOAAtoAERIS(json);
-    } else {
-        // AERIS FORMATTED REPLY
-        gPeriods = json.response.periods;
-    }
-    // AERIS FORMATTED REPLY
+
+    // Convert NOAA reply
+    ParseNOAATides(json);
+    gUserTideSelection = true;  // this flag says that gPeriods contains a non-standard tide collection
     ShowTideDataPage(gPeriods, false);
     TideClick(2);
     return;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-//  NOAAtoAERIS - converts NOAA tides object to AERIS tides object
+//  ParseNOAATides - converts NOAA tides json reply to gPeriods array of period object
 //  entry   json = json object based on noaa reply
 //            { "predictions" : [ {"t":"2018-06-01 02:22", "v":"7.106", "type":"L"},...
-//  exit    returns an array of AERISPeriod objects for gPeriods: 
-//              dateTimeISO "2018-05-20T23:25:00-07:00" string
-//              heightFT 14.0  number
-//              type "h" or l   string
-function NOAAtoAERIS(json) {
-    var periods = []; //Array of Aeris Periods
+//                                      0123456789012345
+//  exit    fills gPeriods array with Period objects
+//
+function ParseNOAATides(json) {
+    gPeriods = []; //Empty the array
     var i; var t; var d; var h;
     for (i = 0; i < json.predictions.length; i++) {
-        d = json.predictions[i].t.substr(0, 10) + "T" + json.predictions[i].t.substr(11, 16) + ":00-07:00";
+        //d = json.predictions[i].t.substr(0, 10) + "T" + json.predictions[i].t.substr(11, 16) + ":00-07:00";
+        var mmdd = Number(json.predictions[i].t.substr(5, 2)) * 100 + Number(json.predictions[i].t.substr(8, 2));
+        var hhmm = Number(json.predictions[i].t.substr(11, 2)) * 100 + Number(json.predictions[i].t.substr(14, 2));
         t = json.predictions[i].type.toLowerCase();  // type -> type
-        h = Number(json.predictions[i].v).toFixed(1);  // v -> heightFT
-        periods[i] = { dateTimeISO: d, heightFT: h, type: t };  // new object
-        //        periods[i] = new AERISPeriod(d, h, t);
-
+        h = Number(json.predictions[i].v);  // v -> height
+        gPeriods[i] = new NewPeriod(mmdd, hhmm, t, h);
     }
-    return periods;
+    return;
 }
 
 // AERISPeriod - construct tide period objects in the original AERIS format, which is what the code understands.
@@ -4392,6 +4431,8 @@ function generateWeatherForecastPage() {
 function ShowFerryWebCam() {
     ShowPage("mferrywebcampage");
     SetPageHeader("Ferry Lane Cameras");
+    // dock cam link
+    document.getElementById("ferrydockcamlink").innerHTML = LSget("ferrydockcamlink");
     // steilacoom link from local storage
     var link = GetLink("ferrycams", "https://online.co.pierce.wa.us/xml/abtus/ourorg/PWU/Ferry/Steilacoom.jpg");
     link = link + "?random" + gTimehhmm.toFixed(0); // defeat the cache
