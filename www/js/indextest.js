@@ -3964,7 +3964,7 @@ function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, ti
 //  exit    returns html <select...> selection list
 var stationlist = ["..New Location..", "", "Yoman Point-Balch Passage", "9446705", "Sandy Point-AI", "9446804","Gig Harbor", "9446369", "Commencement Bay", "9446484", "Tacoma Narrows Bridge", "9446486", "Arletta-Hale Passage", "9446491", "Horsehead Bay-Carr Inlet", "9446451", "Steilacoom-Cormorant Passage", "9446714", "Dupont Wharf-Nisqually Reach", "9446828", "Longbranch-Filucy Bay", "9446638", "Devils Head-Drayton Passage", "9446671", "Henderson Inlet", "9446752", "McMicken Island-Case Inlet", "9446583", "Rocky Point-Eld Inlet", "TWC1115", "Olympia-Budd Inlet", "9446969"];
 function ShowStationDropdown() {
-    var dd = "<select name='station' id='station' onchange='ShowCustomTideLocation()' >";
+    var dd = "<select name='station' id='station' style='width: 30%' onchange='ShowCustomTideLocation()' >";
     //if (gCustomTideStationName == "") dd += "New location...'> ";
     //dd+= gCustomTideStation + "'>"; // set value to selected station
     var i;
