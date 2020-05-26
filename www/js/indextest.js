@@ -57,6 +57,7 @@
         1.26.032020. Add cleartext plugin. Still on branch 125.
         1.27.032330. Use https for all web requests per google requirements for android 9.
         1.28.052220. Refactor Events to use an array of 'event' objects. Refactor Tides to use an array of 'period' objects.
+                     Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
  * 
  * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -143,17 +144,17 @@ var app = {
 var table; // the schedule table as a DOM object
 var Gd; // date object
 var gTimeStampms; // unix ms since 1970
-var gDayofWeek;  // day of week in 0-6
-var gWeekofMonth; // week of the month
+var gDayofWeek;  // day of week: 0-6 NOTE starts with 0
+var gWeekofMonth; // week of the month: 1-5
 var gLetterofWeek; // letter for day of week
-var gTimehhmm;  // hhmm in 24 hour format
-var gTimehh; // time in hours
-var gTimemm; // time in seconds
-var gYear; // year 
-var gMonth;  // month 1-12. note starts with 1
-var gDayofMonth; // day of month 1-31
-var gMonthDay; // mmdd
-var gYYmmdd; // yymmdd
+var gTimehhmm;  // hhmm in 24 hour format: 0000-2359.   
+var gTimehh; // time in hours hh: 00-23
+var gTimemm; // time in minutes mm: 00-59
+var gYear; // year yyyy: 2016-2030
+var gMonth;  // month: 1-12. note starts with 1
+var gDayofMonth; // day of month: 1-31
+var gMonthDay; // mmdd: 0101-1231
+var gYYmmdd; // yymmdd: 160101 - 301231
 var laborday = 0; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
@@ -3410,7 +3411,7 @@ function BumpyymmddByMonths(yymmdd, m) {
 //    **    ****  ***     ******
 
 
-//<!-- TIDES ------------------------------------------------------------------------------------------->
+//<!-- TIDES SECTION----------------------------------------------------------------------------------->
 //<script>
 //===== TIDES =======================================================================================
 var gUserTideSelection = true; // true when user sets tides with custom date (not today)
@@ -3600,6 +3601,9 @@ function TidesDataPage() {
     InitializeDates(0);
     ShowPage("tidespage");
     SetPageHeader("Tides at Yoman Point");
+    gCustomTideFromDate = "";  // reset custom tide settings
+    gCustomTideStation = "";
+    gCustomTideStationName = "";
     // show the tide data in the gPeriods array (from the localstorage.jsontides);
     if (gUserTideSelection) ParseTides();  // force display of data in jsontides for today
     var i = ShowTideDataPage(gPeriods, true);
@@ -3701,8 +3705,8 @@ function ShowTideDataPage(periods, showcurrent) {
                     var tiderate2 = (CalculateCurrentTideHeight10(tidehhmm, oldtidetime, period.height, oldtideheight)-tideheight) * 6; // multiply 10 minute delta by 6 to get delta/hour
                     currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>" +
                         "Date:" + formatDate(gMonthDay) +
-                        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" +
-                        "Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
+                        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button> at " + ShowStationDropdown()  +
+                        "<br/>Tide now: " + tideheight.toFixed(1) + " ft. " + ((tiderate2 > 0) ? "Rising " : "Falling ") + Math.abs(tiderate2).toFixed(1) + " ft/hr.<br/>" +
                         currentTide;
                         //"&nbsp&nbsp&nbsp<span style='background-color:silver;font-weight:normal' onclick='ShowCustom()'>&nbsp Change...&nbsp</span><br/>" + currentTide;
                     // calculate time till next tide                                 
@@ -3760,7 +3764,7 @@ function TideClick(id) {
     if (gPeriods[i].height < gPeriods[i - 1].height) hilo = "Low tide: ";
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
       formatDate(gPeriods[i].mmdd) +
-      "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button><br/>" + 
+        "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button> at " + ShowStationDropdown() + "<br/>" + 
         hilo + gPeriods[i].height + " ft. at " + ShortTime(gPeriods[i].hhmm);
 }
 
@@ -3953,11 +3957,22 @@ function DrawCurve(ctx, tide1, tide2, t1, t2, pixelsfoot, pixelshour, h, tLB, ti
     ctx.stroke();
 }
 
-// tHours: convert ISO datetime to floating point hours
-//function tHours(tISO) {
-//    return Number(tISO.substring(11, 13)) + Number(tISO.substring(14, 16)) / 60;
-//}
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ShowStationDropdown - builds the dropdown station list
+//  entry   none
+//  exit    returns html <select...> selection list
+var stationlist = ["..New Location..", "", "Yoman Point-Balch Passage", "9446705", "Sandy Point-AI", "9446804","Gig Harbor", "9446369", "Commencement Bay", "9446484", "Tacoma Narrows Bridge", "9446486", "Arletta-Hale Passage", "9446491", "Horsehead Bay-Carr Inlet", "9446451", "Steilacoom-Cormorant Passage", "9446714", "Dupont Wharf-Nisqually Reach", "9446828", "Longbranch-Filucy Bay", "9446638", "Devils Head-Drayton Passage", "9446671", "Henderson Inlet", "9446752", "McMicken Island-Case Inlet", "9446583", "Rocky Point-Eld Inlet", "TWC1115", "Olympia-Budd Inlet", "9446969"];
+function ShowStationDropdown() {
+    var dd = "<select name='station' id='station' onchange='ShowCustomTideLocation()' >";
+    //if (gCustomTideStationName == "") dd += "New location...'> ";
+    //dd+= gCustomTideStation + "'>"; // set value to selected station
+    var i;
+    for (i = 0; i < stationlist.length; i = i + 2) {
+        dd += "<option value='" + stationlist[i+1] + "' " + ((stationlist[i+1]==gCustomTideStation)?"selected":"") + ">" + stationlist[i] + "</option>";
+    }
+    return dd + "</select>";
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ShowCustom - get date for custom tides, call the NOAA query, and display the result.
@@ -3969,8 +3984,14 @@ function ShowCustom() {
 function ShowCustomCallback(tidedate){
     if (tidedate == "") return;
     MarkPage("1");
-    getCustomTideData(tidedate);
+    getCustomTideData(tidedate, "");
 }
+function ShowCustomTideLocation() {
+    MarkPage("1");
+    var station = document.getElementById("station").value;
+    getCustomTideData("", station);
+}
+
 
 //////////////////////////////////////////////////////////////////
 // GetDateFromUser (callback function on success or failure)
@@ -4002,15 +4023,37 @@ function GetDateCancel() {
 // getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
 // This is used to get custom tide data from NOAA, via my web site.
 // used only for custom date queries, not for normal tides.
-//  fromdate =  starting date for the tides as: mm/dd/yyyy
+//  Entry   fromdate =  starting date for the tides as: mm/dd/yyyy
+//          stationname = NOAA tide station name (not the number)
 //  gCustomTides = 0 for customtidelink or AERIS
 //                  1 for NOAA direct link
 //  data is used to display tide data. It is not stored.
 const gCustomTides = 1; // NOAA direct tide request
+const YomanPointStation = "9446705"; // NOAA Yoman point station
+var gCustomTideFromDate = ""; // custom tide date mm/dd/yyyy
+var gCustomTideStation = ""; // custom tide Station id
+var gCustomTideStationName = ""; // custom tide station name
 
-function getCustomTideData(fromdate) {
+function getCustomTideData(fromdate, station) {
+    var i;
+    // use user provided station name. If none, use previous, or use default station = Yoman Point
+    if (station != "") gCustomTideStation = station;// if user provided a station
+    else station = gCustomTideStation;
+    if (gCustomTideStation == "") gCustomTideStation = YomanPointStation;
+    for (i = 1; i < stationlist.length; i = i + 2) if (stationlist[i] == gCustomTideStation) break;  // look up name
+    gCustomTideStationName = stationlist[i - 1];
+    SetPageHeader("Tides at " + gCustomTideStationName);  //set header to station name
+
+    // default date = today
+    if (fromdate != "") gCustomTideFromDate = fromdate;
+    else if (gCustomTideFromDate == "") {
+        fromdate = formatDate(gMonthDay) + "/" + gYear.toFixed(0);  // mm/dd/yyyy
+        if (fromdate.length == 9) fromdate = "0" + fromdate; // correct for case of single digit month;
+        gCustomTideFromDate = fromdate;
+    }
+
     // clear the old data display
-    document.getElementById("tidepagecurrent").innerHTML = "...Retrieving tide data for " + fromdate + "...";
+        document.getElementById("tidepagecurrent").innerHTML = "...Retrieving tide data for " + gCustomTideFromDate + " at " + gCustomTideStationName + "...";
     var table = document.getElementById("tidestable");
     gTableToClear = "tidestable";
     clearTable(table);
@@ -4021,12 +4064,12 @@ function getCustomTideData(fromdate) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // build link
-    if (gCustomTides==1) { // NOAA direct
-        fromdate = fromdate.substr(6, 4) + fromdate.substr(0, 2) + fromdate.substr(3,2);  //  mm/dd/yyyy -> yyyymmdd
-        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=9446705&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
+    if (gCustomTides == 1) { // NOAA direct
+        fromdate = gCustomTideFromDate.substr(6, 4) + gCustomTideFromDate.substr(0, 2) + gCustomTideFromDate.substr(3,2);  //  mm/dd/yyyy -> yyyymmdd
+        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=" + gCustomTideStation + "&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
             + fromdate + '%2000:00&range=72';
-    } else {  //customtidelink or AERIS
-        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/9446705?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
+    } else {  //customtidelink for AERIS
+        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/' + gCustomTideStation + '?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
         myurl = myurl + '&from=' + fromdate + '&to=+48hours';   
     }
     var xhttp = new XMLHttpRequest();
