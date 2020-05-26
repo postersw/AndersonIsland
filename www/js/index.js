@@ -3765,7 +3765,7 @@ function TideClick(id) {
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
         formatDate(gPeriods[i].mmdd) +
         "&nbsp;&nbsp;&nbsp;<button onclick='ShowCustom();'>New Date</button> at " + ShowStationDropdown() + "<br/>" +
-        hilo + gPeriods[i].height + " ft. at " + ShortTime(gPeriods[i].hhmm);
+        hilo + gPeriods[i].height.toFixed(1) + " ft. at " + ShortTime(gPeriods[i].hhmm);
 }
 
 function ShowTideNext() {
