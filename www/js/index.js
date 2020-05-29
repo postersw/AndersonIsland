@@ -79,7 +79,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.052520";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.052820";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -626,6 +626,13 @@ function ShowMap() {
     var link = GetLink("googlemaplink", "https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4");
     window.open(link, "_blank");
 }
+
+function ShowChart() {
+    MarkPage("g");
+    var link = GetLink("chartlink", "https://charts.noaa.gov/OnLineViewer/18440.shtml");
+    window.open(link, "_blank");
+}
+
 
 function ShowBurnBan() {
     MarkPage("u");
@@ -1266,6 +1273,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "iosticketlink", "IOSTICKETLINK", "\n"); // 
     parseCacheRemove(data, "ferrypagelink", "FERRYPAGELINK", "\n"); // ferry page
     parseCacheRemove(data, "googlemaplink", "GOOGLEMAPLINK", "\n"); // google maps
+    parseCacheRemove(data, "chartlink", "CHARTLINK", "\n"); // NOAA chart viewer
     parseCacheRemove(data, "applestorelink", "APPLESTORELINK", "\n"); // app store
     parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // parks link
     parseCacheRemove(data, "parksinfo", "PARKSINFO", "\n"); // parks info - goes on main page parks line
