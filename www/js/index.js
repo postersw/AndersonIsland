@@ -79,7 +79,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.052820";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.052920";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -3424,15 +3424,17 @@ function BumpyymmddByMonths(yymmdd, m) {
 //===== TIDES =======================================================================================
 var gUserTideSelection = true; // true when user sets tides with custom date (not today)
 var gPeriods = [];  // Array of Period objects.  All displays and graphs show this array.
-// Period Object = { mmdd, hhmm, type h|l, height in ft. }
+// Period Object = { yy, mmdd, hhmm, type h|l, height in ft. }
 
 /////////////////////////////////////////////////////// added 5/24/20 v1.28
-// Constructor for Period Object = {hhmm, HL, height}
+// Constructor for Period Object = {mmdd, hhmm, type, height, yy}
 //  entry   mmdd = numeric date
 //          hhmm = numeric time
 //          type = 'h' or 'l' for high or low tide
 //          height = height in feet, numeric fp
-function NewPeriod(mmdd, hhmm, type, height) {
+//          yy = numeric year 2 digits
+function NewPeriod(mmdd, hhmm, type, height, yy) {
+    this.yy = yy;       // year, number, 2 digits
     this.mmdd = mmdd;  //date, number
     this.hhmm = hhmm; // time, number
     this.type = type; // 'h' or 'l'
@@ -3467,12 +3469,13 @@ function ParseTides() {
     var i;
     for (i = 0; i < periods.length; i++) {
         var thisperiod = periods[i];
-        var m = Number(thisperiod.dateTimeISO.substring(5, 7));
-        var d = Number(thisperiod.dateTimeISO.substring(8, 10));
+        var yy = Number(thisperiod.dateTimeISO.substring(2, 4)); // year nn
+        var m = Number(thisperiod.dateTimeISO.substring(5, 7)); //mm
+        var d = Number(thisperiod.dateTimeISO.substring(8, 10));//dd
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         // create new tide period entry
-        gPeriods[i] = new NewPeriod((m * 100 + d), ((h * 100) + mi), thisperiod.type, Number(thisperiod.heightFT));
+        gPeriods[i] = new NewPeriod((m * 100 + d), ((h * 100) + mi), thisperiod.type, Number(thisperiod.heightFT), yy);
     }
     gUserTideSelection = false; // standard tide
 }
@@ -3513,6 +3516,7 @@ function ShowNextTides() {
         //var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         //var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         var tidehhmm = thisperiod.hhmm;
+        var tideyymmdd = thisperiod.yy * 10000 + thisperiod.mmdd; // tide yymmdd
         if (thisperiod.type == 'h') {
             hilow = "<i class='material-icons'>&#xe255;</i> High";
             ttshilow = " high ";
@@ -3522,7 +3526,7 @@ function ShowNextTides() {
         }
         // if tide is past, color row gray
         //if ((gMonth > m) || (gMonth == m && gDayofMonth > d) || (gMonth == m && gDayofMonth == d && (gTimehhmm > tidehhmm))) {
-        if ((gMonthDay > thisperiod.mmdd) || ((gMonthDay == thisperiod.mmdd) && (gTimehhmm > tidehhmm))) {
+        if ((gYYmmdd > tideyymmdd) || ((gYYmmdd == tideyymmdd) && (gTimehhmm > tidehhmm))) {
             oldtide = 0;
             oldtidetime = tidehhmm; oldtideheight = thisperiod.height;
         } else if (oldtide != 1) {
@@ -3648,8 +3652,9 @@ function ShowTideDataPage(periods, showcurrent) {
         for (i = 1; i < periods.length; i++) {
             var thisperiod = periods[i];
             var tidehhmm = thisperiod.hhmm;
+            var tideyymmdd = thisperiod.yy * 10000 + thisperiod.mmdd; // tide yymmdd
             // if tide is past (current date/time is > tide), move on to next row
-            if ((gMonthDay > thisperiod.mmdd) || ((gMonthDay == thisperiod.mmdd) && (gTimehhmm > tidehhmm))) continue;
+            if ((gYYmmdd > tideyymmdd) || ((gYYmmdd == tideyymmdd) && (gTimehhmm > tidehhmm))) continue;
             starti = i - 1; // back up one row
             break;  // exit loop
         }
@@ -3681,6 +3686,7 @@ function ShowTideDataPage(periods, showcurrent) {
         // time
         row1col1 = row1.insertCell(1);
         tidehhmm = period.hhmm;
+        tideyymmdd = period.yy * 10000 + period.mmdd; // tide yymmdd
         row1col1.innerHTML = "&nbsp;" + ShortTime(tidehhmm);
         row1col1.style.border = "thin solid gray";
         if (period.type == 'h') {
@@ -3692,7 +3698,7 @@ function ShowTideDataPage(periods, showcurrent) {
         }
         // if tide is past, color row gray and show current tide info
         if (showcurrent) {
-            if ((gMonthDay > tidemmdd) || ((gMonthDay == tidemmdd) && (gTimehhmm > tidehhmm))) {
+            if ((gYYmmdd > tideyymmdd) || ((gYYmmdd == tideyymmdd) && (gTimehhmm > tidehhmm))) {
                 row1.style.color = "gray";
                 //currentTide = "<span style='font-size:16px;font-weight:bold;color:blue'>";
                 if (period.type == 'h') currentTide = "Outgoing since: ";  // incoming outgoing flag
@@ -4118,14 +4124,15 @@ function HandleCustomTidesReply(reply) {
 //
 function ParseNOAATides(json) {
     gPeriods = []; //Empty the array
-    var i; var t; var d; var h;
+    var i; var t; var d; var h; var y;
     for (i = 0; i < json.predictions.length; i++) {
         //d = json.predictions[i].t.substr(0, 10) + "T" + json.predictions[i].t.substr(11, 16) + ":00-07:00";
+        var yy = Number(json.predictions[i].t.substr(2, 2));  // year as yy
         var mmdd = Number(json.predictions[i].t.substr(5, 2)) * 100 + Number(json.predictions[i].t.substr(8, 2));
         var hhmm = Number(json.predictions[i].t.substr(11, 2)) * 100 + Number(json.predictions[i].t.substr(14, 2));
         t = json.predictions[i].type.toLowerCase();  // type -> type
         h = Number(json.predictions[i].v);  // v -> height
-        gPeriods[i] = new NewPeriod(mmdd, hhmm, t, h);
+        gPeriods[i] = new NewPeriod(mmdd, hhmm, t, h, yy);
     }
     return;
 }
