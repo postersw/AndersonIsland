@@ -3511,10 +3511,6 @@ function ShowNextTides() {
     var i;
     for (i = 0; i < gPeriods.length; i++) {
         var thisperiod = gPeriods[i]; // tide oabject
-        //var m = Number(thisperiod.dateTimeISO.substring(5, 7));
-        //var d = Number(thisperiod.dateTimeISO.substring(8, 10));
-        //var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
-        //var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         var tidehhmm = thisperiod.hhmm;
         var tideyymmdd = thisperiod.yy * 10000 + thisperiod.mmdd; // tide yymmdd
         if (thisperiod.type == 'h') {
@@ -4187,9 +4183,28 @@ function ShowEmergencyPage() {
 
 
 
-//<!-- WEATHER ---------------------->
+//<!-- WEATHER SECTION---------->
 //<script>
 //==== WEATHER =====================================================================================
+var gWeatherPeriods = [];  // Array of WeatherPeriod objects.  All displays and show this array.
+// WeatherPeriod Object = { unixtime, temp_max, description, icon, rain, winddeg, windspeed }
+
+/////////////////////////////////////////////////////// added 5/24/20 v1.28
+// Constructor for WeatherPeriod Object = {(unixtime, temp_max, description, icon, rain, winddeg, windspeed)  }
+//  entry   
+//  exit    builds a weather period object
+function NewWeatherPeriod(time, temp_max, description, icon, rain, winddeg, windspeed) {
+    //this.yy = yy;       // year, number, 2 digits
+    //this.mmdd = mmdd;  //date, number
+    //this.hhmm = hhmm; // time, number
+    this.time = time; // in unix time ms since 1970
+    this.temp_max = temp_max;
+    this.description = description;
+    this.icon = icon;
+    this.rain = rain; // rain in inches
+    this.winddeg = winddeg; // wind direction in degrees
+    this.windspeed = windspeed; // wind speed in mph
+}
 
 /////////// WEATHER MAIN PAGE /////////////////////////////////////////////////////////////////////////////////////
 
@@ -4306,27 +4321,31 @@ function getForecast() {
 }
 //////////////////////////////////////////////////////////////////////////////
 //  HandleForecastAReply - read the jason forecast from OpenWeatherMap
-//  entry   jsondata = string json data reply  (note: string, NOT an object)
+//  entry   jsondata = string json forecast data reply  (note: string, NOT an object)
+//  exit    gWeatherPeriods = array of forecast weather period objects
 function HandleForecastAReply(jsondata) {
     localStorage.setItem("forecastjson", jsondata);  // save it for full forecast
     localStorage.setItem("forecastjsontime", gTimehhmm);
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
+    BuildWeatherPeriodArray(jsondata);
     // get hi and low
     var i, t;
     var mint = 9999; var maxt = 0;
     // scan 8 periods for min and max
-    var json = JSON.parse(jsondata); // create the json object
+    //var json = JSON.parse(jsondata); // create the json object
     for (i = 0; i < 8; i++) {
-        t = Math.ceil(Number(json.list[i].main.temp_max));
+        //t = Math.ceil(Number(json.list[i].main.temp_max));
+        t = gWeatherPeriods[i].temp_max;
         if (t > maxt) maxt = t;
         if (t < mint) mint = t;
     }
-    var r = json.list[0];
-    var forecast = "<strong>Forecast:</strong> " + maxt + "&deg/" + mint + "&deg, " +
-        r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
+    //var r = json.list[0];
+    var r = gWeatherPeriods[0];
+    var forecast = "<strong>Forecast:</strong> " + maxt.toFixed(0) + "&deg/" + mint.toFixed(0) + "&deg, " +
+        r.description + ", " + DegToCompassPoints(r.winddeg) + " " + r.windspeed.toFixed(0) + " mph ";
     localStorage.setItem("forecast", forecast);
-    TXTS.WeatherForecast = "The forecast is " + r.weather[0].description + ", high " + maxt + ", low " + mint;
+    TXTS.WeatherForecast = "The forecast is " + r.description + ", high " + maxt.toFixed(0) + ", low " + mint.toFixed(0);
     localStorage.setItem("TXTSWeatherForecast", TXTS.WeatherForecast);
     document.getElementById("forecast").innerHTML = forecast;
 
@@ -4334,7 +4353,34 @@ function HandleForecastAReply(jsondata) {
     if (gDisplayPage == "weatherpage") generateWeatherForecastPage();
 }  // end of function
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BuildWeatherPeriodArray Read json reply data and build the gWeatherPeriods array of WeatherPeriod objects
+// This is the ONLY code that parses the json forecast returned from OpenWeatherMap.
+//  Entry   jsonforecastdata = json forecast data to read
+//  Exit    gWeatherPeriods array built
+//
+function BuildWeatherPeriodArray(jsonforecastdata) {
+    gWeatherPeriods = []; // clear the array
+    if (jsonforecastdata == null) return;
+    try {
+        //var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
+        var json = JSON.parse(jsonforecastdata); // retrieve saved data and turn it into an object again
+    } catch (err) {
+        document.getElementById("forecastpage").innerHTML = "Forecast data error: " + err.message;
+        return;
+    }
+    if (json == null) return;
+    var resp = json.list;
+    for (var i = 0; i < resp.length; i++) {
+        var r = resp[i];
+        var timef = Number(r.dt);// unix gmt time in sec since 1970
+        var icon = r.weather[0].icon.substr(0, 2);
+        var rain;
+        if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = 0;
+        else rain = (Number(r.rain["3h"]) / 25.4);
+        gWeatherPeriods[i] = new NewWeatherPeriod(timef, Number(r.main.temp_max), r.weather[0].description, icon, rain, Number(r.wind.deg), Number(r.wind.speed))
+    }
+}
 /////////// WEATHER DETAIL PAGE /////////////////////////////////////////////////////////////////////////////////
 
 //  ShowWeatherPage
@@ -4350,38 +4396,28 @@ function ShowWeatherPage() {
 
 //////////////////////////////////////////////////////////////////////////////////
 //  generateWeatherForecastPage - generates the forecast using the existing json reply from openweathermap
-//  Entry   forecastjson = string version of json forecast object (must be parsed)
+//  Entry   gWeather = array of weather period objects from the json reply
 //          forecastjsontime = hhmm of when the json forecast was last retrieved
 //
 function generateWeatherForecastPage() {
-    if (localStorage.getItem("forecastjson") == null) return;
-    try {
-        var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
-    } catch (err) {
-        document.getElementById("forecastpage").innerHTML = "Forecast data error: " + err.message;
-        return;
-    }
-    if (json == null) return;
-    //var r = json.list[0];
-    //var forecast = "Forecast: " + StripDecimal(r.main.temp_max) + "&deg/" + StripDecimal(r.main.temp_min) + "&deg, " +
-    //   r.weather[0].description + ", " + DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed) + " mph ";
-    var resp = json.list;
+    if (gWeatherPeriods.length == 0) BuildWeatherPeriodArray(localStorage.getItem("forecastjson"));
+    if (gWeatherPeriods.length == 0) return; // if no data
     var mydayofweek = gDayofWeek;
     var firstrow = true;  // true for first row
     var olddate = "";
     var row1;
-    // roll through the reply in jason.list[i]
+    // roll through the reply in gWeatherPeiods
     var table = document.getElementById("forecasttable");
     gTableToClear = "forecasttable";
     // don't clear the table so it is there in case we don't have network coverage for a new forecast
     clearTable(table);
     var fdate = new Date();
-    for (var i = 0; i < resp.length; i++) {
+    for (var i = 0; i < gWeatherPeriods.length; i++) {
         // if date changed, add a blank row
-        var r = resp[i];
+        var r = gWeatherPeriods[i];
         //var row1 = table.insertRow(-1);
         //var t = r.dt_txt.substring(11, 13) * 100;  // hh00
-        var timef = Number(r.dt);// unix gmt time in sec since 1970
+        var timef = r.time;// unix gmt time in sec since 1970
         if (gTimeStampms > (timef * 1000)) continue;// if this row is old, skip it. Happens when weather is not updated .
 
         fdate.setTime(timef * 1000);// force UTC
@@ -4409,27 +4445,25 @@ function generateWeatherForecastPage() {
         row1col1.style.border = "thin solid gray";
         // high/low
         row1col1 = row1.insertCell(-1);
-        row1col1.innerHTML = StripDecimal(r.main.temp_max) + "&deg";
+        row1col1.innerHTML = r.temp_max.toFixed(0) + "&deg";
         row1col1.style.border = "thin solid gray";
         // icon
-        var icon = r.weather[0].icon.substr(0, 2);
+        var icon = r.icon;
         if ((t < 600) || (t > 1800)) icon += 'n';
         else icon += 'd';
         icon = "<img src='img/" + icon + ".png' width=30 height=30>";
         // weather
         row1col1 = row1.insertCell(-1);
-        row1col1.innerHTML = icon + "&nbsp; " + r.weather[0].description;
+        row1col1.innerHTML = icon + "&nbsp; " + r.description;
         row1col1.style.border = "thin solid gray";
         // rain
         row1col1 = row1.insertCell(-1);
         var rain;
-        if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = "0";
-        else rain = (Number(r.rain["3h"]) / 25.4).toFixed(2);
-        row1col1.innerHTML = rain;
+        row1col1.innerHTML = r.rain.toFixed(2);
         row1col1.style.border = "thin solid gray";
         // wind
         row1col1 = row1.insertCell(-1);
-        row1col1.innerHTML = DegToCompassPoints(r.wind.deg) + " " + StripDecimal(r.wind.speed);
+        row1col1.innerHTML = DegToCompassPoints(r.winddeg) + " " + r.windspeed.toFixed(0);
         row1col1.style.border = "thin solid gray";
     }  // for end
 
