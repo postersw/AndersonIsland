@@ -2307,11 +2307,16 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
                 closetime2 = Oh.Sc[i].H2[gDayofWeek * 2 + 1];
             }
             var openlist; openlist = "";
-            // test for open
+
+            // if OPEN, return 'Open till nn today' or 'Open till nn, then nn-nn";
             if ((hhmm >= opentime) && (hhmm < closetime)) {
                 if (opentime == 1 && closetime == 2359) return " <strong><span style='color:green'> " + TOpen + "  </span>24 hours today</strong>";  // special case for open 24 hours
-                return " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime) + " today</strong>";
+                var r = " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime);
+                if (hhmm < opentime2) r += ", then " + VeryShortTime(opentime2) + "-" + VeryShortTime(closetime2);
+                else r += " today";
+                return r + " </strong>";
             }
+            //  if CLOSED ...
             else if ((hhmm >= opentime2) && (hhmm < closetime2))  // 2nd shift for Post Office
                 return " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime2) + " today</strong>";
             else {
@@ -2414,8 +2419,9 @@ function FormatOneBusiness(Oh, mmdd, showall) {
     var showicon = "<i class='material-icons bizicon'>store</i> ";
     if (Oh.Icon != null) showicon = "<i class='material-icons bizicon'>" + Oh.Icon + " </i> ";
     var openlist = "<div style='background-color:lightblue;padding:6px'><span style='font-weight:bold;font-size:18px;color:blue'>" +
-        "<img style='float:right' src='" + Oh.Img + "' width='33%'>" + showicon + RemoveTags(Oh.Name) + "<br/>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>";
-    if (showall) openlist += Oh.Desc + "<br/>" + Oh.Addr + "<br/>";
+        "<img style='float:right' src='" + Oh.Img + "' width='33%'>" + showicon + RemoveTags(Oh.Name) + "<br/>" + GetOpenStatus(Oh, mmdd, gTimehhmm) + " </span></div>" +
+        Oh.Desc + "<br/>";
+    if (showall) openlist +=  Oh.Addr + "<br/>";
     openlist += "<div style=margin:8px>";
     var mmdd7 = Bumpmmdd(mmdd, 7);  // 7 days after
 

@@ -2299,11 +2299,16 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
                 closetime2 = Oh.Sc[i].H2[gDayofWeek * 2 + 1];
             }
             var openlist; openlist = "";
-            // test for open
+
+            // if OPEN, return 'Open till nn today' or 'Open till nn, then nn-nn";
             if ((hhmm >= opentime) && (hhmm < closetime)) {
                 if (opentime == 1 && closetime == 2359) return " <strong><span style='color:green'> " + TOpen + "  </span>24 hours today</strong>";  // special case for open 24 hours
-                return " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime) + " today</strong>";
+                var r = " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime);
+                if (hhmm < opentime2) r += ", then " + VeryShortTime(opentime2) + "-" + VeryShortTime(closetime2);
+                else r += " today";
+                return r + " </strong>";
             }
+            //  if CLOSED ...
             else if ((hhmm >= opentime2) && (hhmm < closetime2))  // 2nd shift for Post Office
                 return " <strong><span style='color:green'> " + TOpen + " </span>till " + VeryShortTime(closetime2) + " today</strong>";
             else {
