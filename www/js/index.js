@@ -79,7 +79,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.052920";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.053020";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -4332,9 +4332,8 @@ function HandleForecastAReply(jsondata) {
     // get hi and low
     var i, t;
     var mint = 9999; var maxt = 0;
-    // scan 8 periods for min and max
-    //var json = JSON.parse(jsondata); // create the json object
-    for (i = 0; i < 8; i++) {
+    // scan 6 periods (18 hours) for min and max
+    for (i = 0; i < 6; i++) {
         //t = Math.ceil(Number(json.list[i].main.temp_max));
         t = gWeatherPeriods[i].temp_max;
         if (t > maxt) maxt = t;
@@ -4354,23 +4353,24 @@ function HandleForecastAReply(jsondata) {
 }  // end of function
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// BuildWeatherPeriodArray Read json reply data and build the gWeatherPeriods array of WeatherPeriod objects
+// BuildWeatherPeriodArray Read json reply data and alwaysbuild the gWeatherPeriods array of WeatherPeriod objects
 // This is the ONLY code that parses the json forecast returned from OpenWeatherMap.
 //  Entry   jsonforecastdata = json forecast data to read
 //  Exit    gWeatherPeriods array built
 //
 function BuildWeatherPeriodArray(jsonforecastdata) {
-    gWeatherPeriods = []; // clear the array
     if (jsonforecastdata == null) return;
     try {
-        //var json = JSON.parse(localStorage.getItem("forecastjson")); // retrieve saved data and turn it into an object again
-        var json = JSON.parse(jsonforecastdata); // retrieve saved data and turn it into an object again
+        var json = JSON.parse(jsonforecastdata); //  turn json data into an object again
     } catch (err) {
         document.getElementById("forecastpage").innerHTML = "Forecast data error: " + err.message;
         return;
     }
     if (json == null) return;
+    gWeatherPeriods = []; // clear the array
     var resp = json.list;
+
+    // build gWeatherPeriods array of WeatherPeriod objects
     for (var i = 0; i < resp.length; i++) {
         var r = resp[i];
         var timef = Number(r.dt);// unix gmt time in sec since 1970
@@ -4416,7 +4416,6 @@ function generateWeatherForecastPage() {
         // if date changed, add a blank row
         var r = gWeatherPeriods[i];
         //var row1 = table.insertRow(-1);
-        //var t = r.dt_txt.substring(11, 13) * 100;  // hh00
         var timef = r.time;// unix gmt time in sec since 1970
         if (gTimeStampms > (timef * 1000)) continue;// if this row is old, skip it. Happens when weather is not updated .
 
