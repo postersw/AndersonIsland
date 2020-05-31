@@ -108,6 +108,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 04/29/20. Ver 1.27.032320 App Store approved for sale i.e. IOS Production.   
 05/21/20. Ver 1.27.032320 Merged to Master.
 05/21/20. Ver 1.28		  Branch Ver128 created.
+05/30/20. Ver 1.28.053020. Google Play Beta (Android). Add support for tides at different Puget Sound locations. Add NOAA Chart. Add Ferry Dock camera link to Camera page.
+							Improve main screen display of cancelled events, open times, parks status.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
