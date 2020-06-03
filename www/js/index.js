@@ -79,7 +79,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.053020";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.060220";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -2322,24 +2322,29 @@ function GetOpenStatus(Oh, mmdd, hhmm) {
             else {
                 // closed right now. Find next open time.
                 openlist += " <span style='color:red;font-weight:bold'> " + TClosed + ". </span>";
-                if (hhmm < opentime) return openlist + " " + TOpens + " today " + VeryShortTime(opentime);
-                if (hhmm < opentime2) return openlist + " Reopens today " + VeryShortTime(opentime2);
+                //if (hhmm < opentime) return openlist + " " + TOpens + " today " + VeryShortTime(opentime);
+                if (hhmm < opentime) return openlist + " " + TOpen + " today " + VeryShortTime(opentime) + "-" + VeryShortTime(closetime) + 
+                    ((hhmm < opentime2) ? (", " + VeryShortTime(opentime2) + "-" + VeryShortTime(closetime2)):"");
+                if (hhmm < opentime2) return openlist + " Reopens today " + VeryShortTime(opentime2) + "-" + VeryShortTime(closetime2);
                 //  closed today find next open time
                 j = gDayofWeek + 1; if (j == 7) j = 0;
                 // if it opens tomorrow
-                if (H[j * 2] > 0) return openlist + " " + TOpens + " tomorrow " + VeryShortTime(H[j * 2]);
+                if (H[j * 2] > 0) return openlist + " " + TOpen + " tomorrow " + VeryShortTime(H[j * 2]) + "-" + VeryShortTime(H[j * 2 + 1]) + 
+                    ((Oh.Sc[i].H2 != null)&&(Oh.Sc[i].H2[j * 2] != 0) ?(", " + VeryShortTime(Oh.Sc[i].H2[j * 2]) + "-" + VeryShortTime(Oh.Sc[i].H2[j*2+1])) : "");
                 // not open tomorrow. find next open day.---------------------  
                 // Note - for alternate week.  Check to see if it is open later this week. Then return closed status for next week. we know that this week is ok (because it is checked at the top), so next week must be closed
                 if (!(Oh.AlternateWeek === undefined)) {  // if it is an alternate week
                     for (j = gDayofWeek + 1; j < 7; j++) { // ensure we check each day only through the end of this week.
-                        if (H[j * 2] > 0) return TOpens + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]) + ".";
+                        if (H[j * 2] > 0) return TOpen + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]) + "-" + VeryShortTime(H[j * 2 + 1]) + 
+                            (Oh.Sc[i].H2 != null) &&((Oh.Sc[i].H2[j * 2] != 0) ? (", " + VeryShortTime(Oh.Sc[i].H2[j * 2]) + "-" + VeryShortTime(Oh.Sc[i].H2[j * 2 + 1])) : "");
                     }
                     return TClosedAW + " next week.";
                 }
                 // not alternate week and not open tomorrow. find next open day - search next 7 days.  
                 for (var k = 0; k < 7; k++) {  // ensure we check each day only once
                     j++; if (j == 7) j = 0; // handle day rollover
-                    if (H[j * 2] > 0) return openlist + " " + TOpens + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]);
+                    if (H[j * 2] > 0) return openlist + " " + TOpens + " " + gDayofWeekShort[j] + " " + VeryShortTime(H[j * 2]) + "-" + VeryShortTime(H[j * 2 + 1]) +
+                        ((Oh.Sc[i].H2 != null) &&(Oh.Sc[i].H2[j * 2] != 0) ? (", " + VeryShortTime(Oh.Sc[i].H2[j * 2]) + "-" + VeryShortTime(Oh.Sc[i].H2[j * 2 + 1])) : "");
                 } // find open day
             }
         }
