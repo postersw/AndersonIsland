@@ -4071,7 +4071,8 @@ function getCustomTideData(fromdate, station) {
     // default date = today
     if (fromdate != "") gCustomTideFromDate = fromdate;
     else if (gCustomTideFromDate == "") {
-        fromdate = formatDate(gMonthDay) + "/" + gYear.toFixed(0);  // mm/dd/yyyy
+        //fromdate = formatDate(gMonthDay) + "/" + gYear.toFixed(0);  // mm/dd/yyyy
+        fromdate = Leading0(gMonth) + "/" + Leading0(gDayofMonth) + "/" + gYear.toFixed(0);  // mm/dd/yyyy
         if (fromdate.length == 9) fromdate = "0" + fromdate; // correct for case of single digit month;
         gCustomTideFromDate = fromdate;
     }
@@ -4106,11 +4107,19 @@ function getCustomTideData(fromdate, station) {
 ///////////////////////////////////////////////////////////////////
 // HandleCustomTidesReply - handle the NOAA reply and load the gPeriods array
 //  entry   reply = the reply from NOAA
+//  exit    gPeriods array = new obnject. 
+//
 function HandleCustomTidesReply(reply) {
     try {
         var json = JSON.parse(reply);
     } catch (err) {
         document.getElementById("tidepagecurrent").innerHTML = "Tides not available." + err.message;
+        return;
+    }
+
+    // check for error {error: {message: error message}}
+    if (json.error != null) {
+        alert(json.error.message);
         return;
     }
 
