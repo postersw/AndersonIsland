@@ -3780,7 +3780,9 @@ function TideClick(id) {
     showingtidei = i;
     gUserTideSelection = true;
     window.scroll(0, 0);  // force scroll to top
-    GraphTideData(i, false);
+    var showtoday = false;
+    if (gPeriods[i].mmdd == gMonthDay) showtoday = true;  // if the period we are drawing is today, show the today line;
+    GraphTideData(i, showtoday);
     var hilo = "HIGH tide: ";
     if (gPeriods[i].height < gPeriods[i - 1].height) hilo = "Low tide: ";
     document.getElementById("tidepagecurrent").innerHTML = "<span style='font-size:16px;font-weight:bold;color:blue'> Date:" +
