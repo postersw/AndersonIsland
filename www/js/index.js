@@ -1,7 +1,14 @@
 /*****************************************************************************
  * index.js - ALL JAVASCRIPT FOR AIA
  * Javascript for AIA consolidated into this single file
-     ver 1.5.0509: add OpenHours object (multiple date ranges and time ranges).  Fix weather month.
+    2016
+    	1.1.319: Web. fix weather forecast gmt time conversion
+	    1.2: Web. add weather icons
+	    1.3.0414: Web add pushbots3
+        1.3.0422: Android & IOS release. add pushbots.resetBadge
+        1.4.0430: Web only. Add tide graph.  Color code events and add filter.  Add Alert Cancel.
+                  Remove App Store message from non-mobile devices.
+        1.5.0509: add OpenHours object (multiple date ranges and time ranges).  Fix weather month.
             0515: Sunrise/Sunset in tide graph, add other days. Color code activities. Local version of jquery. 
                   Onclick support for events and add-to-google-calendar.
                   My own dialog box div. Formatting improvements.
@@ -27,7 +34,8 @@
             0929     : Coming Events: Automatically add year to all calendar dates and hande year rollover correctly.
             1007     : Ferry Schedule Grid: move headers to each day. Color am backgound blue.
             1010     : Android ver 2220 to Google Play
-            10.14    : ClearCacheandExit button; extra null protections.
+            10.14    : ClearCacheandExit button; extra null protections
+    2017
         1.8 0307 (2017): Add Ferry Location link and Ferry Schedule link to dailycache.
         1.9 039817  : Add TICKETS link that actually starts the ticket app on the phone.
         1.10 031417: Make ferry ticket row narrower.  Fix for IOS.
@@ -40,6 +48,7 @@
         1.13 052100: Ferry times on main page: 3/row. time till run. Highlight by location.
         1.14 0614:   Fix Android launch icon. Released to Google play store. NOT released to IOS.
         1.15 0623:   IOS Version. Show selected options on the menu screen.
+    2018
         1.16 010518. Fix thanksgiving date calc.  0124. Make current time green on events. Add MAINTABLEROWS.
              020218. Change tide display on main page to a table.
              041518. Add arrows to tide display. 
@@ -51,12 +60,15 @@
              081818. Moon phases added to weather.
         1.22 101318. Text to Speech and Big Text for main screen entries.
         1.23.112418. Keep ferry display up for ferry delay time.  Fix android icons.
+    2019
         1.24.021219. Add REFRESH request to Alert.
         1.25.091419. Handle line feeds in calendar details.
+    2020
         1.25.031420. Call external browser for Ferry Location. Add FERRYLOCEXT link.
         1.26.032020. Add cleartext plugin. Still on branch 125.
         1.27.032330. Use https for all web requests per google requirements for android 9.
         1.28.052220. Refactor Events to use an array of 'event' objects. Refactor Tides to use an array of 'period' objects.
+                     Refactor weather to use an array of 'weather' objects.
                      Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
  * 
  * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
@@ -79,7 +91,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.060320";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.060520";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -4129,7 +4141,7 @@ function HandleCustomTidesReply(reply) {
     ParseNOAATides(json);
     gUserTideSelection = true;  // this flag says that gPeriods contains a non-standard tide collection
     ShowTideDataPage(gPeriods, false);
-    TideClick(2);
+    TideClick(1);// begin with start of day
     return;
 }
 
