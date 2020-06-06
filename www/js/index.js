@@ -194,7 +194,7 @@ var app = {
 //googleplaylink
 //iosinternalticketlink
 //iosticketlink
-//jsontidesgPeriods json stringify of gPeriods tides array
+//jsontidesgPeriods json stringify of gPeriods tides array.  (gPeriods is built by ParseTides from the json response from NOAA. gPeriods is used by all tides display routines)
 //jsonweatherperiods json stringify of gWeatherPeriods object array
 //links		html string of island information links
 //message	    top line of main display
@@ -3509,19 +3509,22 @@ function BumpyymmddByMonths(yymmdd, m) {
 
 //<!-- TIDES SECTION----------------------------------------------------------------------------------->
 //<script>
-//===== TIDES =======================================================================================
-var gUserTideSelection = true; // true when user sets tides with custom date (not today)
-var gPeriods = [];  // Array of Period objects.  All displays and graphs show this array.
-// Period Object = { yy, mmdd, hhmm, type h|l, height in ft. }
+//===== TIDES ===================================================================================================================
+var gUserTideSelection = true; // true when user sets tides with custom date (not today) so gPeriods = a custom tide. false=gPeriods contains Yoman Point for today.
+//  gPeriods is built by ParseTides from the json response from NOAA. gPeriods is used by all tides display routines
+//           saved and restored into localStorage.jsontidesgPeriods. 
+var gPeriods = [];  // Array of Tide Period objects.  All displays and graphs show this array.
+//                  note: can contain the Yoman Point tides for today, OR a user's custom tides (if gUserTideSelection=true)
+// Tide Period Object = { yy, mmdd, hhmm, type h|l, height in ft. }
 
 /////////////////////////////////////////////////////// added 5/24/20 v1.28
-// Constructor for Period Object = {mmdd, hhmm, type, height, yy}
+// Constructor for Tide Period Object = {mmdd, hhmm, type, height, yy}
 //  entry   mmdd = numeric date
 //          hhmm = numeric time
 //          type = 'h' or 'l' for high or low tide
 //          height = height in feet, numeric fp
 //          yy = numeric year 2 digits
-function NewPeriod(mmdd, hhmm, type, height, yy) {
+function NewTidePeriod(mmdd, hhmm, type, height, yy) {
     this.yy = yy;       // year, number, 2 digits
     this.mmdd = mmdd;  //date, number
     this.hhmm = hhmm; // time, number
@@ -3563,7 +3566,7 @@ function ParseTides(json) {
         var h = Number(thisperiod.dateTimeISO.substring(11, 13)); // tide hour
         var mi = Number(thisperiod.dateTimeISO.substring(14, 16));  // time min
         // create new tide period entry
-        gPeriods[i] = new NewPeriod((m * 100 + d), ((h * 100) + mi), thisperiod.type, Number(thisperiod.heightFT), yy);
+        gPeriods[i] = new NewTidePeriod((m * 100 + d), ((h * 100) + mi), thisperiod.type, Number(thisperiod.heightFT), yy);
     }
     gUserTideSelection = false; // standard tide
 }
@@ -3689,9 +3692,12 @@ function CalculateCurrentTideHeight10(t2, t1, tide2, tide1) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // TidesDataPage - display the detailed tide table and graph on the Tides Detail page
-//  Always forces gPeriods to contain the current jsontides data, and draws the page from gPeriods
+//  Always forces gPeriods to contain the current jsontides data for Yoman Point, for today, and draws the page from gPeriods
 //
-//  entry gPeriods = array of period objects to display the tides
+//  entry if gUserTideSelection = false, gPeriods = array of period objects to display the tides for Yoman Point for today
+//        else uses localStorage.jsontidesgPeriod = stringify of gPeriods for YomanPoint
+//  exit  gPeriods = user tides objects for Yoman point for today
+//        gUserTideSelection = false
 //
 function TidesDataPage() {
     InitializeDates(0);
@@ -3701,7 +3707,6 @@ function TidesDataPage() {
     gCustomTideStation = "";
     gCustomTideStationName = "";
     // show the tide data in the gPeriods array (from the localstorage.jsontides);
-    //if (gUserTideSelection) ParseTides();  // force display of data in jsontides for today
     if (gUserTideSelection) gPeriods = JSON.parse(localStorage.getItem("jsontidesgPeriods"));
     gUserTideSelection = false; 
     var i = ShowTideDataPage(gPeriods, true);
@@ -3713,7 +3718,7 @@ function TidesDataPage() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ShowTideData - show the data in the gPeriods array in a table on the Tides page
+// ShowTideData - show the data in the periods array in a table on the Tides page
 //  entry periods = array of Period objects. Each array entry is one tide period.
 //        showcurrent = true to show current tides, else false
 //  exit  returns periods index of NEXT tide
@@ -4190,7 +4195,8 @@ function getCustomTideData(fromdate, station) {
 ///////////////////////////////////////////////////////////////////
 // HandleCustomTidesReply - handle the NOAA reply and load the gPeriods array
 //  entry   reply = the reply from NOAA
-//  exit    gPeriods array = new obnject. 
+//  exit    gPeriods array = array of CUSTOM TIDES (NOT the yoman point tides). 
+//          gUserTideSelection = true
 //
 function HandleCustomTidesReply(reply) {
     try {
@@ -4231,7 +4237,7 @@ function ParseNOAATides(json) {
         var hhmm = Number(json.predictions[i].t.substr(11, 2)) * 100 + Number(json.predictions[i].t.substr(14, 2));
         t = json.predictions[i].type.toLowerCase();  // type -> type
         h = Number(json.predictions[i].v);  // v -> height
-        gPeriods[i] = new NewPeriod(mmdd, hhmm, t, h, yy);
+        gPeriods[i] = new NewTidePeriod(mmdd, hhmm, t, h, yy);
     }
     return;
 }
