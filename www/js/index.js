@@ -91,7 +91,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.060520";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.060620";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -151,6 +151,70 @@ var app = {
 // JavaScript source code specifically for Anderson Island Assistant
 //  RFB 2/2/2016
 "use strict";
+
+///////////////////// localStorage (persistant storage over multiple executions)////////////////////////////////////
+//alertdetail	alert detail for ferry							
+//alerthide	1 to hide ferry alert
+//androidpackageticketlink
+//alerttext	alert text
+//appstorelink
+//burnbanalert	alert text for burn ban		
+//burnbanlink   link address of burn ban info
+//chartlink
+//Cmain								
+//comingactivities saved comingactivities text from getdailycache.php
+//comingevents	    saved comingevents text from getdailycache.php
+//comingeventsloaded  mmdd of coming event loaded
+//currentweather	current weather text string for main page
+//currentweatherlink
+//currentweatherlong long text string of current weather for the detailed weather forecast page
+//currentweathertime time of current weather
+//customtideslink
+//dailycacheloaded	mmdd when cach loaded
+//dailycacheloadedtime	hhmm when cache loaded
+//emergency	emergency contacts, from dailycache.txt.
+//eventtype	type of event to display.events | activities
+//ferrycams/a   link address of ferry cameras
+//ferrydate2	date after which ferrytimes2 / a2 / k2 becomes valid
+//ferrydockcamlink
+//ferryhighlight	1 to highlight AI or Steilacoom ferry times
+//ferrylocextlink
+//ferrymessage	message to display on ferry schedule page
+//ferrypagelink
+//ferryschedulelink
+//ferryshow3	1 to show 3 ferry times on main page
+//ferryshowin	1 to show countdown to ferry arrival
+//ferrytimess / a / k / s2 / a2 / k2  raw Steilacoom / Anderson / Ketron ferry time text string / string2 from dailycache.txt
+//forecast	forecast text string for main page							
+//forecastjsontime time forecast was retrieved
+//forecasttime	time of forecast
+//glocationonai	1 if on Anderson Island
+//googlemaplink
+//googleplayticketlink
+//googleplaylink
+//iosinternalticketlink
+//iosticketlink
+//jsontidesgPeriods json stringify of gPeriods tides array
+//jsonweatherperiods json stringify of gWeatherPeriods object array
+//links		html string of island information links
+//message	    top line of main display
+//moon          text string of moon phase
+//myver		    app version
+//newslink
+//nexttide	    next tide text string
+//noaalink
+//notifyoff	    off if notify is off
+//openhoursjson	json string of open hours object array.from dailycache.txt.
+//pagehits	    string 1 letter / page
+//parksinfo	    parts info for main page
+//pierceferryticketlink
+//refreshrequest								
+//sunrise		sunrise time for detailed weather page	
+//sunset        sunset time for detailed weather page
+//tanneroutagelink
+//tidedatalink
+//weatherforecastlink
+
 /////////////////////////  DATE ///////////////////////////////////////////////////////////////////////
 // global date variables
 var table; // the schedule table as a DOM object
@@ -244,6 +308,10 @@ var BIGTX = {
     BurnBanStatus: "",
     TannerOutageStatus: ""
 };
+
+//  localStorage - persistant storage maintained by the browser. Used to save network data between AIA executions.
+//
+//  
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //  DebugLog writes message to console, with time stamp
@@ -1309,12 +1377,8 @@ function ParseDailyCache(data) {
 
     // tides (added 6/6/16);
     s = parseCache(data, "", "TIDES", "TIDESEND");
-    try {
-        var json = JSON.parse(s);
-    } catch (err) {
-        alert("ERROR: Can't decode tide data: " + err.message + "\n" + s);
-    }
-    localStorage.setItem("jsontides", JSON.stringify(json.response.periods)); // store the full json reponse structure
+    ParseTides(s); // parse the tides into the gPeriods array
+    localStorage.setItem("jsontidesgPeriods", JSON.stringify(gPeriods)); // store the gPeriods array as a json string
     localStorage.setItem("tidesloadedmmdd", gMonthDay);
     ShowNextTides();
 
@@ -1537,6 +1601,7 @@ function ShowCachedData() {
     //if (!IsEmpty(s)) document.getElementById("maintablerows").innerHTML = s;
 
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Reload cached data - calls all the ajax calls to get the data and recache it in localStorage.
@@ -3465,15 +3530,14 @@ function NewPeriod(mmdd, hhmm, type, height, yy) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// ParseTides - parse the tides reply in localStorage "jsontides" AERIS json format, and build the gPeriods tide array
+// ParseTides - parse the tides reply in AERIS json format, and build the gPeriods tide array
 //  Note: if the tide return string changes (or we switch vendors), change this code but leave the gPeriods array the same
 //  Note: we get tide data using NOAA web site and return a json structure in the aeris json format.
 //  Original AERIS call changed to get NOAA data on the server, but still return an AERIS format.
-//  entry: localStorage "jsontides" = tide data in AERIS json format  (refreshed nightly) as part of the getdailycache.php feed.
+//  entry: "jsontides" = tide data in AERIS json format  (refreshed nightly) as part of the getdailycache.php feed.
 //  exit    gPeriods array of Period objects, 1/period
 //          gUserTideSelection = false
-function ParseTides() {
-    var json = localStorage.getItem("jsontides");
+function ParseTides(json) {
     // get tide data
     if (json === null) {
         gForceTideReload = true;
@@ -3482,7 +3546,8 @@ function ParseTides() {
     }
     // parse the json tides structure
     try {
-        var periods = JSON.parse(json); // parse it
+        var s = JSON.parse(json); // parse it
+        periods = s.response.periods;
     } catch (err) {
         document.getElementById("tides").innerHTML = "Error in tide data.<br/>" + err.message;
         return;
@@ -3522,11 +3587,11 @@ function ShowNextTides() {
     var newtidetime, oldtidetime, newtideheight, oldtideheight;
     var curtidespeech = "";
 
-    // force gPeriods to have current tides
-    if (gUserTideSelection) ParseTides();
+    if (gUserTideSelection) gPeriods = JSON.parse(localStorage.getItem("jsontidesgPeriods"));
+    gUserTideSelection = false;
     // get tide data
-    if (gPeriods.length == 0) {
-        gForceTideReload = true;
+    if (gPeriods===null || gPeriods.length == 0) {
+        gForceCacheReload = true;
         document.getElementById("tides").innerHTML = "Tide data not available.";
         return;
     }
@@ -3636,7 +3701,9 @@ function TidesDataPage() {
     gCustomTideStation = "";
     gCustomTideStationName = "";
     // show the tide data in the gPeriods array (from the localstorage.jsontides);
-    if (gUserTideSelection) ParseTides();  // force display of data in jsontides for today
+    //if (gUserTideSelection) ParseTides();  // force display of data in jsontides for today
+    if (gUserTideSelection) gPeriods = JSON.parse(localStorage.getItem("jsontidesgPeriods"));
+    gUserTideSelection = false; 
     var i = ShowTideDataPage(gPeriods, true);
     showingtidei = i;
     //GraphTideData(gPeriods[i - 1].heightFT, gPeriods[i].heightFT, gPeriods[i + 1].heightFT,
@@ -3665,6 +3732,8 @@ function ShowTideDataPage(periods, showcurrent) {
     var newdate;
     var starti = 0;
     var showingtidei = 0;  // row id of tide to display
+    var oldtidetime = 0;
+    var oldtideheight = 0;
 
     // roll through the reply in jason.response.periods[i] and find next tide row
     if (showcurrent) {
@@ -4330,14 +4399,17 @@ function FormatWeatherIcon(icon) {
 // getForecast using OpenWeatherMap. This is the ONLY routine that gets the forecast
 // get weather data using the OpenWeatherMap api and returning a jsonp structure. This is the only way to get data from a different web site.
 // License as of 2/25/16 is for 60 hits/min for free. http://openweathermap.org/price
-//  exit: forecastjson = json full forecast structure, used on full forecast page
+//  exit: gWeatherPeriods = full forecast structure, used on full forecast page
+//        localstorage 'forecastweatherperiods' = serialized gWeatherPeriods
 //        forecastjsontime = timestamp
 //        forecast = short form of forecast for main page
 function getForecast() {
     // kludge to prevent over fishing of forecast
-    var timestamp = Date.now() / 1000; // time in sec
-    var t = localStorage.getItem("forecasttime");
-    if (t != null && ((timestamp - t) < (60 * 60))) return; // gets weather forecast async every 60 min.
+    if (!(gWeatherPeriods === null) && (gWeatherPeriods.length != 0)) {
+        var timestamp = Date.now() / 1000; // time in sec
+        var t = localStorage.getItem("forecasttime");
+        if (t != null && ((timestamp - t) < (60 * 60))) return; // gets weather forecast async every 60 min.
+    }
     //$.ajax({
     //    url: 'https://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0',
 
@@ -4355,14 +4427,16 @@ function getForecast() {
 }
 //////////////////////////////////////////////////////////////////////////////
 //  HandleForecastAReply - read the jason forecast from OpenWeatherMap
-//  entry   jsondata = string json forecast data reply  (note: string, NOT an object)
+//  entry   jsondata = string json forecast data reply from openweathermap (note: string, NOT an object)
 //  exit    gWeatherPeriods = array of forecast weather period objects
+//          localstorage 'forecastweatherperiods' = json stringify of gWeatherPeriods
 function HandleForecastAReply(jsondata) {
-    localStorage.setItem("forecastjson", jsondata);  // save it for full forecast
+    //localStorage.setItem("forecastjson", jsondata);  // save it for full forecast
     localStorage.setItem("forecastjsontime", gTimehhmm);
     var timestamp = Date.now() / 1000; // time in sec
     localStorage.setItem("forecasttime", timestamp); // save the cache time so we don't keep asking forever
     BuildWeatherPeriodArray(jsondata);
+    localStorage.setItem("jsonweatherperiods", JSON.stringify(gWeatherPeriods));  //save gWeatherPeriods array as a json string
     // get hi and low
     var i, t;
     var mint = 9999; var maxt = 0;
@@ -4389,7 +4463,7 @@ function HandleForecastAReply(jsondata) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // BuildWeatherPeriodArray Read json reply data and alwaysbuild the gWeatherPeriods array of WeatherPeriod objects
 // This is the ONLY code that parses the json forecast returned from OpenWeatherMap.
-//  Entry   jsonforecastdata = json forecast data to read
+//  Entry   jsonforecastdata = json forecast data from OpenWeatherMap
 //  Exit    gWeatherPeriods array built
 //
 function BuildWeatherPeriodArray(jsonforecastdata) {
@@ -4430,12 +4504,12 @@ function ShowWeatherPage() {
 
 //////////////////////////////////////////////////////////////////////////////////
 //  generateWeatherForecastPage - generates the forecast using the existing json reply from openweathermap
-//  Entry   gWeather = array of weather period objects from the json reply
+//  Entry   gWeather = array of weather period objects from the json reply (if empty, reloaded from local storage 'forecastjsonweatherperiods')
 //          forecastjsontime = hhmm of when the json forecast was last retrieved
 //
 function generateWeatherForecastPage() {
-    if (gWeatherPeriods.length == 0) BuildWeatherPeriodArray(localStorage.getItem("forecastjson"));
-    if (gWeatherPeriods.length == 0) return; // if no data
+    if (gWeatherPeriods===null || gWeatherPeriods.length == 0) gWeatherPeriods = JSON.parse(localStorage.getItem("jsonweatherperiods"));
+    if (gWeatherPeriods === null || gWeatherPeriods.length == 0) return; // if no data
     var mydayofweek = gDayofWeek;
     var firstrow = true;  // true for first row
     var olddate = "";
@@ -4898,11 +4972,15 @@ function StartApp() {
     //  Show the cached data immediately if there is no version change. Otherwise wait for a cache reload.
     if (LSget("myver") == gMyVer) {
         ParseFerryTimes();  // moved saved data into ferry time arrays
-        ParseOpenHours();
-        ParseEventsList(localStorage.getItem("comingevents"), EvtA);
-        ParseEventsList(localStorage.getItem("comingactivities"), ActA);
+        ParseOpenHours();   // fill the OpenHours array
+        ParseEventsList(localStorage.getItem("comingevents"), EvtA);  // fill the EvtA event array
+        ParseEventsList(localStorage.getItem("comingactivities"), ActA);  // fill the ActA event array
+        gPeriods = JSON.parse(localStorage.getItem("jsontidesgPeriods")); // fill the gPeriods tide period array
+        gWeatherPeriods = JSON.parse(localStorage.getItem("jsonweatherperiods")); // fill the gPeriods tide period array
+        gUserTideSelection = false; // gPeriods contains tides data
         ShowCachedData();
     } else gForceCacheReload = true;
+    if (gPeriods === null || gPeriods.length == 0) gForceCacheReload = true;  // if no tides data
 
     //// show the page
     //Show("mainpage");  // now display the main page
