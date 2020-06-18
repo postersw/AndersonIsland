@@ -6,7 +6,7 @@
     <title>AIA: Edit Ferry Schedule</title>
 </head>
 <body>
-<h1>EDIT FERRY SCHEDULE  5/12/20</h1>
+<h1>EDIT FERRY SCHEDULE  6/18/20</h1>
     <p>To Use:
     1. Click 'LOAD FULL SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3. Click on Format (). 4. Make changes using Edit box. 
     5 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 5. When done, select SAVE FULL SCHEDULE, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
@@ -19,7 +19,8 @@
 
     <p>Rules for ferry time expression:<br/>
     <ul>
-        <li>Times are 2400, NO leading zero. 0=midnight. 1200=noon.</li>
+        <li>Times are 2400, NO leading zero. 0=midnight. 1200=noon. </li>
+        <li>Time = D to delete row. I to insert row.</li>
         <li>* = runs every day.</li>
         <li>0123456 = day of week to run. 0=Sunday. 6=Saturday. Multiple days are allowed, e.g. 135</li>
         <li>(xxxxx) = a javascript expression that evaluates to TRUE/FALSE. TRUE = run.  FALSE = skip.</li>
@@ -32,12 +33,12 @@
     <label>mmdd</label><input type="number" id="monthday" size="4"/>
     <label>dayofweek</label><input type="number" id="dayofweek" size="1"/>
     <label>weekofmonth</label><input type="number" id="weekofmonth" size="1"/><br />
-    <input type="text" id="edittime" size="4" /> &nbsp;<input type="text" size="1" id="editSAK" /> &nbsp; &nbsp;
-    <button onclick="PFormat()">Format by ()</button> 
-    <button onclick="CheckEdit()">Check</button> 
+    hhmm/I/D: <input type="text" id="edittime" size="4" /> &nbsp;<input type="text" size="1" id="editSAK" /> &nbsp; &nbsp;
+    <button onclick="PFormat()">Pretty Format by ()</button> 
+    <button onclick="CheckEdit()">Syntax Check rule</button> 
     <button onclick="PCountEdit()">() Count</button> 
-    <button onclick="SaveEdit(0)">Save Edit box to 1 schedule</button>
-    <button onclick="SaveEdit(1)">Save Edit box to ST/AI, adding 30 min to AI time:</button><br/>
+    <button onclick="SaveEdit(0)">Save Edit box and time to 1 schedule</button>
+    <button onclick="SaveEdit(1)">Save Edit box to ST and AI (don't change AI time)</button><br/>
     <textarea cols="200" rows="4" id="editrule"></textarea>
 
     <h1>SCHEDULE TABLE</h1>
@@ -364,7 +365,7 @@
         switch(geditSAK) {
             case "S": 
                 document.getElementById("edittime").value = ferrytimeS[i];
-                document.getElementById("editrule").value = ferrytimeS[i+1];
+                document.getElementById("editrule").value = ferrytimeS[i + 1];
                 break;
             case "A": 
                 document.getElementById("edittime").value = ferrytimeA[i];
@@ -417,12 +418,22 @@
     // SaveEdit - move the edit cell back into the ferrytime array 
     //  and regen the display table
     //  Entry   all = 0 to just save to current entry, 1 to save to Steiacoom, AI
+    //          gediti = index into ferrytimeS/A/K for item being edited.
     function SaveEdit(all) {
         if (all == 1) geditSAK = "SA";
         if (geditSAK == "") return;
         var rule = document.getElementById("editrule").value;
         rule = rule.replace(/ /g, ""); // remove spaces
         rule = rule.replace(/\n/g, ""); // remove new line
+        var ft = document.getElementById("edittime").value;
+        if (ft == "D") {
+            DeleteRow(gediti); // delete row
+            return;
+        }
+        if (ft == "I") {
+            InsertRow(gediti); // insert row
+            return;
+        }
         var ft = Number(document.getElementById("edittime").value);
         if (Number.isNaN(ft) == true) {
             alert("invalid time");
@@ -452,11 +463,7 @@
                 case "SA":
                     ferrytimeS[gediti] = ft;
                     ferrytimeS[gediti + 1] = rule;
-                    var fta = timeAdd(ft, 30);
-                    ferrytimeA[gediti] = fta;
                     ferrytimeA[gediti + 1] = rule;
-                    alert("value saved for S " + ft.toFixed() + " A:" + fta.toFixed());
-
                     //ferrytimeK[gediti] = ft;
                     //ferrytimeK[gediti + 1] = rule;
                     break;
@@ -465,6 +472,48 @@
         clearTable(document.getElementById("ftable"));
         BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK);
         alert("value saved for " + geditSAK + " " + ft.toFixed())
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //  DeleteRow - delete the row
+    //  entry gediti = index of row to delete from ferrytimeS[i]; A[i], K[i]
+    //  exit    2 items deleted from ferrytimeS/A/K
+    //          display rebilt
+    function DeleteRow(di) {
+        if (confirm("delete row?") == false) return;
+        le = ferrytimeS.length-1;
+        var i;
+        // move rows down
+        for (i = di; i < le; i++) {
+            ferrytimeS[i] = ferrytimeS[i + 2];
+            ferrytimeA[i] = ferrytimeA[i + 2];
+            ferrytimeK[i] = ferrytimeK[i + 2];
+        }
+        ferrytimeS.length = le - 2;
+        ferrytimeA.length = le - 2;
+        ferrytimeK.length = le - 2;  // turncate array
+        // rebuild html table for the schedule
+        clearTable(document.getElementById("ftable"));
+        BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK)
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //  InsertRow - insert the row
+    //  entry gediti = index of row to insert
+    function InsertRow(di) {
+        if (confirm("insert row?") == false) return;
+        le = ferrytimeS.length+2;
+        var i;
+        // move rows down
+        for (i = le; i > di; i--) {
+            ferrytimeS[i] = ferrytimeS[i - 2];
+            ferrytimeA[i] = ferrytimeA[i - 2];
+            ferrytimeK[i] = ferrytimeK[i - 2];
+        }
+        // rebuild html table for the schedule
+        clearTable(document.getElementById("ftable"));
+        BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK)
     }
 
     ///////////////////////////////////////////////////////////////////////////////
