@@ -70,6 +70,7 @@
         1.28.052220. Refactor Events to use an array of 'event' objects. Refactor Tides to use an array of 'period' objects.
                      Refactor weather to use an array of 'weather' objects.
                      Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
+        1.28.071320. Use _system web viewer for Chart on iPhone. 
  * 
  * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -91,7 +92,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.060620";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.071320";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -710,7 +711,7 @@ function ShowMap() {
 function ShowChart() {
     MarkPage("g");
     var link = GetLink("chartlink", "https://charts.noaa.gov/OnLineViewer/18440.shtml");
-    window.open(link, "_blank");
+    window.open(link, "_system");
 }
 
 
