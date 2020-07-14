@@ -92,7 +92,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.071320";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.28.071420";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -705,7 +705,7 @@ function ShowFerry() {
 function ShowMap() {
     MarkPage("g");
     var link = GetLink("googlemaplink", "https://www.google.com/maps/place/Anderson+Island,+Washington+98303/@47.1559337,-122.7429194,13z/data=!3m1!4b1!4m2!3m1!1s0x5491a7e3857e1e6f:0x9800502f110113b4");
-    window.open(link, "_blank");
+    window.open(link, "_system");
 }
 
 function ShowChart() {
@@ -718,7 +718,7 @@ function ShowChart() {
 function ShowBurnBan() {
     MarkPage("u");
     var link = GetLink("burnbanlink", "http://wc.pscleanair.org/burnban411/");  // default
-    window.open(link, "_blank");
+    window.open(link, "_system");
 }
 
 function ShowTannerOutage() {
@@ -731,7 +731,7 @@ function ShowParks() {
     MarkPage("p");
     var link = GetLink("parkslink", 'https://www.anderson-island.org/parks/parks.html');
     //window.open(link, '_blank', 'EnableViewPortScale=yes');
-    window.open(link, '_blank'); // no viewport scaling
+    window.open(link, '_system'); 
 
 }
 
