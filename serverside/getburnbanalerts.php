@@ -16,6 +16,7 @@
 //      Rev 4/4/19: Look for alt="FS No Burn Ban"
 //      Rev 11/25/19: Air Quality alert address change.
 //      Rev 01/17/20: Burn Ban address change
+//      Rev 7/29/20: Look for Burn Ban Announcement.
         //<div class="area-row">        //    <div class="area-name sub-area">Peninsula</div>
         //        <div class="status-text no-ban">No Ban</div>
         //</div>                                 12345678
@@ -84,6 +85,7 @@
     $effective = stripos($fire, '"FIRE SAFETY - BURN BAN"', $i);
     if($effective===false) $effective = stripos($fire, '"BURN BAN IN EFFECT"', $i);
     if($effective===false) $effective = stripos($fire, '"FIRE SAFETY BURN BAN"', $i);
+    if($effective===false) $effective = stripos($fire, '"Burn Ban Announcement"', $i);  // added 7/29/2020
     if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
     elseif($effective> 0) $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
     else {
