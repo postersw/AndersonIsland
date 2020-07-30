@@ -105,7 +105,13 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/22/20. Ver 1.26.032020 Promoted to production. Android only. #2245. Add Cleartext plugin for Android 9.
 04/11/20. Ver 1.27.041120 IOS Testflight only. Internally 1.27.032320. Fix Ferry Location. Use https for all links.
                           1st Build on LA952 MacInCloud with XCode 11, for IOS 13. See separate IOS Build document.
-04/28/20.                 Submitted to App Store.
+04/29/20. Ver 1.27.032320 App Store approved for sale i.e. IOS Production.   
+05/21/20. Ver 1.27.032320 Merged to Master.
+05/21/20. Ver 1.28		  Branch Ver128 created.
+05/30/20. Ver 1.28.053020. Google Play Beta (Android). Add support for tides at different Puget Sound locations. Add NOAA Chart. Add Ferry Dock camera link to Camera page.
+06/06/20.     1.28.060620. 	Improve main screen display of cancelled events, open times, parks status. 
+							Internal: persistant data-independent objects for weather periods, tide periods. local objects for events and activities.
+06/11/20. Ver 1.28.060620. Google Play # 2249 released to production.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -421,32 +427,35 @@ HOW TO Create new Development/Production Certificate:
 
 
 ------------------------------------------------------------------------------------------------------------------------
-APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Expires 7/10/2020.
+APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 6/15/20. Expires 7/15/2021.
 
-For OneSignal 6/11/2019. Elapsed time 48 minutes.
+For OneSignal 6/15/2020. Elapsed time 48 minutes.
 1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
-2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
+												I didn't use  LA952.macincloud.com:6000 because the certSigningRequest is on LA051.
+2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
+) -> Certificates,Identifiers...
 3. I selected Certificates +
 4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE
 5. Under Create A new Certificate I ensured that my App ID for andersion-island.andersonislandassistant was selected. Then I clicked on Continue.
 6. Under Create A New Certificate - Upload a Certificate Signing Request' I chose the existing AIAAPN2018.certSigningRequest instead of creating a new one. 
 7. I clicked on CONTINUE to uploaded it.
 8. The next panel was "Download Your Certificate". I downloaded the new cer. It is named "aps.cer". 
-9. I named it apsPushProd0619.cer. Apple name is:
+9. I named it apsPushProd06[yy].cer. So the next one should be apsPushProd0621, ... (on 6/15/20 I generated apsPushProd0620.cer).  I moved it to the desktop. Apple name is:
 10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, type: ApplePushServices, exp 7/10/20. 
 11. I immediately right clicked on that certificate in KeychainAccess and selected 'Export ...".
-12. That brings up a Sagve As dialog with file format p12. I set the file name to APNProd0619.p12
+12. That brings up a Save As dialog with file format p12. I set the file name to APNProd06yy.p12
     When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
-	You will be prompted for the login  password pwd29837
-	The file will be generated as APNProd0619.p12.
-13. I emailed it to me. From Safari, open mail.google.com, then log into my gmail account. Then create an email msg and drag the file from the desktop to the email and send it.
-14. From my PC, find the email. Then save the p12 file as OneDrive=>Documents->PhoneGap->Keys ->APNProd0619.p12.
-15. I uploaded it to OneSignal. www.onesignal.com. login as support@postersw.com. Select my app.
-16. Click on 'SETTINGS'.  Then click on Apple IOS.
-17. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Then click on 'Choose File..."
-18. Choose the APNProd0619.p12 file. Then click on SAVE.
-19. The Apple IOS status will now show the new certificate with 'expires July 10, 2020'.
-20. You are done. Elapsed time 48 minutes.
+	You may be prompted for the login  password pwd29837
+	The file will be generated as APNProd06yy.p12 on the desktop.
+13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. Select my app.
+14. Click on 'SETTINGS'.  Then click on Apple IOS.
+15. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Scroll down and then click on 'Choose File..."
+16. Choose the APNProd06yy.p12 file. Then click on SAVE or NEXT.   
+17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Phonegap' icon. Then you get to another SAVE dialog.
+18. The Apple IOS status will now show the new certificate with 'expires July 10, 2021'.
+19. For grins, save the P12 file on onedrive. Using Safari, go to onedrive.live.com. login to my account. 
+20. Go to files->Documents->PhoneGap->Keys and drag the file from my desktop onto the web browser window.
+21. You are done. Elapsed time 48 minutes.
 
 TESTING:
 See OneSignal Test below

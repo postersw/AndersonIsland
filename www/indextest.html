@@ -136,8 +136,7 @@
         <div class="app">
             <div style="position:fixed;margin-top:-42px;width:100%;">
                 <div id="ipfix1" style="width:100%;color:white;background-color:blue;font-size:small;display:none">&nbsp;</div> <!--for iphone header -->
-    <h1 id="appheader" style="overflow:auto;width:1
-00%;height:25px">
+    <h1 id="appheader" style="overflow:auto;width:100%;height:25px">
         <span id="h1menu" style='float:left;' onclick="OpenMenu()">&#9776;&nbsp;&nbsp;</span>
         <span id="h1title" style="font-weight:bold;margin-left:-40px;">Anderson Island Assistant</span>
     </h1> <!-- why do i need to set width fixed? -->
@@ -162,7 +161,6 @@
                 <span id='alerttext' style="font-size:small;font-weight:bold;color:red;">alert information goes here</span>
                 <!--<div id="alertdetail" style="display:none;font-size:small">Alert detail goes here</div>-->
             </div>
-
 
             <table id="maintable" align="center" style="width:100%;padding:0;border-collapse:collapse" ;>
                 <tr id='ferryrow' style="background-color:azure;" ">
@@ -266,12 +264,9 @@
                     </td>
                 </tr>
 
-                <tr style="background-color:#cce4ff">
-                    <td id="maptitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" onclick="ShowMap();">
+                <tr style="background-color:#cce4ff" onclick="ShowMap();">
+                    <td id="maptitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px" colspan="2">
                         <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe55b;</i><span class='mptext'>Map</span></span>
-                    </td>
-                    <td id="charttitle" style="font-size:18px;font-weight:bold;color:#1010ff;padding-left:6px;border-left:1px solid darkgray;" onclick="ShowChart();">
-                        <span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe55b;</i><span class='mptext'>NOAA Chart</span></span>
                     </td>
                 </tr>
 
@@ -492,15 +487,15 @@
 
     <!-- FERRY WEBCAMS ------------------------------------------------------------------------------------->
     <div id="mferrywebcampage" style="display:none">
-
-        <div style="margin:10px;padding-top:10px;">
-            <span id="ferrydockcamlink"> </span>
-            Tap image to zoom.<br />
-            <span id="scamera" style="font-weight:bold">Steilacoom: </span><br/>
+        <span id="ferrydockcamlink"> </span>
+        <div style="margin:10px;padding-top:10px">
+            Refreshes every minute. Tap to zoom.<br />
+            <span id="scamera" style="font-weight:bold">Steilacoom: </span><br>
+            <br />
             <img id="steilacoomcam" alt="Steilacoom Camera " src="icon.png" onclick="window.open('icon.png','_blank')">
             <hr />
-            <span id="aicamera" style="font-weight:bold">Anderson Island: </span><br/>
-            <img id="aicam" src="icon.png" onclick="window.open('icon.png','_blank')"><br/>
+            <span id="aicamera" style="font-weight:bold">Anderson Island: </span><br /><br>
+            <img id="aicam" src="icon.png" onclick="window.open('icon.png','_blank')"><br />
             <!--   <button style="width:32%" onclick="ShowMainPage();">&larr;BACK</button>-->
         </div>
     </div>
@@ -512,8 +507,7 @@
         </h1> -->
         <p style="margin:10px;padding-top:10px">
             Hi, I'm Bob Bedoll, Anderson Island resident and software developer.
-            One day in 2016, while sitting in the Steilacoom ferry line, I thought "there should be an app for this".
-            So I put together the <strong>Anderson Island Assistant</strong> to give all of us
+            I've put the <strong>Anderson Island Assistant</strong> together to give all of us
             instant access to a wealth of time-sensitive, up-to-the-minute island info.
             I hope you give it a try and find it as useful as I have.  Thanks.<br />
             <em>Bob</em>
@@ -734,7 +728,7 @@
             &nbsp;  Updates every minute.&nbsp;
             <span id="updatetime">Screen update time.</span><br />
             <span id="versionnumber" style="font-size:x-small"> &nbsp; &nbsp; AIA Ver: 1.9.030917	</span>
-            <span style="font-size:x-small"> [0525209]</span>
+            <span style="font-size:x-small"> [011419]</span>
         </p>
     </div>
 
@@ -875,7 +869,7 @@
 
 
     <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/indextest.js"></script>
     <!--<script type="text/javascript" src="js/indextest.js"></script>-->
     <!-- JQUERY removed and replaced with native javascript to speed up loading -->
     <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>-->
