@@ -112,6 +112,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 06/06/20.     1.28.060620. 	Improve main screen display of cancelled events, open times, parks status. 
 							Internal: persistant data-independent objects for weather periods, tide periods. local objects for events and activities.
 06/11/20. Ver 1.28.060620. Google Play # 2249 released to production.
+07/15/20. Ver 1.28.071420. Released to IOS.
+07/29.20. Ver 1.29.072920. Branch Ver129 created.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH

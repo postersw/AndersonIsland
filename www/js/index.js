@@ -71,6 +71,7 @@
                      Refactor weather to use an array of 'weather' objects.
                      Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
         1.28.071320. Use _system web viewer for Chart on iPhone. 
+        1.29.072920. Strikethrough flame on burn ban.
  * 
  * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -92,7 +93,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.071420";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.29.072920";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
 
@@ -1076,12 +1077,19 @@ function DisplayAlertInfo() {
         //document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
     }
 
-    // burnban status or alert
+    // burnban status or alert. Strike out flame if a burn ban, and turn it red.
     var s = localStorage.getItem("burnbanalert");
     if (IsEmpty(s)) s = "Tap for burn ban status.";
     document.getElementById("burnbanalert").innerHTML = s;
+    if ((s.indexOf("color:red") > 0) || (s.indexOf("color:darkorange") > 0)) {  // strike out flame on a burn ban (red or orange text)
+        document.getElementById("burnbantitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'><strike>&#xe80e;</strike></i><span class='mptext'>Burnban</span></span>";
+        document.getElementById("burnbantitle").style.color = "red";
+    } else { // no burn ban
+        document.getElementById("burnbantitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe80e;</i><span class='mptext'>Burnban</span></span>";
+        document.getElementById("burnbantitle").style.color = "darkorange";
+    }
 
-    // tanner status or alert
+    // tanner status or alert. Strike out symbol and turn it red if there is an outage.
     var s = localStorage.getItem("tanneroutagealert");
     if (IsEmpty(s)) s = "Tap for outage status.";
     document.getElementById("tanneroutagealert").innerHTML = s;
