@@ -18,20 +18,20 @@ chdir("/home/postersw/public_html");  // move to web root
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $link = "https://weather.api.here.com/weather/1.0/report.json?app_id=HkBK0Kns18xl1CnGanFm&app_code=iyHvhhPZD4nQlBA2XVu2hw&product=forecast_astronomy&zipcode=98303";
 
-echo $link; //debug
+//echo $link; //debug
 
 // Get the moon data - retry 10 times
 $str = GetData($link);
 
 // reformat the reply
 $strout = FormatHtml($str);  // reformat
-echo "<br/>$strout<br/>";
+//echo "<br/>$strout<br/>"; //debug
 $j = file_put_contents($file, $strout);  // save the data
 if($j <= 0) {  // if not success
     echo("moon cron run: file_put_contents ERROR !!!\n $j $strout");
     return 0;
 }
-echo("here.com moon cron run successful:\n $strout");
+//echo("here.com moon cron run successful:\n $strout");
 return 0;
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ function FormatHtml($reply) {
     $times = "Rise:$risetime Set:$settime";
     $times = str_replace("AM", "a", $times);  // replace AM and PM for shorter string
     $times = str_replace("PM", "p", $times);
-    echo " TIMES: $times ***";// debug //
+    //echo " TIMES: $times ***";// debug //
     // get phase and icon
     $pct =  number_format(abs($jreply->astronomy->astronomy[0]->moonPhase * 100));
     $icon = "";
@@ -79,14 +79,15 @@ function FormatHtml($reply) {
 //  Entry   link = address
 //  returns data
 function GetData($link) {
-    echo $link;
+    //echo $link;
     for ($x = 0; $x <= 10; $x++) {
         $str = "";
-        echo " GetData $x. ";
+        //echo " GetData $x. ";
         $str = file_get_contents($link);
-        echo "str=$str";
-        if($str != false && $str != "") {echo "returned ok<br/>"; return $str;}
+        //echo "str=$str";
+        if($str != false && $str != "") {return $str;}
         sleep(10);
+        echo " GetData Try $x. ";
     }
     echo("<br/>moon cron run: NO here.com moon DATA after 10 tries for $link<br/>");
     return "";
