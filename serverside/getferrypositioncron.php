@@ -23,6 +23,7 @@ $timestamp = 0;
 
 // start
 echo "started <br/>";
+chdir("/home/postersw/public_html");  // move to web root
 getposition();
 // if ($timestamp diff > 5 min) clear file;
 if($speed < 3) $p = reportatdock();  // if LT 2 knots report at dock
@@ -30,7 +31,7 @@ else $p = timetocross();
 $p = "Ferry " . $p;
 echo "$p <br/>"; // debug
 // write to ferry position file
-put_file_contents($ferrypositionfile, $p);
+file_get_contents($ferrypositionfile, $p);
 return;
 
 ////////////////////////////////////////////////////////////////////////
