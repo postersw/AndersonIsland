@@ -15,9 +15,9 @@ $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
 $longE = -.0004;  $latE = .001; // epselon
 $ferrypositionfile = "ferryposition.html";
-//$ferrypositionfile = "emergencymessage.txt";
+$log = 'ferrypositionlog.txt';
 $ferryportfile = "ferryport.txt";
-$crossingtime = 20; // nominal crossing time in minutes
+$crossingtime = 21; // nominal crossing time in minutes
 $MMSICA = 366659730;  // Christine anderson
 $MMSIST = 367153930; // Steilacoom II
 $MMSI = $MMSIST; // use steilacoom
@@ -32,12 +32,12 @@ $timestamp = 0;
 $deltamin = 0;  // minutes after timestamp
 
 // start
-echo "started <br/>";
+//echo "started <br/>";
 chdir("/home/postersw/public_html");  // move to web root
 date_default_timezone_set("UTC"); // set UTC
 $lt = localtime();
 //echo " hour=" . $lt[2] . " ";
-if($lt[2]>7 && $lt[2]<12) exit("time");  // don't run midnight - 4 (7-12 UTC)
+if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7-12 UTC)
 
 // get position
 $ferryport = file_get_contents($ferryportfile);
@@ -47,14 +47,13 @@ checktimestamp($timestamp); // if ($timestamp diff > 5 min) clear file;
 // calculate location and arrival;
 if($speed < 10) $p = reportatdock();  // if LT 1 knots report at dock
 else $p = timetocross();
-echo "$p"; // debug
+//echo "$p"; // debug
 
 // write to ferry position file
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>Ferry $p</div>");
-$log = 'ferrypositionlog.txt';
 $tlh = fopen($log, 'a');
-fwrite($tlh, date('c') . " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, timestamp=$timestamp, deltamin=$deltamin: $p \n");
-
+fwrite($tlh, date('c') . " 1.4 mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, timestamp=$timestamp, deltamin=" . round($deltamin,1) . ": $p \n");
+close($tlh);
 return;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -85,22 +84,23 @@ function checktimestamp($ts) {
 function timetocross() {
     global $lat, $long, $longAI, $longSt,$latKeIs, $crossingtime, $course, $deltamin, $ferryport;
     $AItoSt = .074; // steilacoom to AI longitude
-    $latKeIs = 47.167; // north tip of ketron
+    $latKeIs = 47.170; // north tip of ketron
+    $ketron = "";
     // if below the tip of Ketron, do a general stopping at or leaving
-    if($lat < $latKeIs) {
+    if($lat <= $latKeIs) {
         if($course>110 & $course < 270)  return "stopping at Ketron";
-        else return "leaving Ketron";
+        else $ketron = "leaving Ketron, ";
     }
     // if $ferryport=S, then ferry is headed to AI, else the reverse;
 
     if($ferryport=="S" ) { //|| $course > 190  || $course < 25) { 
         $t = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);
         if($t <= 0) return "at Anderson Is";
-        return "arriving @AI in $t min";
+        return $ketron . "arriving @AI in $t min";
     } else {
         $t = floor(($longSt-$long)/ $AItoSt * $crossingtime - $deltamin);
         if($t <= 0) return "at Steilacoom";
-        return "arriving @Steilacoom in $t min";
+        return $ketron . "arriving @Steilacoom in $t min";
     }
 }
 
@@ -173,10 +173,14 @@ function GetData($link) {
 
 //////////////////////////////////////////////////////////////////////////
 // abortme(msg) - deletes ferry position file and exists with message
-//  msg = message
+//  entry msg = message
+//  does not return. exits the script.
 function abortme($msg) {
-    global $ferrypositionfile;
+    global $ferrypositionfile, $log,$MMSI,$lat,$long,$speed,$course,$timestamp,$deltamin;
     unlink($ferrypositionfile);
+    $tlh = fopen($log, 'a');
+    fwrite($tlh, date('c') . " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, timestamp=$timestamp, deltamin=" . round($deltamin,1) . ": $msg \n");
+    close($tlh);
     exit($msg);
 }
 
