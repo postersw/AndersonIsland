@@ -14,11 +14,11 @@
 //
 //  Robert Bedoll. 12/26/20.  
 //
-$ver = "1.6";  // 12/28/20
+$ver = "1.9";  // 12/29/20
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
-$longE = .0004;  $latE = .001; // epselon
+$longE = .0007;  $latE = .001; // epselon big enough to capture the 2 steilacoom docks
 $ferrypositionfile = "ferryposition.html";
 $log = 'ferrypositionlog.txt';
 $crossingtime = 20; // nominal crossing time in minutes
@@ -55,11 +55,11 @@ print_r($fa); // debug
 foreach($fa as $a) {
     $MMSI = $a[0]; $lat = $a[3]; $long = $a[4]; $speed = $a[5]; $course = $a[7]; $status = $a[8]; $timestamp = $a[9];
     if($MMSI=="")  abortme("MMSI is empty");
-    if($MMSI == $MMSICA) $ferryname = "CA";
-    elseif($MMSI == $MMSIS2) $ferryname = "S2";
+    if($MMSI == $MMSICA) $ferryname = "'CA'";
+    elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
     checktimestamp($timestamp); 
     //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
-    if($status != 0) continue; // skip if not normal
+    //if($status != 0) continue; // skip if not normal
 
     // calculate location and arrival;
     if($p <> "") $p = $p . "<br/>";
@@ -111,17 +111,19 @@ function timetocross() {
         if($course>110 & $course < 270)  return "stopping at Ketron";
         else $ketron = "leaving Ketron, ";
     }
+    // $ct = $crossingtime;
+    // if($speed < 100) $ct = $ct * (100/$speed); // adjust for speed. numbers could get too big.
 
-    $ferryport = file_get_contents($MMSI);
+    $ferryport = file_get_contents($MMSI); // get last ferry port
+
     // if $ferryport=S, then ferry is headed to AI, else the reverse;
-
     if($ferryport=="S" ) { //|| $course > 190  || $course < 25) { 
         $t = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);
-        if($t <= 0) return "at Anderson Is";
+        if($t <= 0) return "docking at Anderson Is";
         return $ketron . "arriving @AI in $t min";
     } else {
         $t = floor(($longSt-$long)/ $AItoSt * $crossingtime - $deltamin);
-        if($t <= 0) return "at Steilacoom";
+        if($t <= 0) return "docking at Steilacoom";
         return $ketron . "arriving @Steilacoom in $t min";
     }
 }
