@@ -30,6 +30,7 @@ $MMSI = $MMSIST; // use steilacoom
 $APIkey = "e5c425e79c24d1c960955f251b0146e361eca917";  // subscription key from MarineTraffic.com
 $ferryname = ""; // based on MMSI
 $fa = []; // ferry array, 0, 1, or 2 arrays of data
+$debug = false;
 
 // instantanious position retrieved from maringtraffic.com
 $speed = 0;  // speed in  knots tenths
@@ -41,7 +42,7 @@ $deltamin = 0;  // minutes after timestamp
 $status = 0;  // 0 = normal, other=wierd
 
 // start
-echo "started <br/>";
+//echo "started <br/>";
 chdir("/home/postersw/public_html");  // move to web root
 date_default_timezone_set("UTC"); // set UTC
 $lt = localtime();
@@ -51,7 +52,7 @@ if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7
 // get position
 $fa = getposition();
 $p = "";
-print_r($fa); // debug
+//print_r($fa); // debug
 
 // loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
 foreach($fa as $a) {
@@ -71,7 +72,7 @@ foreach($fa as $a) {
     else $p = $p . timetocross();
 }
 
-echo "$p"; // debug
+//echo "$p"; // debug
 
 // write to ferry position file
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>$p</div>");
@@ -169,47 +170,6 @@ function getposition() {
     if($numa==0)  abortme("0 length array");
     return $fa;
 }
-
-//    if($numa == 1) $a = $fa[0];
-//    else {
-//        echo "$numa rows of Data. now what?:: $d";
-//        $a = $fa[0];
-//        if($a[8] != 0) $a = $fa[1];
-//        if($a[8] != 0) echo " neither row has a status of 0. Now what?";
-//    }
-
-//    // if there are > 1, I need to find the true working row.  Except for summer when there are 2 runs.
-//    $MMSI = $a[0];
-//    $lat = $a[3];
-//    $long = $a[4];
-//    $speed = $a[5];
-//    $course = $a[7];
-//    $status = $a[8]; 
-//    $timestamp = $a[9];
-//    // debug
-//    if($MMSI=="")  abortme("MMSI is empty");
-//    if($MMSI == $MMSICA) $ferryname = "CA";
-//    elseif($MMSI == $MMSIS2) $ferryname = "S2";
-//    //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, timestamp=$timestamp, ";
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-// Get data after 3 tries
-//  Entry   link = address
-//  returns data or it aborts
-//      if no data, it deletes ferrypositionfile.
-//function GetData($link) {
-//    for ($x = 0; $x <= 3; $x++) {
-//        $str = "";
-//        //echo " GetData $x. ";
-//        $str = file_get_contents($link);
-//        //echo "str=$str";
-//        if($str != false && $str != "") {return $str;}
-//        sleep(10);
-//        echo " GetData Try $x. ";
-//    }
-//    abortme ("<br/>getferryposition cron run: NO marinetraffic.com DATA after 2 tries for $link<br/>");
-//}
 
 //////////////////////////////////////////////////////////////////////////
 // abortme(msg) - deletes ferry position file and exists with message
