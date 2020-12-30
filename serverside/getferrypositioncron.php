@@ -14,11 +14,13 @@
 //
 //  Robert Bedoll. 12/26/20.  
 //
-$ver = "1.9";  // 12/29/20
+$ver = "1.10";  // 12/29/20
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
 $longE = .0007;  $latE = .001; // epselon big enough to capture the 2 steilacoom docks
+$longMIN = -122.7; $longMAX = -122.5; // longitude bounding
+$latMIN = 47.15; $latMAX = 47.2;  // latitude bounding
 $ferrypositionfile = "ferryposition.html";
 $log = 'ferrypositionlog.txt';
 $crossingtime = 20; // nominal crossing time in minutes
@@ -59,7 +61,8 @@ foreach($fa as $a) {
     elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
     checktimestamp($timestamp); 
     //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
-    //if($status != 0) continue; // skip if not normal
+    //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctly
+    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
 
     // calculate location and arrival;
     if($p <> "") $p = $p . "<br/>";
