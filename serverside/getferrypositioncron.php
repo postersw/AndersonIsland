@@ -14,7 +14,7 @@
 //
 //  Robert Bedoll. 12/26/20.  
 //
-$ver = "1.10";  // 12/29/20
+$ver = "1.11";  // 12/29/20
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -106,13 +106,13 @@ function checktimestamp($ts) {
 // note when long is outside of the docking zone and speed is not > 10, make crossing time slower
 //
 function timetocross() {
-    global $MMSI, $lat, $long, $longAI, $longSt,$latKeIs, $crossingtime, $course, $deltamin, $ferryport;
+    global $MMSI, $lat, $long, $longAI, $longSt,$latKe, $crossingtime, $course, $deltamin, $ferryport;
     $AItoSt = .074; // steilacoom to AI longitude
-    $latKeIs = 47.170; // north tip of ketron
+    $latKeIs = 47.170; // north tip of ketron 
     $ketron = "";
-    // if below the tip of Ketron, do a general stopping at or leaving
-    if($lat <= $latKeIs) {
-        if($course>110 & $course < 270)  return "stopping at Ketron";
+    // if below the tip of Ketron, do a general stopping  with estimated arrival based on latitude, or leaving based on course
+    if($lat <= $latKeIs) { // if southerly westerly course, assume arriving.
+        if($course>110 & $course < 340)  return "stopping at Ketron in " . floor(($lat-$latKe)/($latKeIs-$latKe) * 6) . " min";
         else $ketron = "leaving Ketron, ";
     }
     // $ct = $crossingtime;
@@ -140,14 +140,14 @@ function timetocross() {
 //
 function reportatdock() {
     global $MMSI, $lat, $long, $longAI, $longSt, $longKe, $longE;
-    $latKeIs = 47.167; // north tip of ketron
+    $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  // At AI
         file_put_contents($MMSI, "A");
         return "docked at Anderson Is";
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         file_put_contents($MMSI, "S");
         return "docked at Steilacoom";
-    } elseif($long > ($longKe-.001) && $long < ($longKe+.001) && ($lat < $latKeIs) ) return "at Ketron";
+    } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) return "at Ketron";  // allow for extended docking
     else return "stopped at $lat, $long";
 }
 
