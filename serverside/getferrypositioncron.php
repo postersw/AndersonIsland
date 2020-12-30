@@ -112,7 +112,7 @@ function timetocross() {
     $ketron = "";
     // if below the tip of Ketron, do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if($lat <= $latKeIs) { // if southerly westerly course, assume arriving.
-        if($course>110 & $course < 340)  return "stopping at Ketron in " . floor(($lat-$latKe)/($latKeIs-$latKe) * 6) . " min";
+        if($course>110 & $course < 340)  return "stopping at Ketron in " . floor(abs(($lat-$latKe)/($latKeIs-$latKe)) * 6) . " min";
         else $ketron = "leaving Ketron, ";
     }
     // $ct = $crossingtime;
