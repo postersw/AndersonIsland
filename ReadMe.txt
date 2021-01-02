@@ -240,7 +240,7 @@ IOS DEBUG/BUILD
 	b. select the project and target.
 	c. select the scheme of Anderson Island Assistant > Generic IOS Device.
 	d. XCODE -> Product -> Archive.  This generates an archive.
-	e. Window -> Organizer.
+	e. Window -> Organizer.   NOTE: If I have to log into my apple account, have my iPhone on, because the verification code is sent to it.
 	f. Select Archives -> Distribute App.
 	g. select Development. Next. 
 	h. no app thinning or aditional options. Next.

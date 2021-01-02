@@ -68,7 +68,7 @@ foreach($fa as $a) {
 
     // calculate location and arrival;
     if($p <> "") $p = $p . "<br/>";
-    $p = $p . "Ferry $ferryname ";
+    $p = $p . "$ferryname ";
     if($speed < 10) $p =  $p . reportatdock();  // if LT 1 knots report at dock
     else $p = $p . timetocross();
 }
@@ -76,7 +76,8 @@ foreach($fa as $a) {
 //echo "$p"; // debug
 
 // write to ferry position file
-file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>$p</div>");
+file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>Ferry $p</div>");  // html file for iframe
+file_put_contents("ferryposition.txt", $p); // txt file for getalerts.php
 $tlh = fopen($log, 'a');
 $s =  implode(",", $fa[0]) . "/" ;
 if(count($fa)>1) $s = $s . implode(",", $fa[1])  ;

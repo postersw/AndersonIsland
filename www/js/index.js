@@ -72,8 +72,10 @@
                      Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
         1.28.071320. Use _system web viewer for Chart on iPhone. 
         1.29.072920. Strikethrough flame on burn ban.
+    2021
+        1.29.010121. Display Ferry position.
  * 
- * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
+ * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -93,9 +95,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.29.072920";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.29.010121";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -1160,10 +1162,11 @@ function HandleAlertReply(r) {
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+    parseCacheRemove(r, 'ferryposition', "FERRYPOSITION", "FERRYPOSITIONEND");
     var oldrefreshrequest = LSget('refreshrequest'); // current value of refresh request
     var newrefreshrequest = parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
-    WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary.
+    WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary. Also display ferry position
     if ((newrefreshrequest != "") && (oldrefreshrequest != newrefreshrequest)) {
         if ((gTimeStampms - gDailyCacheLoadedms) > 3 * 60000) GetDailyCache(); // if >3 min since last reload, reload daily cache, including calendar & ferry sch, 
     }
@@ -1786,12 +1789,9 @@ function WriteNextFerryTimes() {
         }
     }
 
-    //if (holiday) v = v + "Hoilday<br/>"
-    //v = v + "<span style='font-weight:bold'>Steilacoom: " + 
-    //     FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
-    //var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
-    //         FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
-    //document.getElementById("ferrytimes").innerHTML = v + a;
+    var s = localStorage.getItem('ferryposition');
+    if (!IsEmpty(s)) v = v + s + "<br/>";  // display ferry position
+
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1) {     // && gLatitude > 0) {
         if (gLocationOnAI == 1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow
