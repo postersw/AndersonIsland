@@ -77,7 +77,7 @@
   <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
   <preference name="android-minSdkVersion" value="16" />
   <!-- android: changed from 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. -->
-  <preference name="android-targetSdkVersion" value="28" /><!-- added 3/14/2020 to meet new google requirement. OR could try PG build CLI=9-->
+  <preference name="android-targetSdkVersion" value="29" /><!-- added 1/2/21 to meet new google requirement. OR could try PG build CLI=9-->
   <preference name="android-installLocation" value="auto" />
   <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
   <preference name="android-build-tool" value="gradle" />
