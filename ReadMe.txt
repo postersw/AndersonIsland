@@ -209,6 +209,8 @@ IOS DEBUG/BUILD
 	4/15/20: DEBUG Build on MacinCloud LA952. PG Build has been deprecated for IOS 13, so it is no longer used. 
 	1. Get latest source using desktop GIT.
 	2. Manually copy the source from the GIT repositiory to aia/aia/www/index.html  and js/index.js.
+	   If you are not going to run 'cordova', copy the source directly into the platforms code at:
+		aia/aia/platform/ios/www/index.html and js/index.js
 	   if there are config.xml changes, copy them to aia/aia/config.xml, but note that the config.xml has been customized for IOS.
 	3. If there are no significant changes, try just starting Xcode, selecting the Anderson Island Assistant project,
 	   and then run the test in the simulator:  Anderson Island Assistant > Iphone 11, and click the Run button.

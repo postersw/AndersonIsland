@@ -1340,7 +1340,9 @@ function ParseDailyCache(data) {
     parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
-    if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+    if (!IsEmpty(s)) {
+        if (s.indexOf("iframe") < 0) document.getElementById("topline").innerHTML = s;
+    }
     parseCache(data, "androidver", "ANDROIDVER", "\n");
     parseCache(data, "iosver", "IOSVER", "\n");
     parseCache(data, "locations", "LOCATIONS", "LOCATIONSEND"); // locations for coming events
@@ -1601,8 +1603,9 @@ function ShowCachedData() {
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
     // MOTD. Skip if its an <iframe because it doesn't work on IOS. 1.29 1/1/21.
     var s = localStorage.getItem("message");
-    if (!IsEmpty(s)) if(s.indexOf("<iframe ") < 0 ) document.getElementById("topline").innerHTML = s;
-
+    if (!IsEmpty(s)) {
+        if (s.indexOf("iframe") < 0) document.getElementById("topline").innerHTML = s;
+    }
     var s = localStorage.getItem("forecast");
     if (s != null) document.getElementById("forecast").innerHTML = s;
 
