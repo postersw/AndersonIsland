@@ -205,12 +205,19 @@ ANDROID ADAPTIVE ICONS.
 	4. They were built from C:\Users\Bob\Documents\icon.png on Edgewood.
 
 ------------------------------------------------------------------------------------------------------------
-IOS DEBUG/BUILD 
+IOS DEBUG/BUILD    XCODE 12.2 (1/2/21)
+   Note: since 4/15/20 I have been doing customizations manually in XCODE and in the aia/aia/platforms/ios/www ... directory.
+         I have not been running Cordova Prepare or build, since it rewrites all this information.
+		 XCODE alone works fine and you can run it on the simulator, or Archive (development) and load it using diawi.com, 
+		 or upload directly to the app store. 
+
 	4/15/20: DEBUG Build on MacinCloud LA952. PG Build has been deprecated for IOS 13, so it is no longer used. 
 	1. Get latest source using desktop GIT.
 	2. Manually copy the source from the GIT repositiory to aia/aia/www/index.html  and js/index.js.
-	   If you are not going to run 'cordova', copy the source directly into the platforms code at:
-		aia/aia/platform/ios/www/index.html and js/index.js
+	   If you are NOT going to run 'cordova', manually copy the source directly into the platforms code at:
+		aia/aia/platforms/ios/www/index.html and js/index.js. (This is where the Cordova Prepare script copies it to,
+		and this is where XCODE builds it from). This is what I have been doing since 4/15/20.
+		Make permission and build# changes DIRECTLY IN XCODE. 
 	   if there are config.xml changes, copy them to aia/aia/config.xml, but note that the config.xml has been customized for IOS.
 	3. If there are no significant changes, try just starting Xcode, selecting the Anderson Island Assistant project,
 	   and then run the test in the simulator:  Anderson Island Assistant > Iphone 11, and click the Run button.
