@@ -95,7 +95,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.29.010121";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.29.010221";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -1599,8 +1599,9 @@ function ShowCachedData() {
     ShowOpenHours(); //  open hours
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(EvtA);
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
+    // MOTD. Skip if its an <iframe because it doesn't work on IOS. 1.29 1/1/21.
     var s = localStorage.getItem("message");
-    if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+    if (!IsEmpty(s)) if(s.indexOf("<iframe ") < 0 ) document.getElementById("topline").innerHTML = s;
 
     var s = localStorage.getItem("forecast");
     if (s != null) document.getElementById("forecast").innerHTML = s;
