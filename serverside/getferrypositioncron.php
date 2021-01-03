@@ -31,6 +31,8 @@ $MMSI = $MMSIST; // use steilacoom
 $APIkey = "e5c425e79c24d1c960955f251b0146e361eca917";  // subscription key from MarineTraffic.com
 $ferryname = ""; // based on MMSI
 $fa = []; // ferry array, 0, 1, or 2 arrays of data
+$mi = "<i class='material-icons mptext'>";
+$ri = "";
 $debug = false;
 
 // instantanious position retrieved from maringtraffic.com
@@ -52,7 +54,7 @@ if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7
 
 // get position
 $fa = getposition();
-$p = "";
+$p = ""; $pi = "";
 //print_r($fa); // debug
 
 // loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
@@ -67,17 +69,21 @@ foreach($fa as $a) {
     if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
 
     // calculate location and arrival;
-    if($p <> "") $p = $p . "<br/>";
-    $p = $p . "$ferryname ";
-    if($speed < 10) $p =  $p . reportatdock();  // if LT 1 knots report at dock
-    else $p = $p . timetocross();
+    if($p <> "") {
+        $p = $p . "<br/>";
+        $pi = $pi . "<br/>";
+    }
+    if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
+    else $s = timetocross();
+    $p =  $p . "$ferryname $s"; 
+    $pi = $pi . "$mi$ri</i> $ferryname $s";
 }
 
 //echo "$p"; // debug
 
 // write to ferry position file
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>Ferry $p</div>");  // html file for iframe
-file_put_contents("ferryposition.txt", $p); // txt file for getalerts.php
+file_put_contents("ferryposition.txt", $pi); // txt file for getalerts.php
 $tlh = fopen($log, 'a');
 $s =  implode(",", $fa[0]) . "/" ;
 if(count($fa)>1) $s = $s . implode(",", $fa[1])  ;
@@ -105,18 +111,21 @@ function checktimestamp($ts) {
 ////////////////////////////////////////////////////////////////////////
 // timetocross compute and return remaining time to port
 //  entry   boat in route
-//  returns remaining time by computing percentage of crossing completed and multiplying by 20 min.
+//  returns string indicating remaining time by computing percentage of crossing completed and multiplying by 20 min.
 //          adjusts time by deltamin, which is how old the data is.
+//          if time < 1, returns 'docking...'
+//          $ri = return icon;
 // note when long is outside of the docking zone and speed is not > 10, make crossing time slower
 //
 function timetocross() {
-    global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe, $crossingtime, $course, $deltamin, $ferryport, $speed;
+    global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe, $crossingtime, $course, $deltamin, $ferryport, $speed, $mi, $ri;
     $AItoSt = .074; // steilacoom to AI longitude
     $latKeIs = 47.1725; // Ketron course latitude flag. Just south of the Steilacoom dock
     $ketron = "";
     // if below the tip of Ketron, do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if($lat <= $latKeIs) { // if southerly westerly course, assume arriving.
         if($course>110 & $course < 340)  {
+            $ri = "arrow_drop_down";
             $t = floor(abs(($lat-$latKe)/($latKeIs-$latKe)) * 8);  // min left based on latitude left
             if($t <= 0) {
                 if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
@@ -136,19 +145,27 @@ function timetocross() {
         //$Dt = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);  // longitude only
         $t = floor(((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
+        $ri = "fast_rewind";
         if($t <=0) {
             if($speed >=80) $t = 1;  // if boat is still running at full speed, always give 1 more minute
-            else return "docking at Anderson Is";
+            else {
+                $ri = "arrow_drop_down_circle";
+                return "docking @Anderson";
+            }
         }
         return $ketron . "arriving @AI in $t min";
     } else {
         //$Dt = floor(($longSt-$long)/ $AItoSt * $crossingtime - $deltamin); // longitude only
         $t = floor(((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
+        $ri = "fast_forward";
         if($t <= 0) {
             if($speed >=80) $t = 1;  // if boat is still running at full speed, always give 1 more minute
-            else return "docking at Steilacoom";
-        }
+            else {
+                $ri = "arrow_drop_down_circle";
+                return "docking @Steilacoom";
+            }
+        }    
         return $ketron . "arriving @Steilacoom in $t min";
     }
 }
@@ -158,18 +175,26 @@ function timetocross() {
 // reportatdock - reports the dock position. called when speed < 1 knot.
 //  exit    returns at AI, at Steilacoom, or At Ketron based only on longditude
 //          Also writes the port location (A/S) into the file named for the boat MMSI number
-//
+//          $ri = return icon;
+
 function reportatdock() {
-    global $MMSI, $lat, $long, $longAI, $longSt, $longKe, $longE;
+    global $MMSI, $lat, $long, $longAI, $longSt, $longKe, $longE, $mi, $ri;
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  // At AI
         file_put_contents($MMSI, "A");
+        $ri = "home";
         return "docked at Anderson Is";
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         file_put_contents($MMSI, "S");
+        $ri = "home";
         return "docked at Steilacoom";
-    } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) return "at Ketron";  // allow for extended docking
-    else return "stopped at $lat, $long";
+    } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
+        $ri = "do_not_disturb_on";
+        return "at Ketron";  // allow for extended docking
+    } else {
+        $ri = "do_not_disturb_on";
+        return "stopped at $lat, $long";
+    }
 }
 
 
@@ -200,11 +225,12 @@ function getposition() {
 function abortme($msg) {
     global $ferrypositionfile, $fa, $log,$MMSI,$lat,$long,$speed,$course,$timestamp,$deltamin,$ver;
     if (file_exists($ferrypositionfile)) unlink($ferrypositionfile);
-    print_r($fa);
+    if (file_exists("ferryposition.txt")) unlink("ferryposition.txt");
     $tlh = fopen($log, 'a');
     fwrite($tlh, date('c') ." $ver " . print_r($fa, true) . ", deltamin=" . round($deltamin,1) . ": ABORT $msg \n");
     fclose($tlh);
     if($msg == "0 length array") exit(); // no message if 0 length
+    print_r($fa);
     exit($msg);
 }
 
