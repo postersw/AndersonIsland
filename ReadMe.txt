@@ -115,8 +115,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 07/15/20. Ver 1.28.071420. Released to IOS.
 07/29.20. Ver 1.29.072920. Branch Ver129 created.
 01/02/21. Ver 1.29.010221. Display current ferry location in FERRY section on main screen.
-							IOS version built on virtual Mac using XCODE 12.2 directly.  Uploaded to Testflight.
-							Android version #2250 still built using build.Adobe.com, even though it is not supported. Uploaded to play.google.com beta.
+							IOS version built on virtual Mac using XCODE 12.2 directly.  Uploaded to Testflight. 1/3/21: Released in appstore.
+							Android version #2250 still built using build.Adobe.com, even though it is not supported. Uploaded to play.google.com beta. 1/4/21 released to prod.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
