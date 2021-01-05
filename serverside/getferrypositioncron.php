@@ -15,7 +15,7 @@
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
 
-$ver = "1.18";  // 1/4/21
+$ver = "1.20";  // 1/4/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -122,11 +122,13 @@ function timetocross() {
     $AItoSt = .074; // steilacoom to AI longitude
     $latKeIs = 47.1725; // Ketron course latitude flag. Just south of the Steilacoom dock
     $ketron = "";
+    // if above the tip of ketron but headed SE, OR
     // if below the tip of Ketron, do a general stopping  with estimated arrival based on latitude, or leaving based on course
-    if($lat <= $latKeIs) { // if southerly westerly course, assume arriving.
-        if($course>110 & $course < 340)  {
-            $ri = "arrow_drop_down";
-            $t = floor(abs(($lat-$latKe)/($latKeIs-$latKe)) * 8);  // min left based on latitude left
+    if(($lat <= $latKeIs) || ($lat<47.177 && $long>-122.640 && $long<-122.624 && $course>100 && $course <180 )) { // if southerly westerly course, assume arriving.
+    //if($lat <= $latKeIs) { 
+        if($course>110 & $course < 340)  { // if southerly westerly course, assume arriving.
+            $ri = "file_download";
+            $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
             if($t <= 0) {
                 if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
                 else return "docking at Ketron";
@@ -149,24 +151,25 @@ function timetocross() {
         //$Dt = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);  // longitude only
         $t = floor(((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
-        $ri = "fast_rewind";
+        $ri = "reply"; //"fast_rewind";
         if($t <=0) {
             if($speed >=80) $t = 1;  // if boat is still running at full speed, always give 1 more minute
             else {
-                $ri = "arrow_drop_down_circle";
+                $ri = "skip_previous"; //"arrow_drop_down_circle";
                 return "docking @Anderson";
             }
         }
         return $ketron . "arriving @AI in $t m";
+
     } else {  // headed to Steilacoom
         //$Dt = floor(($longSt-$long)/ $AItoSt * $crossingtime - $deltamin); // longitude only
         $t = floor(((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
-        $ri = "fast_forward";
+        $ri = "forward"; //"fast_forward";
         if($t <= 0) {
             if($speed >=80) $t = 1;  // if boat is still running at full speed, always give 1 more minute
             else {
-                $ri = "arrow_drop_down_circle";
+                $ri = "skip_next"; //"arrow_drop_down_circle";
                 return "docking @Steilacoom";
             }
         }    
@@ -186,7 +189,7 @@ function reportatdock() {
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  // At AI
         file_put_contents($MMSI, "A");
-        $ri = "home";
+        $ri = "font_download";
         return "docked at Anderson";
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         file_put_contents($MMSI, "S");
@@ -198,7 +201,7 @@ function reportatdock() {
         $ri = "do_not_disturb_on";
         return "at Ketron";  // allow for extended docking
     } else {
-        $ri = "do_not_disturb_on";
+        $ri = "report";
         return "stopped at $lat, $long";
     }
 }
