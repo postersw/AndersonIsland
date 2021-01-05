@@ -15,7 +15,7 @@
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
 
-$ver = "1.17";  // 1/1/21
+$ver = "1.18";  // 1/4/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -48,7 +48,7 @@ $status = 0;  // 0 = normal, other=wierd
 //echo "started <br/>";
 chdir("/home/postersw/public_html");  // move to web root
 date_default_timezone_set("UTC"); // set UTC
-$lt = localtime();
+$lt = localtime();   // time in UTC:  [2] = hour, [3]=min
 //echo " hour=" . $lt[2] . " ";
 if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7-12 UTC)
 
@@ -140,8 +140,12 @@ function timetocross() {
 
     $ferryport = file_get_contents($MMSI); // get last ferry port
     $DAItoSt = ($longSt-$longAI) + ($latAI-$latSt)*.67; // total distance in longitude equivalent degrees
+
     // if $ferryport=S, then ferry is headed to AI, else the reverse;
-    if($ferryport=="S" ) { //|| $course > 190  || $course < 25) { 
+    // override ferry port when close to steilacoom and course is headed to steilacoom
+    if($long > -122.615 && $long < -122.600 && $course > 90 && $course < 200) $ferryport = "A"; 
+
+    if($ferryport=="S" ) { // headed to AI 
         //$Dt = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);  // longitude only
         $t = floor(((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
@@ -153,8 +157,8 @@ function timetocross() {
                 return "docking @Anderson";
             }
         }
-        return $ketron . "arriving @AI in $t min";
-    } else {
+        return $ketron . "arriving @AI in $t m";
+    } else {  // headed to Steilacoom
         //$Dt = floor(($longSt-$long)/ $AItoSt * $crossingtime - $deltamin); // longitude only
         $t = floor(((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
@@ -166,7 +170,7 @@ function timetocross() {
                 return "docking @Steilacoom";
             }
         }    
-        return $ketron . "arriving @Steilacoom in $t min";
+        return $ketron . "arriving @Steilacoom in $t m";
     }
 }
 
@@ -178,17 +182,19 @@ function timetocross() {
 //          $ri = return icon;
 
 function reportatdock() {
-    global $MMSI, $lat, $long, $longAI, $longSt, $longKe, $longE, $mi, $ri;
+    global $MMSI, $lat, $long, $longAI, $longSt, $longKe, $longE, $mi, $ri, $lt;
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  // At AI
         file_put_contents($MMSI, "A");
         $ri = "home";
-        return "docked at Anderson Is";
+        return "docked at Anderson";
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         file_put_contents($MMSI, "S");
         $ri = "home";
         return "docked at Steilacoom";
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
+        // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
+        if($lt[2]>=16 && $lt[2]<=17) file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
         $ri = "do_not_disturb_on";
         return "at Ketron";  // allow for extended docking
     } else {
