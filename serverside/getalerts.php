@@ -16,6 +16,9 @@
 //  TANNER
 //  <tanner.txt file>
 //  TANNEREND
+//  FERRYPOSITION
+//  <ferryposition.txt file>
+//  FERRYPOSITIONEND
 //  REFRESH
 //  <time stamp from refresh.txt file>
 //  REFRESHEND
@@ -23,6 +26,7 @@
 //  Note about REFRESH: set this file to a unique value or timestamp. It will force a refresh/reload of dailycache.txt and the currentevents.txt file.
 //
 //  2/11/19. RFB. Added REFRESH and emergencymessage.txt.
+//  1/1/21.  RFB. Added FERRYPOSITION
 
 // special case for FERRY. Put the EmergencyMessage file in front of the ferry alert.
 //
@@ -41,6 +45,7 @@ if($d1 <> "" || $d2 <> "") {
 
 copyfile("burnban.txt", "BURNBAN");
 copyfile("tanneroutage.txt", "TANNER");
+copyfile("ferryposition.txt", "FERRYPOSITION");
 copyfile("refresh.txt", "REFRESH");
 return;
 

@@ -71,8 +71,11 @@
                      Refactor weather to use an array of 'weather' objects.
                      Add alternate Tides location. Add Dock Camera link to Ferry Cams page. 
         1.28.071320. Use _system web viewer for Chart on iPhone. 
+        1.29.072920. Strikethrough flame on burn ban.
+    2021
+        1.29.010121. Display Ferry position.
  * 
- * Copyright 2016-2020, Robert Bedoll, Poster Software, LLC
+ * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -92,9 +95,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.28.071420";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.29.010221";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2020 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -1076,12 +1079,19 @@ function DisplayAlertInfo() {
         //document.getElementById("alertdiv").setAttribute('style', 'display:bock;');
     }
 
-    // burnban status or alert
+    // burnban status or alert. Strike out flame if a burn ban, and turn it red.
     var s = localStorage.getItem("burnbanalert");
     if (IsEmpty(s)) s = "Tap for burn ban status.";
     document.getElementById("burnbanalert").innerHTML = s;
+    if ((s.indexOf("color:red") > 0) || (s.indexOf("color:darkorange") > 0)) {  // strike out flame on a burn ban (red or orange text)
+        document.getElementById("burnbantitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'><strike>&#xe80e;</strike></i><span class='mptext'>Burnban</span></span>";
+        document.getElementById("burnbantitle").style.color = "red";
+    } else { // no burn ban
+        document.getElementById("burnbantitle").innerHTML = "<span style='white-space:nowrap'><i class='material-icons mpicon'>&#xe80e;</i><span class='mptext'>Burnban</span></span>";
+        document.getElementById("burnbantitle").style.color = "darkorange";
+    }
 
-    // tanner status or alert
+    // tanner status or alert. Strike out symbol and turn it red if there is an outage.
     var s = localStorage.getItem("tanneroutagealert");
     if (IsEmpty(s)) s = "Tap for outage status.";
     document.getElementById("tanneroutagealert").innerHTML = s;
@@ -1152,10 +1162,11 @@ function HandleAlertReply(r) {
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
+    parseCacheRemove(r, 'ferryposition', "FERRYPOSITION", "FERRYPOSITIONEND");
     var oldrefreshrequest = LSget('refreshrequest'); // current value of refresh request
     var newrefreshrequest = parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
-    WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary.
+    WriteNextFerryTimes(); // display 'DELAYED' in ferry times if necessary. Also display ferry position
     if ((newrefreshrequest != "") && (oldrefreshrequest != newrefreshrequest)) {
         if ((gTimeStampms - gDailyCacheLoadedms) > 3 * 60000) GetDailyCache(); // if >3 min since last reload, reload daily cache, including calendar & ferry sch, 
     }
@@ -1329,7 +1340,9 @@ function ParseDailyCache(data) {
     parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
-    if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
+    if (!IsEmpty(s)) {
+        if (s.indexOf("iframe") < 0) document.getElementById("topline").innerHTML = s;
+    }
     parseCache(data, "androidver", "ANDROIDVER", "\n");
     parseCache(data, "iosver", "IOSVER", "\n");
     parseCache(data, "locations", "LOCATIONS", "LOCATIONSEND"); // locations for coming events
@@ -1588,9 +1601,11 @@ function ShowCachedData() {
     ShowOpenHours(); //  open hours
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(EvtA);
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
+    // MOTD. Skip if its an <iframe because it doesn't work on IOS. 1.29 1/1/21.
     var s = localStorage.getItem("message");
-    if (!IsEmpty(s)) document.getElementById("topline").innerHTML = s;
-
+    if (!IsEmpty(s)) {
+        if (s.indexOf("iframe") < 0) document.getElementById("topline").innerHTML = s;
+    }
     var s = localStorage.getItem("forecast");
     if (s != null) document.getElementById("forecast").innerHTML = s;
 
@@ -1778,12 +1793,9 @@ function WriteNextFerryTimes() {
         }
     }
 
-    //if (holiday) v = v + "Hoilday<br/>"
-    //v = v + "<span style='font-weight:bold'>Steilacoom: " + 
-    //     FindNextFerryTime(UseFerryTime("S"), "", "S") + "</span>";
-    //var a = "</br><span style='font-weight:bold;color:blue'>Anderson:&nbsp&nbsp&nbsp " + 
-    //         FindNextFerryTime(UseFerryTime("A"), UseFerryTime("K"), "A") + "</span>";
-    //document.getElementById("ferrytimes").innerHTML = v + a;
+    var s = localStorage.getItem('ferryposition');
+    if (!IsEmpty(s)) v = v + s + "<br/>";  // display ferry position
+
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1) {     // && gLatitude > 0) {
         if (gLocationOnAI == 1) AIHighlight = "background-color:#ffff80"; //#ffff00=yellow, #ffffE0=lightyellow

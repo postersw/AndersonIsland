@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.28.060620"
-        android-versionCode="2249"
-        android:versionName="1.28.060620">
-
+        version="1.29.010221"
+        android-versionCode="2250"
+        android:versionName="1.29.010221">
+  <!-- versionCode 2250 for 1.29 1/2/21 for ferry position -->
+  <!-- versionCode 2250 for 1.29 7/29/20 for https -->
   <!-- versionCode 2249 for 1.28 6/06/20 for https -->
   <!-- versionCode 2246 for 1.27 3/23/20 for https -->
   <!-- versionCode 2245 for 1.26 3/20/20 cleartext -->
@@ -76,7 +77,7 @@
   <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
   <preference name="android-minSdkVersion" value="16" />
   <!-- android: changed from 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. -->
-  <preference name="android-targetSdkVersion" value="28" /><!-- added 3/14/2020 to meet new google requirement. OR could try PG build CLI=9-->
+  <preference name="android-targetSdkVersion" value="29" /><!-- added 1/2/21 to meet new google requirement. OR could try PG build CLI=9-->
   <preference name="android-installLocation" value="auto" />
   <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
   <preference name="android-build-tool" value="gradle" />

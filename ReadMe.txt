@@ -112,6 +112,11 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 06/06/20.     1.28.060620. 	Improve main screen display of cancelled events, open times, parks status. 
 							Internal: persistant data-independent objects for weather periods, tide periods. local objects for events and activities.
 06/11/20. Ver 1.28.060620. Google Play # 2249 released to production.
+07/15/20. Ver 1.28.071420. Released to IOS.
+07/29.20. Ver 1.29.072920. Branch Ver129 created.
+01/02/21. Ver 1.29.010221. Display current ferry location in FERRY section on main screen.
+							IOS version built on virtual Mac using XCODE 12.2 directly.  Uploaded to Testflight. 1/3/21: Released in appstore.
+							Android version #2250 still built using build.Adobe.com, even though it is not supported. Uploaded to play.google.com beta. 1/4/21 released to prod.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -203,10 +208,19 @@ ANDROID ADAPTIVE ICONS.
 	4. They were built from C:\Users\Bob\Documents\icon.png on Edgewood.
 
 ------------------------------------------------------------------------------------------------------------
-IOS DEBUG/BUILD 
+IOS DEBUG/BUILD    XCODE 12.2 (1/2/21)
+   Note: since 4/15/20 I have been doing customizations manually in XCODE and in the aia/aia/platforms/ios/www ... directory.
+         I have not been running Cordova Prepare or build, since it rewrites all this information.
+		 XCODE alone works fine and you can run it on the simulator, or Archive (development) and load it using diawi.com, 
+		 or upload directly to the app store. 
+
 	4/15/20: DEBUG Build on MacinCloud LA952. PG Build has been deprecated for IOS 13, so it is no longer used. 
 	1. Get latest source using desktop GIT.
 	2. Manually copy the source from the GIT repositiory to aia/aia/www/index.html  and js/index.js.
+	   If you are NOT going to run 'cordova', manually copy the source directly into the platforms code at:
+		aia/aia/platforms/ios/www/index.html and js/index.js. (This is where the Cordova Prepare script copies it to,
+		and this is where XCODE builds it from). This is what I have been doing since 4/15/20.
+		Make permission and build# changes DIRECTLY IN XCODE. 
 	   if there are config.xml changes, copy them to aia/aia/config.xml, but note that the config.xml has been customized for IOS.
 	3. If there are no significant changes, try just starting Xcode, selecting the Anderson Island Assistant project,
 	   and then run the test in the simulator:  Anderson Island Assistant > Iphone 11, and click the Run button.
@@ -238,7 +252,7 @@ IOS DEBUG/BUILD
 	b. select the project and target.
 	c. select the scheme of Anderson Island Assistant > Generic IOS Device.
 	d. XCODE -> Product -> Archive.  This generates an archive.
-	e. Window -> Organizer.
+	e. Window -> Organizer.   NOTE: If I have to log into my apple account, have my iPhone on, because the verification code is sent to it.
 	f. Select Archives -> Distribute App.
 	g. select Development. Next. 
 	h. no app thinning or aditional options. Next.
