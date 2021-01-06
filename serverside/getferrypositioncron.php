@@ -48,6 +48,7 @@ $status = 0;  // 0 = normal, other=wierd
 //echo "started <br/>";
 chdir("/home/postersw/public_html");  // move to web root
 date_default_timezone_set("UTC"); // set UTC
+//if($_GET["test"]=="test") testme();
 $lt = localtime();   // time in UTC:  [2] = hour, [3]=min
 //echo " hour=" . $lt[2] . " ";
 if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7-12 UTC)
@@ -224,6 +225,26 @@ function getposition() {
     $numa = count($fa);
     if($numa==0)  abortme("0 length array");
     return $fa;
+}
+
+/////////////////////////////////////////////////////////////////////////
+// testme - call routines for each set of coordinates
+//
+function testme() {
+global $lat, $long, $speed, $course, $deltamin;
+// x = array(lat, long, speed, course, ...
+//1-05T19:21:02+00:00 1.19 367153930,0,5125754,47.176970,-122.644900,113,511,102,0,2021-01-05T19:19:43,TER,42/ / deltamin=1.3:'S2' arriving @Steilacoom in 10 m 
+//2021-01-05T19:24:02+00:00 1.19 367153930,0,5125754,47.173740,-122.628700,107,511,125,0,2021-01-05T19:23:23,TER,22/ / deltamin=0.7:'S2' arriving @Steilacoom in 6 m 
+//2021-01-05T19:27:02+00:00 1.19 367153930,0,5125754,47.168220,-122.626100,112,511,181,0,2021-01-05T19:25:22,TER,22/ / deltamin=1.7:'S2' stopping @Ketron in 4 min 
+$x = array(47.176970,-122.644900,113,102,47.173740,-122.628700,107,125,47.168220,-122.626100,112,181);
+$deltamin = 0;
+$i = 0;
+for($i=0; $i<count($x); $i=$i+4) {
+    $lat = $x[$i]; $long=$x[$i+1];$speed=$x[$i+2];$course=$x[$i+3];
+    $s = timetocross();
+    echo "$lat, $long, $speed, $course: $s \n";
+}
+exit("test complete");
 }
 
 //////////////////////////////////////////////////////////////////////////
