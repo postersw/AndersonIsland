@@ -74,6 +74,7 @@
         1.29.072920. Strikethrough flame on burn ban.
     2021
         1.29.010121. Display Ferry position.
+        1.30.010521. Do not remember ferry position between startups.
  * 
  * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -95,7 +96,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.29.010221";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.010721";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -678,6 +679,8 @@ var ferrytimeA2 = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225
 var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
 
 var gFerryDate2 = 0;  // cutover time to ferrytimex2
+var gFerryPosition = ""; // ferry position text message
+var gFerryPositionTime = 0; // time of ferry position text message (unix ms)
 
 // OpenHours Array object. Array of openhours for the store hours.  This array is loaded by a JSON.parse
 //      of the OpenHoursJSON string in 'dailycache'
@@ -1162,7 +1165,8 @@ function HandleAlertReply(r) {
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
-    parseCacheRemove(r, 'ferryposition', "FERRYPOSITION", "FERRYPOSITIONEND");
+    gFerryPosition = parseCacheOptional(r, 'ferryposition', "FERRYPOSITION", "FERRYPOSITIONEND"); // get the ferry position - NOT stored between sessions, so it always starts out empty because it must be refreshed every 3 min.
+    gFerryPositionTime = gTimeStampms; // save time
     var oldrefreshrequest = LSget('refreshrequest'); // current value of refresh request
     var newrefreshrequest = parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
@@ -1774,7 +1778,7 @@ function WriteNextFerryTimes() {
     // at this point, i = the next valid ferry run
 
     var str;
-    var v = "";
+    var v = "";  // text string to display
     gFerryDelayMin = 0;
     TXTS.FerryTime = "";
     BIGTX.FerryTime = "";
@@ -1792,9 +1796,9 @@ function WriteNextFerryTimes() {
             if (gFerryDelayMin > 60) gFerryDelayMin = 60; // maximum of 60
         }
     }
-
-    var s = localStorage.getItem('ferryposition');
-    if (!IsEmpty(s)) v = v + s + "<br/>";  // display ferry position
+    if (gFerryPositionTime != 0 && (gTimeStampms - gFerryPositionTime) < 6 * 60000) { // IF time of ferry position is less than 6 minutes old, 
+        if (gFerryPosition != "") v = v + gFerryPosition + "<br/>";  // display ferry position
+    }
 
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1) {     // && gLatitude > 0) {

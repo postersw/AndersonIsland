@@ -15,7 +15,7 @@
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
 
-$ver = "1.20";  // 1/4/21
+$ver = "1.22";  // 1/7/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -55,12 +55,37 @@ if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7
 
 // get position
 $fa = getposition();
-$p = ""; $pi = "";
+$p = ""; $pi = 0; $pstr = "";
 //print_r($fa); // debug
 
+//// loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
+//foreach($fa as $a) {
+//    $MMSI = $a[0]; $lat = $a[3]; $long = $a[4]; $speed = $a[5]; $course = $a[7]; $status = $a[8]; $timestamp = $a[9];
+//    if($MMSI=="")  abortme("MMSI is empty");
+//    if($MMSI == $MMSICA) $ferryname = "'CA'";
+//    elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
+//    checktimestamp($timestamp); 
+//    //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
+//    //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctly
+//    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
+
+//    // calculate location and arrival;
+//    if($p <> "") {
+//        $p = $p . "<br/>";
+//        $pi = $pi . "<br/>";
+//    }
+//    if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
+//    else $s = timetocross();
+//    $p =  $p . "$ferryname $s"; 
+//    $pi = $pi . "$mi$ri</i> $ferryname $s";
+//}
+
 // loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
-foreach($fa as $a) {
-    $MMSI = $a[0]; $lat = $a[3]; $long = $a[4]; $speed = $a[5]; $course = $a[7]; $status = $a[8]; $timestamp = $a[9];
+$i = 0; $pj = 0;
+$px = array();  // text string
+for($i=0; $i < count($fa); $i++) {
+    $MMSI = $fa[i][0]; $lat = $fa[i][3]; $long = $fa[i][4]; $speed = $fa[i][5]; $course = $fa[i][7]; 
+    $status = $fa[i][8]; $timestamp = $fa[i][9];
     if($MMSI=="")  abortme("MMSI is empty");
     if($MMSI == $MMSICA) $ferryname = "'CA'";
     elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
@@ -70,21 +95,23 @@ foreach($fa as $a) {
     if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
 
     // calculate location and arrival;
-    if($p <> "") {
-        $p = $p . "<br/>";
-        $pi = $pi . "<br/>";
-    }
     if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
     else $s = timetocross();
     $p =  $p . "$ferryname $s"; 
-    $pi = $pi . "$mi$ri</i> $ferryname $s";
+    $px[$pi] = "$mi$ri</i> $ferryname $s";
+    $pi++;
 }
 
-//echo "$p"; // debug
+// always display 'docked at Steilacoom' last and in gray if there are 2 ferries
+if($pi==0) $pstr = "";
+elseif($pi==1) $pstr = $px[0];
+elseif(index($px[0], "docked at Steilacoom") > 0) $pstr = $px[1] . "<br/><span style='color:gray'>" . $px[0] . "</span>";
+elseif(index($px[1], "docked at Steilacoom") > 0) $pstr = $px[0] . "<br/><span style='color:gray'>" . $px[1] . "</span>";
+else $pstr = $px[0] . "<br/>" . $px[1];
 
 // write to ferry position file
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>Ferry $p</div>");  // html file for iframe
-file_put_contents("ferryposition.txt", $pi); // txt file for getalerts.php
+file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 $tlh = fopen($log, 'a');
 $s =  implode(",", $fa[0]) . "/" ;
 if(count($fa)>1) $s = $s . implode(",", $fa[1])  ;
@@ -119,7 +146,7 @@ function checktimestamp($ts) {
 // note when long is outside of the docking zone and speed is not > 10, make crossing time slower
 //
 function timetocross() {
-    global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe, $crossingtime, $course, $deltamin, $ferryport, $speed, $mi, $ri;
+    global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe,$longKe, $crossingtime, $course, $deltamin, $ferryport, $speed, $mi, $ri;
     $AItoSt = .074; // steilacoom to AI longitude
     $latKeIs = 47.1725; // Ketron course latitude flag. Just south of the Steilacoom dock
     $ketron = "";
@@ -127,7 +154,7 @@ function timetocross() {
     // if below the tip of Ketron, do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if(($lat <= $latKeIs) || ($lat<47.177 && $long>-122.640 && $long<-122.624 && $course>100 && $course <180 )) { // if southerly westerly course, assume arriving.
     //if($lat <= $latKeIs) { 
-        if($course>110 & $course < 340)  { // if southerly westerly course, assume arriving.
+        if(($long<$longKe) || ($course>110 & $course < 340))  { // if southerly westerly course, assume arriving.
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
             if($t <= 0) {
@@ -148,6 +175,7 @@ function timetocross() {
     // override ferry port when close to steilacoom and course is headed to steilacoom
     if($long > -122.615 && $long < -122.600 && $course > 90 && $course < 200) $ferryport = "A"; 
 
+    // Headed to AI
     if($ferryport=="S" ) { // headed to AI 
         //$Dt = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);  // longitude only
         $t = floor(((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
@@ -162,7 +190,8 @@ function timetocross() {
         }
         return $ketron . "arriving @AI in $t m";
 
-    } else {  // headed to Steilacoom
+    // Headed to Steilacoom
+    } else { 
         //$Dt = floor(($longSt-$long)/ $AItoSt * $crossingtime - $deltamin); // longitude only
         $t = floor(((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
