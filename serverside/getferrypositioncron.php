@@ -154,7 +154,7 @@ function timetocross() {
     // if below the tip of Ketron, do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if(($lat <= $latKeIs) || ($lat<47.177 && $long>-122.640 && $long<-122.624 && $course>100 && $course <180 )) { // if southerly westerly course, assume arriving.
     //if($lat <= $latKeIs) { 
-        if(($long<$longKe) || ($course>110 & $course < 340))  { // if southerly westerly course, assume arriving.
+        if(($long<$longKe) || ($course>99 & $course < 340))  { // if southerly westerly course, assume arriving.
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
             if($t <= 0) {
