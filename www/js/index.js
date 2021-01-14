@@ -96,7 +96,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.010721";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.011421";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -1796,9 +1796,10 @@ function WriteNextFerryTimes() {
             if (gFerryDelayMin > 60) gFerryDelayMin = 60; // maximum of 60
         }
     }
-    if (gFerryPositionTime != 0 && (gTimeStampms - gFerryPositionTime) < 6 * 60000) { // IF time of ferry position is less than 6 minutes old, 
-        if (gFerryPosition != "") v = v + gFerryPosition + "<br/>";  // display ferry position
+    if (gFerryPositionTime != 0 && (gTimeStampms - gFerryPositionTime) < 8 * 60000) { // IF time of ferry position is less than 8 minutes old, 
+        if (gFerryPosition != "") v = v + gFerryPosition;  // display ferry position
     }
+    v = v + "<br/>"; // always leave a line above the ferry time so display doesn't jump.
 
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1) {     // && gLatitude > 0) {
