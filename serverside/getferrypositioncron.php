@@ -22,6 +22,8 @@ $longKe = -122.6289; $latKe = 47.1622; // ketron dock
 $longE = .0007;  $latE = .001; // epselon big enough to capture the 2 steilacoom docks
 $longMIN = -122.7; $longMAX = -122.5; // longitude bounding
 $latMIN = 47.15; $latMAX = 47.2;  // latitude bounding
+$DAItoSt = ($longSt-$longAI) + ($latAI-$latSt)*.67; // total distance in longitude equivalent degrees
+
 $ferrypositionfile = "ferryposition.html";
 $log = 'ferrypositionlog.txt';
 $crossingtime = 20; // nominal crossing time in minutes
@@ -84,8 +86,8 @@ $p = ""; $pi = 0; $pstr = "";
 $i = 0; $pj = 0;
 $px = array();  // text string
 for($i=0; $i < count($fa); $i++) {
-    $MMSI = $fa[i][0]; $lat = $fa[i][3]; $long = $fa[i][4]; $speed = $fa[i][5]; $course = $fa[i][7]; 
-    $status = $fa[i][8]; $timestamp = $fa[i][9];
+    $MMSI = $fa[$i][0]; $lat = $fa[$i][3]; $long = $fa[$i][4]; $speed = $fa[$i][5]; $course = $fa[$i][7]; 
+    $status = $fa[$i][8]; $timestamp = $fa[$i][9];
     if($MMSI=="")  abortme("MMSI is empty");
     if($MMSI == $MMSICA) $ferryname = "'CA'";
     elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
@@ -146,7 +148,7 @@ function checktimestamp($ts) {
 // note when long is outside of the docking zone and speed is not > 10, make crossing time slower
 //
 function timetocross() {
-    global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe,$longKe, $crossingtime, $course, $deltamin, $ferryport, $speed, $mi, $ri;
+    global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe,$longKe, $DAItoSt, $crossingtime, $course, $deltamin, $ferryport, $speed, $mi, $ri;
     $AItoSt = .074; // steilacoom to AI longitude
     $latKeIs = 47.1725; // Ketron course latitude flag. Just south of the Steilacoom dock
     $ketron = "";
@@ -169,7 +171,6 @@ function timetocross() {
     // if($speed < 100) $ct = $ct * (100/$speed); // adjust for speed. numbers could get too big.
 
     $ferryport = file_get_contents($MMSI); // get last ferry port
-    $DAItoSt = ($longSt-$longAI) + ($latAI-$latSt)*.67; // total distance in longitude equivalent degrees
 
     // if $ferryport=S, then ferry is headed to AI, else the reverse;
     // override ferry port when close to steilacoom and course is headed to steilacoom
@@ -215,24 +216,34 @@ function timetocross() {
 //          $ri = return icon;
 
 function reportatdock() {
-    global $MMSI, $lat, $long, $longAI, $longSt, $longKe, $longE, $mi, $ri, $lt;
+    global $MMSI, $lat, $long, $longAI, $latAI, $longSt, $latSt, $longKe, $longE, $mi, $ri, $lt, $DAItoSt;
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
-    if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  // At AI
+    if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  
+        // At AI
         file_put_contents($MMSI, "A");
         $ri = "font_download";
         return "docked at Anderson";
+
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
+        // At Steilacoom
         file_put_contents($MMSI, "S");
         $ri = "home";
         return "docked at Steilacoom";
+
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
         // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
         if($lt[2]>=16 && $lt[2]<=17) file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
         $ri = "do_not_disturb_on";
         return "at Ketron";  // allow for extended docking
+
     } else {
+        // stopped somewhere. Report distance to AI or Steilacoom
         $ri = "report";
-        return "stopped at $lat, $long";
+        $ta = (((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * 4);  // approx miles to AI
+        $ts = (((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * 4);  // approx miles to Steilacoom
+        if($ta<$ts) return "stopped " . round($ta,1) . " miles from AI at $lat, $long";
+        // if closer to Steilacoom
+        return "stopped " . round($ts,1) . " miles from Steilacoom at $lat, $long";
     }
 }
 
