@@ -96,7 +96,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.011421";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.011521";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -2555,15 +2555,23 @@ function FormatOneBusiness(Oh, mmdd, showall) {
             for (var j = 0; j < 7; j++) {
                 var opentimetoday = H[j * 2]; // hhmm-hhmm open today
                 var closetimetoday = H[j * 2 + 1]; // hhmm-hhmm open today
+                var listbold = false;
+                // make it bold if day of week is correct and date is in range.
+                if (j == gDayofWeek) { // if normal Jan - March
+                    if (Oh.Sc[i].From < Oh.Sc[i].To) {
+                        if ((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) listbold = true;
+                    }  // if March - Jan
+                    else if ((mmdd >= Oh.Sc[i].To) || (mmdd <= Oh.Sc[i].From)) listbold = true;
+                }
                 if (opentimetoday > 0) {
-                    if (j == gDayofWeek) openlist += "<strong>"; // bold today
+                    if (listbold) openlist += "<strong>"; // bold today
                     if (opentimetoday == 1 && closetimetoday == 2359) openlist += "<nobr>" + gDayofWeekShort[j] + ": 24 hours";
                     else openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                     if (H2 != null) {
                         if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                     }
                     openlist += "</nobr>";
-                    if (j == gDayofWeek) openlist += "</strong>";
+                    if (listbold) openlist += "</strong>";
                     if (j < 6) openlist += ", ";
                 }
             } // for loop for each day

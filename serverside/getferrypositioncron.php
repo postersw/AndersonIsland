@@ -15,7 +15,7 @@
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
 
-$ver = "1.22";  // 1/7/21
+$ver = "1.24";  // 1/18/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -107,8 +107,8 @@ for($i=0; $i < count($fa); $i++) {
 // always display 'docked at Steilacoom' last and in gray if there are 2 ferries
 if($pi==0) $pstr = "";
 elseif($pi==1) $pstr = $px[0];
-elseif(index($px[0], "docked at Steilacoom") > 0) $pstr = $px[1] . "<br/><span style='color:gray'>" . $px[0] . "</span>";
-elseif(index($px[1], "docked at Steilacoom") > 0) $pstr = $px[0] . "<br/><span style='color:gray'>" . $px[1] . "</span>";
+elseif(strpos($px[0], "docked at Steilacoom") > 0) $pstr = $px[1] . "<br/><span style='color:gray'>" . $px[0] . "</span>";
+elseif(strpos($px[1], "docked at Steilacoom") > 0) $pstr = $px[0] . "<br/><span style='color:gray'>" . $px[1] . "</span>";
 else $pstr = $px[0] . "<br/>" . $px[1];
 
 // write to ferry position file
@@ -117,7 +117,7 @@ file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 $tlh = fopen($log, 'a');
 $s =  implode(",", $fa[0]) . "/" ;
 if(count($fa)>1) $s = $s . implode(",", $fa[1])  ;
-fwrite($tlh, date('c') . " $ver $s / deltamin=" . round($deltamin,1) . ":$p \n");
+fwrite($tlh, date('c') . " $ver $s / deltamin=" . round($deltamin,1) . ":$pstr \n");
 fclose($tlh);
 return;
 
