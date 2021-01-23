@@ -14,8 +14,9 @@
 //
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
+//  1.25 1/23   Skip boat if docked at backup-boat dock
 
-$ver = "1.24";  // 1/18/21
+$ver = "1.25";  // 1/23/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -97,6 +98,7 @@ for($i=0; $i < count($fa); $i++) {
     if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
 
     // calculate location and arrival;
+    if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) continue;  // skip boat if it is stopped & docked at the backup-boat dock
     if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
     else $s = timetocross();
     $p =  $p . "$ferryname $s"; 
