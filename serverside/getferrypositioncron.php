@@ -14,9 +14,9 @@
 //
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
-//  1.25 1/23   Skip boat if docked at backup-boat dock
+//  1.26 1/23   Skip boat if docked at backup-boat dock. Always display CA before S2 if both active.
 
-$ver = "1.25";  // 1/23/21
+$ver = "1.26";  // 1/23/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -106,11 +106,12 @@ for($i=0; $i < count($fa); $i++) {
     $pi++;
 }
 
-// always display 'docked at Steilacoom' last and in gray if there are 2 ferries
+// always display 'CA' before 'S2' when both are active.
 if($pi==0) $pstr = "";
 elseif($pi==1) $pstr = $px[0];
-elseif(strpos($px[0], "docked at Steilacoom") > 0) $pstr = $px[1] . "<br/><span style='color:gray'>" . $px[0] . "</span>";
-elseif(strpos($px[1], "docked at Steilacoom") > 0) $pstr = $px[0] . "<br/><span style='color:gray'>" . $px[1] . "</span>";
+//elseif(strpos($px[0], "docked at Steilacoom") > 0) $pstr = $px[1] . "<br/><span style='color:gray'>" . $px[0] . "</span>";
+//elseif(strpos($px[1], "docked at Steilacoom") > 0) $pstr = $px[0] . "<br/><span style='color:gray'>" . $px[1] . "</span>";
+elseif(strpos($px[0], "'S2'") > 0) $pstr = $px[1] . "<br/>" . $px[0];  // always display CA before S2
 else $pstr = $px[0] . "<br/>" . $px[1];
 
 // write to ferry position file
