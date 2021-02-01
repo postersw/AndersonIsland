@@ -15,8 +15,9 @@
 //  Robert Bedoll. 12/26/20.  
 //  1.12 12/30  Include latitude in calculation
 //  1.26 1/23   Skip boat if docked at backup-boat dock. Always display CA before S2 if both active.
+//  1.27 2/1/21 Case of boat returning to AI. Check course for a return heading.
 
-$ver = "1.26";  // 1/23/21
+$ver = "1.27";  // 2/1/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -120,7 +121,8 @@ file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 $tlh = fopen($log, 'a');
 $s =  implode(",", $fa[0]) . "/" ;
 if(count($fa)>1) $s = $s . implode(",", $fa[1])  ;
-fwrite($tlh, date('c') . " $ver $s / deltamin=" . round($deltamin,1) . ":$pstr \n");
+date_default_timezone_set("America/Los_Angeles"); // set UTC
+fwrite($tlh, date('c') . " $ver/ $s/deltamin=" . round($deltamin,1) . "/$pstr \n");
 fclose($tlh);
 return;
 
@@ -176,11 +178,16 @@ function timetocross() {
     $ferryport = file_get_contents($MMSI); // get last ferry port
 
     // if $ferryport=S, then ferry is headed to AI, else the reverse;
+ 
+    if($course > 90 && $course < 200) $courseto = "S";  // heading to steilacoom
+    else $courseto = "A"; // heading to AI
+
     // override ferry port when close to steilacoom and course is headed to steilacoom
-    if($long > -122.615 && $long < -122.600 && $course > 90 && $course < 200) $ferryport = "A"; 
+    if($long > -122.615 && $long < -122.600 && $courseto == "S") $ferryport = "A";
+    // override ferry port when course is opposite
 
     // Headed to AI
-    if($ferryport=="S" ) { // headed to AI 
+    if($ferryport=="S" || ($course > 225 && $course < 340) ) { // last port was S, or headed to AI 
         //$Dt = floor((($long-$longAI)/ $AItoSt ) * $crossingtime - $deltamin);  // longitude only
         $t = floor(((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * $crossingtime - $deltamin);  // latitude & longitude
         //echo " AItoST=$AItoSt, DATtoSt=$DAItoSt, Dt=$Dt ";
@@ -189,9 +196,10 @@ function timetocross() {
             if($speed >=80) $t = 1;  // if boat is still running at full speed, always give 1 more minute
             else {
                 $ri = "skip_previous"; //"arrow_drop_down_circle";
-                return "docking @Anderson";
+                return "docking @AI";
             }
         }
+        if($ferryport == "A") return $ketron . "returning to AI in $t m";
         return $ketron . "arriving @AI in $t m";
 
     // Headed to Steilacoom
@@ -206,7 +214,8 @@ function timetocross() {
                 $ri = "skip_next"; //"arrow_drop_down_circle";
                 return "docking @Steilacoom";
             }
-        }    
+        }
+        if($ferryport == "S") return $ketron . "returning to Steilacoom in $t m";    
         return $ketron . "arriving @Steilacoom in $t m";
     }
 }
@@ -244,9 +253,9 @@ function reportatdock() {
         $ri = "report";
         $ta = (((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * 4);  // approx miles to AI
         $ts = (((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * 4);  // approx miles to Steilacoom
-        if($ta<$ts) return "stopped " . round($ta,1) . " miles from AI at $lat, $long";
+        if($ta<$ts) return "stopped " . round($ta,1) . " miles from AI";
         // if closer to Steilacoom
-        return "stopped " . round($ts,1) . " miles from Steilacoom at $lat, $long";
+        return "stopped " . round($ts,1) . " miles from Steilacoom";
     }
 }
 

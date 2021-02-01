@@ -65,8 +65,12 @@ if($title == "") {
 	exit(0); // if no reply
 }
 // get actual message
+if(!property_exists($x->channel, "item")) { 
+	ClearAlertFile($alertfile, $alertlog);
+	exit(0); // if no title
+}
 $title = trim($x->channel->item[0]->title);
-if($title == "") {
+if($title=="") {
 	ClearAlertFile($alertfile, $alertlog);
 	exit(0); // if no title
 }
