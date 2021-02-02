@@ -16,8 +16,9 @@
 //  1.12 12/30  Include latitude in calculation
 //  1.26 1/23   Skip boat if docked at backup-boat dock. Always display CA before S2 if both active.
 //  1.27 2/1/21 Case of boat returning to AI. Check course for a return heading.
+//  1.28 2/2/21 Make position log a csv file.
 
-$ver = "1.27";  // 2/1/21
+$ver = "1.28";  // 2/2/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -27,7 +28,7 @@ $latMIN = 47.15; $latMAX = 47.2;  // latitude bounding
 $DAItoSt = ($longSt-$longAI) + ($latAI-$latSt)*.67; // total distance in longitude equivalent degrees
 
 $ferrypositionfile = "ferryposition.html";
-$log = 'ferrypositionlog.txt';
+$log = 'ferrypositionlog.csv';
 $crossingtime = 20; // nominal crossing time in minutes
 $MMSICA = 366659730;  // Christine Anderson
 $MMSIS2 = 367153930; // Steilacoom II
@@ -60,29 +61,6 @@ if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7
 // get position
 $fa = getposition();
 $p = ""; $pi = 0; $pstr = "";
-//print_r($fa); // debug
-
-//// loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
-//foreach($fa as $a) {
-//    $MMSI = $a[0]; $lat = $a[3]; $long = $a[4]; $speed = $a[5]; $course = $a[7]; $status = $a[8]; $timestamp = $a[9];
-//    if($MMSI=="")  abortme("MMSI is empty");
-//    if($MMSI == $MMSICA) $ferryname = "'CA'";
-//    elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
-//    checktimestamp($timestamp); 
-//    //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
-//    //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctly
-//    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
-
-//    // calculate location and arrival;
-//    if($p <> "") {
-//        $p = $p . "<br/>";
-//        $pi = $pi . "<br/>";
-//    }
-//    if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
-//    else $s = timetocross();
-//    $p =  $p . "$ferryname $s"; 
-//    $pi = $pi . "$mi$ri</i> $ferryname $s";
-//}
 
 // loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
 $i = 0; $pj = 0;
@@ -108,21 +86,33 @@ for($i=0; $i < count($fa); $i++) {
 }
 
 // always display 'CA' before 'S2' when both are active.
+
 if($pi==0) $pstr = "";
 elseif($pi==1) $pstr = $px[0];
-//elseif(strpos($px[0], "docked at Steilacoom") > 0) $pstr = $px[1] . "<br/><span style='color:gray'>" . $px[0] . "</span>";
-//elseif(strpos($px[1], "docked at Steilacoom") > 0) $pstr = $px[0] . "<br/><span style='color:gray'>" . $px[1] . "</span>";
 elseif(strpos($px[0], "'S2'") > 0) $pstr = $px[1] . "<br/>" . $px[0];  // always display CA before S2
 else $pstr = $px[0] . "<br/>" . $px[1];
+//echo $pstr;
 
 // write to ferry position file
+
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>Ferry $p</div>");  // html file for iframe
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
+
+// log it to csv file 
+
 $tlh = fopen($log, 'a');
-$s =  implode(",", $fa[0]) . "/" ;
-if(count($fa)>1) $s = $s . implode(",", $fa[1])  ;
+$s1 = ""; $s2 = "";
+if($fa[0][0] == $MMSICA) {  // if 1st boat is CA
+    $s1 =  implode(",", $fa[0]) . "," . $px[0];
+    if(count($fa)>1) $s2 = implode(",", $fa[1]) . "," . $px[1];
+    else $s2 = ",,,,,,,,,,,";
+} else  { // if 1st boat is S2
+    $s2 =  implode(",", $fa[0]) . "," . $px[0];
+    if(count($fa)>1) $s1 = implode(",", $fa[1]) . "," . $px[1];
+    else $s1 = ",,,,,,,,,,,";
+}
 date_default_timezone_set("America/Los_Angeles"); // set UTC
-fwrite($tlh, date('c') . " $ver/ $s/deltamin=" . round($deltamin,1) . "/$pstr \n");
+fwrite($tlh, date('c') . ",$ver,$s1,$s2," . round($deltamin,1) ."\n");
 fclose($tlh);
 return;
 
@@ -234,13 +224,13 @@ function reportatdock() {
         // At AI
         file_put_contents($MMSI, "A");
         $ri = "font_download";
-        return "docked at Anderson";
+        return "docked @AI";
 
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         // At Steilacoom
         file_put_contents($MMSI, "S");
         $ri = "home";
-        return "docked at Steilacoom";
+        return "docked @Steilacoom";
 
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
         // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
