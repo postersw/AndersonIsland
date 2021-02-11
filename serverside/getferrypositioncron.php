@@ -17,9 +17,9 @@
 //  1.26 1/23   Skip boat if docked at backup-boat dock. Always display CA before S2 if both active.
 //  1.27 2/1/21 Case of boat returning to AI. Check course for a return heading.
 //  1.28 2/2/21 Make position log a csv file.
-//  1.29 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
+//  1.30 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
 
-$ver = "1.29";  // 2/11/21
+$ver = "1.30";  // 2/11/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -169,10 +169,10 @@ function timetocross() {
     // Default: if coming from S, it is headed to A, . Added 1.29 2/22/21
     // $courseto = destination port.  $ferryport = previous port
     if($ferryport=="S") $courseto = "A";
-    else $courseto == "S";
+    else $courseto = "S";
     // override courseto when compass course is unambiguous
-    if($course > 240 && $course < 350) $courseto = "A";  // heading to AI
-    if($course > 35  && $course < 170) $courseto = "S";  // heading to steilacoom
+    if($course > 239 && $course < 351) $courseto = "A";  // heading to AI
+    if($course > 35  && $course < 171) $courseto = "S";  // heading to steilacoom
 
     // override ferry port when close to steilacoom and course is headed to steilacoom.  Not used after 1.29
     //if($long > -122.615 && $long < -122.600 && $courseto == "S") $ferryport = "A";
