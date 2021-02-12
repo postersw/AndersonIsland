@@ -74,7 +74,7 @@
         1.29.072920. Strikethrough flame on burn ban.
     2021
         1.29.010121. Display Ferry position.
-        1.30.010521. Do not remember ferry position between startups.
+        1.30.21121. Do not remember ferry position between startups. Display ketron run time on main page until after we leave ketron.
  * 
  * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -96,7 +96,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.011521";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.021121";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -1838,7 +1838,13 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
 
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
+        //if (ferrytimeK == "") {  // if no ketron times
+        //    if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+        //} else {
+        //    if (adjustedcurrenttime > Math.max(ferrytimes[i], ferrytimeK[i])) continue;  // if a possible ketron run
+        //}
         if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             var tcolor = "";
@@ -1856,11 +1862,14 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
-            // Ketron special case 
+            // Ketron special case for current or previous AI run.
             if (ferrytimeK != "") { // add ketron time for this run
                 if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1], ferrytimeK[i]))) {
                     ketron = true;
                     ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i]) + "</td>";
+                } else if (!ketron && (i > 0) && (ferrytimeK[i - 2] != 0) && (ValidFerryRun(ferrytimeK[i-1], ferrytimeK[i-2])) && (adjustedcurrenttime <= ferrytimeK[i-2])) {
+                    ketron = true;
+                    ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i-2]) + "</td>";
                 } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
             }
             ft = ft + "&nbsp;&nbsp;</td>";
@@ -1875,7 +1884,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA, nruns);
 
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:gray'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
+    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:brown'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
     return ft;
 }
 
