@@ -96,7 +96,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.021121";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.021521";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -236,6 +236,7 @@ var gMonth;  // month: 1-12. note starts with 1
 var gDayofMonth; // day of month: 1-31
 var gMonthDay; // mmdd: 0101-1231
 var gYYmmdd; // yymmdd: 160101 - 301231
+var gTimeZone; // PST or PDT
 var laborday = 0; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
@@ -329,7 +330,9 @@ function DebugLog(msg) {
 // initilize all date variables.  
 // entry: dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1 and reset time).
 //          mm/dd/yyyy for an arbitrary date
-// sets the date globals above
+// sets the date globals above.
+// Automatically adjusts to PST/PDT if dateincr=0.  
+//
 function InitializeDates(dateincr) {
     if (dateincr == 0) Gd = new Date();
     else if (dateincr == 1) {
@@ -339,6 +342,18 @@ function InitializeDates(dateincr) {
         Gd = new Date(dateincr);
     }
     gTimeStampms = Gd.getTime(); // milisec since 1970
+    // hack for other time zones - resets the date by the number of milliseconds. Works for U.S. Fails in wierd Pacific time zones.
+    var fmtdate = Gd.toString();
+    if (fmtdate.indexOf("Daylight") > 0) gTimeZone = "PDT";
+    else gTimeZone = "PST";
+    if ((dateincr==0) && fmtdate.indexOf("Pacific")<0) {  // if not Pacific time, adjust it
+        var gTimeZoneOffset = Gd.getTimezoneOffset()// in minutes; returns 300 for EST
+        var myTZoffset = 8 * 60; // Pacific standard time UTC-8
+        if (gTimeZone == "PDT") myTZoffset = 7 * 60; // Pacific daylight savings time UTC-7
+        Gd = new Date(gTimeStampms + (gTimeZoneOffset - myTZoffset) * 60000);// adjust for the time zone delta
+        gTimeStampms = Gd.getTime(); // milisec since 1970
+    }
+
     gDayofWeek = Gd.getDay();  // day of week in 0-6
     gLetterofWeek = "0123456".charAt(gDayofWeek); // letter for day of week
     gTimehh = Gd.getHours();
@@ -1495,7 +1510,7 @@ function timerUp() {
     InitializeDates(0);
     gLastUpdatems = Date.now();
     gUpdateCounter++;
-    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
+    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm) + " " + gTimeZone;
 
     // special handling for other than the main page
     switch (gDisplayPage) {
@@ -4994,7 +5009,7 @@ function StartApp() {
     gAppStartedTime = gTimeStampms;
     gAppStartedDate = gMonthDay * 10000 + gTimehhmm;
     gLastUpdatems = gTimeStampms;
-    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
+    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm) + " " + gTimeZone;
     gForceCacheReload = false; // cache reload not needed
     gForceTideReload = false;
     InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
