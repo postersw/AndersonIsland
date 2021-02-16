@@ -74,7 +74,8 @@
         1.29.072920. Strikethrough flame on burn ban.
     2021
         1.29.010121. Display Ferry position.
-        1.30.21121. Do not remember ferry position between startups. Display ketron run time on main page until after we leave ketron.
+        1.30.021621. Do not remember ferry position between startups. Display ketron run time on main page until after we leave ketron.
+                     Always adjust time to PST/PDT. Use DST dates in dailyconfig.
  * 
  * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -96,7 +97,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.021521";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.021621";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -346,14 +347,7 @@ function InitializeDates(dateincr) {
     var fmtdate = Gd.toString();
     if (fmtdate.indexOf("Daylight") > 0) gTimeZone = "PDT";
     else gTimeZone = "PST";
-    if ((dateincr==0) && fmtdate.indexOf("Pacific")<0) {  // if not Pacific time, adjust it
-        var gTimeZoneOffset = Gd.getTimezoneOffset()// in minutes; returns 300 for EST
-        var myTZoffset = 8 * 60; // Pacific standard time UTC-8
-        if (gTimeZone == "PDT") myTZoffset = 7 * 60; // Pacific daylight savings time UTC-7
-        Gd = new Date(gTimeStampms + (gTimeZoneOffset - myTZoffset) * 60000);// adjust for the time zone delta
-        gTimeStampms = Gd.getTime(); // milisec since 1970
-    }
-
+    if ((dateincr == 0) && fmtdate.indexOf("Pacific") < 0) AdjustTimeZone();  // if not Pacific time, adjust it
     gDayofWeek = Gd.getDay();  // day of week in 0-6
     gLetterofWeek = "0123456".charAt(gDayofWeek); // letter for day of week
     gTimehh = Gd.getHours();
@@ -369,6 +363,34 @@ function InitializeDates(dateincr) {
     if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
     // compute holidays
     holiday = IsHoliday(gMonthDay);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  AdjustTimeZone - Adjusts the Gd object to force it to be Pacific PDT or PST
+//          tests for WA Daylight Savings Time by checking the date against the DST start / end dates in dailyconfig
+//  entry   Gd is set
+//          dst = local storage object from dailyconfig DST:  mmdd,mmdd   date of WA DST start, date of Wa DST end.
+//                  if no DST use "none"
+//  exit    Gd = global date object reset for new time zone
+//          gTimeStampms = new millisec
+function AdjustTimeZone() {
+    var gTimeZoneOffset = Gd.getTimezoneOffset()// in minutes; returns 300 for EST
+    var myTZoffset = 8 * 60; // Pacific standard time UTC-8
+    // determine if it is Daylight savings time
+    var d = LSget("dst");  // saved DST from dailyconfig.
+    if (d != "none") { 
+        if (d == "") d = "314,1107";  // if none, use 2021 dates
+        var a = d.split(",");   // a[0]=start, a[1]=end
+        if (a.length != 2) alert("Error in DST in dailyconfig");
+        var md = (Gd.getMonth() + 1) * 100 + Gd.getDate(); // day of month 1-31
+        if (md >= Number(a[0]) && md < Number(a[1])) {
+            gTimeZone = "PDT";
+            myTZoffset = 7 * 60; // Pacific daylight savings time UTC-7
+        }
+    }
+    // adjust for offset
+    Gd = new Date(gTimeStampms + (gTimeZoneOffset - myTZoffset) * 60000);// adjust for the time zone delta
+    gTimeStampms = Gd.getTime(); // milisec since 1970
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1393,6 +1415,8 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // news link
     parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // custom tide link
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
+    parseCacheRemove(data, "dst", "DST", "\n"); // Daylight Savings Time start/end schedule
+
     //parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
     parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
 
