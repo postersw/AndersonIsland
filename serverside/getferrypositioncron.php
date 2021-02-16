@@ -175,7 +175,7 @@ function timetocross() {
     else $courseto = "S";
     // override courseto when compass course is unambiguous
     if($course > 225 && $course < 351) $courseto = "A";  // heading to AI
-    if($course > 35  && $course < 171) $courseto = "S";  // heading to steilacoom
+    if($course > 35  && $course < 186) $courseto = "S";  // heading to steilacoom
 
     // override ferry port when close to steilacoom and course is headed to steilacoom.  Not used after 1.29
     //if($long > -122.615 && $long < -122.600 && $courseto == "S") $ferryport = "A";
