@@ -19,7 +19,7 @@
 //  1.28 2/2/21 Make position log a csv file.
 //  1.30 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
 
-$ver = "1.30";  // 2/11/21
+$ver = "1.31";  // 2/16/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -106,11 +106,14 @@ $s1 = ""; $s2 = "";
 if($fa[0][0] == $MMSICA) {  // if 1st boat is CA
     $s1 =  implode(",", $fa[0]) . "," . $px[0];
     if(count($fa)>1) $s2 = implode(",", $fa[1]) . "," . $px[1];
-    else $s2 = ",,,,,,,,,,,";
+    else $s2 = ",,,,,,,,,,,,";
 } else  { // if 1st boat is S2
+    if(strpos($px[0], "'S2'") < 0) {
+        $t = $px[0]; $px[0] = $px[1]; $px[1] = $t;
+    }
     $s2 =  implode(",", $fa[0]) . "," . $px[0];
     if(count($fa)>1) $s1 = implode(",", $fa[1]) . "," . $px[1];
-    else $s1 = ",,,,,,,,,,,";
+    else $s1 = ",,,,,,,,,,,,";
 }
 date_default_timezone_set("America/Los_Angeles"); // set UTC
 fwrite($tlh, date('c') . ",$ver,$s1,$s2," . round($deltamin,1) ."\n");
@@ -161,7 +164,7 @@ function timetocross() {
             }
             return "stopping @Ketron in $t min";
         }
-        else $ketron = "leaving Ketron, ";
+        else $ketron = "leaving Ketron  ";
     }
 
     $ferryport = file_get_contents($MMSI); // get last ferry port
@@ -171,7 +174,7 @@ function timetocross() {
     if($ferryport=="S") $courseto = "A";
     else $courseto = "S";
     // override courseto when compass course is unambiguous
-    if($course > 239 && $course < 351) $courseto = "A";  // heading to AI
+    if($course > 225 && $course < 351) $courseto = "A";  // heading to AI
     if($course > 35  && $course < 171) $courseto = "S";  // heading to steilacoom
 
     // override ferry port when close to steilacoom and course is headed to steilacoom.  Not used after 1.29
