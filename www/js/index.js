@@ -97,7 +97,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.021921";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.022621";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
 
@@ -1877,11 +1877,6 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
 
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
-        //if (ferrytimeK == "") {  // if no ketron times
-        //    if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
-        //} else {
-        //    if (adjustedcurrenttime > Math.max(ferrytimes[i], ferrytimeK[i])) continue;  // if a possible ketron run
-        //}
         if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
 
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
@@ -1923,7 +1918,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA, nruns);
 
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:darkgray'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
+    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:#608f9f'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
     return ft;
 }
 
