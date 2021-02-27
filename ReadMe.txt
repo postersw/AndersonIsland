@@ -117,7 +117,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 01/02/21. Ver 1.29.010221. Display current ferry location in FERRY section on main screen.
 							IOS version built on virtual Mac using XCODE 12.2 directly.  Uploaded to Testflight. 1/3/21: Released in appstore.
 							Android version #2250 still built using build.Adobe.com, even though it is not supported. Uploaded to play.google.com beta. 1/4/21 released to prod.
-01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable.
+01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable so an old line is not displayed.
+02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -196,7 +197,7 @@ ANDROID GOOGLE PLAY STORE
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
 		1.9 (2223) on 3/11/17. 
 	2. Click on Anderson Island Assistant.  Click on "APK".   
-	3. BETA TEST. Click on "Manage Beta version" and create a new open beta version. 
+	3. BETA TEST. Click on "Testing -> Open testing" and create a new open testing version. 
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
 	5. After the beta has been run a while, click on Manage Beta and then Promote to Production. No need to upload a new production ver.
