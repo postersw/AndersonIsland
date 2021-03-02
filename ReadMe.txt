@@ -119,6 +119,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 							Android version #2250 still built using build.Adobe.com, even though it is not supported. Uploaded to play.google.com beta. 1/4/21 released to prod.
 01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable so an old line is not displayed.
 02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
+03/02/21.                  Google Play production rollout. 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
