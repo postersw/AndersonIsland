@@ -4,9 +4,13 @@
 <head>
     <meta charset="utf-8" />
     <title>AIA: Edit Ferry Schedule</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
 </head>
 <body>
-<h1>EDIT FERRY SCHEDULE  6/18/20</h1>
+<div class="w3-container" >
+<h1 class="w3-blue w3-text-white"><strong>&nbsp EDIT FERRY SCHEDULE </strong></h1>
+     (ver 3/5/21)
     <p>To Use:
     1. Click 'LOAD FULL SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3. Click on Format (). 4. Make changes using Edit box. 
     5 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 5. When done, select SAVE FULL SCHEDULE, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
@@ -24,16 +28,17 @@
         <li>* = runs every day.</li>
         <li>0123456 = day of week to run. 0=Sunday. 6=Saturday. Multiple days are allowed, e.g. 135</li>
         <li>(xxxxx) = a javascript expression that evaluates to TRUE/FALSE. TRUE = run.  FALSE = skip.</li>
-        <li>Allowable variables: mmdd (101-1231), mmddyear (1012020), dayofmonth (1-31), weekofmonth (1-5), month (1-12), dayofweek (0-6)</li>
+        <li>Allowable variables: gMonthDay (101-1231), gYYmmdd (201001), gDayofMonth (1-31), gWeekofMonth (1-5), gMonth (1-12), gDayofWeek (0-6)</li>
         <li>Allowable functions: any javascript function, plus any function in AIA.</li>
         <li>Most useful function:  InList(variabletotest, l1, l2, ...).  Returns TRUE if variabletotest is l1 or l2 or ... Can take any number of list elements.</li>
         <li>RFB. 6/3/18.</li>              
         </ul>
-    <h1>EDIT AREA</h1>
-    <label>mmdd</label><input type="number" id="monthday" size="4"/>
-    <label>dayofweek</label><input type="number" id="dayofweek" size="1"/>
-    <label>weekofmonth</label><input type="number" id="weekofmonth" size="1"/><br />
-    hhmm/I/D: <input type="text" id="edittime" size="4" /> &nbsp;<input type="text" size="1" id="editSAK" /> &nbsp; &nbsp;
+
+    <h1 class="w3-blue w3-text-white">&nbsp EDIT AREA</h1>
+    <label>gMonthDay</label><input type="number" id="monthday" size="4"/>
+    <label>gDayofWeek</label><input type="number" id="dayofweek" size="1"/>
+    <label>gWeekofMonth</label><input type="number" id="weekofmonth" size="1"/><p />
+    <strong>hhmm/I/D: <input type="text" id="edittime" size="4" /> &nbsp;<input type="text" size="1" id="editSAK" /> </strong>&nbsp; &nbsp;
     <button onclick="PFormat()">Pretty Format by ()</button> 
     <button onclick="CheckEdit()">Syntax Check rule</button> 
     <button onclick="PCountEdit()">() Count</button> 
@@ -41,17 +46,17 @@
     <button onclick="SaveEdit(1)">Save Edit box to ST and AI (don't change AI time)</button><br/>
     <textarea cols="200" rows="4" id="editrule"></textarea>
 
-    <h1>SCHEDULE TABLE</h1>
+    <h1 class="w3-blue w3-text-white">&nbsp SCHEDULE TABLE</h1>
     <table id="ftable">
             <tr><td>STEIL</td><td>rule</td><td>S</td><td>AI</td><td>Rule</td><td>S</td><td>KETR</td><td>Rule</td><td>S</td></tr>
 
     </table>
   <hr/>
-        <h1>RESULTS TABLE</h1>
+        <h1 class="w3-blue w3-text-white">&nbsp RESULTS TABLE</h1>
     <table id="ferrytable">
 
     </table>
-
+    </div>
 
 <script>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,9 +79,12 @@
     var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
     var gDayofWeekName = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 
+
     var gFerryDate2 = 0;  // cutover time to ferrytimex2
     var geditSAK = "";
     var gediti = 0;
+    var gFerrytimebeingedited = 0;
+    var gASbeingedited = "";
 
     var gdailycache = "";  // global data read in from dailycache.txt
     var gdailycachenew = "";
@@ -310,6 +318,7 @@
                 row1col1.innerHTML = ferrytimeS[i + 1];
                 row1col1.id = "S" + i.toFixed(); // id = yymmddhhmmS
                 row1col1.onclick = function () { fclick(this.id) };
+                if (gFerrytimebeingedited == ferrytimesS[i] && gASbeingedited == "S") row1col1.style.backgroundColor = "yellow";
                 row1col1 = row1.insertCell(2);  // statuss
                 row1col1.style.border = "thin solid black";
 
@@ -326,6 +335,7 @@
                 //row1col2.innerHTML = "<textarea rows='2' cols='100'>" + ferrytimesA[i + 1] + "</textarea>";
                 row1col2.innerHTML = ferrytimesA[i + 1];
                 row1col2.id = "A" + i.toFixed(); // id = yymmddhhmmA
+                if (gFerrytimebeingedited == ferrytimesA[i] && gASbeingedited == "A") row1col2.style.backgroundColor = "yellow";
                 row1col2.onclick = function () { fclick(this.id) };
                 row1col2 = row1.insertCell(5);  // status
                 row1col2.style.border = "thin solid black";
@@ -342,8 +352,10 @@
                 row1col3.innerHTML = ferrytimesK[i + 1];
                 row1col3.id = "K" + i.toFixed(); // id = yymmddhhmmS
                 row1col3.onclick = function () { fclick(this.id) };
+                if (gFerrytimebeingedited == ferrytimesK[i] && gASbeingedited == "K") row1col2.style.backgroundColor = "yellow";
                 row1col3 = row1.insertCell(8);  // status    
                 row1col3.style.border = "thin solid black";
+
         }
         return;
     }
@@ -362,20 +374,26 @@
         document.getElementById("editSAK").value = geditSAK;
         var i = Number(id.substr(1)); //index
         gediti = i;
+        gASbeingedited = geditSAK;
         switch(geditSAK) {
             case "S": 
                 document.getElementById("edittime").value = ferrytimeS[i];
                 document.getElementById("editrule").value = ferrytimeS[i + 1];
+                gFerrytimebeingedited = ferrytimeS[i];
                 break;
             case "A": 
                 document.getElementById("edittime").value = ferrytimeA[i];
                 document.getElementById("editrule").value = ferrytimeA[i + 1];
+                gFerrytimebeingedited = ferrytimeA[i];
                 break;
             case "K": 
                 document.getElementById("edittime").value = ferrytimeK[i];
                 document.getElementById("editrule").value = ferrytimeK[i + 1];
+                gFerrytimebeingedited = ferrytimeK[i];
                 break;
         }
+        clearTable(document.getElementById("ftable"));
+        BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK);
 
     }
         
