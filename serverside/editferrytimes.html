@@ -78,7 +78,9 @@
     var ferrytimeA2 = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1300, 50, 1420, 50, 1450, "*", 1520, 50, 1550, "*", 1620, 50, 1650, "*", 1730, 50, 1800, "*", 1840, 50, 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
     var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
     var gDayofWeekName = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-
+    var ferrytimeSd = [];
+    var ferrytimeAd = [];
+    var ferrytimeKd = [];   // true if modified
 
     var gFerryDate2 = 0;  // cutover time to ferrytimex2
     var geditSAK = "";
@@ -212,6 +214,7 @@
         parseCache(data, "ferrytimesk", "FERRYTK", "\n");
         // fill ferry arrays
         ParseFerryTimes();
+        clearTable(document.getElementById("ftable"));
         BuildFerryScheduleToEdit(ferrytimeS, ferrytimeA, ferrytimeK);
         alert("Loaded " + ferrytimeA.length + " entries.");
         
@@ -256,6 +259,12 @@
         ferrytimeK = FillFerryArray("ferrytimesk");
         if (ferrytimeS.length != ferrytimeA.length) alert("different number of entries for S and A!");
         if (ferrytimeS.length != ferrytimeK.length) alert("different number of entries for S and K!");
+        // set delta to all false
+        for (var i = 0; i < ferrytimeS.length; i = i + 2) {
+            ferrytimeSd[i] = false;
+            ferrytimeAd[i] = false;
+            ferrytimeKd[i] = false;
+        }
 
         //ferrytimeS2 = FillFerryArray("ferrytimess2");
         //ferrytimeA2 = FillFerryArray("ferrytimesa2");
@@ -321,6 +330,7 @@
                 if (gFerrytimebeingedited == ferrytimesS[i] && gASbeingedited == "S") row1col1.style.backgroundColor = "yellow";
                 row1col1 = row1.insertCell(2);  // statuss
                 row1col1.style.border = "thin solid black";
+                if(ferrytimeSd[i]) row1col1.style.backgroundColor = "red";
 
 
                 // Anderson Island;
@@ -339,6 +349,7 @@
                 row1col2.onclick = function () { fclick(this.id) };
                 row1col2 = row1.insertCell(5);  // status
                 row1col2.style.border = "thin solid black";
+                if(ferrytimeAd[i]) row1col2.style.backgroundColor = "red"; // if it changed
 
                 // Ketron
                 var row1col3 = row1.insertCell(6);
@@ -355,6 +366,8 @@
                 if (gFerrytimebeingedited == ferrytimesK[i] && gASbeingedited == "K") row1col2.style.backgroundColor = "yellow";
                 row1col3 = row1.insertCell(8);  // status    
                 row1col3.style.border = "thin solid black";
+                if(ferrytimeKd[i]) row1col1.style.backgroundColor = "red";  // if it changed
+
 
         }
         return;
@@ -469,19 +482,24 @@
                 case "S":
                     ferrytimeS[gediti] = ft;
                     ferrytimeS[gediti + 1] = rule;
+                    ferrytimeSd[gediti] = true;
                     break;
                 case "A":
                     ferrytimeA[gediti] = ft;
                     ferrytimeA[gediti + 1] = rule;
+                    ferrytimeAd[gediti] = true;
                     break;
                 case "K":
                     ferrytimeK[gediti] = ft;
                     ferrytimeK[gediti + 1] = rule;
+                    ferrytimeKd[gediti] = true;
                     break;
                 case "SA":
                     ferrytimeS[gediti] = ft;
                     ferrytimeS[gediti + 1] = rule;
                     ferrytimeA[gediti + 1] = rule;
+                    ferrytimeSd[gediti] = true;
+                    ferrytimeAd[gediti] = true;
                     //ferrytimeK[gediti] = ft;
                     //ferrytimeK[gediti + 1] = rule;
                     break;
