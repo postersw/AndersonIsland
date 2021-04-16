@@ -22,18 +22,24 @@
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/centrallincolnpud";
     $tanneroutagefile = "tanneroutage.txt";
+    $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
+    $msg =   date("g:i a") . ": No Outages.";
+    $AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
+
     chdir("/home/postersw/public_html");  // move to web root
+
     $str = file_get_contents($tanneroutagelink); // read the input
     if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
     if($str == "") $str = file_get_contents($tanneroutagelink);
-    $i = strpos($str, " <communityDescriptor>53053</communityDescriptor>");  // pierce county FIPS number
+    $i = strpos($str, $AI);  // pierce county FIPS number
+    if($i==FALSE){  // if there is no reply we assume no outage, which I don't like.
+        file_put_contents($tanneroutagefile, $msg . $tweet);
+        exit(0);
+    }
 
+    // Now extract the metersAffected and metersServed that occurs after the <communityDescriptor> structure.
 
-    // Now extract the TEXT that occurs after the <communityDescriptor> structure.  Stop at </div
-    //  TEXT is everything between <...> and <...>
-
-    $result = "";
-    $str = substr($str, $i); // 
+    $str = substr($str, $i + strlen($AI)); // 
     $nbrOut = TagValue($str, "metersAffected");
     if($nbrOut = "") {
         $msg =   date("g:i a") . ": No Outages.";
@@ -42,10 +48,9 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
         if($nbrServed == "") $nbrServed = 1100;
         $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%). Tap for Map.</span>";
     }
-    $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
     file_put_contents($tanneroutagefile, $msg . $tweet);
  
-     return 0;
+    return 0;
 
 //////////////////////////////////////////////////////////////////////
 // TagValue returns the string value in the xml tag between <tag> and </tag>
