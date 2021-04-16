@@ -1,74 +1,64 @@
 <?php
 /////////////////////////////////////////////////////////////
-//  gettanneroutage - gets the outage status from the tanner
+//  gettanneralerts - gets the outage status from https://odin.ornl.gov/odi/nisc/centrallincolnpud
 //  web site and writes it to tanneroutage.txt.
 //  this file is picked up by the getalerts.php script and sent to the app.
 //  format is:
-//      <h1>Anderson Island Outages.......................
-//         <blah> <blah> <blah>
-//          All text outside of <> and before the closing </div is picked up
-//      <blah>
-//      </div
-//  CRON: */6 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
-//  DISABLED 11/13/17. Tanner no longer updates the andersonisland page.   Need a new automated solution.
+//      <PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">
+//          <Outage>
+//              <mRID>235c3081-04be-4179-b716-50eeed0bffeb</mRID>
+//              <communityDescriptor>53053</communityDescriptor>
+//              <metersAffected>6</metersAffected>
+//              <OutageArea>
+//                  <earliestReportedTime>2021-04-16T17:14:56.000Z</earliestReportedTime>
+//                  <metersServed>20655</metersServed>
+//                  <outageAreaKind>county</outageAreaKind>
+//              </OutageArea>
+//          </Outage>
+//      </PubOutages>
+//  CRON: */4 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
+//  RFB. 4/16/21
 //
-    $tanneroutagelink = "http://www.tannerelectric.coop/andersonisland";
+date_default_timezone_set("America/Los_Angeles"); // set PDT
+    $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/centrallincolnpud";
     $tanneroutagefile = "tanneroutage.txt";
     chdir("/home/postersw/public_html");  // move to web root
-    $str = file_get_contents($tanneroutagelink);
+    $str = file_get_contents($tanneroutagelink); // read the input
     if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
     if($str == "") $str = file_get_contents($tanneroutagelink);
-    $i = strpos($str, "<h1>Outages for Anderson Island");
-    if($i === false) {  // if string not found
-        echo("h1 not found");
-        unlink($tanneroutagefile);
-        return 0;
-    }
+    $i = strpos($str, " <communityDescriptor>53053</communityDescriptor>");  // pierce county FIPS number
 
-    // Now extract the TEXT that occurs after the <h1> structure.  Stop at </div
+
+    // Now extract the TEXT that occurs after the <communityDescriptor> structure.  Stop at </div
     //  TEXT is everything between <...> and <...>
 
     $result = "";
-    $str = substr($str, $i+31); // string after Outages for Anderson Island
-    $A = explode("<", $str);  // break the string up into: < s1 > s2
-
-    // loop through the $A strings, each of which is: < s1 > s2
-    for($i = 0; $i < count($A); $i++) {
-        $s = $A[$i];
-        $j = strpos($s, ">");  // j = closing >
-        if($j == 0) $s1 = "";
-        else $s1 = substr($s, 0, $j);  // s1 is the string between < and >
-        $s2 = substr($s, $j + 1);  // s2 is the string After the >.  This should be text.
-            // debug
-            //$s1 = str_replace ("<", "&lt", $s1);$s1 = str_replace (">", "&gt", $s1);
-            //$s2d = str_replace ("<", "&lt", $s2);
-            //$s2d = str_replace (">", "&gt", $s2d);
-            //echo ("i = $i:' $s1 '<br/>");
-            //echo (" s2:' $s2d '<br/>");
-        if($s1 == "p") $result = $result . "<p>";
-        $result = $result . $s2;
-        if($s1 == "/div") break;  // quit at the first /div
+    $str = substr($str, $i); // 
+    $nbrOut = TagValue($str, "metersAffected");
+    if($nbrOut = "") {
+        $msg =   date("g:i a") . ": No Outages.";
+    } else {
+        $nbrServed == TagValue($str, "metersServed");
+        if($nbrServed == "") $nbrServed = 1100;
+        $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%). Tap for Map.</span>";
     }
+    $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
+    file_put_contents($tanneroutagefile, $msg . $tweet);
+ 
+     return 0;
 
-    // eliminate newline and multiple blanks
-    $r = preg_replace('/\s+/', ' ', $result); // remove all duplicate blanks and whitespace characters
-    // if an update, find the last one.
-    //$i = strripos ($r, "Update ");
-    //if($i > 0) {
-    //    $r = substr($r, $i);  // get the update
-    //}
-    // break $r into paragraphs
-    $P = explode("<p>", $r);
-    // use the last paragraph
-    $r = $P[count($P)-1];
-    if (strlen($r) > 137) $r = substr($r, 0, 300) . "...";
-
-    // write it to the file
-    $old = file_get_contents($tanneroutagefile);
-    if($r == $old) return 0;
-    echo ("<br/><br/>RESULT= $result <br/><br/>");
-    echo $r;
-    file_put_contents($tanneroutagefile, $r);
-    return 0;
+//////////////////////////////////////////////////////////////////////
+// TagValue returns the string value in the xml tag between <tag> and </tag>
+//  entry $s = string
+//          $tag = xml tag without <>
+// Returns  string between tags, or error message
+function TagValue($s, $tag, $is) {
+    $i = strpos($s, "<" . $tag . ">", $is);
+    if($i==FALSE) return "";
+    $taglen = strlen($tag) + 2;
+    $j = strpos($s,  "</" . $tag . ">", $i);
+    if($j==FALSE) exit("ERR: </".  $tag . "> not found");
+    return substr($s, $i+$taglen, $j-$i-$taglen);
+    }
 
 ?>
