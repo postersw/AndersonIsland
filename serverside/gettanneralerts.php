@@ -20,7 +20,7 @@
 //  RFB. 4/16/21
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
-    $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/centrallincolnpud";
+    $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
     $tanneroutagefile = "tanneroutage.txt";
     $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
     $msg =   date("g:i a") . ": No Outages.";
