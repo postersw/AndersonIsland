@@ -28,7 +28,7 @@ exit();
 //  entry   
 //  exit    builds table to display
 function BuildRunTimeTable() {
-    $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1930,2035,2220); // ST departures
+    $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
     $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
     echo "<table>";

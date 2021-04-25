@@ -30,24 +30,27 @@ switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
         sleep(120); // wait 2 minutes
         $picture = file_get_contents($STurl);
+        if($picture=="")$picture = file_get_contents($STurl);
         if($picture=="") exit("No ST picture");
         file_put_contents("$filename.jpg", $picture);
         $picture = file_get_contents($STdock);
-        if($picture=="") exit("No ST picture");
+        if($picture=="") echo ("No ST dock picture");
         file_put_contents("D$filename.jpg", $picture);
         break;
     case "A": // AI
         sleep(120); // wait 2 minutes
         $picture = file_get_contents($AIurl); 
+        if($picture=="") $picture = file_get_contents($AIurl); 
         if($picture=="") exit("no AI picture");
         file_put_contents("$filename.jpg", $picture);
         $picture = file_get_contents($AIdock); 
-        if($picture=="") exit("no AI dock picture");
+        if($picture=="") echo ("no AI dock picture");
         file_put_contents("D$filename.jpg", $picture);
         break;
     default:
         exit();
 }
+// log it
 $dt = date("m/d/y h:i");
 file_put_contents("L$filename.txt", $dt); // log date and time
 file_put_contents("overflowlog.txt", "$dt : $filename\n", FILE_APPEND);  // write to log
@@ -69,7 +72,7 @@ function CalcRunTime() {
 //  exit    returns Sdhhmm to capture steilacoom, Adhhmm to capture AI where dhhmm is the scheduled departure time
 //          returns "" to skip capture
 function CheckRunTime($runtime) {
-    $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1930,2035,2220); // ST departures
+    $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
     $d = substr($runtime, 0, 1); // day
     $hhmm = intval(substr($runtime, 1)); // hhmm
