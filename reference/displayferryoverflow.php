@@ -31,21 +31,24 @@ function BuildRunTimeTable() {
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
     $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+    $amcolor = "#f0ffff";
     echo "<table>";
     for($d=1; $d<8; $d++) {
-        echo "<tr><td colspan='2' style='background-color:blue;color:white'>$Day[$d]</td></tr><tr><td style='background-color: cyan'>Steilacoom&nbsp;&nbsp</td><td style='background-color: cyan'>Anderson Is&nbsp;&nbsp</td></tr>";
+        echo "<tr><td colspan='2' style='background-color:blue;color:white'>$Day[$d]</td></tr><tr><td style='background-color: lightblue'>Steilacoom&nbsp;&nbsp</td><td style='background-color: cyan'>Anderson Is&nbsp;&nbsp</td></tr>";
         // all runs for the day
         $s = 0;
         if($d >5 ) $s = 1; // skip early runs on sat, sun
         for($i=$s; $i<count($ST); $i++){
             $Stime = formattime($ST[$i]);
             $Atime = formattime($AI[$i]);
-            echo "<tr><td><a href='overflowcameras.php?f=S$d" . sprintf('%04d', $ST[$i]) . "'>$Stime</td>";
-            echo     "<td><a href='overflowcameras.php?f=A$d" . sprintf('%04d', $AI[$i]) . "'>$Atime</td></tr>";
+            if($ST[$i]<1200) $bcolor= "#f0ffff";  // light blue in morning
+            else $bcolor="white";
+            echo "<tr><td style='background-color:$bcolor'><a href='overflowcameras.php?f=S$d" . sprintf('%04d', $ST[$i]) . "'>$Stime</td>";
+            echo     "<td style='background-color:$bcolor'><a href='overflowcameras.php?f=A$d" . sprintf('%04d', $AI[$i]) . "'>$Atime</td></tr>";
         }
         echo "<tr><td colspan='2'>&nbsp</td></tr>";
     }
-    echo "</table>Pictures are saved from the past 7 days. Each new picture replaces the previous picture that is exactly 7 days (168 hours) old.</html>";
+    echo "</table>Pictures are saved from the past 7 days. Each new picture replaces the previous picture for that day of the week and time of day.</html>";
 }
 
 //////////////////////////////////////////////////////////////////
