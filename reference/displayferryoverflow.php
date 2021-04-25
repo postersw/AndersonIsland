@@ -15,7 +15,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 echo "<html><head>";
 echo '<meta name="viewport" content="initial-scale=1, width=device-width,height=device-height,target-densitydpi=medium-dpi,user-scalable=no" />';
 echo "<style>body {font-family:'HelveticaNeue-Light','HelveticaNeue',Helvetica,Arial,sans-serif;} table,td {border:1px solid black;border-collapse:collapse;font-size: larger} A {text-decoration: none;} </style></head>";
-echo "<h1>Ferry Overflow Pictures</h1>Tap on a time to see a picture of the ferry lanes from the last 7 days just as the ferry leaves. If there are cars left, then the ferry filled up for this run.<p>";
+echo "<h1>Ferry Overflow Pictures</h1>Tap on a time to see a picture of the ferry lanes taken <i>just as the ferry leaves</i>. If there are cars left, then the ferry filled up for this run. Pictures are saved from the last 7 days. <p>";
 
 BuildRunTimeTable();
 
@@ -45,7 +45,7 @@ function BuildRunTimeTable() {
         }
         echo "<tr><td colspan='2'>&nbsp</td></tr>";
     }
-    echo "</table>Pictures are from the past 7 days. Each new picture replaces the previous picture that is exactly 7 days (168 hours) old.</html>";
+    echo "</table>Pictures are saved from the past 7 days. Each new picture replaces the previous picture that is exactly 7 days (168 hours) old.</html>";
 }
 
 //////////////////////////////////////////////////////////////////
