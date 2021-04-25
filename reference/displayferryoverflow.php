@@ -54,8 +54,8 @@ function formattime($t) {
     $h = floor($t/100);
     $m = sprintf('%02d', $t % 100); // min
     $am = "am";
-    if($h > 12) {
-        $h = $h - 12;
+    if($h >= 12) {
+        if($h>12) $h = $h - 12;
         $am = "pm";
     }
     return "$h:$m $am";
