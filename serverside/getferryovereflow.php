@@ -50,7 +50,7 @@ switch(substr($filename, 0, 1)) {
 }
 $dt = date("m/d/y h:i");
 file_put_contents("L$filename.txt", $dt); // log date and time
-file_put_contents("log.txt", "$dt : $filename", FILE_APPEND);  // write to log
+file_put_contents("overflowlog.txt", "$dt : $filename\n", FILE_APPEND);  // write to log
 echo "wrote $filename $dt";
 exit(0);
 
