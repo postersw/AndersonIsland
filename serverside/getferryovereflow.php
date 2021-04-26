@@ -5,6 +5,7 @@
 //  Lane camera pictures are saved in the folder Overflow as 
 //      Adhhmm.jpg or Sdhhmm.jpg of the scheduled run for line camera
 //      DAdhhmm.jpg or DSdhhmm.jpg for Dock cameras.
+//      XAdhhmm.jpg or XSdhhmm.jpg for lane camera 1 minute later
 //      LAdhhmm.txt or LS.... for log of date/time pictures were taken
 //      log.txt is a continuous log of the filename written.
 //      where d = 1 - 7 for Mon-Sun
@@ -28,7 +29,7 @@ $filename = CheckRunTime($runtime);  // return A|Sdhhmm where d=1-7, hh = 00-23,
 // if filename is set, capture the camera for Steilacoom or AI
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
-        sleep(180); // wait 3 minutes
+        sleep(120); // wait 2 minutes
         $picture = file_get_contents($STurl);
         if($picture=="")$picture = file_get_contents($STurl);
         if($picture=="") exit("No ST picture");
@@ -36,9 +37,13 @@ switch(substr($filename, 0, 1)) {
         $picture = file_get_contents($STdock);
         if($picture=="") echo ("No ST dock picture");
         file_put_contents("D$filename.jpg", $picture);
+        // wait 1 more minute
+        sleep(60); // wait 1 more minute
+        $picture = file_get_contents($STurl);
+        if($picture!="") file_put_contents("X$filename.jpg", $picture);
         break;
     case "A": // AI
-        sleep(180); // wait 3 minutes
+        sleep(120); // wait 2 minutes
         $picture = file_get_contents($AIurl); 
         if($picture=="") $picture = file_get_contents($AIurl); 
         if($picture=="") exit("no AI picture");
@@ -46,6 +51,10 @@ switch(substr($filename, 0, 1)) {
         $picture = file_get_contents($AIdock); 
         if($picture=="") echo ("no AI dock picture");
         file_put_contents("D$filename.jpg", $picture);
+        // wait 1 more minute
+        sleep(60); // wait 1 more minute
+        $picture = file_get_contents($AIurl);
+        if($picture!="") file_put_contents("X$filename.jpg", $picture);
         break;
     default:
         exit();
