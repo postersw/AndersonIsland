@@ -26,6 +26,7 @@ $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
     echo "$dock overflow on $Day[$d] for " . formattime(substr($f, 2)) . " run<br/><br/>"; 
     echo "<img src='Overflow/$f.jpg'></img><hr/>";
     echo "<img src='Overflow/D$f.jpg'></img><hr/>";
+    echo "<hr/><img src='Overflow/X$f.jpg'></img><hr/>";
     echo "($dt)";
     echo "</div></body></html>";
     exit(0);
