@@ -11,6 +11,7 @@
 //      where d = 1 - 7 for Mon-Sun
 //
 //  Bob Bedoll. 4/24/21
+//              4/29/21 take the Xtra picture exactly at sailing time.
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -29,6 +30,8 @@ $filename = CheckRunTime($runtime);  // return A|Sdhhmm where d=1-7, hh = 00-23,
 // if filename is set, capture the camera for Steilacoom or AI
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
+        $picture = file_get_contents($STurl);
+        if($picture!="") file_put_contents("X$filename.jpg", $picture);
         sleep(120); // wait 2 minutes
         $picture = file_get_contents($STurl);
         if($picture=="")$picture = file_get_contents($STurl);
@@ -37,12 +40,10 @@ switch(substr($filename, 0, 1)) {
         $picture = file_get_contents($STdock);
         if($picture=="") echo ("No ST dock picture");
         file_put_contents("D$filename.jpg", $picture);
-        // wait 1 more minute
-        sleep(60); // wait 1 more minute
-        $picture = file_get_contents($STurl);
-        if($picture!="") file_put_contents("X$filename.jpg", $picture);
         break;
     case "A": // AI
+        $picture = file_get_contents($AIurl);
+        if($picture!="") file_put_contents("X$filename.jpg", $picture);
         sleep(120); // wait 2 minutes
         $picture = file_get_contents($AIurl); 
         if($picture=="") $picture = file_get_contents($AIurl); 
@@ -53,8 +54,6 @@ switch(substr($filename, 0, 1)) {
         file_put_contents("D$filename.jpg", $picture);
         // wait 1 more minute
         sleep(60); // wait 1 more minute
-        $picture = file_get_contents($AIurl);
-        if($picture!="") file_put_contents("X$filename.jpg", $picture);
         break;
     default:
         exit();

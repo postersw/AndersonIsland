@@ -10,6 +10,7 @@
 //              LAdhhmm.txt or LSddmm.txt for date/time when picture was taken
 //
 //  RFB  4/24/21
+//       4/30/21
 //
 $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 
@@ -28,6 +29,8 @@ $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
     $s = strlen($f);
     if($s==1) {  // 1 character is the day only
         OneDay($f);
+        echo "<p/>Pictures are from the last 7 days, and are taken based on the scheduled departure time. If the ferry is late, then the pictures may still show cars in all 3 lanes. In that case, only the first 4 cars in lane 3 usually get on.";
+        echo "</div></body></html>";   
         exit(0);
     }
     if($s != 6) exit(); // must be 6
@@ -37,17 +40,20 @@ $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
     else $dock = "Anderson Island";
     $dt = file_get_contents("L$f.txt");
     $d = substr($f,1,1);  // day index
-    echo "$dock overflow on $Day[$d] for " . formattime(substr($f, 2)) . " run<br/><br/>"; 
-    echo "<img src='Overflow/$f.jpg'></img><hr/>";
-    echo "<img src='Overflow/D$f.jpg'></img><hr/>";
+    $ft = formattime(substr($f, 2));
+    echo "<strong>$dock overflow on $Day[$d] for $ft run</strong><br/><br/>"; 
+    echo "<img src='Overflow/$f.jpg' alt='$ft lane not available'></img><hr/>";
+    echo "<img src='Overflow/D$f.jpg' alt='$ft dock not available'></img><hr/>";
     echo "<hr/><img src='Overflow/X$f.jpg'></img><hr/>";
     echo "($dt)";
+    echo "<br/>Pictures are from the last 7 days, and are taken based on the scheduled departure time. If the ferry is late, then the pictures may still show cars in all 3 lanes. In that case, only the first 4 cars in lane 3 usually get on.";
     echo "</div></body></html>";
     exit(0);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  All cameras for a day
 //  entry   $d = day index, 1=7
+//
 function OneDay($d) {
     global $Day;
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
@@ -55,22 +61,24 @@ function OneDay($d) {
 
     $s = 0;
     if($d >5 ) $s = 1; // skip early runs on sat, sun
-    echo "Overflow on $Day[$d] for Steilacoom: <br/> ";
+    echo "<strong>Overflow on $Day[$d] for Steilacoom: </strong><br/> ";
     for($i=$s; $i<count($ST); $i++){
-        echo formattime($ST[$i]) . ":<br/>";
+        $ft = formattime($ST[$i]);
+        echo "$ft:<br/>";
         $f = "S" . $d . sprintf('%04d', $ST[$i]);
-        echo "<img src='Overflow/$f.jpg'></img> ";
-        echo "<img src='Overflow/D$f.jpg'></img><br/>";
+        echo "<img src='Overflow/$f.jpg' alt='$ft Lane not available'></img> ";
+        echo "<img src='Overflow/D$f.jpg' alt='$ft Dock not available'></img><br/>";
         $dt = file_get_contents("L$f.txt");
         echo "($dt)<hr/>";
     }
 
-    echo "<hr/>Overflow on $Day[$d] for Anderson Island: <br/> ";
+    echo "<hr/><strong>Overflow on $Day[$d] for Anderson Island: </strong><br/> ";
     for($i=$s; $i<count($AI); $i++){
-        echo formattime($AI[$i]) . ":<br/>";
+        $ft = formattime($AI[$i]);
+        echo "$ft:<br/>";
         $f = "A" . $d . sprintf('%04d', $AI[$i]);
-        echo "<img src='Overflow/$f.jpg'></img> ";
-        echo "<img src='Overflow/D$f.jpg'></img><br/>";
+        echo "<img src='Overflow/$f.jpg' alt='$ft Lane not available'></img> ";
+        echo "<img src='Overflow/D$f.jpg' alt='$ft Dock not available'></img><br/>";
         $dt = file_get_contents("L$f.txt");
         echo "($dt)<hr/>";
     }
@@ -78,6 +86,8 @@ function OneDay($d) {
 
 //////////////////////////////////////////////////////////////////
 //  formattime convert interger time to display time with am/pm
+//  entry   hhmm in integer
+//  exit    hh:mm am|pm string
 function formattime($t) {
     $h = floor($t/100);
     $m = sprintf('%02d', $t % 100); // min
