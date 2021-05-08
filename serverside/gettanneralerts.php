@@ -18,20 +18,21 @@
 //      </PubOutages>
 //  CRON: */4 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
 //  RFB. 4/16/21
+//       5/7/21. Production live.
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
     $tanneroutagefile = "tanneroutage.txt";
     $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
     $msg =   date("g:i a") . ": No Outages.";
-    $AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
-
+    //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
+    $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // pierce county FIPS number
     chdir("/home/postersw/public_html");  // move to web root
 
     $str = file_get_contents($tanneroutagelink); // read the input
     if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
     if($str == "") $str = file_get_contents($tanneroutagelink);
-    $i = strpos($str, $AI);  // pierce county FIPS number
+    $i = strpos($str, $AI);  // pierce county Community Descriptor
     if($i==FALSE){  // if there is no reply we assume no outage, which I don't like.
         file_put_contents($tanneroutagefile, $msg . $tweet);
         exit(0);
