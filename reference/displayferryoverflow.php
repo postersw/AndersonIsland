@@ -1,12 +1,17 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  displayferryoverflow - display pictures of the ferry lanes just after a ferry has left. 
-//  called by user
-//  Lane camera pictures are saved in the folder Overflow as Adhhmm.jpg or Sdhhmm.jpg of the scheduled run,
+//  displayferryoverflow - displays a ferry run schedule which lets a user pick a day&time of a ferry
+//          run to display pictures of the ferry lanes just after a ferry has left. 
+//  called by user from the Anderson Island Assistant: displayferryoverflow.php.  (no parameters)
+//
+//  Calls: overflowcameras.php to display the actual pictures.
+//  Lane camera pictures are saved by getferryoverflow.php (cron job) in the folder Overflow as
+//      Adhhmm.jpg or Sdhhmm.jpg of the scheduled run,
 //      DAdhhmm.jpg  DSdhhmm.jpg for Dock cameras.
 //      where d = 1 - 7 for Mon-Sun
 //
 //  Bob Bedoll. 4/24/21
+//              5/10/21. Update overflow days/times
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -33,8 +38,8 @@ function BuildRunTimeTable() {
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
     // OVERFLOW runs by day
-    $STO = array(11445,11550,11700,11810, 21445,21550,21700,21810, 31445,31550,31700,31810, 41445,41550,41700,41810, 51445,51550,51700,51810,); // ST overflow times:  dhhss, where d = 1-7 M-S, must be in numeric order
-    $AIO = array(10735,10855,11005,20735,20855,21005,30735,30855,31005,40735,40855,41005,50735,50855,51005,61515,71515); // AI overflow times:  dhhss, where d = 1-7 M-S
+    $STO = array(11445,11550,11700,11810, 21445,21550,21700,21810, 31445,31550,31700,31810, 41445,41550,41700,41810, 51445,51550,51700,51810, 61445, 71445); // ST overflow times:  dhhss, where d = 1-7 M-S, must be in numeric order
+    $AIO = array(10735,10855,11005,20735,20855,21005,30735,30855,31005,40735,40855,41005,50735,50855,51005, 61515, 71515); // AI overflow times:  dhhss, where d = 1-7 M-S
     //
     $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
     $amcolor = "#f0ffff";
