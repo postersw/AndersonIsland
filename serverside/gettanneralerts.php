@@ -2,7 +2,9 @@
 /////////////////////////////////////////////////////////////
 //  gettanneralerts - gets the outage status from https://odin.ornl.gov/odi/nisc/tannerelectric
 //  web site, decodes it, and writes it to tanneroutage.txt.
-//  this file is picked up by the getalerts.php script and sent to the app.
+//  tanneroutage.txt. is picked up by the getalerts.php script and sent to the app.
+//  The outage message is also saved in tanneroutagelog.txt. 
+// 
 //  The XML format from odin is:
 // <PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">
 //   <Outage>
@@ -19,6 +21,7 @@
 //
 // The format of tanneroutage.txt is:  time: No Outages. Tap for Map.
 //                                or:  time OUTAGE: nn Houses Out (n%). Tap for map.
+// The format of tanneroutagelog.txt is:  time OUTAGE: nn Houses Out (n%). \n
 //  This job is run by cron every 4 minutes:
 //    CRON: */4 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
 //  RFB. 4/16/21
@@ -27,10 +30,11 @@
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
-    $tanneroutagefile = "tanneroutage.txt";
+    $tanneroutagefile = "tanneroutage.txt";  // one line outage info for the app
+    $tanneroutagelog = "tanneroutagelog.txt";  // log file 
     $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
-    $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with no outage
-    $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply from odin.ornl
+    $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with NO outage
+    $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply if there is an outage
     $msg =   date("g:i a") . ": No Outages.";
     //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
@@ -54,9 +58,9 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     
     // there is a tanner outage, but not necessarily AI. 
 
-    echo $str;  // display the string I get // DEBUG FOR NOW
+    //echo $str;  // display the string I get // DEBUG FOR NOW
     $i = strpos($str, $AI);  // AI Community Descriptor
-    echo " <br/>community descriptor i = $i<br/>";
+    //echo " <br/>community descriptor i = $i<br/>";
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
         file_put_contents($tanneroutagefile, $msg . $tweet);
         exit(0);
@@ -66,20 +70,21 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     // Now extract the metersAffected and metersServed that occurs after the <communityDescriptor> structure.
 
     $str = substr($str, $i + strlen($AI)); // 
-    echo " string after commDesc:$str<br/>";
+    //echo " string after commDesc:$str<br/>";
     $nbrOut = TagValue($str, "metersAffected");
-    echo " nbrOut=$nbrOut <br/>";
+    //echo " nbrOut=$nbrOut <br/>";
     if($nbrOut == "") {
        $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE in progress. Tap for Map.</span>";
 
     } else {
         $nbrServed = TagValue($str, "metersServed");
-        echo "nbrServed=$nbrServed<br/>";
+        //echo "nbrServed=$nbrServed<br/>";
         if($nbrServed == "") $nbrServed = 1246;
         $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%). Tap for Map.</span>";
     }
     file_put_contents($tanneroutagefile, $msg . $tweet);
-    echo $msg;  // debug
+    file_put_contents($tanneroutagelog, $msg . "\n", FILE_APPEND);  // log it
+    //echo $msg;  // debug
     return 0;
 
 //////////////////////////////////////////////////////////////////////
