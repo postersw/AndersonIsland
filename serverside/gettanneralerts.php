@@ -22,16 +22,21 @@
 // The format of tanneroutage.txt is:  time: No Outages. Tap for Map.
 //                                or:  time OUTAGE: nn Houses Out (n%). Tap for map.
 // The format of tanneroutagelog.txt is:  time OUTAGE: nn Houses Out (n%). \n
+// The format of tanneroutagetime.txt is: hh:mm dow   and is set when an outage starts and cleared whenever there is no outage.
+//
 //  This job is run by cron every 4 minutes:
 //    CRON: */4 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
+//
 //  RFB. 4/16/21
 //       5/7/21. Production live.
 //       5/11/21. Debugged for actual output.
+//       5/13/21. Add outage start time.
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
     $tanneroutagefile = "tanneroutage.txt";  // one line outage info for the app
     $tanneroutagelog = "tanneroutagelog.txt";  // log file 
+    $tanneroutagetimefile = "tanneroutagetime.txt";
     $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
     $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with NO outage
     $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply if there is an outage
@@ -49,6 +54,8 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     // look for the NO OUTAGE reply
     if(substr($str, 0, $strl) == $tannerreply){  // if there is no reply past the header we assume no outage, which I don't like.
         file_put_contents($tanneroutagefile, $msg . $tweet);
+        $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
+        if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
         exit(0);
     }
 
@@ -63,6 +70,8 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     //echo " <br/>community descriptor i = $i<br/>";
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
         file_put_contents($tanneroutagefile, $msg . $tweet);
+        $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
+        if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
         exit(0);
     }
 
@@ -73,15 +82,22 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     //echo " string after commDesc:$str<br/>";
     $nbrOut = TagValue($str, "metersAffected");
     //echo " nbrOut=$nbrOut <br/>";
+    // get or set outage start time
+    $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
+    if($outagestarttime=="") { // if no start time, create one
+        $outagestarttime = date("g:i a D"); // hh:mm am ddd, eg 8:05 am Sun
+        file_put_contents($tanneroutagetimefile, $outagestarttime);  // save the outage start time
+    }
     if($nbrOut == "") {
-       $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE in progress. Tap for Map.</span>";
+       $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE in progress since $outagestarttime. Tap for Map.</span>";
 
     } else {
         $nbrServed = TagValue($str, "metersServed");
         //echo "nbrServed=$nbrServed<br/>";
         if($nbrServed == "") $nbrServed = 1246;
-        $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%). Tap for Map.</span>";
+        $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%) since $outagestarttime. Tap for Map.</span>";
     }
+
     file_put_contents($tanneroutagefile, $msg . $tweet);
     file_put_contents($tanneroutagelog, $msg . "\n", FILE_APPEND);  // log it
     //echo $msg;  // debug
