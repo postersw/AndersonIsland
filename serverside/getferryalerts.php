@@ -17,6 +17,7 @@
 //      7/9/18. Modify pushbots call to not bump badge.
 //      9/30/18. Add warning for Pushbots.
 //      10/9/18. Removed Pushbots calls and code. All messages now sent by OneSignal. Saves $29/m.
+//      5/13/21. Don't create a DELAY message if a run is Cancelled.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -115,7 +116,7 @@ $alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
 
 // test for a delay
 $delay = "";
-if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " cancel") > 0) || (strpos($title, " delay") > 0) ) {
+if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " delay") > 0) ) {
     $delay = "DELAYED: ";
     $matches = "";
     if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
