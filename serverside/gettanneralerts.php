@@ -46,9 +46,14 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     chdir("/home/postersw/public_html");  // move to web root
 
     $str = file_get_contents($tanneroutagelink); // read the input
-    if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
-    if($str == "") $str = file_get_contents($tanneroutagelink);
-    if($str == "") exit("gettanneralerts: No reply from odin.ornl.gov/odi/nisc/tannerelectric");
+    //if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
+    //if($str == "") $str = file_get_contents($tanneroutagelink);
+    if($str == "") {
+        $msg = date("g:i a") . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
+        file_put_contents($tanneroutagefile, $msg . $tweet);
+        exit();
+        //exit("gettanneralerts: No reply from odin.ornl.gov/odi/nisc/tannerelectric");
+    }
     $strl = strlen($tannerreply);
 
     // look for the NO OUTAGE reply
