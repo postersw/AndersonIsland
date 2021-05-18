@@ -11,6 +11,7 @@
 //
 //  RFB  4/24/21
 //       4/30/21
+//       5/16/21 Prevent caching of images.
 //
 $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 
