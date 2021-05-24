@@ -12,6 +12,7 @@
 //
 //  Bob Bedoll. 4/24/21
 //              4/29/21 take the Xtra picture exactly at sailing time.
+//              5/23/21 add repeats if no picture. Log no picture.
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -30,30 +31,22 @@ $filename = CheckRunTime($runtime);  // return A|Sdhhmm where d=1-7, hh = 00-23,
 // if filename is set, capture the camera for Steilacoom or AI
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
-        $picture = file_get_contents($STurl);
-        if($picture!="") file_put_contents("X$filename.jpg", $picture);
+        $picture = GetPicture($STurl);
+        file_put_contents("X$filename.jpg", $picture);
         sleep(120); // wait 2 minutes
-        $picture = file_get_contents($STurl);
-        if($picture=="")$picture = file_get_contents($STurl);
-        if($picture=="") exit("No ST picture");
+        $picture = GetPicture($STurl);
         file_put_contents("$filename.jpg", $picture);
-        $picture = file_get_contents($STdock);
-        if($picture=="") echo ("No ST dock picture");
+        $picture = GetPicture($STdock);
         file_put_contents("D$filename.jpg", $picture);
         break;
     case "A": // AI
-        $picture = file_get_contents($AIurl);
-        if($picture!="") file_put_contents("X$filename.jpg", $picture);
+        $picture = GetPicture($AIurl);
+        file_put_contents("X$filename.jpg", $picture);
         sleep(120); // wait 2 minutes
-        $picture = file_get_contents($AIurl); 
-        if($picture=="") $picture = file_get_contents($AIurl); 
-        if($picture=="") exit("no AI picture");
+        $picture = GetPicture($AIurl); 
         file_put_contents("$filename.jpg", $picture);
-        $picture = file_get_contents($AIdock); 
-        if($picture=="") echo ("no AI dock picture");
+        $picture = GetPicture($AIdock); 
         file_put_contents("D$filename.jpg", $picture);
-        // wait 1 more minute
-        //sleep(60); // wait 1 more minute
         break;
     default:
         exit();
@@ -61,9 +54,24 @@ switch(substr($filename, 0, 1)) {
 // log it
 $dt = date("m/d/y h:i");
 file_put_contents("L$filename.txt", $dt); // log date and time
-file_put_contents("overflowlog.txt", "$dt : $filename\n", FILE_APPEND);  // write to log
+file_put_contents("overflowlog.txt", "$dt: $filename\n", FILE_APPEND);  // write to log
 //echo "wrote $filename $dt";
 exit(0);
+
+///////////////////////////////////////////////////////////////////////////////////
+// GetPicture - get picture. if none try again in a few seconds.
+function GetPicture($url) {
+    for($i=0;$i<4;$i++) {  // try 4 times
+        $picture = file_get_contents($url);
+        if($picture!="") return $picture;  // exit if a picture
+        sleep(20);     
+    }
+    if($picture=="") {  // if no picture, issue a message
+        echo ("No $url picture after 4 tries");
+        file_put_contents("overflowlog.txt", "$dt: no picture for $url\n", FILE_APPEND);  // write to log
+    }
+    return $picture;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 // CalcRunTime - return run time as dhhmm where d=1-7 (Mo-Su), hh = 00-23, mm=0-60
