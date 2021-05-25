@@ -18,6 +18,7 @@
 //  1.27 2/1/21 Case of boat returning to AI. Check course for a return heading.
 //  1.28 2/2/21 Make position log a csv file.
 //  1.30 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
+//  1.32 5/25/21 Make font dark blue.
 
 $ver = "1.31";  // 2/16/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
@@ -96,7 +97,8 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // write to ferry position file
 
-file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller'>Ferry $p</div>");  // html file for iframe
+file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller;color:darkblue'>Ferry $p</div>");  // html file for iframe
+$pstr = "<span style='color:darkblue'>$pstr</span>";
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 
 // log it to csv file 
