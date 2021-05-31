@@ -12,6 +12,7 @@
 //
 //  Bob Bedoll. 4/24/21
 //              5/10/21. Update overflow days/times
+//              5/21/21. All "ALL" as an option.
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -37,14 +38,14 @@ function BuildRunTimeTable() {
     // SCHEDULED RUNS same for ALL days
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
-    // OVERFLOW runs by day
+    // OVERFLOW runs by day  (1=Sunday, ... 8=All)
     $STO = array(11445,11550,11700,11810, 21445,21550,21700,21810, 31445,31550,31700,31810, 41445,41550,41700,41810, 51445,51550,51700,51810,51920, 61445,61550); // ST overflow times:  dhhss, where d = 1-7 M-S, must be in numeric order
     $AIO = array(10735,10855,11005,20735,20855,21005,30735,30855,31005,40735,40855,41005,50735,50855,51005, 61515, 71515,71625,71735); // AI overflow times:  dhhss, where d = 1-7 M-S
     //
-    $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+    $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "ALL DAYS");
     $amcolor = "#f0ffff";
     echo "<table>";
-    for($d=1; $d<8; $d++) {
+    for($d=1; $d<9; $d++) {
         echo "<tr><td colspan='2' style='background-color:blue;color:white'><a style='color:white' href='overflowcameras.php?f=$d'>$Day[$d] [show all]</td></tr><tr><td style='background-color: lightblue'>Steilacoom&nbsp;&nbsp</td><td style='background-color: cyan'>Anderson Is&nbsp;&nbsp</td></tr>";
         // all runs for the day
         $s = 0;
@@ -81,6 +82,8 @@ function BuildRunTimeTable() {
 
 //////////////////////////////////////////////////////////////////
 //  formattime convert interger time to display time with am/pm
+//  Entry: #t = integer time hhmm
+//  Exit: returns hh:mm am|pm as text
 function formattime($t) {
     $h = floor($t/100);
     $m = sprintf('%02d', $t % 100); // min
