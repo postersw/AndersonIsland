@@ -40,6 +40,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
     $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with NO outage
     $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply if there is an outage
+    $tannernooutage = '<PubOutages><outage/></PubOutages>';
     $msg =   date("g:i a") . ": No Outages.";
     //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
@@ -57,7 +58,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $strl = strlen($tannerreply);
 
     // look for the NO OUTAGE reply
-    if(substr($str, 0, $strl) == $tannerreply){  // if there is no reply past the header we assume no outage, which I don't like.
+    if((strpos($str, $tannernooutage) > 0) || (substr($str, 0, $strl) == $tannerreply)){  // if there is no reply past the header we assume no outage, which I don't like.
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
         if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
@@ -65,8 +66,8 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     }
 
     // check for an outage reply
-    $strl = strlen($tannerreplyoutage);
-    if(substr($str, 0, $strl) != $tannerreplyoutage) exit("gettanneralerts: incorrect tanner reply: $str");
+    // $strl = strlen($tannerreplyoutage);
+    // if(substr($str, 0, $strl) != $tannerreplyoutage) exit("gettanneralerts: incorrect tanner reply: $str");
     
     // there is a tanner outage, but not necessarily AI. 
 
