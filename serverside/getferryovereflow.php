@@ -32,22 +32,22 @@ $filename = CheckRunTime($runtime);  // return A|Sdhhmm where d=1-7, hh = 00-23,
 // if filename is set, capture the camera for Steilacoom or AI
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
-        sleep(60); // wait 1 min
+        sleep(80); // wait 1 min
         $picture = GetPicture($STurl);
         file_put_contents("$filename.jpg", $picture);
         $picture = GetPicture($STdock);
         file_put_contents("D$filename.jpg", $picture);
-        sleep(60);
+        sleep(90);
         $picture = GetPicture($STurl);
         file_put_contents("X$filename.jpg", $picture);                                
         break;
     case "A": // AI
-        sleep(60); // wait 1 minutes
+        sleep(80); // wait 1 minutes
         $picture = GetPicture($AIurl); 
         file_put_contents("$filename.jpg", $picture);
         $picture = GetPicture($AIdock); 
         file_put_contents("D$filename.jpg", $picture);
-        sleep(60);
+        sleep(90);
         $picture = GetPicture($AIurl);
         file_put_contents("X$filename.jpg", $picture);
         break;
