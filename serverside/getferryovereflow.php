@@ -13,6 +13,7 @@
 //  Bob Bedoll. 4/24/21
 //              4/29/21 take the Xtra picture exactly at sailing time.
 //              5/23/21 add repeats if no picture. Log no picture.
+//              6/10/21 changes times. wait 1 m. pictures. wait 1m. pictures.
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -31,22 +32,24 @@ $filename = CheckRunTime($runtime);  // return A|Sdhhmm where d=1-7, hh = 00-23,
 // if filename is set, capture the camera for Steilacoom or AI
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
-        $picture = GetPicture($STurl);
-        file_put_contents("X$filename.jpg", $picture);
-        sleep(120); // wait 2 minutes
+        sleep(60); // wait 1 min
         $picture = GetPicture($STurl);
         file_put_contents("$filename.jpg", $picture);
         $picture = GetPicture($STdock);
         file_put_contents("D$filename.jpg", $picture);
+        sleep(60);
+        $picture = GetPicture($STurl);
+        file_put_contents("X$filename.jpg", $picture);                                
         break;
     case "A": // AI
-        $picture = GetPicture($AIurl);
-        file_put_contents("X$filename.jpg", $picture);
-        sleep(120); // wait 2 minutes
+        sleep(60); // wait 1 minutes
         $picture = GetPicture($AIurl); 
         file_put_contents("$filename.jpg", $picture);
         $picture = GetPicture($AIdock); 
         file_put_contents("D$filename.jpg", $picture);
+        sleep(60);
+        $picture = GetPicture($AIurl);
+        file_put_contents("X$filename.jpg", $picture);
         break;
     default:
         exit();
