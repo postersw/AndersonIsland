@@ -13,6 +13,7 @@
 //       4/30/21
 //       5/16/21 Prevent caching of images.
 //       5/31/21 Accept 8 to display all days
+//       6/11/21 Fix random number use to prevent picture caching
 //
 $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 
@@ -59,7 +60,7 @@ $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
 //
 function DisplayOneTime($f) {
     global $Day;
-    $rnd = str_replace("/", "", $dt); // use date as random number to prevent caching
+    $rnd = rand(1,32000); // use random number to prevent caching
     if(substr($f,0,1) == "S") $dock = "Steilacoom";
     else $dock = "Anderson Island";
     $dt = file_get_contents("L$f.txt");
@@ -67,7 +68,7 @@ function DisplayOneTime($f) {
     $ft = formattime(substr($f, 2));
     echo "<strong>$dock overflow on $Day[$d] for $ft run</strong><br/><br/>"; 
     echo "<img src='Overflow/$f.jpg?d=$rnd' alt='$ft lane not available'></img> ";
-    echo "<img src='Overflow/D$f.jpg'?d=$rnd alt='$ft dock not available'></img> ";
+    echo "<img src='Overflow/D$f.jpg?d=$rnd' alt='$ft dock not available'></img> ";
     echo "<img src='Overflow/X$f.jpg?d=$rnd'></img><br/>";
     echo "($dt)<hr/>";
 }
