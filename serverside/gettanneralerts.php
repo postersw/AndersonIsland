@@ -23,6 +23,7 @@
 //                                or:  time OUTAGE: nn Houses Out (n%). Tap for map.
 // The format of tanneroutagelog.txt is:  time OUTAGE: nn Houses Out (n%). \n
 // The format of tanneroutagetime.txt is: hh:mm dow   and is set when an outage starts and cleared whenever there is no outage.
+//  The cron script will email me every time the status changes.
 //
 //  This job is run by cron every 4 minutes:
 //    CRON: */4 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
@@ -31,6 +32,7 @@
 //       5/7/21. Production live.
 //       5/11/21. Debugged for actual output.
 //       5/13/21. Add outage start time.
+//       6/14/21. Write to stdout for No response start or Outage start.
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
@@ -46,10 +48,13 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
     chdir("/home/postersw/public_html");  // move to web root
 
+    $oldmsg = file_get_contents($tanneroutagefile);
     $str = file_get_contents($tanneroutagelink); // read the input
     //if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
     //if($str == "") $str = file_get_contents($tanneroutagelink);
+    // NO RESPONSE - issue email first time. 
     if($str == "") {
+        if(strpos($oldmsg, "Status Unavailable") === false) echo date("g:i a D") . " Tanner Status 'Unavailable' due to no response starting now. Was '$oldmsg'";
         $msg = date("g:i a") . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
         file_put_contents($tanneroutagefile, $msg . $tweet);
         exit();
@@ -57,8 +62,10 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     }
     $strl = strlen($tannerreply);
 
+
     // look for the NO OUTAGE reply
     if((strpos($str, $tannernooutage) > 0) || (substr($str, 0, $strl) == $tannerreply)){  // if there is no reply past the header we assume no outage, which I don't like.
+        if(strpos($oldmsg, "No Outages")=== false) echo date("g:i a D") . " Tanner Status 'No Outages' starting now. Was '$oldmsg'";
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
         if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
@@ -75,6 +82,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $i = strpos($str, $AI);  // AI Community Descriptor
     //echo " <br/>community descriptor i = $i<br/>";
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
+        if(strpos($oldmsg, "No Outages")=== false) echo date("g:i a D") . " Tanner Status 'No Outages' starting now. Was '$oldmsg'";
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
         if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
@@ -85,14 +93,14 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     // Now extract the metersAffected and metersServed that occurs after the <communityDescriptor> structure.
 
     $str = substr($str, $i + strlen($AI)); // 
-    //echo " string after commDesc:$str<br/>";
-    $nbrOut = TagValue($str, "metersAffected");
-    //echo " nbrOut=$nbrOut <br/>";
+    $nbrOut = TagValue($str, "metersAffected");  // number out
+
     // get or set outage start time
     $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
     if($outagestarttime=="") { // if no start time, create one
         $outagestarttime = date("g:i a D"); // hh:mm am ddd, eg 8:05 am Sun
         file_put_contents($tanneroutagetimefile, $outagestarttime);  // save the outage start time
+        echo date("g:i a D") . "Tanner Outage starting now. $nbrOut Out. Was '$oldmsg'";
     }
     if($nbrOut == "") {
        $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE in progress since $outagestarttime. Tap for Map.</span>";
