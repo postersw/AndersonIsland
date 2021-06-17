@@ -774,7 +774,7 @@ function DisplayFerrySchedule() {
     InitializeDates(0);  // reset dates back
     }
     /////////////////////////////////////////////////////////////////////////////////////////
-// Loads the next ferry times into the global 'table' as a row for each run. 
+// Loads the next ferry times into the global 'table' as a row for each run for 1 day. 
 // ferrytimesS, ferrytimesA is the array of times and days for Steelacoom and AI;
 //  Entry: table = table to add to
 //         ferrytimesS, A, K = array of ferry times for Steilacoom, AI, and Ketron
@@ -788,6 +788,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var boldS = false, boldA = false, boldK = false;
     var validS = false, validA = false, validK = false; // true if runs are valid
     var adjustedcurrenttime = 0; // time adjusted for ferry delays (time adjusted backwards)
+    var rowcount = 0;
     //if (gTimehhmm > 0) adjustedcurrenttime = timeAdd(gTimehhmm, -(extrat + gFerryDelayMin)); // adjust current time backwards for the ferry sailing test
 
     // roll through the ferry times, skipping runs that are not valid for today
@@ -798,6 +799,7 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
         validA = (ferrytimesA[i] != 0) && ValidFerryRun(ferrytimesA[i + 1], ferrytimesA[i]);
         validK = (ferrytimesK[i] != 0) && ValidFerryRun(ferrytimesK[i + 1], ferrytimesK[i]);
         if (validS||validA||validK) {
+            rowcount++;
             // Steelacoom
             var row1, row1col1, row1col2;
             row1 = table.insertRow(-1);
@@ -858,6 +860,11 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
 
         }
     }
+    row1 = table.insertRow(-1);
+    row1col1 = row1.insertCell(0);
+    row1col1.style.border.width = 1;
+    row1col1.style.border = "thin solid black";
+    row1col1.innerHTML = rowcount.toFixed(0) + " rows";
     return;
 }
 // formathhmm - ensure 4 digit hhmm
