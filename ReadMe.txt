@@ -454,32 +454,34 @@ HOW TO Create new Development/Production Certificate  every year when the old on
 
 
 ------------------------------------------------------------------------------------------------------------------------
-APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 6/15/20. Expires 7/15/2021.
+APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 7/13/21. Expires 8/12/2022.
+Last updated 7/13/21.
 
-For OneSignal 6/15/2020. Elapsed time 48 minutes.
-1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
+For OneSignal 7/13/21. Allow about 1 hour.
+1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com:6000, then login as user901584 pw= pwd29837
 												I didn't use  LA952.macincloud.com:6000 because the certSigningRequest is on LA051.
 2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
 ) -> Certificates,Identifiers...
-3. I selected Certificates +
+3. I selected "Certificates +" at the top of the page.
 4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE
 5. Under Create A new Certificate I ensured that my App ID for andersion-island.andersonislandassistant was selected. Then I clicked on Continue.
 6. Under Create A New Certificate - Upload a Certificate Signing Request' I chose the existing AIAAPN2018.certSigningRequest instead of creating a new one. 
 7. I clicked on CONTINUE to uploaded it.
 8. The next panel was "Download Your Certificate". I downloaded the new cer. It is named "aps.cer". 
-9. I named it apsPushProd06[yy].cer. So the next one should be apsPushProd0621, ... (on 6/15/20 I generated apsPushProd0620.cer).  I moved it to the desktop. Apple name is:
-10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, type: ApplePushServices, exp 7/10/20. 
+9. I named it apsPushProd06[yy].cer. So the next one should be apsPushProd0622, ... (on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
+10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, 
+    type: ApplePushServices, exp 8/12/22. 
 11. I immediately right clicked on that certificate in KeychainAccess and selected 'Export ...".
 12. That brings up a Save As dialog with file format p12. I set the file name to APNProd06yy.p12
     When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
 	You may be prompted for the login  password pwd29837
 	The file will be generated as APNProd06yy.p12 on the desktop.
-13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. Select my app.
-14. Click on 'SETTINGS'.  Then click on Apple IOS.
+13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. DD1 Select my app.
+14. Click on 'SETTINGS' at top of screen..  Then click on Apple IOS.
 15. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Scroll down and then click on 'Choose File..."
 16. Choose the APNProd06yy.p12 file. Then click on SAVE or NEXT.   
-17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Phonegap' icon. Then you get to another SAVE dialog.
-18. The Apple IOS status will now show the new certificate with 'expires July 10, 2021'.
+17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Cordova' icon. Then you get to another SAVE dialog.
+18. The Apple IOS status will now show the new certificate with 'expires August 12, 2022'.
 19. For grins, save the P12 file on onedrive. Using Safari, go to onedrive.live.com. login to my account. 
 20. Go to files->Documents->PhoneGap->Keys and drag the file from my desktop onto the web browser window.
 21. You are done. Elapsed time 48 minutes.
