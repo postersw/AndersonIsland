@@ -33,6 +33,7 @@
 //       5/11/21. Debugged for actual output.
 //       5/13/21. Add outage start time.
 //       6/14/21. Write to stdout for No response start or Outage start.
+//       7/19/21. Always log date on state change.
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
@@ -43,19 +44,23 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with NO outage
     $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply if there is an outage
     $tannernooutage = '<PubOutages><outage/></PubOutages>';
-    $msg =   date("g:i a") . ": No Outages.";
+    $shorttime = date("g:i a");
+    $shortdate = date("m/d/y");
+    $msg =   $shorttime . ": No Outages.";
     //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
     chdir("/home/postersw/public_html");  // move to web root
 
     $oldmsg = file_get_contents($tanneroutagefile);
     $str = file_get_contents($tanneroutagelink); // read the input
-    //if($str == "") $str = file_get_contents($tanneroutagelink);  // try again if no result
-    //if($str == "") $str = file_get_contents($tanneroutagelink);
+
     // NO RESPONSE - issue email first time. 
     if($str == "") {
-        if(strpos($oldmsg, "Status Unavailable") === false) echo date("g:i a D") . " Tanner Status 'Unavailable' due to no response starting now. Was '$oldmsg'";
-        $msg = date("g:i a") . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
+        if(strpos($oldmsg, "Status Unavailable") === false) {
+            echo "$shortdate $shorttime Tanner Status 'Unavailable' due to no response starting now. Was '$oldmsg'";
+            file_put_contents($tanneroutagelog, "$shortdate $shorttime No Response. \n", FILE_APPEND);  // log it
+        }
+        $msg = $shorttime . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
         file_put_contents($tanneroutagefile, $msg . $tweet);
         exit();
         //exit("gettanneralerts: No reply from odin.ornl.gov/odi/nisc/tannerelectric");
@@ -65,7 +70,10 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 
     // look for the NO OUTAGE reply
     if((strpos($str, $tannernooutage) > 0) || (substr($str, 0, $strl) == $tannerreply)){  // if there is no reply past the header we assume no outage, which I don't like.
-        if(strpos($oldmsg, "No Outages")=== false) echo date("g:i a D") . " Tanner Status 'No Outages' starting now. Was '$oldmsg'";
+        if(strpos($oldmsg, "No Outages")=== false) {  // if state changed
+            echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
+            file_put_contents($tanneroutagelog, "$shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
+        }
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
         if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
@@ -82,7 +90,10 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $i = strpos($str, $AI);  // AI Community Descriptor
     //echo " <br/>community descriptor i = $i<br/>";
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
-        if(strpos($oldmsg, "No Outages")=== false) echo date("g:i a D") . " Tanner Status 'No Outages' starting now. Was '$oldmsg'";
+        if(strpos($oldmsg, "No Outages")=== false) {
+            echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
+            file_put_contents($tanneroutagelog, "$shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
+        }
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
         if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
@@ -100,20 +111,20 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     if($outagestarttime=="") { // if no start time, create one
         $outagestarttime = date("g:i a D"); // hh:mm am ddd, eg 8:05 am Sun
         file_put_contents($tanneroutagetimefile, $outagestarttime);  // save the outage start time
-        echo date("g:i a D") . "Tanner Outage starting now. $nbrOut Out. Was '$oldmsg'";
+        echo "$shortdate $shorttime Tanner Outage starting now. $nbrOut Out. Was '$oldmsg'";
     }
     if($nbrOut == "") {
-       $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE in progress since $outagestarttime. Tap for Map.</span>";
+       $msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE in progress since $outagestarttime. Tap for Map.</span>";
 
     } else {
         $nbrServed = TagValue($str, "metersServed");
         //echo "nbrServed=$nbrServed<br/>";
         if($nbrServed == "") $nbrServed = 1246;
-        $msg =  "<span style='color:red;font-weight:bold'>" . date("g:i a") . " OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%) since $outagestarttime. Tap for Map.</span>";
+        $msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%) since $outagestarttime. Tap for Map.</span>";
     }
 
     file_put_contents($tanneroutagefile, $msg . $tweet);
-    file_put_contents($tanneroutagelog, $msg . "\n", FILE_APPEND);  // log it
+    file_put_contents($tanneroutagelog,"$shortdate $msg \n", FILE_APPEND);  // log it
     //echo $msg;  // debug
     return 0;
 
