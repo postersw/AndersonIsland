@@ -19,8 +19,9 @@
 //  1.28 2/2/21 Make position log a csv file.
 //  1.30 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
 //  1.32 5/25/21 Make font dark blue.
+//  1.33 7/19/21 Make text italic
 
-$ver = "1.31";  // 2/16/21
+$ver = "1.33";  // 7/19/21
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -83,7 +84,7 @@ for($i=0; $i < count($fa); $i++) {
     if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
     else $s = timetocross();
     $p =  $p . "$ferryname $s"; 
-    $px[$pi] = "$mi$ri</i> $ferryname $s";
+    $px[$pi] = "$mi$ri</i><i> $ferryname $s</i>";
     $pi++;
 }
 
