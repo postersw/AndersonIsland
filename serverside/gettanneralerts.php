@@ -34,6 +34,7 @@
 //       5/13/21. Add outage start time.
 //       6/14/21. Write to stdout for No response start or Outage start.
 //       7/19/21. Always log date on state change.
+//       8/08/21. Fixed 'No Outages' test so that state change is always logged.
 //
 date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
@@ -70,7 +71,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 
     // look for the NO OUTAGE reply
     if((strpos($str, $tannernooutage) > 0) || (substr($str, 0, $strl) == $tannerreply)){  // if there is no reply past the header we assume no outage, which I don't like.
-        if(strpos($oldmsg, "No Outages")=== false) {  // if state changed
+        if(strpos($oldmsg, "No Outages.")=== false) {   // if previous status was an outage, log the change
             echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
             file_put_contents($tanneroutagelog, "$shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
         }
@@ -90,7 +91,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $i = strpos($str, $AI);  // AI Community Descriptor
     //echo " <br/>community descriptor i = $i<br/>";
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
-        if(strpos($oldmsg, "No Outages")=== false) {
+        if(strpos($oldmsg, "No Outages.")=== false) {  // if previous status was an outage, log the change
             echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
             file_put_contents($tanneroutagelog, "$shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
         }
