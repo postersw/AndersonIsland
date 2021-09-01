@@ -64,5 +64,28 @@ function  DisplayFerryLog($n) {
         if($i == 0) break;
     }
 }
+///////////////////////////////////////////////////////////////////////////////////////////////
+// ReadDisplayFerryLog
+//
+function ReadDisplayFerryLog() {
+    $i = 0;
+    $ferrylog = "alertlog.txt";
+    $log = file_get_contents($ferrylog);  // read entire file into memory
+    $limit = 70;
+    $s = strlen($log);
+    // start at the end of the file and back up, line by line
+    while($limit > 0) {
+        $e = $s - 1;
+        $s = strripos($log, '\n', $e);  // find start of line
+        if($s <= 0) break;
+        if(substr($log, $s+1, 2) != "20") {
+            $s = strripos($log, '\n', $s);  // find start of line
+        }
+        $str = substr($log, $s+1, ($e-$s));  // isolate string
+        if(strpos($str, "Cleared alert ")) continue;
+        echo "<strong>" . substr($str, 20, 14) . "</strong>" . substr($str, 34) . "<br/><br/>";
+        $limit--;
+    }
+}
 
 ?>
