@@ -14,6 +14,7 @@
 //       5/16/21 Prevent caching of images.
 //       5/31/21 Accept 8 to display all days
 //       6/11/21 Fix random number use to prevent picture caching
+//       9/04.21 Show only 2 pictures. Simplify captions.
 //
 $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 
@@ -36,7 +37,7 @@ $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
             for($i=1; $i<8; $i++) DisplayOneDay($i);
         }
         else DisplayOneDay($f);
-        echo "<p/>Pictures are from the last 7 days, and are taken based on the scheduled departure time. If the ferry is late, then the pictures may still show cars in all 3 lanes. In that case, only the first 4 cars in lane 3 usually get on.";
+        echo "<p/>Pictures from the last 7 days, taken just as the ferry leaves.";
         echo "</div></body></html>";   
         exit(0);
     }
@@ -49,7 +50,7 @@ $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturd
     }
     else DisplayOneTime($f);
 
-    echo "<br/>Pictures are from the last 7 days, and are taken based on the scheduled departure time. If the ferry is late, then the pictures may still show cars in all 3 lanes. In that case, only the first 4 cars in lane 3 usually get on.";
+    echo "<br/>Pictures from the last 7 days, taken just as the ferry leaves.";
     echo "</div></body></html>";
     exit(0);
 
@@ -66,11 +67,11 @@ function DisplayOneTime($f) {
     $dt = file_get_contents("L$f.txt");
     $d = substr($f,1,1);  // day index
     $ft = formattime(substr($f, 2));
-    echo "<strong>$dock overflow on $Day[$d] for $ft run</strong><br/><br/>"; 
-    echo "<img src='Overflow/$f.jpg?d=$rnd' alt='$ft lane not available'></img> ";
-    echo "<img src='Overflow/D$f.jpg?d=$rnd' alt='$ft dock not available'></img> ";
+    echo "<strong>$dock overflow on $Day[$d] for $ft run</strong><br/> Taken $dt<br/>"; 
+    //echo "<img src='Overflow/$f.jpg?d=$rnd' alt='$ft lane not available'></img> ";
     echo "<img src='Overflow/X$f.jpg?d=$rnd'></img><br/>";
-    echo "($dt)<hr/>";
+    echo "<img src='Overflow/D$f.jpg?d=$rnd' alt='$ft dock not available'></img> ";
+    echo "<hr/>";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

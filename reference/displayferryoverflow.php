@@ -13,7 +13,7 @@
 //  Bob Bedoll. 4/24/21
 //              5/10/21. Update overflow days/times
 //              5/21/21. All "ALL" as an option.
-//
+//              9/03/21. Simplify caption.
 
 chdir("/home/postersw/public_html/Overflow");
 //chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
@@ -21,7 +21,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 echo "<html><head>";
 echo '<meta name="viewport" content="initial-scale=1, width=device-width,height=device-height,target-densitydpi=medium-dpi,user-scalable=no" />';
 echo "<style>body {font-family:'HelveticaNeue-Light','HelveticaNeue',Helvetica,Arial,sans-serif;} table,td {border:1px solid black;border-collapse:collapse;font-size: larger} A {text-decoration: none;} </style></head>";
-echo "<h1>Ferry Overflow Pictures</h1>Will a ferry run fill up? Tap on a day or time to see ferry lane pictures taken <i>just as the ferry is scheduled to leave.</i>. If there are cars left, then the ferry filled up for that
+echo "<h1>Ferry Overflow Pictures</h1>Will a ferry run fill up? Tap on a day or time to see ferry lane pictures taken <i>just as the ferry leaves.</i>. If there are cars left, then the ferry filled up for that
  run.<br/>";
 echo "<span style='background-color:pink'>Times in PINK usually fill up. </span><p/>";
 BuildRunTimeTable();
