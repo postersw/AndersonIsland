@@ -42,8 +42,8 @@ switch(substr($filename, 0, 1)) {
         $picture = GetPicture($STurl);
         file_put_contents("$filename.jpg", $picture);
         echo " S picture1 ";
-        // capture pictures every 3 min until the ferry leaves, up to 20 minutes.
-        for($i=0;$i<9;$i++) {
+        // capture pictures every 2 min until the ferry leaves, up to 20 minutes.
+        for($i=0;$i<12;$i++) {
             $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
             $d = CalcRunTime();  // debug
             echo "$d, $filename, i=$i, position=$position \n"; // debug
@@ -54,7 +54,7 @@ switch(substr($filename, 0, 1)) {
             $picture = GetPicture($STurl);
             file_put_contents("X$filename.jpg", $picture);  
             $dt = date("m/d/y h:i");
-            sleep(180);    // wait 3 min which is the ferry position update cycle
+            sleep(120);    // wait 2 min which is the ferry position update cycle
         }                          
         break;
     case "A": // AI
@@ -63,8 +63,8 @@ switch(substr($filename, 0, 1)) {
         $picture = GetPicture($AIurl); 
         file_put_contents("$filename.jpg", $picture);
         echo " A picture1 ";
-        // capture pictures every 3 min until the ferry leaves, up to 20 minutes.
-        for($i=0;$i<9;$i++) {
+        // capture pictures every 2 min until the ferry leaves, up to 20 minutes.
+        for($i=0;$i<12;$i++) {
             $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
             $d = CalcRunTime(); // debug
             echo "$d, $filename, i=$i, position=$position \n"; // debug
@@ -75,7 +75,7 @@ switch(substr($filename, 0, 1)) {
             $picture = GetPicture($AIurl);
             file_put_contents("X$filename.jpg", $picture);
             $dt = date("m/d/y h:i");
-            sleep(180);  // wait 3 min which is the ferry position update cycle
+            sleep(120);  // wait 2 min which is the ferry position update cycle
         }
         break;
     default:

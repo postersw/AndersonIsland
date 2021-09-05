@@ -166,4 +166,31 @@ function gettimeoflaststatus() {
     // return time in PDT
     return date("hh:mm", $uts); 
 }
+//////////////////////////////////////////////////////////////////////
+//  getstatustime
+//  {"receivedDate":"2021-09-01T20:57:56Z","utility":"tannerelectric","vendor":"nisc"},
+// returns status time
+function getstatustime() {
+    $tannerstatustimelink = "https://odin.ornl.gov/odi/status";
+    $statustime = file_get_contents($tannerstatustimelink);
+
+    if($statustime == "") {   // if no status time
+        echo "status time unavailable";
+        return date("g:i a");
+    }
+
+    $i = strpos($statustime, '"utility":"tannerelectric"');
+    if($i <= 0)  {   // if no status time
+        echo "tanner electric status utility unavailable";
+        return date("g:i a");
+    }
+    $i = strrpos($statustime, '"receivedDate":');
+    if($i <= 0)  {   // if no status time
+        echo "tanner electric status time unavailable";
+        return date("g:i a");
+    }
+    $d = substr($statustime, $i+15, 10);  // date
+    $t = substr($statustime, $i+27, 8); //time
+
+}
 ?>
