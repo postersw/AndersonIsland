@@ -3,7 +3,7 @@
 //  getferryoverflow - gets pictures of the ferry lanes just after a ferry has left. 
 //  Run by cron every 5 minutes, 
 //  Lane camera pictures are saved in the folder Overflow as 
-//      Adhhmm.jpg or Sdhhmm.jpg of the scheduled run for line camera
+//      Not used as of 9/5/21: Adhhmm.jpg or Sdhhmm.jpg of the scheduled run for line camera
 //      DAdhhmm.jpg or DSdhhmm.jpg for Dock cameras.
 //      XAdhhmm.jpg or XSdhhmm.jpg for lane camera after the ferryposition.txt says the ferry has left.
 //      LAdhhmm.txt or LS.... for log of date/time pictures were taken
@@ -18,6 +18,7 @@
 //              5/23/21 add repeats if no picture. Log no picture.
 //              6/10/21 changes times. wait 1 m. pictures. wait 1m. pictures.
 //              9/03/21 save last picture before ferry leaves by checking 'ferryposition.txt'.
+//              9/05/21 Ensure 1st picture is saved. save picture ever 2 min.
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -27,7 +28,7 @@ $STurl = "https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/stllane.jpg"
 $STdock = "https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/stlferry.jpg";
 $AIurl = "https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/ailane.jpg"; // AI camera
 $AIdock = "https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/aiferry.jpg"; // AI camera
-//echo "ver 4/24 1312 ";
+//echo "ver 9/5/21 ";
 $runtime = CalcRunTime();  // return dhhmm where d=1-7, hh = 00-23, mm=0-60 CURRENT time
 //echo " runtime=$runtime ";
 $filename = CheckRunTime($runtime);  // return A|Sdhhmm where d=1-7, hh = 00-23, mm=0-60 SCHEDULED ferry run time
@@ -38,16 +39,8 @@ $dt = date("m/d/y h:i");
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
         $dock = "Steilacoom";
-        sleep(60); // wait 1 min
-        $picture = GetPicture($STurl);
-        file_put_contents("$filename.jpg", $picture);
-        echo " S picture1 ";
         // capture pictures every 2 min until the ferry leaves, up to 20 minutes.
         for($i=0;$i<12;$i++) {
-            $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
-            $d = CalcRunTime();  // debug
-            echo "$d, $filename, i=$i, position=$position \n"; // debug
-            if(strpos($position, "arriving @AI") > 0) break; // if the ferry has left Steilacoom, use the last pictures taken
             // capture pictures for next cycle
             $picture = GetPicture($STdock);
             file_put_contents("D$filename.jpg", $picture);
@@ -55,20 +48,19 @@ switch(substr($filename, 0, 1)) {
             file_put_contents("X$filename.jpg", $picture);  
             $dt = date("m/d/y h:i");
             sleep(120);    // wait 2 min which is the ferry position update cycle
+
+            // exit if ferry has left
+            $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
+            echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
+            if($position=="") break; // if no position
+            if(strpos($position, "arriving @AI") > 0) break; // if the ferry has left St, use the last pictures taken
         }                          
         break;
+
     case "A": // AI
         $dock = "AI";
-        sleep(60); // wait 1 minutes
-        $picture = GetPicture($AIurl); 
-        file_put_contents("$filename.jpg", $picture);
-        echo " A picture1 ";
         // capture pictures every 2 min until the ferry leaves, up to 20 minutes.
         for($i=0;$i<12;$i++) {
-            $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
-            $d = CalcRunTime(); // debug
-            echo "$d, $filename, i=$i, position=$position \n"; // debug
-            if(strpos($position, "arriving @St") > 0) break; // if the ferry has left Steilacoom, use the last pictures taken
             // capture pictures for next cycle
             $picture = GetPicture($AIdock); 
             file_put_contents("D$filename.jpg", $picture);
@@ -76,8 +68,15 @@ switch(substr($filename, 0, 1)) {
             file_put_contents("X$filename.jpg", $picture);
             $dt = date("m/d/y h:i");
             sleep(120);  // wait 2 min which is the ferry position update cycle
+
+            //  exit if ferry has left
+            $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
+            echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
+            if($position=="") break; // if no position
+            if(strpos($position, "arriving @St") > 0) break; // if the ferry has left AI, use the last pictures taken
         }
         break;
+
     default:
         //echo " no run";
         exit();
