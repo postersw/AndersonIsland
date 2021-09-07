@@ -76,7 +76,8 @@ switch(substr($filename, 0, 1)) {
             echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
             if($position=="") break; // if no position
             if(strpos($position, "arriving @St") > 0) break; // if the ferry has left AI, use the last pictures taken
-            if(strpos($position, "returning to St") > 0) break; // if the ferry has left AI, use the last pictures taken       }
+            if(strpos($position, "returning to St") > 0) break; // if the ferry has left AI, use the last pictures taken 
+        }
         break;
 
     default:
