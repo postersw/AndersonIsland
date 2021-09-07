@@ -18,6 +18,7 @@
 //              5/23/21 add repeats if no picture. Log no picture.
 //              6/10/21 changes times. wait 1 m. pictures. wait 1m. pictures.
 //              9/03/21 save last picture before ferry leaves by checking 'ferryposition.txt'.
+//              9/06/21 Accept 'return to ...'.
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -48,6 +49,7 @@ switch(substr($filename, 0, 1)) {
             $d = CalcRunTime();  // debug
             echo "$d, $filename, i=$i, position=$position \n"; // debug
             if(strpos($position, "arriving @AI") > 0) break; // if the ferry has left Steilacoom, use the last pictures taken
+            if(strpos($position, "returning to AI") > 0) break; // if the ferry has left Steilacoom, use the last pictures taken           returning to Ste
             // capture pictures for next cycle
             $picture = GetPicture($STdock);
             file_put_contents("D$filename.jpg", $picture);
@@ -69,6 +71,7 @@ switch(substr($filename, 0, 1)) {
             $d = CalcRunTime(); // debug
             echo "$d, $filename, i=$i, position=$position \n"; // debug
             if(strpos($position, "arriving @St") > 0) break; // if the ferry has left Steilacoom, use the last pictures taken
+            if(strpos($position, "returning to St") > 0) break; // if the ferry has left Steilacoom, use the last pictures taken
             // capture pictures for next cycle
             $picture = GetPicture($AIdock); 
             file_put_contents("D$filename.jpg", $picture);
