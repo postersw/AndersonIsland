@@ -20,9 +20,11 @@
 //              9/03/21 save last picture before ferry leaves by checking 'ferryposition.txt'.
 //              9/06/21 Accept 'return to ...'.
 //              9/05/21 Ensure 1st picture is saved. save picture ever 2 min.
+//              9/8/21  Back to 2.5 min waittime
 //
 
 chdir("/home/postersw/public_html/Overflow");
+$sleeptime = 150;  // 2.5 minutes
 //chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $STurl = "https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/stllane.jpg"; // Steilacoom camera
@@ -48,7 +50,7 @@ switch(substr($filename, 0, 1)) {
             $picture = GetPicture($STurl);
             file_put_contents("X$filename.jpg", $picture);  
             $dt = date("m/d/y h:i");
-            sleep(120);    // wait 2 min which is the ferry position update cycle
+            sleep($sleeptime);    // wait 2 min which is the ferry position update cycle
 
             // exit if ferry has left
             $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
@@ -69,7 +71,7 @@ switch(substr($filename, 0, 1)) {
             $picture = GetPicture($AIurl);
             file_put_contents("X$filename.jpg", $picture);
             $dt = date("m/d/y h:i");
-            sleep(120);  // wait 2 min which is the ferry position update cycle
+            sleep($sleeptime);  // wait 2 min which is the ferry position update cycle
 
             //  exit if ferry has left
             $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
