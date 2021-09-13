@@ -21,6 +21,7 @@
 //              9/06/21 Accept 'return to ...'.
 //              9/05/21 Ensure 1st picture is saved. save picture ever 2 min.
 //              9/8/21  Back to 2.5 min waittime
+//              9/13/21 Turn off debug messages
 //
 
 chdir("/home/postersw/public_html/Overflow");
@@ -54,7 +55,7 @@ switch(substr($filename, 0, 1)) {
 
             // exit if ferry has left
             $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
-            echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
+            //echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
             if($position=="") break; // if no position
             if(strpos($position, "arriving @AI") > 0) break; // if the ferry has left St, use the last pictures taken
             if(strpos($position, "returning to AI") > 0) break; // if the ferry has left St, use the last pictures taken
@@ -75,7 +76,7 @@ switch(substr($filename, 0, 1)) {
 
             //  exit if ferry has left
             $position = file_get_contents("../ferryposition.txt"); // updated every 3 minutes by getferrypositioncron
-            echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
+            //echo date("h:i") . ", $filename, i=$i, position=$position \n"; // debug
             if($position=="") break; // if no position
             if(strpos($position, "arriving @St") > 0) break; // if the ferry has left AI, use the last pictures taken
             if(strpos($position, "returning to St") > 0) break; // if the ferry has left AI, use the last pictures taken 
@@ -90,7 +91,7 @@ switch(substr($filename, 0, 1)) {
 
 file_put_contents("L$filename.txt", "$dt Ferry leaving $dock"); // log date and time
 file_put_contents("overflowlog.txt", "$dt: $filename\n", FILE_APPEND);  // write to log
-echo "wrote $filename $dt";
+//echo "wrote $filename $dt";
 exit(0);
 
 ///////////////////////////////////////////////////////////////////////////////////
