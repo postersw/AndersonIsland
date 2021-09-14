@@ -43,6 +43,7 @@ $dt = date("m/d/y h:i");
 switch(substr($filename, 0, 1)) {
     case "S": // Steilacoom
         $dock = "Steilacoom";
+        sleep(120); //wait 2 min
         // capture pictures every 2 min until the ferry leaves, up to 20 minutes.
         for($i=0;$i<12;$i++) {
             // capture pictures for next cycle
@@ -64,6 +65,7 @@ switch(substr($filename, 0, 1)) {
 
     case "A": // AI
         $dock = "AI";
+        sleep(120); // wait 2 min
         // capture pictures every 2 min until the ferry leaves, up to 20 minutes.
         for($i=0;$i<12;$i++) {
             // capture pictures for next cycle
