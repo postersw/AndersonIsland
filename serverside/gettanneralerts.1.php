@@ -35,8 +35,10 @@
 //       6/14/21. Write to stdout for No response start or Outage start.
 //       7/19/21. Always log date on state change.
 //       8/08/21. Fixed 'No Outages' test so that state change is always logged.
+//       9/14/21. Get date/time of last tanner feed from odin.
 //
-date_default_timezone_set("America/Los_Angeles"); // set PDT
+
+    date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
     $tanneroutagefile = "tanneroutage.txt";  // one line outage info for the app
     $tanneroutagelog = "tanneroutagelog.txt";  // log file 
@@ -47,7 +49,8 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tannernooutage = '<PubOutages><outage/></PubOutages>';
     $shorttime = date("g:i a");
     $shortdate = date("m/d/y");
-    $msg =   $shorttime . ": No Outages.";
+    $dateday = date("g:i a D");
+
     //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
     chdir("/home/postersw/public_html");  // move to web root
@@ -56,12 +59,20 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     $str = file_get_contents($tanneroutagelink); // read the input
 
     // get the status of the last time
-    gettimeoflaststatus();
+    $uts = gettimeoflaststatus();
+    date_default_timezone_set("America/Los_Angeles"); // set PDT
+    if($uts > 0) {
+        $shorttime = date("g:i a", $uts);
+        $shortdate = date("m/d/y", $uts);
+        $dateday = date("g:i a D", $uts);
+        //echo "shorttime=$shorttime, $shortdate, $dateday ";
+    }
+    $msg =   $shorttime . ": No Outages.";
 
     // NO RESPONSE - issue email first time. 
     if($str == "") {
         if(strpos($oldmsg, "Status Unavailable") === false) {
-            echo "$shortdate $shorttime Tanner Status 'Unavailable' due to no response starting now. Was '$oldmsg'";
+            echo "$shortdate $shorttime Tanner Status 'Unavailable'. No response to $tanneroutagelink.starting now. Was '$oldmsg'";
             file_put_contents($tanneroutagelog, "$shortdate $shorttime No Response. \n", FILE_APPEND);  // log it
         }
         $msg = $shorttime . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
@@ -69,6 +80,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
         exit();
         //exit("gettanneralerts: No reply from odin.ornl.gov/odi/nisc/tannerelectric");
     }
+
     $strl = strlen($tannerreply);
 
 
@@ -113,7 +125,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
     // get or set outage start time
     $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
     if($outagestarttime=="") { // if no start time, create one
-        $outagestarttime = date("g:i a D"); // hh:mm am ddd, eg 8:05 am Sun
+        $outagestarttime = $dateday; // hh:mm am ddd, eg 8:05 am Sun
         file_put_contents($tanneroutagetimefile, $outagestarttime);  // save the outage start time
         echo "$shortdate $shorttime Tanner Outage starting now. $nbrOut Out. Was '$oldmsg'";
     }
@@ -147,23 +159,44 @@ function TagValue($s, $tag) {
     }
 
 //////////////////////////////////////////////////////////////////////
-//  gettimeoflaststatus()
+//  gettimeoflaststatus() get time of last status from the odin status endpoint
+//
+//  returns unix timestamp of the tanner feed from odin ornl gov odi status.
+//          0 if no tanner time stamp
+// https://odin.ornl.gov/odi/status returns 
+// {"receivedDate":"2021-09-14T20:11:09Z","utility":"tannerelectric","vendor":"nisc"},
+    
 function gettimeoflaststatus() {
+    $tannerstatus = "https://odin.ornl.gov/odi/status";
     $str = file_get_contents($tannerstatus);
-    // look for tanner time stamp
-    $i = strpos("str", "tanner");
-    if($i===false) {
-        echo "No tanner time stamp: $str";
-        return "";
+    if($str == "") {
+        echo "No response to $tannerstatus";
+        return 0;
     }
+    //echo $str . "\n"; // debug
+    // look for tanner time stamp
+    $i = strpos($str, '"utility":"tannerelectric"');
+    //echo "i=$i \n";
+    if($i===false) {
+        echo "No tanner time stamp from $tannerstatus: $str";
+        return 0;
+    }
+    date_default_timezone_set("UCT"); // set UCT
     // get time time and convert it to a unix time stamp
-    $ts = substr($str, $i-xxxx, 20?);
+    //$ts = strrpos($str, "receivedDate", -(strlen($str)-$i));  //search backward from $i
+    //echo "ts=$ts \n";
+    $ts = substr($str, $i-22, 20);
+    //echo "ts=$ts \n";
     $uts = strtotime($ts);  // unit time stamp in GMT in SECONDS
+    //echo "uts=$uts \n";
+    //echo date("m/d/y H:i:s \n", $uts); 
     // calculate difference between now and time stamp
     $now = time();
-    // if > 10 minutes, log error, and return error
-    if(($now - $uts)> 14*60) error;
-    // return time in PDT
-    return date("hh:mm", $uts); 
+    $delta = ($now - $uts)/60.0;
+    //echo "now=$now, delta=$delta \n";
+    // if > 20 minutes, log error, and return error
+    if(($now - $uts)> 20*60) echo ("time > 20 min");
+    // return time in
+    return $uts; 
 }
 ?>
