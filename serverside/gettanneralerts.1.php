@@ -50,6 +50,7 @@
     $shorttime = date("g:i a");
     $shortdate = date("m/d/y");
     $dateday = date("g:i a D");
+    $realdate = date("m/d/y g:i a");
 
     //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
@@ -61,7 +62,9 @@
     // get the status of the last time
     $uts = gettimeoflaststatus();
     date_default_timezone_set("America/Los_Angeles"); // set PDT
+    $statusdate = "none";
     if($uts > 0) {
+        $statusdate = date("m/d/y g:i a", $uts);
         $shorttime = date("g:i a", $uts);
         $shortdate = date("m/d/y", $uts);
         $dateday = date("g:i a D", $uts);
@@ -73,7 +76,7 @@
     if($str == "") {
         if(strpos($oldmsg, "Status Unavailable") === false) {
             echo "$shortdate $shorttime Tanner Status 'Unavailable'. No response to $tanneroutagelink.starting now. Was '$oldmsg'";
-            file_put_contents($tanneroutagelog, "$shortdate $shorttime No Response. \n", FILE_APPEND);  // log it
+            file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Response. status date=$statusdate \n", FILE_APPEND);  // log it
         }
         $msg = $shorttime . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
         file_put_contents($tanneroutagefile, $msg . $tweet);
@@ -88,7 +91,7 @@
     if((strpos($str, $tannernooutage) > 0) || (substr($str, 0, $strl) == $tannerreply)){  // if there is no reply past the header we assume no outage, which I don't like.
         if(strpos($oldmsg, "No Outages.")=== false) {   // if previous status was an outage, log the change
             echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
-            file_put_contents($tanneroutagelog, "$shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
+            file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
         }
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
@@ -108,7 +111,7 @@
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
         if(strpos($oldmsg, "No Outages.")=== false) {  // if previous status was an outage, log the change
             echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
-            file_put_contents($tanneroutagelog, "$shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
+            file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
         }
         file_put_contents($tanneroutagefile, $msg . $tweet);
         $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
@@ -140,7 +143,7 @@
     }
 
     file_put_contents($tanneroutagefile, $msg . $tweet);
-    file_put_contents($tanneroutagelog,"$shortdate $msg \n", FILE_APPEND);  // log it
+    file_put_contents($tanneroutagelog,"$realdate $msg  status-date=$statusdate \n", FILE_APPEND);  // log it
     //echo $msg;  // debug
     return 0;
 
@@ -170,7 +173,7 @@ function gettimeoflaststatus() {
     $tannerstatus = "https://odin.ornl.gov/odi/status";
     $str = file_get_contents($tannerstatus);
     if($str == "") {
-        echo "No response to $tannerstatus";
+        //echo "No response to $tannerstatus";
         return 0;
     }
     //echo $str . "\n"; // debug
