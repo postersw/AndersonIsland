@@ -142,8 +142,15 @@
         $msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: " . $nbrOut . " Houses Out (" . (int)($nbrOut/$nbrServed*100) . "%) since $outagestarttime. Tap for Map.</span>";
     }
 
+    // write out status for the app
     file_put_contents($tanneroutagefile, $msg . $tweet);
-    file_put_contents($tanneroutagelog,"$realdate $msg  status-date=$statusdate \n", FILE_APPEND);  // log it
+
+    // log it if a change from $oldmsg
+    $oldmsginspan = TagValue($oldmsg, "span");
+    $msginspan = TagValue($msg, "span");
+    if(($oldmsginspan="") || (substr($msginspan, 10) != substr($oldmsginspan, 10))) {   // if a change in status (skip time)
+        file_put_contents($tanneroutagelog,"$realdate $msg  status-date=$statusdate \n", FILE_APPEND);  // log it
+    }
     //echo $msg;  // debug
     return 0;
 
