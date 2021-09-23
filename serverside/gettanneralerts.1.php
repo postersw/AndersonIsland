@@ -159,13 +159,17 @@
 //  entry $s = string
 //          $tag = xml tag without <>
 // Returns  string between tags, or "" if tag not found
+//   <tag ...>value</tag>
+//          12345678    start at 2+1, lenght=8-2-1
 function TagValue($s, $tag) {
-    $i = strpos($s, "<" . $tag . ">");
+    //$i = strpos($s, "<" . $tag . ">");
+    $i = strpos($s, "<" . $tag);
     if($i===FALSE) return "";
-    $taglen = strlen($tag) + 2;
+    $i = strpos($s, ">", $i+2);
+    //$taglen = strlen($tag) + 2;
     $j = strpos($s,  "</" . $tag . ">", $i);
     if($j==FALSE) exit("ERR: </".  $tag . "> not found");
-    return substr($s, $i+$taglen, $j-$i-$taglen);
+    return substr($s, $i+1, $j-$i-1);
     }
 
 //////////////////////////////////////////////////////////////////////
