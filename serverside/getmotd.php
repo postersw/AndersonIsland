@@ -1,16 +1,16 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // getmotd.php merges the motd.txt file into the dailycache.txt file every night.
-//  run by cron at 11pm nightly.
+//  run by cron at 12:02am nightly.
 // ALWAYS replaces all messages between MOTD and the ending /nl
 // Strips out all \n.   Always end a message with a </br>
 // input file: dailycache.txt.   If there is an MOTD, it MUST be in line 2 as MOTD, and the MOTD must immediately follow it until the next \n.
 // input file: motd.txt
 //  <MOTD>
-//  Optional motd messages to always include. only 1 line up to the /nl which is stripped.
+//  Optional motd messages to always include. only 1 line up to the \n,  \n is stripped.
 //  </MOTD>
 //  <DATE mmddstart mmddend>
-//   optional motd message to include starting mmddstart, and ending mmddend.  only 1 line up to the \n. \n is stripped.
+//   optional motd message to include, starting mmddstart, and ending mmddend.  only 1 line up to the \n. \n is stripped.
 //  </DATE>
 //  .... repeated as necessary
 //  <MOTDLAST>
@@ -20,7 +20,7 @@
 //  10/3/21. RFB. Initial version.
 //
 
-$test = true;
+$test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
 $dailycachefile = "dailycache.txt";
 if($test) $dailycachefile = "dailycache_test.txt";
@@ -58,7 +58,7 @@ if($ln != "</MOTD>\n") {
 if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 
 
-// check for date rows:   <DATE yymmdd,yymmdd>\n msg \n</DATE> ...
+// check for date rows:   <DATE mmdd,mmdd>\n msg \n</DATE> ...
 while(true) {
     $ln = fgets($motdf);
     if(substr($ln, 0, 5)== "<DATE") {
@@ -75,7 +75,7 @@ while(true) {
     else break;
 }
 
-// check for row after the date rows
+// check for MOTDLAST row after the date rows
 if($ln != "") {
     if($ln != "<MOTDLAST>\n") exit("ill formed MOTDLAST: $ln");
     $ln = fgets($motdf); // get motdlast
@@ -127,7 +127,6 @@ function flushdailycache($motdout) {
 //  exit    true if current date is with date1-date2, else false
 //
 function checkmotddate($dstart, $dend) {
-    echo ("checkmotddate $dstart $dend; ");
     $d1 = intval($dstart);
     $d2 = intval($dend);
 
@@ -135,10 +134,9 @@ function checkmotddate($dstart, $dend) {
     if($d1 < 101 || $d1 > 1231) exit(" invalid start date $dstart");
     if($d2 < 101 || $d2 > 1231) exit(" invalid end date $dend");
 
-    $dnow = date("md");  // get mmdd
-    echo " date: $dnow ";
-    echo ("d1=$d1, d2=$d2, dnow=$dnow. ");
-    if(($d1>=$dnow) && ($d2<=$dnow)) return true;
+    $dnow = intval(date("md"));  // get mmdd
+    //echo ("d1=$d1, d2=$d2, dnow=$dnow. ");
+    if(($d1<=$dnow) && ($dnow<=$d2)) {return true;}
     return false;    
 }
 
