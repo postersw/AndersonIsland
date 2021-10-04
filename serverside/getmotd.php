@@ -65,8 +65,8 @@ while(true) {
         $dates = explode(" ", $ln);  // get the dates
         $ln = fgets($motdf);
         if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
-        echo ("ds=$dates[1], de=$dates[2] ");
-        if(checkmotddate($dates[1], $dates[2])) {  // if date is active
+        echo ("ds=$dates[1], de=$dates[2].  ");
+        if(checkmotddate(preg_replace('~\D~', '', $dates[1]), preg_replace('~\D~', '', $dates[2]))) {  // if date is active
             $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
         }
         $ln = fgets($motdf);  // read line after msg. should be </DATE>
@@ -83,11 +83,11 @@ if($ln != "") {
         $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
         $ln = fgets($motdf);
     }
-    if($ln != "</MOTDLAST>") exit("no closing /MOTDLAST: $ln");
+    if($ln != "</MOTDLAST>" && $ln != "</MOTDLAST>\n" ) exit("no closing /MOTDLAST: $ln");
 }
 
 fclose($motdf);   // close modfile
-echo ("MOTD:\n$motdout");  // if there is an motd
+echo ("MOTD:\n$motdout <br/>\n");  // if there is an motd
 flushdailycache($motdout);
 exit();
 
@@ -127,12 +127,17 @@ function flushdailycache($motdout) {
 //  exit    true if current date is with date1-date2, else false
 //
 function checkmotddate($dstart, $dend) {
+    echo ("checkmotddate $dstart $dend; ");
     $d1 = intval($dstart);
     $d2 = intval($dend);
-    if($d2 > $d1) error("end date $dend is > start date $dstart");
-    if($d1 < 101 || $d1 > 1231) error(" invalid start date $dstart");
-    if($d2 < 101 || $d2 > 1231) error(" invalid end date $dend");
-    $dnow = intval(date("md"));  // get mmdd
+
+    if($d1 > $d2) exit("end date $dend is < start date $dstart");
+    if($d1 < 101 || $d1 > 1231) exit(" invalid start date $dstart");
+    if($d2 < 101 || $d2 > 1231) exit(" invalid end date $dend");
+
+    $dnow = date("md");  // get mmdd
+    echo " date: $dnow ";
+    echo ("d1=$d1, d2=$d2, dnow=$dnow. ");
     if(($d1>=$dnow) && ($d2<=$dnow)) return true;
     return false;    
 }
