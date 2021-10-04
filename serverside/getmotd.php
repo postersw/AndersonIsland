@@ -4,113 +4,137 @@
 //  run by cron at 11pm nightly.
 // ALWAYS replaces all messages between MOTD and the ending /nl
 // Strips out all \n.   Always end a message with a </br>
-//
+// input file: dailycache.txt.   If there is an MOTD, it MUST be in line 2 as MOTD, and the MOTD must immediately follow it until the next \n.
 // input file: motd.txt
 //  <MOTD>
-//   motd messages to always include. only 1 line up to the /nl which is stripped.
+//  Optional motd messages to always include. only 1 line up to the /nl which is stripped.
 //  </MOTD>
-//  <DATE mmddstart,mmddend>
-//   motd message to include starting mmddstart, and ending mmddend.  only 1 line up to the \n. \n is stripped.
+//  <DATE mmddstart mmddend>
+//   optional motd message to include starting mmddstart, and ending mmddend.  only 1 line up to the \n. \n is stripped.
 //  </DATE>
 //  .... repeated as necessary
 //  <MOTDLAST>
-//   messages to include after the scheduled messages. Only 1 line up to the \n
+//   optional messages to include after the scheduled messages. Only 1 line up to the \n
 //  </MOTDLAST>
 //
-//  2/11/19. RFB. Added REFRESH and emergencymessage.txt.
-//  1/1/21.  RFB. Added FERRYPOSITION
-
-// special case for FERRY. Put the EmergencyMessage file in front of the ferry alert.
+//  10/3/21. RFB. Initial version.
 //
-//copyfile("alert.txt", "FERRY");
+
+$test = true;
 $motdfile = "motd.txt";
 $dailycachefile = "dailycache.txt";
+if($test) $dailycachefile = "dailycache_test.txt";
+date_default_timezone_set('America/Los_Angeles');
 
-$motd = "";
-if(!file_exists($motdfile)) exit(0);
-
-$motdf = fopen($motdfile, "r"); 
-if($motd == "") exit(0);
-
-$dc = file_get_contents($dailycachefile);
-if($dc=="") {
-    echo "can't get daily cache";
-    exit("cant get daily cache");
-}
-
-// check first line for DAILYCACHE
-$ln = getnextline($dc);
+// read daily cache and check first line for DAILYCACHE
+$dcf = fopen($dailycachefile, "r");
+if($dcf==false) exit("$dailycachefile does not exist");
+if(feof($dcf)) exit("$dailycachefile is empty");
+$ln = fgets($dcf);
 if($ln=="") exit("daily cache is empty");
-if($ln!="DAILYCACHE") exit ("first line is not DAILY CACHE");
-$dcout = "DAILYCACHE\n";
+if($ln!="DAILYCACHE\n") exit ("first line of $dailycachefile is not DAILYCACHE");
+//$dcout = $ln;  // data to write back to DAILY CACHE
 
-// check 2nd line for MOTD  & discard
-$ln = getnextline($dc);
-if($ln=="MOTD") {
-    $ln = getnextline($dc); // get motd, which we will discard
+// check 2nd line for MOTD  & discard.  leave DC positioned after the MOTD
+$ln = fgets($dcf);
+if($ln=="MOTD\n") {
+    $ln = fgets($dcf);// get the actual motd, which we will discard
 }
+$motdout = "";
 
-// check 1st line for <MOTD>
+// check motd.txt file
+$motdf = fopen($motdfile, "r"); 
+if($motdf==false) exit("No $motdfile");
+// check 1st line of motd.txt for <MOTD>
 $ln = fgets($motdf);
-if($ln != "<MOTD>") {
-    flushdailycache();  // if not MOTD, flush the cache
-    exit();
+if($ln == "") exit("Empty $motdfile");  // if no motd file, just quite
+if($ln != "<MOTD>\n")  exit("$motdfile missing &lt MOTD &gt and is skipped");
+// check 2nd line of motd.txt for </MOTD>
+$ln = fgets($motdf);
+if($ln != "</MOTD>\n") {
+    $motdout = substr($ln, 0, strlen($ln)-1); // remove trailing \n
+    $ln = fgets($motdf);  // get next line
 }
+if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 
-// add MOTD contents
-$ln = getnextline($motd);  // either motd lines or </MOTD>
-if($ln == "</MOTD>") {
-    flushdailycache();
-    exit();
-}
-$dcout = "MOTD\n$ln"; // add motd
-$ln = getnextline($motd);
-if($ln != "</MOTD>") {exit("no /MOTD after motd line");}
 
-// check for date rows
+// check for date rows:   <DATE yymmdd,yymmdd>\n msg \n</DATE> ...
 while(true) {
-    $ln = getnextline($motd);
+    $ln = fgets($motdf);
     if(substr($ln, 0, 5)== "<DATE") {
-        if(checkdate($ln)) {
-            $ln = getnextline($motd);
-            $dcout .= $ln;  // add line
+        $dates = explode(" ", $ln);  // get the dates
+        $ln = fgets($motdf);
+        if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
+        echo ("ds=$dates[1], de=$dates[2] ");
+        if(checkmotddate($dates[1], $dates[2])) {  // if date is active
+            $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
         }
-        $ln = getnextline($motd);
-        if($ln != "</DATE>") exit("no ending /Date for $ln");
+        $ln = fgets($motdf);  // read line after msg. should be </DATE>
+        if($ln != "</DATE>\n") exit("no ending /Date for $ln");
     }
     else break;
 }
 
 // check for row after the date rows
 if($ln != "") {
-    if($ln != "<MOTDLAST>") exit("ill formed MOTDLAST: $ln");
-    $ln = getnextline($motd); // get motdlast
-    $dcout .= $ln;
-    $ln = getnextline($motd);
+    if($ln != "<MOTDLAST>\n") exit("ill formed MOTDLAST: $ln");
+    $ln = fgets($motdf); // get motdlast
+    if($ln != "</MOTDLAST>\n")  {
+        $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
+        $ln = fgets($motdf);
+    }
     if($ln != "</MOTDLAST>") exit("no closing /MOTDLAST: $ln");
 }
 
-$dcout .= "\n";
-flushdailycache();
+fclose($motdf);   // close modfile
+echo ("MOTD:\n$motdout");  // if there is an motd
+flushdailycache($motdout);
 exit();
 
 
+//////////////////////////////////////////////////////////////////////////////////
+//  flushdailycache - writes $motdout to dailycache.txt as MOTD, then copies the rest of dailycache.txt , replacing the original
+//  entry   $motdout = motd string to add to daily cache, with NO \n
+//          $dcf = daily cache file handle
+//          $dcout = data to write back to dailycachefile
+//          $dailycachefile = daily cache file name
+//
+function flushdailycache($motdout) {
+    global $dcf, $dailycachefile;
+    $i = 0;
+    if($motdout != "") {
+        $dcout  = "DAILYCACHE\nMOTD\n" . $motdout . "\n";
+    } else     $dcout = "DAILYCACHE\n";
 
-
-
-
-// copyfile from file to stdout
-//  diskfile = file name
-//  label = label that surrounds the content
-function copyfile($diskfile, $label) {
-    if(!file_exists($diskfile)) return;  // exit if file doesn't exist
-    $theData = file_get_contents($diskfile);
-    if($theData <> "") {
-        if($label <> "") echo $label . "\n";
-        echo $theData;
-        if($label <> "") echo $label . "END\n";
+    // read dailycache into $dcout
+    while (!feof($dcf)) {
+        $ln = fgets($dcf);
+        $i++;
+        if($ln=="MOTD\n") exit("MOTD is in dailycache.txt but not in line 2.");
+        $dcout = $dcout . $ln;
     }
+    fclose($dcf);
+    // now copy dcout to dcf
+    file_put_contents($dailycachefile, $dcout);
+    echo("wrote $i lines to $dailycachefile ");
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  checkmotddate - returns true if the date is within date1 - date2
+//
+//  entry   dstart is start date, mmdd
+//          dend is end date, mmdd
+//  exit    true if current date is with date1-date2, else false
+//
+function checkmotddate($dstart, $dend) {
+    $d1 = intval($dstart);
+    $d2 = intval($dend);
+    if($d2 > $d1) error("end date $dend is > start date $dstart");
+    if($d1 < 101 || $d1 > 1231) error(" invalid start date $dstart");
+    if($d2 < 101 || $d2 > 1231) error(" invalid end date $dend");
+    $dnow = intval(date("md"));  // get mmdd
+    if(($d1>=$dnow) && ($d2<=$dnow)) return true;
+    return false;    
+}
 
 ?>
