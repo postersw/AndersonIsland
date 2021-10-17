@@ -19,6 +19,7 @@
 //      10/9/18. Removed Pushbots calls and code. All messages now sent by OneSignal. Saves $29/m.
 //      5/13/21. Don't create a DELAY message if a run is Cancelled.
 //      10/14/21. This fails now. simplexmlload returns null due to a web site change that was made.
+//      10/17/21. Temporary. RSS feed is read from file FerryRSSfile.txt, which is manually updated.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -50,6 +51,7 @@ $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 //$alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
 $alertrssurl = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26";  
+$RSSfile = "FerryRSSfile.txt";  // temporary RSS file as of 10/17/21
 $title = "";
 
 //  $alertrssurl = "http://www.anderson-island.org/ferry_rsstest.txt";  // TEST URL/////// debug for local pc ///////////////
@@ -57,10 +59,14 @@ $title = "";
 // try 10 times to get content
 for($i=0; $i<3; $i++) {  // try 3 times
     $x = simplexml_load_file($alertrssurl);
-    if($x === false) exit(0);  // change made 10/15 because this fails now
-    if($x===false) exit("No return from $alertrssurl");  // if no data, try again
+    //if($x === false) exit(0);  // change made 10/15 because this fails now
+    if($x === false) {
+        echo " load failed from $alertrssurl. ";
+        $x = simplexml_load_file($RSSfile);  // change made 10/15 because this fails nowif($x===false) exit("No return from $alertrssurl");  // if no data, try again
+        if($x === false) echo " load failed from $RSSfile. ";
+    }
     $title = $x->channel->title;
-    echo("  |x->channel->title=" . $x->channel->title);
+    echo("  x->channel->title=" . $x->channel->title);
     if($title != "") break; // if we have content
 }
 if($title == "") {
@@ -100,11 +106,12 @@ $t=time(); // current seconds in PDT I hope
 $deltat = $t - $talert;
 //echo (" delta t hrs = " . ($deltat/3600));
 
-// if alert is >4 hrs old, clear it
- if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
-     ClearAlertFile($alertfile, $alertlog);
-     exit(0);
- }
+// if alert is >4 hrs old, clear it and stop
+if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
+    echo " Alert is > $alertclearhours hours old ";
+    ClearAlertFile($alertfile, $alertlog);
+    exit(0);
+}
 
 // write alert to file
 //echo ("writing alert to file.");

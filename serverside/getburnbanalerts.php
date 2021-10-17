@@ -20,76 +20,94 @@
         //<div class="area-row">        //    <div class="area-name sub-area">Peninsula</div>
         //        <div class="status-text no-ban">No Ban</div>
         //</div>                                 12345678
-//
+//      Rev 10/17/21. look for RSS feed for bun ban.  This fails as of 10/15/21, locked out by cloudflair security of <piercecountywa class="gov">
+//                   Currently the only way to set the fire safety burn ban is to set it in file fireburnbanstatus.txt.
+
     $burnbanlink = "https://secure.pscleanair.org/AirQuality/BurnBan";
     $firebblink = "https://www.piercecountywa.gov/982/Outdoor-Burning?PREVIEW=YES";//  
     $fireburnbanRSS = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=1&CID=All-newsflash.xml";  //rss feed
     $burnbanfile = "burnban.txt";
-    $fileburnbanstatus = "fireburnbanstatus.txt"; // saves burn band status for fire only
+
     chdir("/home/postersw/public_html");  // move to web root
 
-// AIR QUALITY: read the Air Quality page and extract the data for peninsula
+    $bb = getAirQuality($burnbanlink);  // air quallity
 
-    $str = file_get_contents($burnbanlink);
-    if($str == "") file_get_contents($burnbanlink); // 1 retry
-    if($str===false) Bailout("No data read from $burnbanlink");
-       //    <div class="area-name sub-area">Peninsula</div>
-   //        <div class="status-text no-ban">No Ban</div>
-    $j = stripos($str, 'Peninsula'); // j = position of Peninsula
-    if($j==false) Bailout("Peninsula not found");
-    // now find <div.
-    $k = strpos($str, "<div", $j); // position of <div
-    if($k==false) Bailout("<div not found");
-    // now find closing >
-    $v = strpos($str, ">", $k);// closing >
-    if($k==false) Bailout("> not found");
-    // now find </div
-    $q = strpos($str, "</div", $v);   // position of <div
-    if($k==false) Bailout("</div not found");
-    $bb = substr($str, $v+1, $q-$v-1); // bb = burn ban value
-    if($bb == "") Bailout("bb=null");
-    // make it green if no burnban; else red with the text value
-    if($bb == "No Ban") $bb = '<span style="color:green">No Ban</span>';
-    elseif($bb == "Stage 1") $bb = '<span style="color:darkorange">Stage 1 Burn Ban</span>';
-    else $bb = '<span style="color:red;font-weight:bold">' . $bb . ' Burn Ban</span>';
-
-    // write it
-    $airqual = "Air quality: " . $bb;
-    //echo $airqual;   debug
-
-
-// FIRE SAFETY. read pierce county page and find "Fire Safety Burn Ban Status" or Burn Ban Status.
-// then find the alt image tages: FIRE SAFETY - NO BURN BAN or FIRE SAFETY - BURN BAN. Not the best solution. 6/6/18.
-
-    // FIRE SAFETY BURN BAN USING RSS FEED;
-    $fire = file_get_contents($fireburnbanRSS); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
-    if($fire===false) Bailout("No data read from $fireburnbanRSS");
-    echo "FIRE =$fire|";
-    if(strlen($fire)<100) Bailout("No reply to $fireburnbanRSS");
-    //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
-    $lifted = 0; // >0 if no burn ban
-    $effective = 0; // >0 if there is a burn ban
-    $lifted = stripos($fire, "burn ban lifted");
-    if($lifted===false) $lifted = 0;
-    $effective = stripos($fire, "burn ban effective");
-    if($effective===false) $effective = 0;
-
-    // check the effective & lifted switches and create the message.
-    if($lifteed>0 && (($effective==0)||($lifted<$effective))) {
-        $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
-    } elseif($effective > 0) {
-        $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
-    } else $firebb = file_get_contents($fileburnbanstatus);
-    file_put_contents($fileburnbanstatus, $firebb);
-    echo ("lifted=$lifted, effective=$effective, firebb=$firebb");
+    $firebb = getFireSafetyRSS($fireburnbanRSS);  // fire safety
 
     // write to file if it changed, and issue to email
+    $airqual = "Air quality: " . $bb;
     $msg = $airqual . "<br/>Fire Safety: " . $firebb;
     $old = file_get_contents($burnbanfile);
     if($msg == $old) return 0;  // if no change
     echo $msg;
     file_put_contents($burnbanfile, $msg);
     return 0;
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  getAirQuality - get the air quality and return it for app
+    //        AIR QUALITY: read the Air Quality page and extract the data for peninsula
+    //  Entry   $burnbanlink = address of air quality web page.
+    //  Exit    returns text for web page or app.
+    //
+    function getAirQuality($burnbanlink) {
+        $str = file_get_contents($burnbanlink);
+        if($str == "") file_get_contents($burnbanlink); // 1 retry
+        if($str===false) Bailout("No data read from $burnbanlink");
+        //    <div class="area-name sub-area">Peninsula</div>
+        //    <div class="status-text no-ban">No Ban</div>
+        $j = stripos($str, 'Peninsula'); // j = position of Peninsula
+        if($j==false) Bailout("Peninsula not found");
+        // now find <div.
+        $k = strpos($str, "<div", $j); // position of <div
+        if($k==false) Bailout("<div not found");
+        // now find closing >
+        $v = strpos($str, ">", $k);// closing >
+        if($k==false) Bailout("> not found");
+        // now find </div
+        $q = strpos($str, "</div", $v);   // position of <div
+        if($k==false) Bailout("</div not found");
+        $bb = substr($str, $v+1, $q-$v-1); // bb = burn ban value
+        if($bb == "") Bailout("bb=null");
+        // make it green if no burnban; else red with the text value
+        if($bb == "No Ban") $bb = '<span style="color:green">No Ban</span>';
+        elseif($bb == "Stage 1") $bb = '<span style="color:darkorange">Stage 1 Burn Ban</span>';
+        else $bb = '<span style="color:red;font-weight:bold">' . $bb . ' Burn Ban</span>';
+        return $bb;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //  getFireSafetyRSS FIRE SAFETY BURN BAN USING RSS FEED;   Locked out by Cloudflare as of 10/14/21.
+    //  Entry   $fireburnbanRSS = link for RSS feed with may contain a burn ban notice]
+    //          fileburnbanstatus.txt = previous status. saved in this file.
+    //  Exit    returns burn ban status for web page or app.
+    // 
+    function getFireSafetyRSS($fireburnbanRSS) {
+        global $firebblink;
+        $fileburnbanstatus = "fireburnbanstatus.txt"; // saves burn band status for fire only
+        $fire = file_get_contents($fireburnbanRSS); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
+        if($fire===false) echo("No data read from $fireburnbanRSS");
+        echo "FIRE =$fire|";
+        if(strlen($fire)<100) echo("No reply to $fireburnbanRSS");
+        //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
+        $lifted = 0; // >0 if no burn ban
+        $effective = 0; // >0 if there is a burn ban
+        $lifted = stripos($fire, "burn ban lifted");
+        if($lifted===false) $lifted = 0;
+        $effective = stripos($fire, "burn ban effective");
+        if($effective===false) $effective = 0;
+
+        // check the effective & lifted switches and create the message. if no burn ban notice, use the saved status in the file.
+        if($lifteed>0 && (($effective==0)||($lifted<$effective))) {
+            $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
+        } elseif($effective > 0) {
+            $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
+        } else $firebb = file_get_contents($fileburnbanstatus);
+        file_put_contents($fileburnbanstatus, $firebb);  // save status for next 
+        echo ("lifted=$lifted, effective=$effective, firebb=$firebb");
+        return $firebb;
+    }
+
 
     ////////////////////////////////////////////////////////////
     // Bailout - send error message and delete file and exit
@@ -101,7 +119,7 @@
 
     //////////////////////////////////////////////////////////////////////////////////
     //  getUrlContent - impersonate a brower to read a web page.
-    //  Not Used.
+    //  Not Used because it will not pass Cloudflair security.
     function getUrlContent($url) {
         fopen("cookies.txt", "w");
         $parts = parse_url($url);
@@ -113,7 +131,6 @@
             'Accept-Language:en-US,en;q=0.8',
             'Cache-Control:max-age=0',
             'Connection:keep-alive',
-            'Host:adfoc.us',
             'User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36',
         );
     
