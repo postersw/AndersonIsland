@@ -25,24 +25,24 @@ $motdfile = "motd.txt";
 $dailycachefile = "dailycache.txt";
 if($test) $dailycachefile = "dailycache_test.txt";
 date_default_timezone_set('America/Los_Angeles');
+chdir("/home/postersw/public_html");  // move to web root
 
-// read daily cache and check first line for DAILYCACHE
-$dcf = fopen($dailycachefile, "r");
-if($dcf==false) exit("$dailycachefile does not exist");
-if(feof($dcf)) exit("$dailycachefile is empty");
-$ln = fgets($dcf);
-if($ln=="") exit("daily cache is empty");
-if($ln!="DAILYCACHE\n") exit ("first line of $dailycachefile is not DAILYCACHE");
-//$dcout = $ln;  // data to write back to DAILY CACHE
+//  read dailycache into buffer $dcout
+$dcout = file_get_contents($dailycachefile);
+if($dcout==false) exit("$dailycachefile does not exist");
+if($dcout=="") exit("$dailycachefile is empty");
+if(substr($dcout, 0, 11) !="DAILYCACHE\n") exit ("first line of $dailycachefile is not DAILYCACHE");
 
-// check 2nd line for MOTD  & discard.  leave DC positioned after the MOTD
-$ln = fgets($dcf);
-if($ln=="MOTD\n") {
-    $ln = fgets($dcf);// get the actual motd, which we will discard
+// find MOTD and delete it from $dcout
+$i = strpos($dcout, "MOTD\n");
+if($i > 10) {
+    $j = strpos($dcout, "\n", $i+6);  // $j = end of motd
+    $dcout = substr_replace($dcout, "", $i, ($j-$i+1));  // delete the motd;
+    echo (" Deleted motd from $i to $j ");
 }
-$motdout = "";
 
 // check motd.txt file
+$motdout = "";
 $motdf = fopen($motdfile, "r"); 
 if($motdf==false) exit("No $motdfile");
 // check 1st line of motd.txt for <MOTD>
@@ -58,17 +58,18 @@ if($ln != "</MOTD>\n") {
 if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 
 
-// check for date rows:   <DATE mmdd,mmdd>\n msg \n</DATE> ...
+// check for MOTD date rows:   <DATE mmdd,mmdd>\n msg \n</DATE> ...
 while(true) {
     $ln = fgets($motdf);
     if(substr($ln, 0, 5)== "<DATE") {
         $dates = explode(" ", $ln);  // get the dates
         $ln = fgets($motdf);
         if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
-        echo ("ds=$dates[1], de=$dates[2].  ");
+        echo (" ds=$dates[1], de=$dates[2].  ");
         if(checkmotddate(preg_replace('~\D~', '', $dates[1]), preg_replace('~\D~', '', $dates[2]))) {  // if date is active
             $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
-        }
+            echo (" Added $ln ");
+        } else echo (" Skipped $ln ");
         $ln = fgets($motdf);  // read line after msg. should be </DATE>
         if($ln != "</DATE>\n") exit("no ending /Date for $ln");
     }
@@ -86,38 +87,18 @@ if($ln != "") {
     if($ln != "</MOTDLAST>" && $ln != "</MOTDLAST>\n" ) exit("no closing /MOTDLAST: $ln");
 }
 
+// insert motd into $dcout
 fclose($motdf);   // close modfile
 echo ("MOTD:\n$motdout <br/>\n");  // if there is an motd
-flushdailycache($motdout);
+if($motdout != "") {
+    $dcout = substr_replace($dcout, "MOTD\n" . $motdout . "\n", 11, 0); // insert motd after DAILYCACHE\n
+} 
+
+//  copy dcout to dailycache
+$i = file_put_contents($dailycachefile, $dcout);
+echo ("wrote $i chars to $dailycachefile ");
 exit();
 
-
-//////////////////////////////////////////////////////////////////////////////////
-//  flushdailycache - writes $motdout to dailycache.txt as MOTD, then copies the rest of dailycache.txt , replacing the original
-//  entry   $motdout = motd string to add to daily cache, with NO \n
-//          $dcf = daily cache file handle
-//          $dcout = data to write back to dailycachefile
-//          $dailycachefile = daily cache file name
-//
-function flushdailycache($motdout) {
-    global $dcf, $dailycachefile;
-    $i = 0;
-    if($motdout != "") {
-        $dcout  = "DAILYCACHE\nMOTD\n" . $motdout . "\n";
-    } else     $dcout = "DAILYCACHE\n";
-
-    // read dailycache into $dcout
-    while (!feof($dcf)) {
-        $ln = fgets($dcf);
-        $i++;
-        if($ln=="MOTD\n") exit("MOTD is in dailycache.txt but not in line 2.");
-        $dcout = $dcout . $ln;
-    }
-    fclose($dcf);
-    // now copy dcout to dcf
-    file_put_contents($dailycachefile, $dcout);
-    echo("wrote $i lines to $dailycachefile ");
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  checkmotddate - returns true if the date is within date1 - date2
