@@ -18,6 +18,7 @@
 //      9/30/18. Add warning for Pushbots.
 //      10/9/18. Removed Pushbots calls and code. All messages now sent by OneSignal. Saves $29/m.
 //      5/13/21. Don't create a DELAY message if a run is Cancelled.
+//      10/14/21. This fails now. simplexmlload returns null due to a web site change that was made.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -47,24 +48,28 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
-$alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
+//$alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
+$alertrssurl = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26";  
 $title = "";
 
 //  $alertrssurl = "http://www.anderson-island.org/ferry_rsstest.txt";  // TEST URL/////// debug for local pc ///////////////
 //  Read the RSS feed. Isn't this easy! php is great.
 // try 10 times to get content
-for($i=0; $i<10; $i++) {  // try 10 times
+for($i=0; $i<3; $i++) {  // try 3 times
     $x = simplexml_load_file($alertrssurl);
-    if($x===false) continue;  // if no data, try again
+    if($x === false) exit(0);  // change made 10/15 because this fails now
+    if($x===false) exit("No return from $alertrssurl");  // if no data, try again
     $title = $x->channel->title;
-    //echo("  |x->channel->title=" . $x->channel->title);
+    echo("  |x->channel->title=" . $x->channel->title);
     if($title != "") break; // if we have content
 }
 if($title == "") {
 	ClearAlertFile($alertfile, $alertlog);
 	logalertlast("no title");
-	exit(0); // if no reply
+    exit(0);
+	exit("No ferry alert title"); // if no reply
 }
+echo("ITS WORKING: x->channel->title=" . $x->channel->title);
 // get actual message
 if(!property_exists($x->channel, "item")) { 
 	ClearAlertFile($alertfile, $alertlog);
@@ -77,6 +82,7 @@ if($title=="") {
 }
 
 $desc = trim($x->channel->item[0]->description);
+echo ("desc=$desc");
 $alertts = $x->channel->item[0]->pubDate;
 $alertts = substr($alertts, 5);
 $alertts[2] = "/";

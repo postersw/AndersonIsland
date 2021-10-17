@@ -22,17 +22,19 @@
         //</div>                                 12345678
 //
     $burnbanlink = "https://secure.pscleanair.org/AirQuality/BurnBan";
-    $firebblink = "http://www.co.pierce.wa.us/982/Outdoor-Burning";//  1/17/20
+    $firebblink = "https://www.piercecountywa.gov/982/Outdoor-Burning?PREVIEW=YES";//  
+    $fireburnbanRSS = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=1&CID=All-newsflash.xml";  //rss feed
     $burnbanfile = "burnban.txt";
+    $fileburnbanstatus = "fireburnbanstatus.txt"; // saves burn band status for fire only
     chdir("/home/postersw/public_html");  // move to web root
 
 // AIR QUALITY: read the Air Quality page and extract the data for peninsula
 
     $str = file_get_contents($burnbanlink);
     if($str == "") file_get_contents($burnbanlink); // 1 retry
+    if($str===false) Bailout("No data read from $burnbanlink");
        //    <div class="area-name sub-area">Peninsula</div>
    //        <div class="status-text no-ban">No Ban</div>
-
     $j = stripos($str, 'Peninsula'); // j = position of Peninsula
     if($j==false) Bailout("Peninsula not found");
     // now find <div.
@@ -55,43 +57,31 @@
     $airqual = "Air quality: " . $bb;
     //echo $airqual;   debug
 
+
 // FIRE SAFETY. read pierce county page and find "Fire Safety Burn Ban Status" or Burn Ban Status.
 // then find the alt image tages: FIRE SAFETY - NO BURN BAN or FIRE SAFETY - BURN BAN. Not the best solution. 6/6/18.
 
-    $fire = file_get_contents($firebblink); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
-    if($fire == "") $fire = file_get_contents($firebblink); //1 retry
+    // FIRE SAFETY BURN BAN USING RSS FEED;
+    $fire = file_get_contents($fireburnbanRSS); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
+    if($fire===false) Bailout("No data read from $fireburnbanRSS");
+    echo "FIRE =$fire|";
+    if(strlen($fire)<100) Bailout("No reply to $fireburnbanRSS");
     //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
-    //$fire = strip_tags($firew);  // remove the tags
-
-    // find starting point for burn ban
-    $cwbb = "Fire Safety Burn Ban Status";
-    $i = stripos($fire, $cwbb);
-    if($i == 0) {
-        $cwbb = "Burn Ban Status";
-        $i = stripos($fire, $cwbb);
-    }
-    if($i == 0) Bailout("Could not find \"$cwbb\"");
-
     $lifted = 0; // >0 if no burn ban
     $effective = 0; // >0 if there is a burn ban
+    $lifted = stripos($fire, "burn ban lifted");
+    if($lifted===false) $lifted = 0;
+    $effective = stripos($fire, "burn ban effective");
+    if($effective===false) $effective = 0;
 
-    // 3/26/19: Find the line after Current Fire Safety Burn Ban:
-    $lifted = stripos($fire, "Current Fire Safety Burn Ban: NO BURN BAN", $i);
-
-    // now find alt image tags (bad solution) to get the actual status
-    if($lifted===false) $lifted = stripos($fire,'alt="FS No Burn Ban"', $i);
-    if($lifted===false) $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
-    if($lifted===false) $lifted = stripos($fire, "NO FIRE SAFETY BURN BAN", $i);
-    $effective = stripos($fire, '"FIRE SAFETY - BURN BAN"', $i);
-    if($effective===false) $effective = stripos($fire, '"BURN BAN IN EFFECT"', $i);
-    if($effective===false) $effective = stripos($fire, '"FIRE SAFETY BURN BAN"', $i);
-    if($effective===false) $effective = stripos($fire, '"Burn Ban Announcement"', $i);  // added 7/29/2020
-    if($lifted > 0) $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
-    elseif($effective> 0) $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
-    else {
-        $firebb = "<a href=\"$firebblink\" >Unknown</a>";
-        echo "Could not find burn ban status on $firebblink. Revise getburnbanalerts.php.";
-    }
+    // check the effective & lifted switches and create the message.
+    if($lifteed>0 && (($effective==0)||($lifted<$effective))) {
+        $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
+    } elseif($effective > 0) {
+        $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
+    } else $firebb = file_get_contents($fileburnbanstatus);
+    file_put_contents($fileburnbanstatus, $firebb);
+    echo ("lifted=$lifted, effective=$effective, firebb=$firebb");
 
     // write to file if it changed, and issue to email
     $msg = $airqual . "<br/>Fire Safety: " . $firebb;
@@ -101,8 +91,6 @@
     file_put_contents($burnbanfile, $msg);
     return 0;
 
-
-
     ////////////////////////////////////////////////////////////
     // Bailout - send error message and delete file and exit
     function Bailout($s) {
@@ -111,17 +99,75 @@
         exit;
     }
 
-    ///old extract
-        ////echo " len=" . strlen($str); echo (" j=$j " . substr($str, $j, 10));
-    //$k = strpos($str, "<input ", $j);  //k=position of <input
-    //if($k==false) Bailout("<input not found");
-    ////echo "  k=$k "; echo substr($str, $k+1, 10);
-    //$v = strpos($str, 'value="', $k);  //v=position of value="xxxx"
-    //if($v==false) Bailout ("value not found");
-    ////echo ("  v=$v " . substr($str, $v, 10));
-    //// extract the value
-    //$q = strpos($str, '"', $v+7);  // q = position of closing quote
-    //if($v==false) Bailout("no closing quote");
-    ////echo ("  q=$q " . substr($str, $q, 10));  echo (" l = " . ($q-$v-7));
-    //$bb = substr($str, $v+7, $q-$v-7); // bb = burn ban value
+    //////////////////////////////////////////////////////////////////////////////////
+    //  getUrlContent - impersonate a brower to read a web page.
+    //  Not Used.
+    function getUrlContent($url) {
+        fopen("cookies.txt", "w");
+        $parts = parse_url($url);
+        $host = $parts['host'];
+        $ch = curl_init();
+        $header = array('GET /1575051 HTTP/1.1',
+            "Host: {$host}",
+            'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language:en-US,en;q=0.8',
+            'Cache-Control:max-age=0',
+            'Connection:keep-alive',
+            'Host:adfoc.us',
+            'User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.116 Safari/537.36',
+        );
+    
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_COOKIESESSION, true);
+    
+        curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookies.txt');
+        curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookies.txt');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OBSOLETE - getFireBunBanWebStatus - reads the firebblink web page and tries to extract the status
+    //  As of 10/41/21 I am blocked from reading the web page. It returns nothing. 
+    //  Both file_get_contents and getUrlContent return an empty string.
+    // function getFireBurnBanWebStatus() {
+    //     global $firebblink;
+    //     $fire = file_get_contents($firebblink); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
+    //     //if($fire == "") $fire = file_get_contents($firebblink); //1 retry
+    //     //$file = getUrlContent($firebblink);
+    //     echo "FIRE =$fire|";
+    //     if(strlen($fire)<100) Bailout("No reply to $firebblink");
+    //     //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
+    //     //$fire = strip_tags($firew);  // remove the tags
+    
+    //     // find starting point for burn ban
+    //     $cwbb = "Fire Safety Burn Ban Status";
+    //     $i = stripos($fire, $cwbb);
+    //     if($i == 0) {
+    //         $cwbb = "Burn Ban Status";
+    //         $i = stripos($fire, $cwbb);
+    //     }
+    //     if($i == 0) Bailout("Could not find \"$cwbb\"");
+    
+    //     $lifted = 0; // >0 if no burn ban
+    //     $effective = 0; // >0 if there is a burn ban
+    
+    //     // 3/26/19: Find the line after Current Fire Safety Burn Ban:
+    //     $lifted = stripos($fire, "Current Fire Safety Burn Ban: NO BURN BAN", $i);
+    
+    //     // now find alt image tags (bad solution) to get the actual status
+    //     if($lifted===false) $lifted = stripos($fire,'alt="FS No Burn Ban"', $i);
+    //     if($lifted===false) $lifted = stripos($fire,'BURN BAN LIFTED', $i);
+    //     if($lifted===false) $lifted = stripos($fire, "FIRE SAFETY - NO BURN BAN", $i); // these are alt image tags, which will change.
+    //     if($lifted===false) $lifted = stripos($fire, "NO FIRE SAFETY BURN BAN", $i);
+    //     $effective = stripos($fire, '"FIRE SAFETY - BURN BAN"', $i);
+    //     if($effective===false) $effective = stripos($fire, '"BURN BAN IN EFFECT"', $i);
+    //     if($effective===false) $effective = stripos($fire, '"FIRE SAFETY BURN BAN"', $i);
+    //     if($effective===false) $effective = stripos($fire, '"Burn Ban Announcement"', $i);  // added 7/29/2020
+    //     return;
+    // }
 ?>
