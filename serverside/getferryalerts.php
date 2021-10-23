@@ -18,8 +18,9 @@
 //      9/30/18. Add warning for Pushbots.
 //      10/9/18. Removed Pushbots calls and code. All messages now sent by OneSignal. Saves $29/m.
 //      5/13/21. Don't create a DELAY message if a run is Cancelled.
-//      10/14/21. This fails now. simplexmlload returns null due to a web site change that was made.
+//      10/14/21. This fails now. simplexmlload returns null becasue CloudFlare security is blocking any script that can't prove it is javascript.
 //      10/17/21. Temporary. RSS feed is read from file FerryRSSfile.txt, which is manually updated.
+//      10/22/21. Use email instead of RSS feed.  RSS feed is commented out for now, till it works again. It is broken due to Cloudflare security.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -43,92 +44,48 @@
 //  NOTIFICATION MESSAGE WRITTEN TO ALERT FILE:
 //  hh:mm DELAYED nn: <ferry message title> \n <ferry message description>
 
+class Alert{
+    public $title;  // the title line.  Includes link to full msg.
+    public $notifymsg;  // msg to send via OneSignal.  No link.
+    public $detail;  // detail displayed in detail msg.  If there is more than the title.
+    public $timestamp; // date/time of alert, unix time stamp.
+}
+
 chdir("/home/postersw/public_html");
 //chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
-//$alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
-$alertrssurl = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26";  
-$RSSfile = "FerryRSSfile.txt";  // temporary RSS file as of 10/17/21
-$title = "";
 
-//  $alertrssurl = "http://www.anderson-island.org/ferry_rsstest.txt";  // TEST URL/////// debug for local pc ///////////////
-//  Read the RSS feed. Isn't this easy! php is great.
-// try 10 times to get content
-for($i=0; $i<3; $i++) {  // try 3 times
-    $x = simplexml_load_file($alertrssurl);
-    //if($x === false) exit(0);  // change made 10/15 because this fails now
-    if($x === false) {
-        echo " load failed from $alertrssurl. ";
-        $x = simplexml_load_file($RSSfile);  // change made 10/15 because this fails nowif($x===false) exit("No return from $alertrssurl");  // if no data, try again
-        if($x === false) echo " load failed from $RSSfile. ";
-    }
-    $title = $x->channel->title;
-    echo("  x->channel->title=" . $x->channel->title);
-    if($title != "") break; // if we have content
-}
-if($title == "") {
+//  Get the alert. returned in $AlertObj
+//$AlertObj = getRSSalert();  // doesnt work after 10/20/21
+$AlertObj = getEmailAlert();  //read the email
+
+// no response so clear the alert file.
+if($AlertObj->title == "") {
 	ClearAlertFile($alertfile, $alertlog);
 	logalertlast("no title");
-    exit(0);
 	exit("No ferry alert title"); // if no reply
 }
-echo("ITS WORKING: x->channel->title=" . $x->channel->title);
-// get actual message
-if(!property_exists($x->channel, "item")) { 
-	ClearAlertFile($alertfile, $alertlog);
-	exit(0); // if no title
-}
-$title = trim($x->channel->item[0]->title);
-if($title=="") {
-	ClearAlertFile($alertfile, $alertlog);
-	exit(0); // if no title
-}
 
-$desc = trim($x->channel->item[0]->description);
-echo ("desc=$desc");
-$alertts = $x->channel->item[0]->pubDate;
-$alertts = substr($alertts, 5);
-$alertts[2] = "/";
-$alertts[6] = "/";
-$alertts[11] = ":";
-//change Fri, 11 Mar 2016 21:30:08 -0800 into "10/Oct/2000:13:55:36 -0700"
-// strip out day, and strip out -ms
-//echo ("  |pubDate=" . $alertts . " " . $title);
-// check expiration
-
-$talert=strtotime($alertts); // covert to timestamp
-//echo("  |talert:" . $talert . "  |"); echo(date("Y-m-d-H-i-s", $talert));// debug
+// check time. If alert is >4 hrs old, clear it and stop.
 $t=time(); // current seconds in PDT I hope
+$talert = $AlertObj->timestamp;
 //echo("  |current:" . $t . "|"); echo(date("Y-m-d-H-i-s", $t));// debug
 $deltat = $t - $talert;
 //echo (" delta t hrs = " . ($deltat/3600));
-
-// if alert is >4 hrs old, clear it and stop
+// if alert is >4 hrs old, clear it and stop  TEMPORARILY DISABLED FOR DEBUG> REINSTATE IT.
 if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
-    echo " Alert is > $alertclearhours hours old ";
+    //echo " Alert is > $alertclearhours hours old ";
     ClearAlertFile($alertfile, $alertlog);
     exit(0);
 }
 
-// write alert to file
-//echo ("writing alert to file.");
-//$alertts  = substr($x->channel->item[0]->pubDate, 5, 7) . substr($x->channel->item[0]->pubDate, 17, 5);
-$alertday  = substr($x->channel->item[0]->pubDate, 8, 3) . " " . substr($x->channel->item[0]->pubDate, 5, 2);
-$alerthr = substr($x->channel->item[0]->pubDate, 17, 2);
-$alertam = "a";
-if($alerthr > "12") {  // convert to 12 hour
-    $alerthr = $alerthr - 12;
-    $alertam = "p";
-}
-$alertmin = substr($x->channel->item[0]->pubDate, 19, 3);
-$alertdatestring = $alertday . ", " . $alerthr . $alertmin . $alertam;
-//$alertdatestring = date("m/d h:ia", $talert); // 7/2 5:17pm This should have worked, but it didn't to DST correctly.
-
 // test for a delay
 $delay = "";
+$title = $AlertObj->title;
+$desc = $AlertObj->detail;
 if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " delay") > 0) ) {
     $delay = "DELAYED: ";
     $matches = "";
@@ -137,21 +94,29 @@ if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($
     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
 
-if($title != $desc) $title = $title . " ...>";
+// log it
+if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
+$alertdatestring = date("m/d h:ia", $talert); // date/time of alert
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
+echo " alertstring=$alertstring|";
+exit(0);
+
+// exit if the message is not being changed.
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
 	logalertlast("alert already written");
-	return; // if already written
+	exit(0); // if already written
 }
 
-// write it to file, and log it
+var_dump($AlertObj);
+
+// write it to the alertfile, and log it
 $fh = fopen($alertfile, 'w');
 fwrite($fh, $alertstring);
 fclose($fh);
 
 // log it
- $fhl = fopen($alertlog, 'a');
+$fhl = fopen($alertlog, 'a');
 fwrite($fhl, date("Y/m/d H:i:s") . "|" . $alertstring . "\n");
 fclose($fhl);
 echo ("wrote to file: " . $alertstring);
@@ -164,9 +129,12 @@ logalertlast("wrote to alert file");
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
 $msgtitle = "FERRY ALERT";
 if($delay != "") $msgtitle = "FERRY " . $delay;
-PushOSNotification($msgtitle, $alerthr . $alertmin . $alertam . " " . $title);
+$push = date("H:i:s", $talert) . " " . $AlertObj->notifymsg;
+echo(" push=$push \n");
+////DEBUG PushOSNotification($msgtitle, $push );
 exit(0);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 //  ClearAlertFile - writes an empty string to the alert file
 //
@@ -267,4 +235,110 @@ function PushOSNotification($title, $msg) {
     return $response;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//  getEmail - get ferry alert via email.  Created 10/22/21 after security blocked the RSS feed.
+//
+//  Exit    returns an Alert object based on the newest message in the mailbox.
+//  
+function getEmailAlert() {
+    $yourEmail = "alerts@anderson-island.org";
+    $yourEmailPassword = "alerts";
+    //echo ($yourEmail);
+
+    // read mailbox
+    $mailbox = imap_open("{mail.anderson-island.org:993/imap/ssl/novalidate-cert}", $yourEmail, $yourEmailPassword) or die("can't connect: " . imap_last_error());
+    $emailnumberarray = imap_search($mailbox, "ALL") or die("no mail returned");  // return array
+    $emailnum = max($emailnumberarray);  // get the highest email
+    //echo ("highest emailnum=$emailnum \n");
+    // read the newest email
+    //foreach($emailnumberarray as $emailnum) {
+
+    $email_headers = imap_headerinfo($mailbox, $emailnum); // read the header
+    $subject = $email_headers->subject;
+    $from = trim($email_headers->fromaddress);
+    $date = $email_headers->date;
+    //echo ("emailnum=$emailnum, subject=$subject, from=$from, date=$date\n ");
+    $talert=strtotime($date); // covert to unix timestamp
+    //echo (" converted date=". date("m/d/y H:i:s", $talert) . "|");
+    if($from!='"listserv@civicplus.com" <listserv@civicplus.com>') Bailout("first email is from $from, not listserv@civicplus.com <listserv@civicplus.com>");
+    $body = imap_body($mailbox, $emailnum);
+    $body = imap_qprint($body);  // decode quoted printables like =
+    //echo ("body= $body");
+
+    // get the link to the message
+    $link = "";
+    $i = stripos($body, "https://www.piercecountywa.gov/");  // find the link to the message
+    if($i > 1) {
+        $iend = stripos($body, "\r", $i);  // find end of link
+        //echo (" link found at position $i to $iend ");
+        //echo (" at $iend, char=" . substr($body, $iend, 1) . " code=" . ord(substr($body, $iend, 1)) ); 
+        $link = substr($body, $i, $iend-$i); // link
+    }
+    //echo ("link=$link|");
+    //imap_setflag_full($mailbox, $mail[0], "\\Seen \\Flagged");
+    imap_close($mailbox);
+
+    // return the object
+    $alertobj = new Alert(); // create alert object
+    $alertobj->title = $subject. '<a href="' . $link . '">Tap for Details.</a>';  // title includes link
+    $alertobj->notifymsg = $subject;
+    $alertobj->detail = $subject;
+    $alertobj->timestamp = $talert; // unix date stamp of the alert
+    return $alertobj;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  getRSS - get the RSS feed.  Temporarily deprecated 10/20/21 due to CloudFlare security.
+//  
+//  exit    returns Alert object
+// function getRSS() {
+//     //$alertrssurl = "http://www.co.pierce.wa.us/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26"; // url for rss alert
+//     $alertrssurl = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=63&CID=Pierce-County-Ferry-Rider-Alert-26";  
+//     $RSSfile = "FerryRSSfile.txt";  // temporary RSS file as of 10/17/21
+//     //  $alertrssurl = "http://www.anderson-island.org/ferry_rsstest.txt";  // TEST URL/////// debug for local pc ///////////////
+//     //  Read the RSS feed. Isn't this easy! php is great.
+//     // try 10 times to get content
+//     for($i=0; $i<3; $i++) {  // try 3 times
+//         $x = simplexml_load_file($alertrssurl);
+//         //if($x === false) exit(0);  // change made 10/15 because this fails now
+//         if($x === false) {
+//             echo " load failed from $alertrssurl. ";
+//             $x = simplexml_load_file($RSSfile);  // change made 10/15 because this fails nowif($x===false) exit("No return from $alertrssurl");  // if no data, try again
+//             if($x === false) echo " load failed from $RSSfile. ";
+//         }
+//         if(!property_exists($x->channel, "item")) { 
+//             ClearAlertFile($alertfile, $alertlog);
+//             exit(0); // if no title
+//         }
+//         $title = $x->channel->title;
+//         echo("  x->channel->title=" . $x->channel->title);
+//         if($title != "") break; // if we have content
+//     }
+//     $title = trim($x->channel->item[0]->title);
+//     $desc = trim($x->channel->item[0]->description);
+
+//     // get timestamp
+//     $alertts = $x->channel->item[0]->pubDate;
+//     $alertts = substr($alertts, 5);
+//     $alertts[2] = "/";
+//     $alertts[6] = "/";
+//     $alertts[11] = ":";
+//     //change Fri, 11 Mar 2016 21:30:08 -0800 into "10/Oct/2000:13:55:36 -0700"
+//     // strip out day, and strip out -ms
+//     //echo ("  |pubDate=" . $alertts . " " . $title);
+//     // check expiration
+
+//     $talert=strtotime($alertts); // covert to timestamp
+//     //echo("  |talert:" . $talert . "  |"); echo(date("Y-m-d-H-i-s", $talert));// debug
+
+//     // return the object
+//     $alertobj = new Alert(); // create alert object
+//     $alertobj->title = $title;
+//     $alertobj->notifymsg = $title;
+//     $alertobj->detail = $desc;
+//     $alertobj->timestamp = $talert; // unix date stamp
+//     return $alertobj;
+
+// }
 ?>
