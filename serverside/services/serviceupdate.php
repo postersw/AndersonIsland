@@ -24,14 +24,17 @@
 //  serviceupdate.php Present updatable record to user.
 //  Entry   Called by serviceeditauth.php with the password.
 //          Post:  "business" = business name primary key
+//                  "forgotpw" = checked if user forgot pw.
 //          "password" = password, not encoded
 //  Exit    calls dbupdate.php to update the database. dbupdate calls dbgentable2.php to update services.html
 //
 //  RFB. 1/3/2019
+//       10/26/21. Add a password email function. 
 
 
 include "dbconnect.php"; // connect to the database.  returns $myconn.
 
+    $headers = "From: support@anderson-island.org\r\nMime-Version: 1.0\r\nContent-type: text/html; charset=\"iso-8859-1\"";
     $business = $myconn->real_escape_string((trim($_POST['business'])));
     $password = trim($_POST['password']);
     $id = preg_replace('/\D/', '', $_POST["id"]);// allow only numbers by deleting all non numbers /\D/ to prevent sql injection
@@ -41,17 +44,30 @@ include "dbconnect.php"; // connect to the database.  returns $myconn.
     // read the record.  "business" = business name primary key
     $sql = "Select * from business where id=$id";
     $result = $myconn->query($sql);
-
-    // Check the password
     if($result->num_rows == 0) {
         echo "<br/>ERROR: The business '" . $business . "' does not exist.<br/>";
         exit();
     }
 
-    // Check the password
     $row = $result->fetch_assoc(); // get first row
+    $business = $row['business'];
+
+    // if PW was forgotten, email it
+    if($_POST['forgotpw']=="yes") {
+        $email = $row['email'];
+        if($email=="") {
+            echo "<br/>ERROR: You have no email address.  Please email support@postersw.com.";
+            exit();           
+        }
+        $reply = $business . "<br/>Here is your password: " . $row['password'] . "<br/>";
+        $r = mail($email, "AIA Business Listing update", $reply, $headers);
+        echo  $business . ": Your password has been emailed to $email <br/>";
+        exit();
+    }
+
+    // Check the password
     if($password != $row['password'] && $password != $adminpw) {
-        echo "<br/><b>ERROR: Invalid password.</b> <br/>If you forgot your password, send email to <a href=\"mailto:support@anderson-island.org\">support@anderson-island.org</a><br/>";
+        echo "<br/><b>ERROR: Invalid password.</b> <br/>If you forgot your password, return to the previous screen and check 'I forgot my password'. Your password will be emailed to you at " . $row['email'] . "<br/>";
         exit();
     }
 
