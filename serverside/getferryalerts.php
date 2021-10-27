@@ -21,6 +21,7 @@
 //      10/14/21. This fails now. simplexmlload returns null becasue CloudFlare security is blocking any script that can't prove it is javascript.
 //      10/17/21. Temporary. RSS feed is read from file FerryRSSfile.txt, which is manually updated.
 //      10/22/21. Use email instead of RSS feed.  RSS feed is commented out for now, till it works again. It is broken due to Cloudflare security.
+//      10/27/21. Activated full email use.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -98,8 +99,7 @@ if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($
 if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
 $alertdatestring = date("m/d h:ia", $talert); // date/time of alert
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
-echo " alertstring=$alertstring|";
-exit(0);
+//echo " alertstring=$alertstring|";
 
 // exit if the message is not being changed.
 $alc = file_get_contents($alertfile);  // read the alert file
@@ -131,7 +131,7 @@ $msgtitle = "FERRY ALERT";
 if($delay != "") $msgtitle = "FERRY " . $delay;
 $push = date("H:i:s", $talert) . " " . $AlertObj->notifymsg;
 echo(" push=$push \n");
-////DEBUG PushOSNotification($msgtitle, $push );
+PushOSNotification($msgtitle, $push );
 exit(0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +280,7 @@ function getEmailAlert() {
 
     // return the object
     $alertobj = new Alert(); // create alert object
-    $alertobj->title = $subject. '<a href="' . $link . '">Tap for Details.</a>';  // title includes link
+    $alertobj->title = $subject. '<br/><a href="' . $link . '">Tap for Details.</a>';  // title includes link
     $alertobj->notifymsg = $subject;
     $alertobj->detail = $subject;
     $alertobj->timestamp = $talert; // unix date stamp of the alert
