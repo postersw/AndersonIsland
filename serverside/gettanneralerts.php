@@ -149,7 +149,7 @@
     // log it if a change from $oldmsg
     $oldmsginspan = TagValue($oldmsg, "span");
     $msginspan = TagValue($msg, "span");
-    echo (" oldmsginspan=$oldmsginspan, msginspan=$msginspan ");  // debug
+    //echo (" oldmsginspan=$oldmsginspan, msginspan=$msginspan ");  // debug
     if(($oldmsginspan=="") || (substr($msginspan, 10) != substr($oldmsginspan, 10))) {   // if a change in status (skip time)
         file_put_contents($tanneroutagelog,"$realdate $msg  status-date=$statusdate \n", FILE_APPEND);  // log it
         echo(" LOGGED MSG.");
