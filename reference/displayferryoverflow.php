@@ -40,8 +40,8 @@ function BuildRunTimeTable() {
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
     // OVERFLOW runs by day  (1=Sunday, ... 8=All)
-    $STO = array(11445,11550,11700,11810, 21445,21550,21700,21810, 31445,31550,31700,31810, 41445,41550,41700,41810, 51445,51550,51700,51810,51920, 61445,61550); // ST overflow times:  dhhss, where d = 1-7 M-S, must be in numeric order
-    $AIO = array(10735,10855,11005,11110,11245,11515, 20735,20855,21005,21110,21245,21515, 30735,30855,31005,31110,31245,31515, 40735,40855,41005,41110,41245,41515, 50735,50855,51005,51110,51245,51515, 61515, 71515,71625,71735); // AI overflow times:  dhhss, where d = 1-7 M-S
+    $STO = array(11445,11550,11700, 21445,21550,21700, 31445,31550,31700, 41445,41550,41700, 51445,51550,51700,51810, 61445); // ST overflow times:  dhhss, where d = 1-7 M-S, must be in numeric order
+    $AIO = array(11110,11245,11515, 21245,21515, 31245,31515, 41245,41515, 51245,51515); // AI overflow times:  dhhss, where d = 1-7 M-S
     //
     $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "ALL DAYS");
     $amcolor = "#f0ffff";
