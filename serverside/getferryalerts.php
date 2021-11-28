@@ -261,19 +261,20 @@ function getEmailAlert() {
     $talert=strtotime($date); // covert to unix timestamp
     //echo (" converted date=". date("m/d/y H:i:s", $talert) . "|");
     if($from!='"listserv@civicplus.com" <listserv@civicplus.com>') Bailout("first email is from $from, not listserv@civicplus.com <listserv@civicplus.com>");
+    $subject = str_replace("for www.piercecountywa.gov", "", $subject);  // get rid of web reference
     $body = imap_body($mailbox, $emailnum);
     $body = imap_qprint($body);  // decode quoted printables like =
-    //echo ("body= $body");
+    //echo ("body= $body");exit(0);
 
     // get the link to the message
-    $link = "";
-    $i = stripos($body, "https://www.piercecountywa.gov/");  // find the link to the message
-    if($i > 1) {
-        $iend = stripos($body, "\r", $i);  // find end of link
-        //echo (" link found at position $i to $iend ");
-        //echo (" at $iend, char=" . substr($body, $iend, 1) . " code=" . ord(substr($body, $iend, 1)) ); 
-        $link = substr($body, $i, $iend-$i); // link
-    }
+    // $link = "";
+    // $i = stripos($body, "https://www.piercecountywa.gov/");  // find the link to the message
+    // if($i > 1) {
+    //     $iend = stripos($body, "\r", $i);  // find end of link
+    //     //echo (" link found at position $i to $iend ");
+    //     //echo (" at $iend, char=" . substr($body, $iend, 1) . " code=" . ord(substr($body, $iend, 1)) ); 
+    //     $link = substr($body, $i, $iend-$i); // link
+    // }
     //echo ("link=$link|");
     //imap_setflag_full($mailbox, $mail[0], "\\Seen \\Flagged");
     imap_close($mailbox);
