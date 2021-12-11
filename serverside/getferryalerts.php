@@ -21,6 +21,7 @@
 //      10/14/21. This fails now. simplexmlload returns null becasue CloudFlare security is blocking any script that can't prove it is javascript.
 //      10/17/21. Temporary. RSS feed is read from file FerryRSSfile.txt, which is manually updated.
 //      10/22/21. Use email instead of RSS feed.  RSS feed is commented out for now, till it works again. It is broken due to Cloudflare security.
+//      10/27/21. Activated full email use.
 //
 //  Sample RSS feed:
 //<rss version="2.0">
@@ -98,8 +99,7 @@ if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($
 if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
 $alertdatestring = date("m/d h:ia", $talert); // date/time of alert
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
-echo " alertstring=$alertstring|";
-exit(0);
+//echo " alertstring=$alertstring|";
 
 // exit if the message is not being changed.
 $alc = file_get_contents($alertfile);  // read the alert file
@@ -131,7 +131,7 @@ $msgtitle = "FERRY ALERT";
 if($delay != "") $msgtitle = "FERRY " . $delay;
 $push = date("H:i:s", $talert) . " " . $AlertObj->notifymsg;
 echo(" push=$push \n");
-////DEBUG PushOSNotification($msgtitle, $push );
+PushOSNotification($msgtitle, $push );
 exit(0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,26 +261,27 @@ function getEmailAlert() {
     $talert=strtotime($date); // covert to unix timestamp
     //echo (" converted date=". date("m/d/y H:i:s", $talert) . "|");
     if($from!='"listserv@civicplus.com" <listserv@civicplus.com>') Bailout("first email is from $from, not listserv@civicplus.com <listserv@civicplus.com>");
+    $subject = str_replace("for www.piercecountywa.gov", "", $subject);  // get rid of web reference
     $body = imap_body($mailbox, $emailnum);
     $body = imap_qprint($body);  // decode quoted printables like =
-    //echo ("body= $body");
+    //echo ("body= $body");exit(0);
 
     // get the link to the message
-    $link = "";
-    $i = stripos($body, "https://www.piercecountywa.gov/");  // find the link to the message
-    if($i > 1) {
-        $iend = stripos($body, "\r", $i);  // find end of link
-        //echo (" link found at position $i to $iend ");
-        //echo (" at $iend, char=" . substr($body, $iend, 1) . " code=" . ord(substr($body, $iend, 1)) ); 
-        $link = substr($body, $i, $iend-$i); // link
-    }
+    // $link = "";
+    // $i = stripos($body, "https://www.piercecountywa.gov/");  // find the link to the message
+    // if($i > 1) {
+    //     $iend = stripos($body, "\r", $i);  // find end of link
+    //     //echo (" link found at position $i to $iend ");
+    //     //echo (" at $iend, char=" . substr($body, $iend, 1) . " code=" . ord(substr($body, $iend, 1)) ); 
+    //     $link = substr($body, $i, $iend-$i); // link
+    // }
     //echo ("link=$link|");
     //imap_setflag_full($mailbox, $mail[0], "\\Seen \\Flagged");
     imap_close($mailbox);
 
     // return the object
     $alertobj = new Alert(); // create alert object
-    $alertobj->title = $subject. '<a href="' . $link . '">Tap for Details.</a>';  // title includes link
+    $alertobj->title = $subject. '<br/>Tap "Alerts" button for details';  // title includes link
     $alertobj->notifymsg = $subject;
     $alertobj->detail = $subject;
     $alertobj->timestamp = $talert; // unix date stamp of the alert
