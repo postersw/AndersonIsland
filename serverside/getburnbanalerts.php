@@ -22,6 +22,7 @@
         //</div>                                 12345678
 //      Rev 10/17/21. look for RSS feed for bun ban.  This fails as of 10/15/21, locked out by cloudflair security of <piercecountywa class="gov">
 //                   Currently the only way to set the fire safety burn ban is to set it in file fireburnbanstatus.txt.
+//      12/18/21:  Messages improved.  No data from Outdoor bun ban will not about the script. No data from Air Quailty WILL abort the script.
 
     $burnbanlink = "https://secure.pscleanair.org/AirQuality/BurnBan";
     $firebblink = "https://www.piercecountywa.gov/982/Outdoor-Burning?PREVIEW=YES";//  
@@ -53,7 +54,7 @@
     function getAirQuality($burnbanlink) {
         $str = file_get_contents($burnbanlink);
         if($str == "") file_get_contents($burnbanlink); // 1 retry
-        if($str===false) Bailout("No data read from $burnbanlink");
+        if($str===false) Bailout("No air quality data read from $burnbanlink");
         //    <div class="area-name sub-area">Peninsula</div>
         //    <div class="status-text no-ban">No Ban</div>
         $j = stripos($str, 'Peninsula'); // j = position of Peninsula
@@ -86,8 +87,8 @@
         global $firebblink;
         $fileburnbanstatus = "fireburnbanstatus.txt"; // saves burn band status for fire only
         $fire = file_get_contents($fireburnbanRSS); //'<a href="http://www.co.pierce.wa.us/index.aspx?NID=982" style="color:red;font-weight:bold">County-wide Outdoor Burn Ban</a>'; // rfb 8/19
-        if($fire===false) echo("No data read from $fireburnbanRSS");
-        echo "FIRE =$fire|";
+        if($fire===false) echo("No outdoor burn ban data read from $fireburnbanRSS");
+        echo "    FIRE =$fire|";
         if(strlen($fire)<100) echo("No reply to $fireburnbanRSS");
         //echo("length of fire=" . strlen($fire) . "<br/>"); DEBUG
         $lifted = 0; // >0 if no burn ban
@@ -104,7 +105,7 @@
             $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban</a>";
         } else $firebb = file_get_contents($fileburnbanstatus);
         file_put_contents($fileburnbanstatus, $firebb);  // save status for next 
-        echo ("lifted=$lifted, effective=$effective, firebb=$firebb");
+        echo (";  lifted=$lifted, effective=$effective, firebb=$firebb;  ");
         return $firebb;
     }
 
@@ -112,7 +113,7 @@
     ////////////////////////////////////////////////////////////
     // Bailout - send error message and delete file and exit
     function Bailout($s) {
-        echo "Error: " . $s;
+        echo "ABORT-BAILOUT ERROR: " . $s;
         //unlink($burnbanfile);
         exit;
     }
