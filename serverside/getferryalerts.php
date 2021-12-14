@@ -281,7 +281,7 @@ function getEmailAlert() {
 
     // return the object
     $alertobj = new Alert(); // create alert object
-    $alertobj->title = $subject. '<br/>Tap "Alerts" button for details';  // title includes link
+    $alertobj->title = $subject. '. Tap "Alerts" button for more';  // title includes link
     $alertobj->notifymsg = $subject;
     $alertobj->detail = $subject;
     $alertobj->timestamp = $talert; // unix date stamp of the alert
