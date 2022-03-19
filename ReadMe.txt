@@ -508,6 +508,7 @@ Note: The OneSignal API Key is stored under root/private/OneSignal.php
 DATA LOADS
 	Data is loaded from:
 	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app getdailycache.php.
+	   RELOAD: To force a reload immediately: create file refresh.txt manually with 1 line that contains the date. This gets picked up by alerts.php.
 	2. Coming Events: 
 		comingevents.txt is loaded 1/day by the app getdailycache.php (called by the app) as of 1.6. 
 		  It is copied directly into the dailycache data stream.
@@ -516,7 +517,8 @@ DATA LOADS
 	3. getalerts.php which copies alerts.txt (filled by getferryalerts.php cron every 5 min),
 		 tanneroutage.txt (filled by gettanneralerts.php cron every 10 min),
 		 burnban.txt (filled by getburnbanalerts.php cron every 15 min) to stdout.
-		 run every 10 minutes by the app as of 1.6.
+		 refresh.txt  (TO FORCE A REFRESH DATA, create this file manually with 1 line that contains the date. This gets turned into REFRESH\ndate\nREFRESHEND\n)  
+		 run every 1 minutes by the app as of 1.6.
 	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the getdailycache.php script as of 1.6.
 	5. openweathermap.com which returns json structures for current weather and forecast.
 		current loaded every 15 min by the app. forecast loaded every 30 min by the app.
