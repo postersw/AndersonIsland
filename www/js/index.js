@@ -76,6 +76,7 @@
         1.29.010121. Display Ferry position.
         1.30.021621. Do not remember ferry position between startups. Display ketron run time on main page until after we leave ketron.
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
+        1.30.042222. Switch to using voltbuilder. No source changes except version #.
  * 
  * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -97,9 +98,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.022621";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.042422";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -439,10 +440,10 @@ function BuildHoliday(year) {
     else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
     else memorialday = 525;
     // thanksgiving calculation.  Fixed on 01/05/18.
-    // thanksgiving = 11/22 – 11/28
+    // thanksgiving = 11/22 ï¿½ 11/28
     var dthanksdate, dthanks;
     dthanksdate = new Date(year, 10, 1);// 1st day of nov
-    dowthanks = dthanksdate.getDay(); // 0 – 6, thur=4
+    dowthanks = dthanksdate.getDay(); // 0 ï¿½ 6, thur=4
     if (dowthanks <= 4) thanksgiving = 1126 - dowthanks;//  4 = 22,3=23,2=24,1=25,0=26
     else thanksgiving = 1133 - dowthanks;;//  5 ->1128,  6->11/27
 }
