@@ -4,6 +4,7 @@
         version="1.30.042422"
         android-versionCode="2252"
         android:versionName="1.30.042422">
+  <!--4/26/22 Android debug version successfully build using volt.build. ver 1.40.042422-->
   <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->      
   <!-- versionCode 2252 for 1.30.042422 for Volt.Build (no code changes) ANDROID ONLY -->
   <!-- versionCode 2251 for 1.30.011021 for ferry position -->
@@ -84,7 +85,6 @@
   <!--<gap:plugin name="org.apache.cordova.file" />-->
   <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
   <plugin name="cordova-plugin-geolocation" source="npm" />
-  <!-- removed spec="2.4.3" on 8/3/18. platform="android"  removed- forced 3.0.1 on 2/16/18-->
   <plugin name="cordova-plugin-inappbrowser" source="npm" />
   <!--<gap:plugin name="org.apache.cordova.media" />-->
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
@@ -113,6 +113,7 @@
       <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" />
     </edit-config>
     <!--Adaptive Icons 11/29/18-->
+    <icon src="www/locales/android/mipmap-mdpi/ic_launcher.png"/>  <!--Default icon. Works as of 4/26/22 on VoltBuilder.-->
     <resource-file src="www/locales/android/mipmap-ldpi/icon.png" target="app/src/main/res/mipmap-ldpi/icon.png" />
 
     <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
