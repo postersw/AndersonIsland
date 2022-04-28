@@ -98,11 +98,15 @@
   <plugin name="cordova-plugin-calendar" source="npm" /><!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
   <!--<plugin name="com.hutchind.cordova.plugins.launcher" spec="https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git" /> Removed 4/24/22 in place of npm -->
   <plugin name="cordova-plugin-app-launcher" source="npm" />  <!--4/24/22 for volt.build, use npm instead of nchutchind.  I don't know if this works. See npmjs.com/package/cordova-plugin-app-launcher-->
-  <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18--><!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> --><!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
+  <plugin name="cordova-plugin-tts" source="npm" /><!--Text To Speech added 10/13/18-->
+  <!-- <gap:plugin name="com.phonegap.plugins.barcodescanner" /> -->
+  <!-- END OF PLUGINS -->
+  
+  <!-- ICONS.  TO DEBUG ICONS FOR IOS, download AndersonIslandAssistant.ipa, rename it to .zip,
       UNZIP it and check  AndersonIslandAssistant/Payload/AndersonIslandAssistant.app file 
-      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17--><!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 -->
+      and check all the AppIConxxx.png files.  They all should have the map icon. None should have the phonegap icon. 3/21/17-->
+  <!-- <icon src="icon.png" /> hopefully replaced by adaptive icons 11/29/18 -->
   <!-- Define app icon for each platform. -->
-  <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad--><!-- END OF PLUGINS -->
    <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
     <!--OneSignal Icons 5/24/18-->
@@ -163,7 +167,6 @@
   <allow-intent href="sms:*" />
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
-  <!-- ADDING IN ACCESS TO ios ticketing app -->
   <platform name="android">
     <allow-intent href="market:*" />
   </platform>
