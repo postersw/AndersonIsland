@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.30.042422"
+        version="1.30.042822"
         android-versionCode="2252"
-        android:versionName="1.30.042422">
+        android:versionName="1.30.042822">
   <!--4/26/22 Android debug version successfully build using volt.build. ver 1.40.042422-->
   <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->      
   <!-- versionCode 2252 for 1.30.042422 for Volt.Build (no code changes) ANDROID ONLY -->
@@ -19,6 +19,7 @@
   <!-- versionCode 2238 for 1.21 9/26/18 -->
   <!-- versionCode 2237 for 1.21 9/07/18 -->
   <!-- versionCode 2236 for 1.21 9/01/18 -->
+  <!-- versionCode 2235 for 1.21 8/29/18 -->
   <!-- versionCode 2235 for 1.21 8/29/18 -->
   <!-- moved config.xml to root 8/19/18-->
   <!-- versionCode 2234 for 1.21 7/30/18 beta only -->
@@ -51,8 +52,9 @@
   <!--<preference name="permissions"                value="none"/>-->
   <!-- Customize your app and platform with the preference element. -->
   <!-- <preference name="SplashScreen"               value="Default.png" />-->
-  <!-- <preference name="SplashScreenDelay"          value="3000" />-->
-  <preference name="SplashMaintainAspectRatio" value="true" />
+  <preference name="SplashScreenDelay" value="1000" />  <!-- added 4/24/22 for volt.build-->
+  <preference name="AutoHideSplashScreen" value="true"/> <!-- added 4/24/22 for volt.build-->
+  <!--<preference name="SplashMaintainAspectRatio" value="true" /> -->
   <!--<preference name="ShowSplashScreenSpinner" value="true" />  DEBUG TEST-->
   <preference name="ShowSplashScreenSpinner" value="false" />
   <preference name="orientation" value="default" />
@@ -88,7 +90,7 @@
   <plugin name="cordova-plugin-inappbrowser" source="npm" />
   <!--<gap:plugin name="org.apache.cordova.media" />-->
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-  <!--<plugin name="cordova-plugin-splashscreen"   platform="android"  source="npm"/> Removed 4/10/16 to speed up android loading by 2 sec-->
+  <plugin name="cordova-plugin-splashscreen"/> <!-- Restored 4/28/22 for volt.build. Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
   <plugin name="onesignal-cordova-plugin" platform="android" spec="^2.4.0" source="npm" />
   <!--OneSignal added 5/23/18-->
@@ -109,11 +111,14 @@
     <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="www/ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
+
+    <!--Adaptive Icons 11/29/18 - 4/28/22.   REMOVED 4/28/22 because they didn't work under Volt.Build, and Volt.Build will build them all!
+
     <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
       <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" />
     </edit-config>
-    <!--Adaptive Icons 11/29/18-->
-    <icon src="www/locales/android/mipmap-mdpi/ic_launcher.png"/>  <!--Default icon. Works as of 4/26/22 on VoltBuilder.-->
+
+    <icon src="www/locales/android/mipmap-mdpi/ic_launcher.png"/>  <!--Default icon. Works as of 4/26/22 on VoltBuilder.
     <resource-file src="www/locales/android/mipmap-ldpi/icon.png" target="app/src/main/res/mipmap-ldpi/icon.png" />
 
     <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
@@ -140,12 +145,13 @@
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
-    <!--XML for Adaptive Icons-->
+    <!--XML for Adaptive Icons
     <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher.xml" target="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" />
     <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher_round.xml" target="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" />
     <resource-file src="www/locales/android/drawable/ic_launcher_background.xml" target="app/src/main/res/drawable/ic_launcher_background.xml" />
     <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
     <resource-file src="www/locales/android/values/ic_launcher_background.xml" target="app/src/main/res/values/ic_launcher_background.xml" />
+    -->
   </platform>
   <access origin="*" /><!-- a wildcard access tag allows access to all external resource.-->
   <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
