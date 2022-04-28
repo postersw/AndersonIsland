@@ -122,7 +122,7 @@
       <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" />
     </edit-config>
 
-    <icon src="www/locales/android/mipmap-mdpi/ic_launcher.png"/>  <!--Default icon. Works as of 4/26/22 on VoltBuilder.
+    <icon src="www/locales/android/mipmap-mdpi/ic_launcher.png"/>  Default icon. Works as of 4/26/22 on VoltBuilder.
     <resource-file src="www/locales/android/mipmap-ldpi/icon.png" target="app/src/main/res/mipmap-ldpi/icon.png" />
 
     <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
@@ -149,7 +149,7 @@
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/icon.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
     <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
-    <!--XML for Adaptive Icons
+    XML for Adaptive Icons
     <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher.xml" target="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" />
     <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher_round.xml" target="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" />
     <resource-file src="www/locales/android/drawable/ic_launcher_background.xml" target="app/src/main/res/drawable/ic_launcher_background.xml" />
