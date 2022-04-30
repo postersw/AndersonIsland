@@ -3,7 +3,7 @@
         id="org.anderson-island.andersonislandassistant"
         version="1.30.042822"
         android-versionCode="2252"
-        android:versionName="1.30.042822">
+        android:versionName="1.30.042922">
   <!--4/26/22 Android debug version successfully build using volt.build. ver 1.40.042422-->
   <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->      
   <!-- versionCode 2252 for 1.30.042422 for Volt.Build (no code changes) ANDROID ONLY -->
@@ -90,7 +90,7 @@
   <plugin name="cordova-plugin-inappbrowser" source="npm" />
   <!--<gap:plugin name="org.apache.cordova.media" />-->
   <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-  <plugin name="cordova-plugin-splashscreen"/> <!-- Restored 4/28/22 for volt.build. Removed 4/10/16 to speed up android loading by 2 sec-->
+  <!--<plugin name="cordova-plugin-splashscreen"/> --><!-- Restored 4/28/22 for volt.build. Removed 4/10/16 to speed up android loading by 2 sec-->
   <!--<gap:plugin name="org.apache.cordova.vibration" />-->
   <plugin name="onesignal-cordova-plugin" platform="android" spec="^2.4.0" source="npm" />
   <!--OneSignal added 5/23/18-->
@@ -110,11 +110,11 @@
    <!-- pushbots icons for android. added 4/28/18 for phonegap cli 7.1-->
   <platform name="android">
     <!--OneSignal Icons 5/24/18-->
-    <resource-file src="www/locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
-    <resource-file src="www/locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
-    <resource-file src="www/locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
-    <resource-file src="www/locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
-    <resource-file src="www/ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
+    <resource-file src="locales/android/drawable-hdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-hdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="locales/android/drawable-xhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xhdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
+    <resource-file src="ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
 
     <!--Adaptive Icons 11/29/18 - 4/28/22.   REMOVED 4/28/22 because they didn't work under Volt.Build, and Volt.Build will build them all!
 
