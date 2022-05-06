@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets"
         id="org.anderson-island.andersonislandassistant"
-        version="1.30.050322"
-        android-versionCode="2252"
-        android:versionName="1.30.042422">
+        version="1.30.050322">
   <!-- versionCode 2252 for 1.30.042422 for Volt.Build (no code changes)-->
   <!-- versionCode 2251 for 1.30.011021 for ferry position -->
   <!-- versionCode 2250 for 1.29 7/29/20 for ferry position -->
@@ -84,17 +82,6 @@
   <preference name="android-build-tool" value="gradle" />
   <!-- required for calendar plugin-->
   <!-- Permission description for calendar-->
-  <!--OLD OBSOLETE
-    <config-file platform="ios" parent="NSCalendarsUsageDescription" mode="replace">
-    <string>For copying events to your personal calendar</string>
-  </config-file>
-  <config-file platform="ios" parent="NSLocationWhenInUseUsageDescription" mode="replace">
-    <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
-  </config-file>
-  <config-file platform="ios" parent="NSLocationWhenInUseUsageDescription" mode="replace">
-    <string>To highlight either the Steilacoom or Anderson Island ferry schedule row</string>
-  </config-file>
-  -->
   <!-- Add permission rows to Anderson Island Assistant-Info.plist-->
   <platform name="ios">
   <edit-config parent="NSCalendarsUsageDescription" file="*-Info.plist" mode="merge">
