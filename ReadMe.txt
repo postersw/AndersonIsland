@@ -341,14 +341,16 @@ IOS DEBUG/BUILD    USE XCODE 12.2 (1/2/21)
 
 -----------------------------------------------------------------------------------------------------------------------
 
-IOS CERTIFICATES  updated 5/31/18.
-Certificates last just 1 year. Provisioning profiles last 1 year. 
+IOS CERTIFICATES  updated 5/5/22.
+Certificates last just 1 year. Provisioning profiles last 1 year. certSigningRequests last 5 years.
 HISTORY
-These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
-2/27/21 On LA051: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
+These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac
+ and the developer.apple.com web site.
+5/5/22 on LA952. New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest.
+2/27/21 On LA952: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
 	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
-3/18/20 On LA051: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
+3/18/20 On LA952: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
 	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
 	P12 files exported using the new dev and distribution certs.
@@ -371,25 +373,24 @@ These files are on the desktop of the virtual mac. They are duplicated in OneDri
 4/3/14  New Provisioning Profile for Esther's iPhone 5. Created new phonegap build signing key: "AIADevPush040317" consisting
 	of posterswdev.p12 cert and AndersonIslandDevPush.mobileprovision on my PC only which enables Esther's iPhone 5 for testing.
 
-HOW TO Create new Development/Production Certificate  every year when the old ones expire:
+HOW TO Create new Development/Production Certificate  EVERY YEAR when the old ones expire:  Allow 1 hour for Dev and Prod.
 	The overall process is: 
 		1. Generate a Certificate Signing Request (CSR) xxxx.certSigningRequest. using Keychain. 
-		   NOTE: You should use an existing one. posterswdev.certSigningRequest or posterswprod...
+		   NOTE: You should use an existing one for 5 years. posterswdev.certSigningRequest or posterswprod...
 		2. Use that to generate the Certificate on the developer.apple.com web site.
 		3. Import that certificate back into Keychain on the Mac. Then export the Public key to a P12 file.
 		4. Create a Provisioning Profile using the Certificate from #2 on the developer.apple.com web site. 
 		5. Download the MobileProfile file from #4.
-		6. Upload the MobileProfile and the P12 file to build.phonegap.com.  NO longer necessary as of 2020 because I build on mac.
+		6. Upload the MobileProfile and the P12 file to OneDrive for use on VoltBuild.  NO longer necessary as of 2020 because I build on mac.
 	DETAILS:
 	Open Mac.
-	    Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com,
-		then login as user901584 pw= pwd29837
+	    Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to  LA952.user168917,pw=pxt77203 
 		Open Safari. 
 	From Safari:
 		Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
 		Go to Certificate.  
 		Click on '+' to create a new certificate.  
-		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.
+		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.  NOTE: expires 5/5/23.
 		PRODUCTION: click on 'Apple Distribution. Sign for App Store and Ad Hoc'.
  	Back to the Mac only if you don't already have a certSigningRequest file (you one for dev and a different one for prod). 
 		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
@@ -413,7 +414,7 @@ HOW TO Create new Development/Production Certificate  every year when the old on
 		developer.apple.com:
 		Upload the CSR file (from above): posterswdev.certSigningRequest. or posterswprod.certSigningRequest.
 		Note that I can always use 
-		  the original posterswdev.certSigningRequest or posterswprod.certSigningRequest from 3/17 UNTIL 2/22.
+		  the original posterswdev.certSigningRequest or posterswprod.certSigningRequest from 3/17 UNTIL 5/23.
 		Now your certificate is done.
 		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
 		Rename it to AIADevmmyy.cer or AIAProdmmyy.cer.
@@ -422,12 +423,13 @@ HOW TO Create new Development/Production Certificate  every year when the old on
 		It now shows up in Keychain Access- Certificates as
 			 'Apple Development: Robert Bedoll' or Apple Distribution: Robert Bedoll.  and it will expire 1 year from today.
 			 (last done on 2/28/21, expires on 2/28/22).
+			 5/5/22: shows up as iPhoneDeveloper ... Bedoll, expires 5/5/23. and iPhoneDistribution... expires 5/5/23
 	    KEYCHAIN ACCESS:
 		select Certificates (not Keys), and the certificate just added (iPhone Developer or iPhone Distribution).  
 		right click on Export.  Select the P12 File Format.
 		Set the file name to AIADevmmyy or AIAProdmmyy  (was posterswdev or posterswprod.)
 		click Save.  It will prompt for the new password. Create the pw='dd', enter it twice and click OK.
-		You'll be asked for the Login PW. Use the MacinCloud pw, 'pwd29837' and click on 'Allow'.
+		You'll be asked for the Login PW. Use the MacinCloud pw, pxt77203 and click on 'Allow'.
 		You will now have a AIADevmmyy.p12 or AIAProdmmyy.p12 file (was posterswdev.p12 or posterswprod.p12 file.)
 
 	Backk to Safari.
@@ -436,14 +438,16 @@ HOW TO Create new Development/Production Certificate  every year when the old on
 		click "Edit".
 		Add the new iOS Development or iOS Distribution (code signing) certificate. It should show up in the list of certificates.
 		Click on 'Save.'
-		Download it to the desktop. It will be called AndersonIslandDevPush.mobileprovision.
+		Download it to the desktop. It will be called AndersonIslandDevPush.mobileprovision.  It is only valid for 1 year. 
+		Rename to AndersonIsland<DevPush|DistributionPush>mmyy.mobileprovision.  e.g. AndersonIslandDistributionPush0522.mobileprovidion.
 		NOTE: THE APP PROVISIONING PROFILE ONLY HAS THE iOS App Development (or Distribution) Code Signing certificate.  
 			IT DOESNT HAVE THE PUSH CERTIFICATE. 
 			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
 		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.
 			It has no pw because Pushbots does not accept a pw. 
-
-		NOW WHAT? I think I am done.  Do I copy the P12 over to LA952? I don't think so. The certificate can be downloaded from developer.apple.com.
+	Copy the p12 and mobileprovision to OneDrive: AIAssistant/IOS to use in VoltBuild.
+		NOW WHAT? I think I am done. 
+		
 
 
 		OBSOLETE as of 4/2020: BUILD.PHONEGAP.COM
