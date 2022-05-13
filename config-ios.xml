@@ -150,6 +150,7 @@
   <allow-intent href="geo:*" />
   <!-- ADDING IN ACCESS TO ios ticketing app -->
     <allow-navigation href="ttpapps.pcf://" />
+    <allow-navigation href="*"/>
 
 
 </widget>

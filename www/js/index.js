@@ -98,7 +98,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.042422";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.051022";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -251,6 +251,7 @@ var scheduledate = ["5/1/2014"];
 
 // global variables (gXxxxxx). Since this entire app is one page and one program, these variables hold for the entire execution.
 
+var reloadreasontext = "Reused old";  // reason for reloading the cache.
 
 var gisPhoneGap; // true if phonegap
 var gisAndroid; // true if android
@@ -1319,7 +1320,9 @@ function GetDailyCache() {
     // ajax request without jquery
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (xhttp.readyState == 4 && xhttp.status == 200) HandleDailyCacheReply(xhttp.responseText);
+        //alert("DEBUG Ready State = " + xhttp.readyState.toString() + " status=" + xhttp.status.toString()); //////////DEBUG/////
+        if (xhttp.readyState == 4 && xhttp.status == 200) HandleDailyCacheReply(xhttp.responseText); 
+        //if (xhttp.readyState == 4 ) HandleDailyCacheReply(xhttp.responseText);
     }
     xhttp.open("GET", myurl, true);
     xhttp.send();
@@ -1353,12 +1356,16 @@ function HandleDailyCacheReply(data) {
 
 function ParseDailyCache(data) {
     var s;
-
+    if(data.length==0) {
+        alert("Data length = " + data.length.toString()); //////////////////////////////////////////DEBUG 05/10/22
+        reloadreasontext = "daily cache length=0";
+        return;
+    }
     data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
     //var rows = data.split("\n"); //split into lines
     if (data.substring(0, 10) != "DAILYCACHE") {
-        //alert("could not load updated values for ferry times and open hours");
-        document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
+        alert("Dailycache header is bad.");
+        reloadreasontext = "Daily cache header bad";
         return;
     }
 
@@ -1690,9 +1697,8 @@ var gReloadCachedDataButtonInProgress = false;
 function ReloadCachedDataButton() {
     if (gMenuOpen) CloseMenu();  // close the menu            if (gMenuOpen) CloseMenu();  // close the men
     gReloadCachedDataButtonInProgress = true;
-
+    reloadreasontext = "user requested"; 
     ReloadCachedData();
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1700,8 +1706,8 @@ function ReloadCachedDataButton() {
 function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "<br/>Stats:<br/>App started " + gAppStartedDate +
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
-        ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-        ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
+        ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext +
+        "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
@@ -5048,18 +5054,18 @@ function StartApp() {
 
     // -------------  after main page has been displayed ---------------------------
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
-    var reloadreason = "";
+
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
     if (dailycacheloaded == null) {
         gForceCacheReload = true;
-        reloadreason = "initial cache load";
+        reloadreasontext = "initial cache load";
     } else if (Number(dailycacheloaded) != gMonthDay) {
-        reloadreason = "dailycacheloaded != monthday";
+        reloadreasontext = "dailycacheloaded != monthday";
         gForceCacheReload = true;
     }
 
     if (gForceCacheReload) {
-        document.getElementById("reloadreason").innerHTML = reloadreason;
+        //document.getElementById("reloadreason").innerHTML = "<br/>Cache Load: " + reloadreasontext;
         ReloadCachedData();  // reload daily cache, alerts (always), weather (always)
     } else {
         // show Alert and Weather immediately.
