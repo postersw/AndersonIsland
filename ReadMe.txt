@@ -244,7 +244,7 @@ IOS DEBUG/BUILD    USE XCODE 12.2 (1/2/21)
 6. Items in config.xml should get copied into Anderson Island Assistant.pinfo.   If there don't end up there you will have to add them
 	yourself.  Don't edit pinfo directly. Instead use the XCode mechanism. Ensure you have keys for 
 	NSlocationwheninuseusagedescription, NSLocationAlwaysUsageDescription ? 
- NSCalendarsUsageDescription, LSApplicationQueriesSchemes (array of 1 string: "ttpapps.pcf"). See the file 'WorkingPlist0418.png' in Documents/Phonegap.
+ NSCalendarsUsageDescription, LSApplicationQueriesSchemes (array of 1 string: "hornblower.hornblower"). See the file 'WorkingPlist0418.png' in Documents/Phonegap.
  7. SPLASHSCREEN - Created SplashScreen.stroyboard.  Added an image control. Moved a screen.PNG file into the xcassets. Added that file to the image control. Set margins to 0.  Works ok now.
     This may have to be redone when 'Cordova build' is run, because it throws this stuff away. I'm not sure how to get Cordova config.xml to do this.
   8. 
@@ -384,7 +384,7 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 		6. Upload the MobileProfile and the P12 file to OneDrive for use on VoltBuild.  NO longer necessary as of 2020 because I build on mac.
 	DETAILS:
 	Open Mac.
-	    Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to  LA952.user168917,pw=pxt77203 
+	    Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to  LAuser168917.user168917,pw=pxt77203 
 		Open Safari. 
 	From Safari:
 		Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
