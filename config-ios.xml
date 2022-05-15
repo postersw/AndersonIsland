@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets"
         id="org.anderson-island.andersonislandassistant"
-        version="1.30.050322">
-  <!-- versionCode 2252 for 1.30.042422 for Volt.Build (no code changes)-->
+        version="1.30.051522">
+  <!-- versionCode 2252 for 1.30.051522 for Volt.Build IOS (no code changes)-->
   <!-- versionCode 2251 for 1.30.011021 for ferry position -->
   <!-- versionCode 2250 for 1.29 7/29/20 for ferry position -->
   <!-- versionCode 2249 for 1.28 6/06/20 for https -->
@@ -74,32 +74,32 @@
   <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
   <preference name="disable-cursor" value="false" />
   <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
-  <preference name="android-minSdkVersion" value="16" />
-  <!-- android: changed from 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. -->
-  <preference name="android-targetSdkVersion" value="29" /><!-- added 1/2/21 to meet new google requirement. OR could try PG build CLI=9-->
-  <preference name="android-installLocation" value="auto" />
-  <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
-  <preference name="android-build-tool" value="gradle" />
+
   <!-- required for calendar plugin-->
   <!-- Permission description for calendar-->
   <!-- Add permission rows to Anderson Island Assistant-Info.plist-->
-  <platform name="ios">
-  <edit-config parent="NSCalendarsUsageDescription" file="*-Info.plist" mode="merge">
+
+  <edit-config parent="NSCalendarsUsageDescription" file="*-Info.plist" mode="overwrite">
     <string>Allow events to be added to your calendar.</string>
   </edit-config>
-  <edit-config parent="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+  <edit-config parent="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="overwrite">
     <string>Required to highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </edit-config>
-  <edit-config parent="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="merge">
+  <edit-config parent="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="overwrite">
     <string>Required to highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </edit-config>
   <!-- Allow launch of ferry ticket app-->
-  <edit-config parent="LSApplicationQueriesSchemes" file="*-Info.plist" mode="merge">
+  <edit-config parent="LSApplicationQueriesSchemes" file="*-Info.plist" mode="overwrite">
     <array>
       <string>ttpapps.pcf</string>
+      <string>hornblower.hornblower</string>
     </array>
   </edit-config>
-  </platform>
+  <edit-config parent="NSAppTransportSecurity" file="*-Info.plist" mode="overwrite" >
+    <dict>  
+      <key>NSAllowsArbitraryLoads</key> <true/>  
+    </dict>
+  </edit-config>
   <!--Define a specific version of PhoneGap to build into your app. updated to 8 on 8/19/18 to get onesignal to build-->
   <!-- Still required with builder=1 for IOS as of May 2019-->
   <!-- Plugins -->
@@ -142,6 +142,7 @@
   <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
   <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
   <plugin name="cordova-plugin-whitelist" />
+  <access origin="https://anderson-island.org" />
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />
@@ -149,8 +150,8 @@
   <allow-intent href="mailto:*" />
   <allow-intent href="geo:*" />
   <!-- ADDING IN ACCESS TO ios ticketing app -->
-    <allow-navigation href="ttpapps.pcf://" />
-    <allow-navigation href="*"/>
-
+  <allow-navigation href="ttpapps.pcf://" />
+  <allow-navigation href="hornblower.hornblower://" />
+  <!--NOTE: do not add allow navigation href=* because it breaks the webbrowser back button and breaks the hornblower startup-->
 
 </widget>

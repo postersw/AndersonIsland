@@ -3,7 +3,8 @@
 //  getdailycache.php - retrieves dailycache.txt, comingevents.txt, tidedata.txt
 //  concolidates daily feeds in one big pull, rather than 3 small ones.
 //  rfb. 6/6/16.
-
+//  rfb. 5/15/22. Add access control allow origin   
+header("Access-Control-Allow-Origin: *");  // added 5/15/22
 copyfile("dailycache.txt", "");
 copyfile("moondata.txt","MOON");   // moon data
 copyfile("comingevents.txt", "COMINGEVENTS");

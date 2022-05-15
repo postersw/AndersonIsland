@@ -76,9 +76,10 @@
         1.29.010121. Display Ferry position.
         1.30.021621. Do not remember ferry position between startups. Display ketron run time on main page until after we leave ketron.
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
-        1.30.042222. Switch to using voltbuilder. No source changes except version #.
+    2022
+        1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
  * 
- * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
+ * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -98,7 +99,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.051022";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.30.051522";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -1317,12 +1318,13 @@ function GetDailyCache() {
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         "&P=" + pagehits);
 
-    // ajax request without jquery
+    // ajax request without jquery.  Normal finish is readyState=4,status=200.
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        //alert("DEBUG Ready State = " + xhttp.readyState.toString() + " status=" + xhttp.status.toString()); //////////DEBUG/////
-        if (xhttp.readyState == 4 && xhttp.status == 200) HandleDailyCacheReply(xhttp.responseText); 
-        //if (xhttp.readyState == 4 ) HandleDailyCacheReply(xhttp.responseText);
+        if (xhttp.readyState == 4) {  // if it's done...
+            if(xhttp.status != 200) alert("ERROR: DailyCache fetch failed. Status=" + xhttp.status.toString() + "," + xhttp.statusText); 
+            HandleDailyCacheReply(xhttp.responseText); 
+        }
     }
     xhttp.open("GET", myurl, true);
     xhttp.send();
