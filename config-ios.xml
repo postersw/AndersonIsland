@@ -79,23 +79,23 @@
   <!-- Permission description for calendar-->
   <!-- Add permission rows to Anderson Island Assistant-Info.plist-->
 
-  <edit-config parent="NSCalendarsUsageDescription" file="*-Info.plist" mode="overwrite">
+  <edit-config target="NSCalendarsUsageDescription" file="*-Info.plist" mode="merge">
     <string>Allow events to be added to your calendar.</string>
   </edit-config>
-  <edit-config parent="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="overwrite">
+  <edit-config target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
     <string>Required to highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </edit-config>
-  <edit-config parent="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="overwrite">
+  <edit-config target="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="merge">
     <string>Required to highlight either the Steilacoom or Anderson Island ferry schedule row</string>
   </edit-config>
   <!-- Allow launch of ferry ticket app-->
-  <edit-config parent="LSApplicationQueriesSchemes" file="*-Info.plist" mode="overwrite">
+  <edit-config target="LSApplicationQueriesSchemes" file="*-Info.plist" mode="merge">
     <array>
       <string>ttpapps.pcf</string>
       <string>hornblower.hornblower</string>
     </array>
   </edit-config>
-  <edit-config parent="NSAppTransportSecurity" file="*-Info.plist" mode="overwrite" >
+  <edit-config target="NSAppTransportSecurity" file="*-Info.plist" mode="merge" >
     <dict>  
       <key>NSAllowsArbitraryLoads</key> <true/>  
     </dict>
@@ -139,9 +139,9 @@
   <!-- IOS need 29x29 1x2x3xipad, 40x40 1xipad2x2xipad3x 50x50 1xipad 2xipad, 57x57 1x,2x 60x60 2x3x, 72x72 1xipad2xipad, 76x76 2xipad1xipad 83.5 2xipad--><!-- END OF PLUGINS -->
   <!-- IOS Removed all icons and splash screens to let vold.build build them.-->
   <access origin="*" /><!-- a wildcard access tag allows access to all external resource.-->
-  <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
+  
   <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
-  <plugin name="cordova-plugin-whitelist" />
+  
   <access origin="https://anderson-island.org" />
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
