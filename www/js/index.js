@@ -99,7 +99,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.30.051522";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.051722";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -1423,7 +1423,7 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // parks link
     parseCacheRemove(data, "parksinfo", "PARKSINFO", "\n"); // parks info - goes on main page parks line
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // news link
-    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // custom tide link
+    parseCacheRemove(data, "customtidelinka", "CUSTOMTIDELINKA", "\n"); // custom tide link
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
     parseCacheRemove(data, "dst", "DST", "\n"); // Daylight Savings Time start/end schedule
 
@@ -4194,13 +4194,10 @@ function GetDateCancel() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
-// This is used to get custom tide data from NOAA, via my web site.
+// getCustomTideData get tide data using ide data from NOAA directly
 // used only for custom date queries, not for normal tides.
 //  Entry   fromdate =  starting date for the tides as: mm/dd/yyyy
 //          stationname = NOAA tide station name (not the number)
-//  gCustomTides = 0 for customtidelink or AERIS
-//                  1 for NOAA direct link
 //  data is used to display tide data. It is not stored.
 const gCustomTides = 1; // NOAA direct tide request
 const YomanPointStation = "9446705"; // NOAA Yoman point station
@@ -4239,14 +4236,10 @@ function getCustomTideData(fromdate, station) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // build link
-    if (gCustomTides == 1) { // NOAA direct
-        fromdate = gCustomTideFromDate.substr(6, 4) + gCustomTideFromDate.substr(0, 2) + gCustomTideFromDate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
-        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=" + gCustomTideStation + "&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
+    fromdate = gCustomTideFromDate.substr(6, 4) + gCustomTideFromDate.substr(0, 2) + gCustomTideFromDate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
+    var myurl = GetLink("customtidelinka", "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter") + "?station=" + gCustomTideStation + "&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
             + fromdate + '%2000:00&range=72';
-    } else {  //customtidelink for AERIS
-        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/' + gCustomTideStation + '?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
-        myurl = myurl + '&from=' + fromdate + '&to=+48hours';
-    }
+    
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCustomTidesReply(xhttp.responseText);

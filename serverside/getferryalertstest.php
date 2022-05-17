@@ -53,31 +53,32 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
+$alerthistory = "alerthistory.txt";
 
 //  Get the alert. returned in $AlertObj
 $AlertObj = getAlertsfromHornblower() ;
 // no response so clear the alert file.
 if($AlertObj->title == "") {
 	ClearAlertFile($alertfile, $alertlog);
-	logalertlast("no title");
+	logAlertLast("no title");
 	exit("No ferry alert title"); // if no reply
 }
  
 // check time. If alert is >4 hrs old, clear it and stop.
-$t=time(); // current seconds in PDT I hope
+$t=time(); // current seconds UCT
 $talert = $AlertObj->timestamp;
-echo("  |alert timestamp:" . $talert . "|"); echo(date("Y-m-d-H-i-s", $talert));// debug
-echo("  |current:" . $t . "|"); echo(date("Y-m-d-H-i-s", $t));// debug
+//echo("  |alert timestamp:" . $talert . "|"); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
+//echo("  |current:" . $t . "|"); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
 $deltat = $t - $talert;
-echo (" delta t hrs = " . ($deltat/3600));
-// if alert is >4 hrs old, clear it and stop  TEMPORARILY DISABLED FOR DEBUG> REINSTATE IT.
+//echo (" delta t hrs = " . ($deltat/3600));
+// if alert is >4 hrs old, clear it and stop 
 if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
-    //echo " Alert is > $alertclearhours hours old ";
+    logAlertLast(" Alert is > $alertclearhours hours old");
     ClearAlertFile($alertfile, $alertlog);
     exit(0);
 }
 
-// test for a delay
+// test for a delay and add to alert string
 $delay = "";
 $title = $AlertObj->title;
 $desc = $AlertObj->detail;
@@ -89,7 +90,7 @@ if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($
     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
 
-// log it
+// build message
 if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
 $alertdatestring = date("m/d h:ia", $talert); // date/time of alert
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
@@ -98,25 +99,17 @@ $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
 // exit if the message is not being changed.
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
-	logalertlast("alert already written");
+	logAlertLast("alert already written");
 	exit(0); // if already written
 }
 
-var_dump($AlertObj);
-echo "<br/>alertstring: " . $alertstring;
-exit(0);
-
-// write it to the alertfile, and log it
-$fh = fopen($alertfile, 'w');
-fwrite($fh, $alertstring);
-fclose($fh);
-
-// log it
-$fhl = fopen($alertlog, 'a');
-fwrite($fhl, date("Y/m/d H:i:s") . "|" . $alertstring . "\n");
-fclose($fhl);
+// write it to the alertfile, alerthistory, and log it
+file_put_contents($alertfile, $alertstring);  // alert file for getalerts.php app display
+addAlertHistory($alerthistory, $alertObj);    // alert history for getalerthistory.php
+file_put_contents($alertlog, date("Y/m/d H:i:s") . "|" . $alertstring . "\n", FILE_APPEND);  // log 
 echo ("wrote to file: " . $alertstring);
-logalertlast("wrote to alert file");
+logAlertLast("wrote to alert file");
+//var_dump($AlertObj);
 
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
 $msgtitle = "FERRY ALERT";
@@ -133,7 +126,6 @@ exit(0);
 function ClearAlertFile($alertfile, $alertlog) {
     $DefaultMessage = "";
     //$DefaultMessage = "<span style='color:black;'>8/22: Both Ferry Lane Webcams are now UP.</span>";
-     logalertlast("cleared alert file");
      $alc = file_get_contents($alertfile);
      //if($alc=="") return; // if already empty
      if($alc==$DefaultMessage) return; // if already empty
@@ -146,20 +138,9 @@ function ClearAlertFile($alertfile, $alertlog) {
      $fhl = fopen($alertlog, 'a');
      fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file and wrote: $DefaultMessage.\n");
      fclose($fhl);
-	 logalertlast("physically cleared alert file");
+	 logAlertLast("wrote '$defaultMessage' to alert file");
      //echo("ClearAlertFile wrote to log");
 }
-
-/////////////////////////////////////////////////////////////////
-//  loglastalert - writes an  string to the alertlast file
-//
-function logalertlast($s) {
-	$alertlast = "alertlast.txt";
-    $fh = fopen($alertlast, 'w');
-    fwrite($fh, date("Y/m/d H:i:s") . $s);
-    fclose($fh);
-}
-
 
 /////////////////////////////////////////////////////////
 //  PushOneSignalNotification. 5/25/18
@@ -202,8 +183,85 @@ function PushOSNotification($title, $msg) {
     print($response);
     return $response;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  getRSS - get the RSS feed.  Temporarily deprecated 10/20/21 due to CloudFlare security.
+//  getAlertsfromHornblower - get the Hornblower web feed. works as of 5/16/22.
+//  
+//  exit    returns Alert object
+//          if no alert, alertObj->title=""
+//
+//  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+//[{"createdDate":"1652555109859",
+// "expirationDate":"1653177600000",
+// "notificationBody":"Extreme low tides are predicted this summer beginning the week of May 16, 2022. ... \n\nRiders...\n",
+// "notificationTitle":"Service Alert – Extreme Low Tides beginning Monday, May 16",
+// "reasonForNotification":" ",
+// "notificationType":" "},...
+// ]
+function getAlertsfromHornblower() {
+    $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+    $alertobj = new Alert(); // create alert object
+    $alertobj->title = "";
+
+    //  Read the hornblower feed. Isn't this easy! php is great.
+    $x = file_get_contents($alertrssurl);
+    if($x === false || $x=="") {
+        echo " load failed from $alertrssurl. ";
+        return $alertobj;
+    }
+
+    //  decode json return and check for errors and no data
+    $a = json_decode($x);
+    if($a==null) {
+        echo "json decode returned null";
+        return $alertobj;
+    }
+    $i = count($a) - 1;  // last element
+    if($i<0) {
+        echo "json decode i=$i";
+        return $alertobj; 
+    }
+
+    // return the last message in the list.  I hope that is correct but who knows...
+    $v = $a[$i];
+    //echo "<br/>i=$i<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
+    //echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
+    //echo "<br/>________________________<br>";
+    $i++;
+    // fill an alert object
+    $alertobj->title = $v->notificationTitle;
+    $alertobj->notifymsg = $v->notificationTitle;
+    $alertobj->detail = $v->notificationBody;
+    $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
+    $alertobj->expiration = intval($v->expriationDate)/1000;
+    return $alertobj;
+
+    // foreach($a as $v) {
+    //     echo "<br/>created Date: " . $v->createdDate;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  addAlertHistory - adds the new alert to the beginning of the alert history file.
+//  entry   $alerthistory = file name
+//          alertObj = alert object
+//  exit    added to front of $alerthistory
+//
+function addAlertHistory($alerthistory, $alertObj) {
+    $ah = file_get_contents($alerthistory);
+    $ah = "<b>" . date("m/d/y h:ia", $alertObj->createdDate) . ": " . $alertObj->notificationTitle . "</b><br/>" . $alertObj->notificationBody . "<br/><br/>" . $ah;
+    file_put_contents($alerthistory, $ah);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  logAlertLast - write a message to the alertlast file
+//  entry   $s = string to write
+//  exit    $s written to alertlast.txt. overwrites previous string.
+function logAlertLast($s) {
+    file_put_contents("alertlast.txt", date("Y/m/d H:i:s ") . $s);  
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  getRSS - get the RSS feed.  Deprecated 10/20/21 due to CloudFlare security.
 //  
 //  exit    returns Alert object
 // function getRSS() {
@@ -256,65 +314,4 @@ function PushOSNotification($title, $msg) {
 
 // }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-//  getAlertsfromHornblower - get the Hornblower web feed. works as of 5/16/22.
-//  
-//  exit    returns Alert object
-//
-//  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
-//[{"createdDate":"1652555109859",
-// "expirationDate":"1653177600000",
-// "notificationBody":"Extreme low tides are predicted this summer beginning the week of May 16, 2022. ... \n\nRiders...\n",
-// "notificationTitle":"Service Alert – Extreme Low Tides beginning Monday, May 16",
-// "reasonForNotification":" ",
-// "notificationType":" "},...
-// ]
-function getAlertsfromHornblower() {
-    $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
-
-    //  Read the RSS feed. Isn't this easy! php is great.
-    $x = file_get_contents($alertrssurl);
-    if($x === false) {
-        echo " load failed from $alertrssurl. ";
-        exit(0);
-    }
-    echo $x;
-
-    $alertobj = new Alert(); // create alert object
-    $a = json_decode($x);
-    $i = count($a) - 1;  // last element
-    $v = $a[$i];
-    echo "<br/>i=$i";
-    echo "<br/>created Date: " . $v->createdDate;
-    echo "<br/>expriationDate: " . $v->expirationDate;
-    echo "<br/>notification Title: " . $v->notificationTitle;
-    echo "<br/>notification Body: " . $v->notificationBody;
-    echo "<br/>________________________<br>";
-    $i++;
-
-    $alertobj->title = $v->notificationTitle;
-    $alertobj->notifymsg = $v->notificationTitle;
-    $alertobj->detail = $v->notificationBody;
-    $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
-    $alertobj->expiration = intval($v->expriationDate)/1000;
-    return $alertobj;
-
-    // foreach($a as $v) {
-    //     echo "<br/>i=$i";
-    //     echo "<br/>created Date: " . $v->createdDate;
-    //     echo "<br/>expriationDate: " . $v->expirationDate;
-    //     echo "<br/>notification Title: " . $v->notificationTitle;
-    //     echo "<br/>notification Body: " . $v->notificationBody;
-    //     echo "<br/>________________________<br>";
-    //     $i++;
-
-    //     $alertobj->title = $v->notificationTitle;
-    //     $alertobj->notifymsg = $v->notificationTitle;
-    //     $alertobj->detail = $v->notificationBody;
-    //     $alertobj->timestamp = intval($v->createdDate); // unix date stamp
-    //     return $alertobj;
-    // }
-    // return $alertobj;
-
-}
 ?>
