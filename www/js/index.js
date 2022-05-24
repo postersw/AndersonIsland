@@ -78,7 +78,8 @@
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
     2022
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
- * 
+        1.31.052422. Fixed month when adding event to calendar.
+        * 
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -99,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.051722";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.052422";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -382,7 +383,7 @@ function AdjustTimeZone() {
     // determine if it is Daylight savings time
     var d = LSget("dst");  // saved DST from dailyconfig.
     if (d != "none") { 
-        if (d == "") d = "314,1107";  // if none, use 2021 dates
+        if (d == "") d = "313,1106";  // if none, use 2022 dates
         var a = d.split(",");   // a[0]=start, a[1]=end
         if (a.length != 2) alert("Error in DST in dailyconfig");
         var md = (Gd.getMonth() + 1) * 100 + Gd.getDate(); // day of month 1-31
@@ -2241,7 +2242,7 @@ function ferryclick(tc) {
         case "K": el = "Ketron"; to = "Steilacoom"; break;
     }
     if (confirm("Add ferry run from " + el + " at " + FormatTime(tc.substring(6, 10)) + " on " + M + "/" + d + " to your calendar?\n(Your phone will remind you before departure)") != true) return;
-    M = M - 1;
+    M = M - 1;  // month index starts at 0
     var startDate = new Date(y, M, d, h, m, 0, 0); // beware: month 0 = january, 11 = december
     m = m + 30; // allow for 30 minute sailing
     if (m >= 60) {
@@ -3173,7 +3174,7 @@ function AddToCal(id) {
     //var d = Number(d.substring(4, 6)); // day
     // or:
     var y = Math.floor(Evt.date / 10000); //yymmdd ->
-    var m = Math.floor((Evt.date - (y * 10000)) / 100);
+    var m = Math.floor((Evt.date - (y * 10000)) / 100) - 1;  // month begins with 0.  fixed 5/23/22 ver 1.31.
     var d = Evt.date % 100;
     y = y + 2000;
     var startDate = new Date(y, m, d, Math.floor(Evt.startt / 100), (Evt.startt % 100), 0, 0); // beware: month 0 = january, 11 = december
