@@ -16,6 +16,9 @@
 //  rfb. 10/2/17.
 //      5/19/18.  This takes 30 seconds to run on anderson-island.org and I can't figure out why.
 //              It dies on postersw.com on Fatal error: Allowed memory size of 33554432 bytes exhausted (tried to allocate 33030099 bytes)
+//      5/15/22. Add access control allow origin * so iOS does not complain.
+
+
 
     // code for NOAA
     //$log = "Time:  " . date("h:i:sa") . " START<br/>" . x;/////////////////////////////
@@ -60,7 +63,8 @@
     //$log .= "Time:  " . date("h:i:sa") . " GOT TIDE<br/>" . x;/////////////////////////////
     $strout = reformatdata($str);  // reformat
     //$log .= "Time:  " . date("h:i:sa") . " FORMATTED DATA<br/>";/////////////////////////////////
-
+    
+    header("Access-Control-Allow-Origin: *");  // added 5/15/22
     echo $strout;  // return the data
     //$log .= "Time:  " . date("h:i:sa") . " END<br/>" . x;/////////////////////////////
     //echo $log;

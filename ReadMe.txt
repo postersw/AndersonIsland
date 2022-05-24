@@ -117,6 +117,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 01/02/21. Ver 1.29.010221. Display current ferry location in FERRY section on main screen.
 							IOS version built on virtual Mac using XCODE 12.2 directly.  Uploaded to Testflight. 1/3/21: Released in appstore.
 							Android version #2250 still built using build.Adobe.com, even though it is not supported. Uploaded to play.google.com beta. 1/4/21 released to prod.
+01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable so an old line is not displayed.
+02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
+03/02/21.                  Google Play production rollout. 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -195,7 +198,7 @@ ANDROID GOOGLE PLAY STORE
 		dev_acc=13833158091009122644 ; AIA ver 1.3 on 4/16/16; 1.5 on 6/5/16; 1.6 on 6/7/16. 1.7 on 10/14/16. 1.8 on 3/7/17.
 		1.9 (2223) on 3/11/17. 
 	2. Click on Anderson Island Assistant.  Click on "APK".   
-	3. BETA TEST. Click on "Manage Beta version" and create a new open beta version. 
+	3. BETA TEST. Click on "Testing -> Open testing" and create a new open testing version. 
 	3. Set the what's new.
 	4. make sure that the versioncode is higher than the previous version.
 	5. After the beta has been run a while, click on Manage Beta and then Promote to Production. No need to upload a new production ver.
@@ -208,13 +211,13 @@ ANDROID ADAPTIVE ICONS.
 	4. They were built from C:\Users\Bob\Documents\icon.png on Edgewood.
 
 ------------------------------------------------------------------------------------------------------------
-IOS DEBUG/BUILD    XCODE 12.2 (1/2/21)
+IOS DEBUG/BUILD    USE XCODE 12.2 (1/2/21)
    Note: since 4/15/20 I have been doing customizations manually in XCODE and in the aia/aia/platforms/ios/www ... directory.
-         I have not been running Cordova Prepare or build, since it rewrites all this information.
+         I have NOT been running Cordova Prepare or build, since it rewrites all this information.
 		 XCODE alone works fine and you can run it on the simulator, or Archive (development) and load it using diawi.com, 
 		 or upload directly to the app store. 
 
-	4/15/20: DEBUG Build on MacinCloud LA952. PG Build has been deprecated for IOS 13, so it is no longer used. 
+	4/15/20: DEBUG Build on MacinCloud LA952.user168917,pw=pxt77203 PG Build has been deprecated for IOS 13, so it is no longer used. 
 	1. Get latest source using desktop GIT.
 	2. Manually copy the source from the GIT repositiory to aia/aia/www/index.html  and js/index.js.
 	   If you are NOT going to run 'cordova', manually copy the source directly into the platforms code at:
@@ -241,7 +244,7 @@ IOS DEBUG/BUILD    XCODE 12.2 (1/2/21)
 6. Items in config.xml should get copied into Anderson Island Assistant.pinfo.   If there don't end up there you will have to add them
 	yourself.  Don't edit pinfo directly. Instead use the XCode mechanism. Ensure you have keys for 
 	NSlocationwheninuseusagedescription, NSLocationAlwaysUsageDescription ? 
- NSCalendarsUsageDescription, LSApplicationQueriesSchemes (array of 1 string: "ttpapps.pcf"). See the file 'WorkingPlist0418.png' in Documents/Phonegap.
+ NSCalendarsUsageDescription, LSApplicationQueriesSchemes (array of 1 string: "hornblower.hornblower"). See the file 'WorkingPlist0418.png' in Documents/Phonegap.
  7. SPLASHSCREEN - Created SplashScreen.stroyboard.  Added an image control. Moved a screen.PNG file into the xcassets. Added that file to the image control. Set margins to 0.  Works ok now.
     This may have to be redone when 'Cordova build' is run, because it throws this stuff away. I'm not sure how to get Cordova config.xml to do this.
   8. 
@@ -338,11 +341,16 @@ IOS DEBUG/BUILD    XCODE 12.2 (1/2/21)
 
 -----------------------------------------------------------------------------------------------------------------------
 
-IOS CERTIFICATES  updated 5/31/18.
-Certificates last 3 years. Provisioning profiles last 1 year. 
+IOS CERTIFICATES  updated 5/5/22.
+Certificates last just 1 year. Provisioning profiles last 1 year. certSigningRequests last 5 years.
 HISTORY
-These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac and the developer.apple.com web site.
-3/18/20 New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
+These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac
+ and the developer.apple.com web site.
+5/5/22 on LA952. New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest.
+2/27/21 On LA952: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
+	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
+	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
+3/18/20 On LA952: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
 	Dev and Distribution MobileProvisioningProfiles updated to point to new certs.
 	P12 files exported using the new dev and distribution certs.
@@ -365,27 +373,29 @@ These files are on the desktop of the virtual mac. They are duplicated in OneDri
 4/3/14  New Provisioning Profile for Esther's iPhone 5. Created new phonegap build signing key: "AIADevPush040317" consisting
 	of posterswdev.p12 cert and AndersonIslandDevPush.mobileprovision on my PC only which enables Esther's iPhone 5 for testing.
 
-HOW TO Create new Development/Production Certificate:
+HOW TO Create new Development/Production Certificate  EVERY YEAR when the old ones expire:  Allow 1 hour for Dev and Prod.
 	The overall process is: 
-		1. Generate a Certificate Signing Request (CSR) xxxx.certSigningRequest. using Keychain. You can use an existing one.
-		   posterswdev.certSigningRequest or posterswprod...
+		1. Generate a Certificate Signing Request (CSR) xxxx.certSigningRequest. using Keychain. 
+		   NOTE: You should use an existing one for 5 years. posterswdev.certSigningRequest or posterswprod...
 		2. Use that to generate the Certificate on the developer.apple.com web site.
 		3. Import that certificate back into Keychain on the Mac. Then export the Public key to a P12 file.
 		4. Create a Provisioning Profile using the Certificate from #2 on the developer.apple.com web site. 
 		5. Download the MobileProfile file from #4.
-		6. Upload the MobileProfile and the P12 file to build.phonegap.com.
+		6. Upload the MobileProfile and the P12 file to OneDrive for use on VoltBuild.  NO longer necessary as of 2020 because I build on mac.
 	DETAILS:
 	Open Mac.
+	    Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to  LAuser168917.user168917,pw=pxt77203 
 		Open Safari. 
 	From Safari:
 		Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1) -> Certificates,Identifiers...
 		Go to Certificate.  
 		Click on '+' to create a new certificate.  
-		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.
+		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.  NOTE: expires 5/5/23.
 		PRODUCTION: click on 'Apple Distribution. Sign for App Store and Ad Hoc'.
  	Back to the Mac only if you don't already have a certSigningRequest file (you one for dev and a different one for prod). 
 		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
-		NOTE: I can use the existing CSR files for dev and prod that I created on 3/17.
+		NOTE: I can use the existing CSR files for dev and prod that I created on 3/17. Upload it by dragging it into the 
+		'choose file' box on Safari.
 		
 		Create A CSR (I should not need to do the following:) : 
 		 To create a CSR file, follow the instructions below to create one using Keychain Access.
@@ -404,36 +414,43 @@ HOW TO Create new Development/Production Certificate:
 		developer.apple.com:
 		Upload the CSR file (from above): posterswdev.certSigningRequest. or posterswprod.certSigningRequest.
 		Note that I can always use 
-		  the original posterswdev.certSigningRequest or posterswprod.certSigningRequest from 3/17.
+		  the original posterswdev.certSigningRequest or posterswprod.certSigningRequest from 3/17 UNTIL 5/23.
 		Now your certificate is done.
 		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
 		Rename it to AIADevmmyy.cer or AIAProdmmyy.cer.
 	Back to the Mac.
 		Then double click the .cer file to install in Keychain Access.
 		It now shows up in Keychain Access- Certificates as
-			 'Apple Development: Robert Bedoll' or Apple Distribution: Robert Bedoll.
+			 'Apple Development: Robert Bedoll' or Apple Distribution: Robert Bedoll.  and it will expire 1 year from today.
+			 (last done on 2/28/21, expires on 2/28/22).
+			 5/5/22: shows up as iPhoneDeveloper ... Bedoll, expires 5/5/23. and iPhoneDistribution... expires 5/5/23
 	    KEYCHAIN ACCESS:
 		select Certificates (not Keys), and the certificate just added (iPhone Developer or iPhone Distribution).  
 		right click on Export.  Select the P12 File Format.
 		Set the file name to AIADevmmyy or AIAProdmmyy  (was posterswdev or posterswprod.)
 		click Save.  It will prompt for the new password. Create the pw='dd', enter it twice and click OK.
-		You'll be asked for the Login PW. Use the MacinCloud pw, 'pwd29837' and click on 'Allow'.
+		You'll be asked for the Login PW. Use the MacinCloud pw, pxt77203 and click on 'Allow'.
 		You will now have a AIADevmmyy.p12 or AIAProdmmyy.p12 file (was posterswdev.p12 or posterswprod.p12 file.)
 
 	Backk to Safari.
 		developer.apple.com:
 		Now select correct Provisioning Profile: AIADistributionPush or AndersonIslandDevPush. 
-		click Edit.
+		click "Edit".
 		Add the new iOS Development or iOS Distribution (code signing) certificate. It should show up in the list of certificates.
 		Click on 'Save.'
-		Download it to the desktop. It will be called AndersonIslandDevPush.mobileprovision.
+		Download it to the desktop. It will be called AndersonIslandDevPush.mobileprovision.  It is only valid for 1 year. 
+		Rename to AndersonIsland<DevPush|DistributionPush>mmyy.mobileprovision.  e.g. AndersonIslandDistributionPush0522.mobileprovidion.
 		NOTE: THE APP PROVISIONING PROFILE ONLY HAS THE iOS App Development (or Distribution) Code Signing certificate.  
 			IT DOESNT HAVE THE PUSH CERTIFICATE. 
 			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
 		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.
 			It has no pw because Pushbots does not accept a pw. 
+	Copy the p12 and mobileprovision to OneDrive: AIAssistant/IOS to use in VoltBuild.
+		NOW WHAT? I think I am done. 
+		
 
-		BUILD.PHONEGAP.COM
+
+		OBSOLETE as of 4/2020: BUILD.PHONEGAP.COM
 		Log in to build.phonegap.com.  support@postersw.com 
 		Select Accounts -> Edit Account -> Signing keys.
 		Click on Add key, create a new key with the .P12 file just created and the .mobileprovision file just created.
@@ -441,32 +458,34 @@ HOW TO Create new Development/Production Certificate:
 
 
 ------------------------------------------------------------------------------------------------------------------------
-APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 6/15/20. Expires 7/15/2021.
+APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 7/13/21. Expires 8/12/2022.
+Last updated 7/13/21.
 
-For OneSignal 6/15/2020. Elapsed time 48 minutes.
-1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
+For OneSignal 7/13/21. Allow about 1 hour.
+1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com:6000, then login as user901584 pw= pwd29837
 												I didn't use  LA952.macincloud.com:6000 because the certSigningRequest is on LA051.
 2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
 ) -> Certificates,Identifiers...
-3. I selected Certificates +
+3. I selected "Certificates +" at the top of the page.
 4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE
 5. Under Create A new Certificate I ensured that my App ID for andersion-island.andersonislandassistant was selected. Then I clicked on Continue.
 6. Under Create A New Certificate - Upload a Certificate Signing Request' I chose the existing AIAAPN2018.certSigningRequest instead of creating a new one. 
 7. I clicked on CONTINUE to uploaded it.
 8. The next panel was "Download Your Certificate". I downloaded the new cer. It is named "aps.cer". 
-9. I named it apsPushProd06[yy].cer. So the next one should be apsPushProd0621, ... (on 6/15/20 I generated apsPushProd0620.cer).  I moved it to the desktop. Apple name is:
-10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, type: ApplePushServices, exp 7/10/20. 
+9. I named it apsPushProd06[yy].cer. So the next one should be apsPushProd0622, ... (on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
+10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, 
+    type: ApplePushServices, exp 8/12/22. 
 11. I immediately right clicked on that certificate in KeychainAccess and selected 'Export ...".
 12. That brings up a Save As dialog with file format p12. I set the file name to APNProd06yy.p12
     When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
 	You may be prompted for the login  password pwd29837
 	The file will be generated as APNProd06yy.p12 on the desktop.
-13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. Select my app.
-14. Click on 'SETTINGS'.  Then click on Apple IOS.
+13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. DD1 Select my app.
+14. Click on 'SETTINGS' at top of screen..  Then click on Apple IOS.
 15. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Scroll down and then click on 'Choose File..."
 16. Choose the APNProd06yy.p12 file. Then click on SAVE or NEXT.   
-17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Phonegap' icon. Then you get to another SAVE dialog.
-18. The Apple IOS status will now show the new certificate with 'expires July 10, 2021'.
+17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Cordova' icon. Then you get to another SAVE dialog.
+18. The Apple IOS status will now show the new certificate with 'expires August 12, 2022'.
 19. For grins, save the P12 file on onedrive. Using Safari, go to onedrive.live.com. login to my account. 
 20. Go to files->Documents->PhoneGap->Keys and drag the file from my desktop onto the web browser window.
 21. You are done. Elapsed time 48 minutes.
@@ -493,6 +512,7 @@ Note: The OneSignal API Key is stored under root/private/OneSignal.php
 DATA LOADS
 	Data is loaded from:
 	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app getdailycache.php.
+	   RELOAD: To force a reload immediately: create file refresh.txt manually with 1 line that contains the date. This gets picked up by alerts.php.
 	2. Coming Events: 
 		comingevents.txt is loaded 1/day by the app getdailycache.php (called by the app) as of 1.6. 
 		  It is copied directly into the dailycache data stream.
@@ -501,7 +521,8 @@ DATA LOADS
 	3. getalerts.php which copies alerts.txt (filled by getferryalerts.php cron every 5 min),
 		 tanneroutage.txt (filled by gettanneralerts.php cron every 10 min),
 		 burnban.txt (filled by getburnbanalerts.php cron every 15 min) to stdout.
-		 run every 10 minutes by the app as of 1.6.
+		 refresh.txt  (TO FORCE A REFRESH DATA, create this file manually with 1 line that contains the date. This gets turned into REFRESH\ndate\nREFRESHEND\n)  
+		 run every 1 minutes by the app as of 1.6.
 	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the getdailycache.php script as of 1.6.
 	5. openweathermap.com which returns json structures for current weather and forecast.
 		current loaded every 15 min by the app. forecast loaded every 30 min by the app.

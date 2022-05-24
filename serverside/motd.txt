@@ -1,0 +1,15 @@
+<MOTD>
+<button  style="text-align:left;font-weight:bold;padding:2px;margin:5px" onclick="window.open('https://www.anderson-island.org/displayferryoverflow.php', '_system');"><i class='material-icons'>&#xe532;</i> Overflow Pictures</button>&nbsp;&nbsp;<button  style="text-align:left;font-weight:bold;padding:2px;margin:2px" onclick="window.open('https://www.anderson-island.org/displayferryalerts.php', '_system');"><i class='material-icons'>&#xe002;</i>Alerts</button><br/><span style="color:red;font-weight:bold">
+</MOTD>
+<DATE 925 1003>
+Fri 10/1: Non-peak season fares begin.<br/>
+</DATE>
+<DATE 0927 1003>
+Sun 10/3: 9:10p AI, 10:20p St, 10:50p AI Cancelled<br/>
+</DATE>
+<DATE 928 1004>
+Mon 10/4: 9:30am ST, 11:10am AI Cancelled<br/>
+</DATE>
+<MOTDLAST>
+</span>Tap left for speech. Tap right for details.
+</MOTDLAST>

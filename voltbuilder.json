@@ -1,0 +1,17 @@
+{
+    "androidAlias": "postersw",
+    "androidAliasPassword": "davedeb",
+    "androidKeystore": "certificates/mykeystore.keystore",
+    "androidKeystorePassword": "davedeb",
+    "androidPackageType": "apk",
+    "googlePlayKey": "",
+    "googlePlayTrack": "",
+    "iosDevP12": "certificates/AIADev0522.p12",
+    "iosDevP12Password": "davedeb",
+    "iosDevelopment": "certificates/AndersonIslandDevPush0522.mobileprovision",
+    "iosDistP12": "certificates/AIAProd0522.p12",
+    "iosDistP12Password": "davedeb",
+    "iosDistribution": "certificates/AIADistributionPush0522.mobileprovision",
+    "iosPackageType": "app-store",
+    "release": "debug"
+}

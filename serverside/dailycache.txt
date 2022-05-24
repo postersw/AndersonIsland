@@ -1,14 +1,47 @@
 DAILYCACHE
 MOTD
-<button  style="width:100%;padding:6px;text-align:left;font-weight:bold;color:darkred" onclick="window.open('http://www.anderson-island.org/corona.html', '_system');"> AI Coronavirus Information</button> <br/>
+<button  style="text-align:left;font-weight:bold;padding:2px;margin:5px" onclick="window.open('https://www.anderson-island.org/displayferryoverflow.php', '_system');"><i class='material-icons'>&#xe532;</i> Overflow Pictures</button>&nbsp;&nbsp;<button  style="text-align:left;font-weight:bold;padding:2px;margin:2px" onclick="window.open('https://www.anderson-island.org/displayferryalerts.php', '_system');"><i class='material-icons'>&#xe002;</i>Alerts</button><br/><span style="color:red;font-weight:bold">Fri 10/1: Non-peak season fares begin.<br/>Sun 10/3: 9:10p AI, 10:20p St, 10:50p AI Cancelled<br/>Mon 10/4: 9:30am ST, 11:10am AI Cancelled</span><br/>Tap left for speech. Tap right for details.
+PROTOTYPEALERT
+<span style="color:red;font-weight:bold">ALERT: Sept 7: 9:30am ST, 11:10am AI Cancelled</span><br/>
 FERRYMESSAGE
-Summer rates begin May 1. Winter-rate tickets will not be accepted.
+Will a ferry run fill up? <br/><button  style="text-align:left;font-weight:bold;padding:4px;" onclick="window.open('https://www.anderson-island.org/displayferryoverflow.php', '_system');"><i class='material-icons'>&#xe532;</i> Ferry Overflow Pictures</button>&nbsp;<button  style="text-align:left;font-weight:bold;padding:2px;" onclick="window.open('https://www.anderson-island.org/displayferryalerts.php', '_system');">Alert History</button><br/><span style="color:red;font-weight:bold">ALERT: Fri 10/1: Non-peak season fares begin.<br/>Sun 10/3: 9:10p AI, 10:20p St, 10:50p AI Cancelled<br/>Mon 10/4: 9:30am ST, 11:10am AI Cancelled</span><br/>
 FERRYMESSAGEEND
+DST
+314,1107
+TANNEROUTAGELINK
+https://tannerelectric.ebill.coop/maps/ext/OutageWebMap/
+BURNBANLINK
+https://secure.pscleanair.org/AirQuality/BurnBan
+TIDEDATALINK
+tidedata.txt
+CUSTOMTIDELINK
+https://www.anderson-island.org/getcustomtide.php?
+FERRYLOCEXTLINK
+https://www.marinetraffic.com/en/ais/home/centerx:-122.630/centery:47.168/zoom:12/shownames:true
+FERRYSCHEDULELINK
+https://www.co.pierce.wa.us/index.aspx?NID=2200
+FERRYDOCKCAMLINK
+&nbsp;&nbsp;&nbsp;<button  style="text-align:left;font-weight:bold;" onclick="window.open('http://www.anderson-island.org/dockcameras.html', '_system');"><i class='material-icons'>&#xe04b;</i> Dock Cameras</button>&nbsp;&nbsp;
+PARKSLINK
+https://www.anderson-island.org/parks/parks.html?2
+PARKSINFO
+All parks open 7am-10:30pm. Tap for more...
+NEWSLINK
+https://www.anderson-island.org/news.html?1
+FERRYCAMS
+https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/stllane.jpg
+FERRYCAMA
+https://online.co.pierce.wa.us/xml/abtus/ourorg/pwu/ferry/ailane.jpg
+ANDROIDVER
+1.29
+IOSVER
+1.29
 EMERGENCY
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:911"><i class='material-icons bizicon'>&#xe0cd;</i> All emergencies: 911</a> </td></tr>
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-798-4333"><i class='material-icons bizicon'>&#xe61d;</i> Crisis Line: 253-798-4333</a></td></tr>
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-884-4040"><i class='material-icons bizicon'>&#xe80e;</i> Fire Department: 253-884-4040</a></td></tr>
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-884-4057"><i class='material-icons bizicon'>&#xe80e;</i> Fire Department Fax: 253-884-4057</a></td></tr>
+<tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-225-5173"><i class='material-icons bizicon'>&#xe0cd;</i> Health Ministry: 253-225-5173</a></td></tr>
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:253-970-5403"><i class='material-icons bizicon'>&#xe542;</i> Island Volunteer Patrol: 253-970-5403</a></td></tr>
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-800-562-9800"><i class='material-icons bizicon'>&#xe90d;</i> Pierce County Sheriff: 1-800-562-9800</a></td></tr>
 <tr style="background-color:lightgray;padding:8px;"><td  ><a style="display:normal;text-decoration:none;" href="tel:1-253-798-4721"><i class='material-icons bizicon'>&#xe90d;</i> Pierce County Sheriff Non-Emergency: 253-798-4721</a></td></tr>
@@ -22,7 +55,6 @@ Museum Store (253-884-2135),1200-1600,,,,,,1200-1600,http://www.andersonislandhs
 MHEND
 LINKS
 <span id='island'>
-<button  style="width:100%;padding:6px;text-align:left;font-weight:bold;color:darkblue;" onclick="window.open('http://matterhornwab.co.pierce.wa.us/ferrystatus/', '_system');"><i class='material-icons bizicon'>&#xe532;</i> FERRY LOCATION</button> <br/>
 <button  style="width:100%;padding:6px;text-align:left;font-weight:bold;color:darkred;" onclick="window.open('http://www.anderson-island.org/corona.html', '_system');">AI CORONA VIRUS INFORMATION</button> <br/>
 <strong>ISLAND:</strong>
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/AIASounder.html', '_system');"><i  class='material-icons bizicon'>&#xe54b</i> AIA: AI Association & Island Sounder Newsletter</button><br />
@@ -32,19 +64,24 @@ LINKS
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://andersonislandhs.org', '_system');"><i class='material-icons bizicon'>&#xe7ef;</i> AIHS: AI Historical Society</button><br /><button style="width:100%;padding:6px;text-align:left" onclick="window.open('https://post265.wildapricot.org/', '_system');"><i class='material-icons bizicon'>&#xe153;</i> American Legion Post 265</button><br />
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/churches.html', '_system');"><i class='material-icons bizicon'>&#xe145;</i> Churches (on AI)</button><br />
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.steilacoom.k12.wa.us/Domain/13', '_system');"><i class='material-icons bizicon'>&#xe80c;</i> Elementary School</button><br />  
-<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/362537050519207', '_system');"><i class='material-icons bizicon'>&#xe8dc;</i> Facebook: AI Buy and Sell</button>
-<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/797030787077525', '_system');"><i class='material-icons bizicon'>&#xe8dc;</i> Facebook: AI Community</button><br />
-<button  style="width:100%;padding:6px;text-align:left" onclick="window.open('http://matterhornwab.co.pierce.wa.us/ferrystatus/', '_system');"><i class='material-icons bizicon'>&#xe532;</i> Ferry Location</button> <br/>
+
+<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/797030787077525', '_system');"><i class='material-icons bizicon'>&#xe8dc;</i> FB: AI Community</button>
+<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/MeanwhileOnAndersonIsland', '_system');"><i class='material-icons bizicon'>&#xe8dc;</i> FB: Meanwhile On AI</button><br />
+<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/362537050519207', '_system');"><i class='material-icons bizicon'>&#xe8dc;</i> FB: AI Buy and Sell</button>
+<button style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.facebook.com/groups/birdsofandersonisland', '_system');"><i class='material-icons bizicon'>&#xe8dc;</i> FB: Birds of AI</button><br/>
+
+<button  style="width:100%;padding:6px;text-align:left" onclick="window.open('https://www.marinetraffic.com/en/ais/home/centerx:-122.630/centery:47.168/zoom:12/shownames:true', '_system');"><i class='material-icons bizicon'>&#xe532;</i> Ferry Location</button> <br/>
 <button  style="width:45%;padding:6px;text-align:left" onclick="window.open('http://www.co.pierce.wa.us/index.aspx?NID=1793', '_system');"><i class='material-icons bizicon'>&#xe532;</i> FERRY</button> &nbsp
 <button  style="width:45%;padding:6px;text-align:left" onclick="window.open('https://www.pierceferrytickets.com/', '_system');"><i class='material-icons bizicon'>&#xe638;</i> Buy Tickets</button> <br/>
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.pcfd27.com', '_system');"><i class='material-icons bizicon'>&#xe80e;</i> Fire and Rescue (PC Fire District 27)</button><br />   
    
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://andersonislandarts.org', '_system');"><i class='material-icons bizicon'>&#xe3b7;</i> Island Arts</button><br />                
-<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.andersonislandpatrol.org', '_system');"><i class='material-icons bizicon'>&#xe542;</i> Island Patrol</button><br />
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://marine.weather.gov/MapClick.php?zoneid=PZZ135#.W9zVwJNKiHs', '_system');"><i class='material-icons bizicon'>&#xe2bd;</i> Marine Forecast</button><br />          
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.marinetraffic.com/en/ais/home/centerx:-122.743/centery:47.1558/zoom:12', '_system');"><i class='material-icons bizicon'>&#xe532;</i> Marine Traffic Tracking</button><br /> 
-<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.hobolink.com/p/de3ae8d02aff87b5523cf8b2e7491441', '_system');"><i class='material-icons bizicon'>&#xe2bd;</i> Oro Bay Weather</button><br />          
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.hobolink.com/p/de3ae8d02aff87b5523cf8b2e7491441', '_system');"><i class='material-icons bizicon'>&#xe2bd;</i> Oro Bay Weather</button><br />         
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.orobayyc.org', '_system');"><i class='material-icons bizicon'>&#xe532;</i> Oro Bay Yacht Club</button><br />  
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://andersonislandparks.org', '_system');"><i class='material-icons bizicon'>&#xe407;</i> Parks</button><br />
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/phonebook.html', '_system');"><i class='material-icons bizicon'>&#xe0cd;</i> Phone Book</button><br />
 <button style="width:48%;padding:6px;text-align:left" onclick="window.open('https://www.piercetransit.org/', '_system');"><i class='material-icons bizicon'>directions_bus</i> Pierce County Transit</button>
 <button style="width:48%;padding:6px;text-align:left" onclick="window.open('https://www.piercetransit.org/routes/?id=212', '_system');"><i class='material-icons bizicon'>directions_bus</i> Route 212-Steilacoom</button><br />
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://rivieracommunityclub.com', '_system');"><i class='material-icons bizicon'>&#xe8d1;</i> Riviera</button><br />
@@ -54,6 +91,7 @@ LINKS
 <button style="width:45%;padding:6px;text-align:left" onclick="window.open('http://tanner.coopwebbuilder2.com/content/report-outage', '_system');"><i class='material-icons bizicon'>&#xe3e6;</i> Report Outage</button>
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/transportationservices.html', '_system');"><i class='material-icons bizicon'>&#xe531;</i> Transportation Services</button><br />
 <button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/volunteers.html', '_system');"><i class='material-icons bizicon'>&#xe7fe;</i> Volunteer Opportunities</button><br />
+<button style="width:100%;padding:6px;text-align:left" onclick="window.open('http://www.anderson-island.org/vip.html', '_system');"><i class='material-icons bizicon'>&#xe542;</i> VIP - Volunteer Island Patrol</button><br />
 <hr/>
 </span>
 <span id='fishing'>
@@ -91,83 +129,87 @@ LINKSEND
 OPENHOURSJSON
 [{
     "Name": "Store", "Phone": "253-884-4001", "Desc": "Groceries, Deli, Hardware, Gas, Propane, Tool Rental","Icon":"local_grocery_store",
-    "Img": "http://anderson-island.org/img/store.jpg",
+    "Img": "https://anderson-island.org/img/store.jpg",
     "Href": "http://www.andersonislandgeneralstore.com",
     "Addr": "10202 Eckenstam Johnson Rd",
     "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
-    "Sc": [{ "From": 101,  "To":  525, "H": [1000, 1800, 800, 1900, 800, 1900, 800, 1900, 800, 1900, 800, 1900, 800, 1900] },
-           { "From": 526,  "To": 1013, "H": [800, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
-           { "From": 1014, "To": 1123, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
-           { "From": 1124, "To": 1130, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 800, 1300, 700, 2100, 800, 2100] },
-           { "From": 1201, "To": 1221, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
-           { "From": 1222, "To": 1228, "H": [1000, 1800, 700, 1800, 700, 1800,   0,    0, 700, 2000, 700, 2100, 800, 2100] },
-           { "From": 1229, "To":  104, "H": [1000, 1800, 700, 2100, 700, 2100, 800, 2000, 700, 2000, 700, 2100, 800, 2100] }],
+    "Sc": [{ "From":  103, "To":  417, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
+           { "From":  418, "To":  918, "H": [ 800, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
+           { "From":  919, "To": 1121, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
+           { "From": 1122, "To": 1128, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 800, 1300, 700, 2100, 800, 2100] },
+           { "From": 1129, "To": 1219, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 2000, 700, 2100, 800, 2100] },
+           { "From": 1220, "To": 1226, "H": [1000, 1800, 700, 2000, 700, 2000, 700, 2000, 700, 1800,   0,    0, 800, 2100] },
+           { "From": 1227, "To":  102, "H": [1000, 1800, 700, 2100, 700, 2100, 800, 2000, 700, 2100, 800, 2000, 800, 2100] }],
     "Closed": [1225]
 },{
-    "Name": "Cafe", "Phone": "253-884-1300", "Desc": "Coffee, breads, lunch and dinner", "Icon":"local_cafe",
-    "Img": "http://anderson-island.org/img/cafe.jpg",
+    "Name": "Cafe ToGo", "Phone": "253-884-1300", "Desc": "Coffee, breads, lunch and dinner", "Icon":"local_cafe",
+    "Img": "https://anderson-island.org/img/cafe.jpg",
     "Href": "http://www.andersonislandcafe.com",
     "Addr": "10006 Eckenstam Johnson Rd",
     "Map": "https://www.google.com/maps?q=Island+Coffee+Shoppe,+10006+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
-    "Sc": [{ "From":  101, "To": 531, "H": [800, 1500, 800, 1900, 800, 1500, 800, 1500, 800, 1500, 800, 1900, 800, 1900] },
-           { "From":  601, "To": 1026,"H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630, 1500, 630, 2000, 800, 2000] },
-           { "From": 1027, "To": 1123,"H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630, 1500, 630, 2000, 800, 2000] },
-           { "From": 1124, "To": 1130,"H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 800, 1300, 630, 2000, 800, 2000] },
-           { "From": 1201, "To": 1221,"H": [800, 1500, 630, 2000, 630, 1500, 630, 1500, 630, 1500, 630, 2000, 800, 2000] },
-           { "From": 1222, "To": 1228,"H": [800, 1500, 630, 1800, 630, 1500,   0,    0, 630, 1500, 630, 2000, 800, 2000] },
-           { "From": 1229, "To":  104,"H": [800, 1500, 630, 2100, 800, 1500, 800, 1500, 630, 1500, 630, 2000, 800, 2000] }],
+    "Sc": [{ "From":  103, "To": 1026,"H": [800, 1500, 700, 2000, 700, 1500, 700, 1500, 700, 1500, 700, 2000, 800, 2000] },
+           { "From": 1027, "To": 1121,"H": [800, 1500, 700, 2000, 700, 1500, 700, 1500, 700, 1500, 700, 2000, 800, 2000] },
+           { "From": 1122, "To": 1128,"H": [800, 1500, 700, 2000, 700, 1500, 700, 1500, 800, 1300, 700, 2000, 800, 2000] },
+           { "From": 1129, "To": 1219,"H": [800, 1500, 700, 2000, 700, 1500, 700, 1500, 700, 1500, 700, 2000, 800, 2000] },
+           { "From": 1220, "To": 1226,"H": [800, 1500, 700, 2000, 700, 1500, 700, 1500, 700, 1500,   0,    0, 800, 2000] },
+           { "From": 1227, "To":  102,"H": [800, 1500, 700, 2000, 700, 1500, 700, 1500, 700, 1500, 700, 2000, 800, 2000] }],
     "Closed": [1225]
 },{
-    "Name": "Restaurant ToGo", "Phone": "253-884-3344", "Desc": "Takeout only: Riviera Lakeshore full-service Restaurant and Bar", "Icon": "restaurant",
-    "Img": "http://anderson-island.org/img/restaurant.jpg",
-    "Href": "http://rivieracommunityclub.com/amenities/restaurant",
+   "Name": "Restaurant", "Phone": "253-884-3344", "Desc": "Riviera Lakeshore take-out and dine-in Restaurant and Bar", "Icon": "restaurant",
+    "Img": "https://anderson-island.org/img/restaurant.jpg",
+    "Href": "https://rivieraclub.org/restaurant/",
     "Addr": "11019 Country Club Dr",
     "Map": "https://www.google.com/maps?q=Riviera+Lakeshore+Restaurant,+11019+Country+Club+Dr,+Anderson+Island,+WA",
-    "Sc": [ { "From": 317, "To": 1005, "H":[1500,1900,1500,1900,1500,1900,1500,1900,1500,1900,1500,1900,1500,1900] },
-            { "From": 1006, "To": 316, "H":[900,2000,1500,2000,1500,2000,1500,2000,1500,2000,1100,2100,900,2100] }
+    "Sc": [ { "From": 103, "To":  703, "H":[1100,1900,1500,2000,1500,2000,1500,2000,1500,2000,1500,2000,1100,2000] },
+            { "From": 704, "To":  710, "H":[1100,2000,1500,2000,1500,2000,1500,2000,1500,2000,1500,2000,1100,2000] },
+            { "From": 711, "To":  925, "H":[1100,2000,1500,2000,1500,2000,1500,2000,1100,2000,1100,2100,1100,2100] },
+            { "From": 926, "To": 1219, "H":[1100,2000,1500,2000,1500,2000,1500,2000,1500,2000,1500,2100,1100,2100] },
+            { "From":1220, "To": 1226, "H":[1100,2000,1500,2000,1500,2000,1500,2000,   0,   0,   0,   0,1100,2100] },
+            { "From":1227, "To": 102,  "H":[1100,2000,1500,2000,1500,2000,1500,2000,1500,2000,   0,   0,1100,2100] }
           ],
-    "Closed": [1202,1203,1204,1205,1206,1224,1225,101]
+    "Closed": [213,214,1224,1225,101]
 },{
-    "Name": "<img style='float:right' src='http://anderson-island.org/img/aihs300px.jpg' width='33%'>AIHS Farm Gift<br/> Shop & Farm House", "Phone": "253-884-2135", "Desc": "AIHS Museum and gift shop located at the Johnson Farm","Icon": "card_giftcard",
-    "Img": "http://anderson-island.org/img/aihs300px.jpg",
-    "Href": "http://www.andersonislandhs.org",
+    "Name": "<img style='float:right' src='https://anderson-island.org/img/aihs300px.jpg' width='33%'>AIHS Farm Gift Shop & Museum", "Phone": "253-884-2135", "Desc": "AIHS Museum and gift shop open weekends.","Icon": "card_giftcard",
+    "Img": "https://anderson-island.org/img/aihs300px.jpg",
+    "Href": "https://www.anderson-island.org/hs",
     "Addr": "9306 Otso Point Rd",
     "Map": "https://maps.google.com/maps?q=9306+Otso+Point+Road,+Anderson+Island,+WA",
-    "Sc": [{ "From": 501, "To": 922, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600] },
-	   { "From": 923, "To": 1117, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] },
-	   { "From": 1124, "To": 1130, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600, 1000, 1600] },
-	   { "From": 1201, "To": 1223, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] }],
+    "Sc": [{ "From": 401, "To": 523,  "H":[1100, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1100, 1500] },
+	   { "From": 529, "To": 926, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 1600] },
+	   { "From": 1121, "To": 1127, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600, 1000, 1600] },
+	   { "From": 1002, "To": 1219, "H":[1200, 1600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1200, 1600] }
+          ],
     "Closed": [1225]
 },{
-    "Name": "Dump/Recycling<img style='float:right' src='http://anderson-island.org/img/recycle.jpg' width='33%'>", "Phone": "253-847-7555", "Desc": "Pierce County Recycle Transfer Station<br/>","Icon": "delete",
-    "Img": "http://anderson-island.org/img/recycle.jpg",
-    "Href": "http://www.co.pierce.wa.us/index.aspx?NID=1541",
+    "Name": "Dump/Recycling<img style='float:right' src='https://anderson-island.org/img/recycle.jpg' width='33%'>", "Phone": "253-847-7555", "Desc": "Pierce County Recycle Transfer Station<br/>","Icon": "delete",
+    "Img": "https://anderson-island.org/img/recycle.jpg",
+    "Href": "https://www.co.pierce.wa.us/index.aspx?NID=1541",
     "Addr": "9607 Steffensen Rd",
     "Map": "https://www.google.com/maps?q=Pierce+County+Recycling,+9607+Steffense+Rd,+Anderson+Island,+WA",
     "Sc": [{ "From": 1001, "To": 331, "H": [1000, 1400, 1300, 1700, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
         { "From": 401, "To": 930, "H":[1000, 1800, 1000, 1800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }],
     "Closed": [1124, 1225, 101]
 },{
-    "Name": "<img style='float:right' src='http://anderson-island.org/img/pcfd27.jpg' width='33%'>Fire and Rescue<br/> (PCFD27)", "Phone": "253-884-4040", "Desc": "Anderson Island Fire and Rescue (PC Fire District 27)","Icon":"whatshot",
-    "Img": "http://anderson-island.org/img/pcfd27.jpg",
+    "Name": "<img style='float:right' src='https://anderson-island.org/img/pcfd27.jpg' width='33%'>Fire and Rescue<br/> (PCFD27)", "Phone": "253-884-4040", "Desc": "Anderson Island Fire and Rescue (PC Fire District 27)","Icon":"whatshot",
+    "Img": "https://anderson-island.org/img/pcfd27.jpg",
     "Href": "http://www.pcfd27.com/",
     "Addr": "12207 Lake Josephine Blvd",
     "Map": "https://maps.google.com/maps?q=Pierce+County+Fire+District+27,+12207+Lake+Josephine+Blvd,+Anderson+Island,+WA",
     "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 800, 1600, 800, 1600, 800, 1600, 800, 1600, 800, 1600, 0, 0] }],
     "Closed": [1225]
 },{
-    "Name": "Fitness Center<img style='float:right' src='http://anderson-island.org/img/oldschool.jpg' width='33%'>", "Phone": "253-884-3059", "Desc": "Anderson Island 24-hour Fitness Center in Old Schoolhouse. Call Deb Lal for information on membership, equipment, and classes.",
-    "Img": "http://anderson-island.org/img/oldschool.jpg",
+    "Name": "Fitness Center<img style='float:right' src='https://anderson-island.org/img/oldschool.jpg' width='33%'>", "Phone": "253-884-3059", "Desc": "Anderson Island 24-hour Fitness Center in Old Schoolhouse. Call Dan at 425-879-8334 for more.",
+    "Img": "https://anderson-island.org/img/oldschool.jpg",
     "Href": "http://www.AndersonIslandCFC.org", "Icon":"fitness_center",
     "Addr": "10833 Eckenstam Johnson Rd",
     "Map": "https://maps.google.com/maps/place/+10833+Eckenstam+Johnson+Rd,+Anderson+Island,+WA+98303",
-    "Sc": [{ "From": 101, "To": 301, "H":[1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359, 1, 2359]},
-           { "From": 302, "To": 1231, "H":[0,0,0,0,0,0,0,0,0,0,0,0,0,0]} ],
+    "Sc": [{ "From": 101, "To":  117, "H":[0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+           { "From": 118, "To": 1231, "H":[1,2359,1,2359,1,2359,1,2359,1,2359,1,2359,1,2359]} ],
     "Closed": [1225]
 },{
-    "Name": "<img style='float:right' src='http://anderson-island.org/img/lemay.jpg' width='33%'>Garbage Weekly<br/> Thursday Pickup", "Phone": "253-875-5053", "Desc": "Weekly Curbside Garbage Pickup by LeMay","Icon": "delete",
-    "Img": "http://anderson-island.org/img/lemay.jpg",
-    "Href": "http://lemaypiercecountyrefuse.com/",
+    "Name": "<img style='float:right' src='https://anderson-island.org/img/lemay.jpg' width='33%'>Garbage Weekly<br/> Thursday Pickup", "Phone": "253-875-5053", "Desc": "Weekly Curbside Garbage Pickup by LeMay","Icon": "delete",
+    "Img": "https://anderson-island.org/img/lemay.jpg",
+    "Href": "https://www.lemaypiercecountyrefuse.com/",
     "Addr": "",
     "Map": "",
     "Sc": [{ "From": 1222, "To": 104, "H":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 1600, 0, 0] },
@@ -175,36 +217,43 @@ OPENHOURSJSON
     "Pickup": "on",
     "Closed": [1124]
 },{
-     "Name": "<img style='float:right' src='http://anderson-island.org/img/golf.jpg' width='33%'>Golf Course<br/> and Shop (Riviera)", "Phone": "253-884-9634", "Desc": "Riviera golf course and pro shop","Icon": "golf_course",
-    "Img": "http://anderson-island.org/img/golf.jpg",
-    "Href": "http://rivieracommunityclub.com/amenities/golf-course",
+     "Name": "<img style='float:right' src='https://anderson-island.org/img/golf.jpg' width='33%'>Golf Course<br/> and Shop (Riviera)", "Phone": "253-884-9634", "Desc": "Riviera golf course and pro shop for members and guests","Icon": "golf_course",
+    "Img": "https://anderson-island.org/img/golf.jpg",
+    "Href": "https://rivieraclub.org/golf",
     "Addr": "11019 Country Club Dr",
-    "Map": "",
-    "Sc": [{"From": 101, "To": 430, "H":[0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
-           {"From": 501, "To": 925, "H":[ 830, 1600, 830, 1600, 830, 1600, 800, 1600, 830, 1600, 800, 1700, 800, 1700]},
-	   {"From": 926, "To": 101, "H":[1100, 1500, 0, 0, 0, 0, 0, 0, 0, 0, 1100, 1500, 1000, 1600]}],
+    "Map": "https://www.google.com/maps/dir/11019+Country+Club+Drive,+Anderson+Island,+WA//@47.1540066,-122.686699,16z/data=!4m9!4m8!1m5!1m1!1s0x5491a8015bf24d35:0x817b55c1ac7e0888!2m2!1d-122.6850139!2d47.1567861!1m0!3e0",
+    "Sc": [{"From": 501, "To": 930, "H":[ 830, 1600, 830, 1600, 830, 1600, 800, 1600, 830, 1600, 800, 1700, 800, 1700]},
+           {"From":1001, "To": 430, "H":[1100, 1500, 0,   0,      0,    0,   0,    0,   0,    0,1100, 1500,1100, 1600]}],
     "Closed": [425,426,427,912,913,914]
 },{
-    "Name": "Library (Pierce)<img style='float:right' src='http://anderson-island.org/img/aicc.jpg' width='33%'>", "Phone": "", "Desc": "Weekly Pierce Country Library","Icon": "local_library",
-    "Img": "http://anderson-island.org/img/aicc.jpg",
-    "Href": "http://www.piercecountylibrary.org",
-    "Addr": "Community Center Clubhouse",
+    "Name": "Library (Pierce)<img style='float:right' src='https://anderson-island.org/img/aicc.jpg' width='33%'>", "Phone": "", "Desc": "Weekly Pierce Country Library Curbside Pickup at Community Center","Icon": "local_library",
+    "Img": "https://anderson-island.org/img/aicc.jpg",
+    "Href": "https://www.piercecountylibrary.org",
+    "Addr": "Community Center Curbside Pickup",
     "Map": "",
-    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }],
+    "Sc": [{ "From": 101, "To": 1231, "H":[0, 0, 0, 0, 0, 0, 1100, 1330, 0, 0, 0, 0, 0, 0] }],
     "Closed": [1124, 1225]
 },{
-    "Name": "Post Office<img style='float:right' src='http://anderson-island.org/img/store.jpg' width='33%'>", "Phone": "253-884-4001", "Desc": "USPS Post Office in General Store","Icon": "email",
-    "Img": "http://anderson-island.org/img/store.jpg",
+     "Name": "Marina (Riviera)", "Phone": "253-961-6352", "Desc": "Riviera Marina","Icon": "golf_course",
+    "Img": "https://anderson-island.org/img/marina.jpg",
+    "Href": "https://rivieraclub.org/marina",
+    "Addr": "11019 Country Club Dr",
+    "Map": "https://www.google.com/maps/dir/47.1867,-122.7079646/Riviera+Boat+Lauch+%26+Marina,+11711+Marina+Dr,+Anderson+Island,+WA+98303/@47.1689661,-122.7102558,14z/data=!3m1!4b1!4m10!4m9!1m1!4e1!1m5!1m1!1s0x549107ff32dd3e7f:0x8890997d832b1c0a!2m2!1d-122.6788286!2d47.1523895!3e0",
+    "Sc": [{"From": 101, "To": 504, "H":[0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
+           {"From": 505, "To": 925, "H":[ 800,2200,800,2200,800,2200,800,2200,800,2200,800,2200,800,2200]}]
+},{
+    "Name": "Post Office<img style='float:right' src='https://anderson-island.org/img/store.jpg' width='33%'>", "Phone": "253-884-4001", "Desc": "USPS Post Office in General Store","Icon": "email",
+    "Img": "https://anderson-island.org/img/store.jpg",
     "Href": "http://www.hourspostoffice.com/USPS+Post+Office+Anderson+Island/98303/Anderson+Island/40629",
     "Addr": "10202 Eckenstam Johnson Rd",
     "Map": "https://www.google.com/maps?q=Anderson+Island+General+Store,+10202+Eckenstam+Johnson+Rd,+Anderson+Island,+WA",
     "Sc": [{"From": 101, "To": 1231, "H": [0, 0, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500, 1100, 1500],
         "H2":[0, 0, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 1800, 1900, 0, 0]}],
-    "Closed": [101, 121, 218, 527, 704, 902, 1014, 1111, 1128, 1225]
+    "Closed": [101, 118,215,531,705,906,1011,1111,1126,1225]
 },{
-    "Name": "<img style='float:right' src='http://anderson-island.org/img/lemay.jpg' width='33%'>Recycle alternate-week<br/> Thursday Pickup", "Phone": "253-875-5053", "Desc": "Alternate Week Curbside Recycle Pickup by LeMay","Icon": "refresh",
-    "Img": "http://anderson-island.org/img/lemay.jpg",
-    "Href": "http://lemaypiercecountyrefuse.com/",
+    "Name": "<img style='float:right' src='https://anderson-island.org/img/lemay.jpg' width='33%'>Recycle alternate-week<br/> Thursday Pickup", "Phone": "253-875-5053", "Desc": "Alternate Week Curbside Recycle Pickup by LeMay","Icon": "refresh",
+    "Img": "https://anderson-island.org/img/lemay.jpg",
+    "Href": "https://www.lemaypiercecountyrefuse.com/",
     "Addr": "",
     "Map": "",
     "Sc":[{ "From": 1222, "To": 104, "H":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 1600, 0, 0] },
@@ -213,49 +262,29 @@ OPENHOURSJSON
     "Pickup": "on",
     "Closed": [101, 527, 704, 902, 1128]
 },{
-    "Name": "Riviera Office<img style='float:right' src='http://anderson-island.org/img/riviera.jpg' width='33%'>", "Phone": "253-884-4093", "Desc": "Riviera Business Office",
-    "Img": "http://anderson-island.org/img/riviera.jpg",
-    "Href": "http://rivieracommunityclub.com",
+    "Name": "Riviera Office<img style='float:right' src='https://anderson-island.org/img/riviera.jpg' width='33%'>", "Phone": "253-884-4093", "Desc": "Riviera Business Office",
+    "Img": "https://anderson-island.org/img/riviera.jpg",
+    "Href": "https://rivieraclub.org",
     "Addr": "11019 Country Club Dr",
-    "Map": "",
-    "Sc": [{"From": 522, "To": 925, "H":[0,0, 900, 1600, 900, 1600, 900, 1600, 900, 1600, 900, 1600, 900, 1400]},
-	{"From": 926, "To": 521, "H":[0,0, 900, 1700, 900, 1700, 900, 1700, 900, 1700, 900, 1700, 0,0]}],
+    "Map": "https://www.google.com/maps/dir/11019+Country+Club+Drive,+Anderson+Island,+WA//@47.1540066,-122.686699,16z/data=!4m9!4m8!1m5!1m1!1s0x5491a8015bf24d35:0x817b55c1ac7e0888!2m2!1d-122.6850139!2d47.1567861!1m0!3e0",
+    "Sc": [{"From": 522, "To": 925, "H":[0,0, 900, 1200, 900, 1200, 900, 1200, 900, 1200, 900, 1200, 0, 0],
+                                   "H2":[0, 0, 1300,1600,1300,1600,1300,1600,1300,1600,1300,1600, 0, 0]},
+	{"From": 926, "To": 521, "H":[0,0, 900, 1600, 900, 1600, 900, 1600, 900, 1600, 900, 1600, 0,0]}],
     "Closed": [101,1224,1225,1231]
 }]
 OPENHOURSJSONEND
-TANNEROUTAGELINK
-https://tannerelectric.ebill.coop/maps/ext/OutageWebMap/
-BURNBANLINK
-https://secure.pscleanair.org/AirQuality/BurnBan
-TIDEDATALINK
-tidedata.txt
-CUSTOMTIDELINK
-http://www.anderson-island.org/getcustomtide.php?
-FERRYLOCATIONLINK
-http://www.anderson-island.org/ferrylocation.html?3
-FERRYSCHEDULELINK
-http://www.co.pierce.wa.us/index.aspx?NID=2200
-PARKSLINK
-https://www.anderson-island.org/parks/parks.html?1
-NEWSLINK
-https://www.anderson-island.org/news.html?1
-ANDROIDVER
-1.26
-IOSVER
-1.23
-COMMENT 10/10:30 run cancelled 1/1/20. rescheduled to 1/2. 
 FERRYTS
-445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,thanksgiving+1,1224,1225);545;123456;645;*;800;*;900;*;1000;(gMonthDay!=102)&&((gMonthDay==101)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1030;(InList(gMonthDay,memorialday,laborday));1100;(false);1130;(InList(gMonthDay,memorialday,laborday));1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday,703,704)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday,703,704)));1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,703,704,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,703,704,laborday));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday-3));1730;*;1800;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(laborday-1)))||InList(gMonthDay,memorialday-3,703,704));1840;*;1940;((gMonthDay==101)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2040;*;2200;(gDayofWeek==6)|| ((gDayofWeek==5)&&((gMonthDay<701)||(gMonthDay>825)))||InList(gMonthDay,1231,101,703,704,707,memorialday,laborday,thanksgiving,thanksgiving+1,1224,1225);2300;(gMonthDay==memorialday-3)||((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<825))
+445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,thanksgiving+1,1224,1225);545;*;705;*;820;*;930;(gMonthDay!=1004);1035;*;1210;*;1230;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1345;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1445;(!InList(gMonthDay,430,501));1515;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1550;*;1625;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906)));1700;*;1735;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1810;*;1920;*;2035;(gMonthDay!=816);2220;(!InList(gMonthDay,1003))
 FERRYTA
-515;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,thanksgiving+1,1224,1225);615;123456;730;*;830;*;930;*;1030;(gMonthDay!=102)&&((gMonthDay==101)||(gDayofWeek!=3)||!InList(gWeekofMonth,1,3));1100;(InList(gMonthDay,memorialday,laborday));1130;(false);1200;(InList(gMonthDay,memorialday,laborday));1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday,703,704)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,laborday,703,704)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday,memorialday-3,703,704,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,703,704,laborday));1650;*;1720;(InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(901)))||(InList(gMonthDay,memorialday-3));1800;*;1840;((InList(gDayofWeek,5,0)&&(gMonthDay>=706)&&(gMonthDay<(laborday-1)))||InList(gMonthDay,memorialday-3,703,704));1910;*;2010;((gMonthDay==101)||(gDayofWeek!=2)||!InList(gWeekofMonth,1,3));2110;*;2230;(gDayofWeek==6)|| ((gDayofWeek==5)&&((gMonthDay<701)||(gMonthDay>825)))||InList(gMonthDay,1231,101,703,704,707,memorialday,laborday,thanksgiving,thanksgiving+1,1224,1225);2330;(gMonthDay==memorialday-3)||((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<825))
+515;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,thanksgiving+1,1224,1225);620;*;735;*;855;*;1005;*;1110;(gMonthDay!=1004);1245;*;1310;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1445;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1515;(!InList(gMonthDay,430,501));1550;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1625;*;1700;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906)));1735;*;1810;(InList(gMonthDay,memorialday-3,memorialday,702,705))||((gMonthDay!=801)&&(InList(gDayofWeek,5,0)&&(gMonthDay>=906)&&(gMonthDay<(906))));1845;*;1955;*;2110;(gMonthDay!=1003);2250;(!InList(gMonthDay,1003))
 FERRYTK
-0;;0;;655;*;0;;0;;01010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3));0;;0;;0;;1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;(gDayofWeek==6)|| ((gDayofWeek==5)&&((gMonthDay<701)||(gMonthDay>825)))||InList(gMonthDay,1231,101,703,704,707,memorialday,thanksgiving,thanksgiving+1,1224,1225);2350;(gMonthDay==memorialday-3)||((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<825))
+0;;640;*;0;;0;;0;;1130;(gMonthDay!=920);0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;2015;*;0;;0;
 FERRYTS2
-445;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,thanksgiving)); 545;123456; 645;*; 800;*; 900;*; 930;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1000;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1030;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1130;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1350;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday))); 1420;*;1450;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1520;*;1550;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday)));1620;*;1650;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1730;*;1800;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1840;*;1940;*;2040;*; 2200;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225)); 2300;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,thanksgiving+1,1224,1225);545;*;705;*;820;*;930;*;1035;*;1210;*;1230;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1345;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1445;*;1515;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1550;*;1625;(InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908)));1700;*;1735;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1810;*;1920;*;2035;*;2220;*;
 FERRYTA2
-515;((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,thanksgiving)); 615;123456; 730;*; 830;*; 930;*; 1000;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1030;((gDayofWeek!=3)||!InList(gWeekofMonth,1,3)); 1100;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1200;(InList(gMonthDay,memorialday,memorialday-3,laborday)); 1230;*;1300;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1420;((InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1450;*;1520;((InList(gDayofWeek,5,0)&&(gMonthDay>629)&&(gMonthDay<(laborday-1)))||(InList(gMonthDay,memorialday,memorialday-3,laborday)));1550;*;1620;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1650;*;1730;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1800;*;1840;(InList(gDayofWeek,5,0)&&(gMonthDay>=630)&&(gMonthDay<(laborday-1)));1910;*;2010;*;2110;*; 2230;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225)); 2330;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+515;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,thanksgiving+1,1224,1225);620;*;735;*;855;*;1005;*;1110;*;1245;*;1310;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1445;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1515;*;1550;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1625;*;1700;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1735;*;1810;((InList(gDayofWeek,5,0)&&(gMonthDay>=701)&&(gMonthDay<(908))));1845;*;1955;*;2110;*;2250;*;
 FERRYTK2
-0;;0;;655;*;0;;0;;0;;1010;((gDayofWeek==2)&&InList(gWeekofMonth,1,3)); 0;; 0;; 1255;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;1935;*;0;;0;;2250;( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225)); 2350;((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))
+0;;640;*;0;;0;;0;;1130;*;0;;0;;0;;0;;0;;0;;0;;0;;0;;0;;2015;*;0;;2305;(gDayofWeek==5)||(gDayofWeek==6)||InList(gMonthDay,1231,101,memorialday,704,laborday,thanksgiving,thanksgiving+1,1224,1225)
 FERRYD2
 01/01/2099
 
@@ -275,4 +304,4 @@ MAINTABLEROWS
 <tr> <td id="servicetitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px;background-color:#fff4b3" colspan="2" onclick="window.open('http://www.anderson-island.org/services.html', '_system');">Island Services</tr>
 <tr> <td id="pttitle" style="font-size:18px;font-weight:bold;color:black;padding-left:6px;background-color:#fff4b3" colspan="2" onclick="window.open('https://www.piercetransit.org/routes/?id=212', '_system');">Pierce County Transit #212 (Steilacoom)</tr>
 MAINTABLEEND
-// 12/18/18
+// 6/17/21

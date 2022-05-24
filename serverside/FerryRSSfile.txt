@@ -1,0 +1,135 @@
+<?xml version="1.0"?><rss version="2.0"><channel>
+	<title>Pierce County, WA - Alert Center - Pierce County Ferry Rider Alert</title>
+	<link>https://www.piercecountywa.gov/AlertCenter.aspx</link>
+	<lastBuildDate>Sun, 17 Oct 2021 12:45:52 -0800</lastBuildDate>
+	<description>Pierce County, WA - Get the latest alerts</description>
+	<language>en-us</language>
+	<item>
+		<title>The ticketing system including the phone app and scanners are offline.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2164</link>
+		<pubDate>Fri, 15 Oct 2021 14:26:46 -0800</pubDate>
+		<description>The ticketing system including the phone app and scanners are offline. Single-use tickets are available at the ticket counter cash and credit. We are working to resolve and we&#39;ll update as soon as the system is back up and running.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2164/637699084060000000</guid>
+	</item>
+	<item>
+		<title>The ticketing system including the phone app and scanners are offline.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2165</link>
+		<pubDate>Fri, 15 Oct 2021 07:32:32 -0800</pubDate>
+		<description>The ticketing system including the phone app and scanners are offline. Single-use tickets are available at the ticket counter cash and credit. We are working to resolve and we&#39;ll update as soon as the system is back up and running.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2165/637698835520000000</guid>
+	</item>
+	<item>
+		<title>Morning Fuel Run on Monday, October 18th to impact ferry schedule.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2162</link>
+		<pubDate>Wed, 13 Oct 2021 13:33:01 -0800</pubDate>
+		<description>Fuel service run on Oct 18 will cancel the following: 9:00am service provider run to Ketron, 9:30am Steilacoom departure, the 10:35am/11:30am run to Ketron, and the 11:10am AI departure. The 12:10pm Steilacoom departure will include a run to Ketron.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2162/637697323810000000</guid>
+	</item>
+	<item>
+		<title>Morning Fuel Run on Monday, October 18th to impact ferry schedule.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2161</link>
+		<pubDate>Wed, 13 Oct 2021 13:32:04 -0800</pubDate>
+		<description>Fuel service run on Oct 18 will cancel the following: 9:00am service provider run to Ketron, 9:30am Steilacoom departure, the 10:35am/11:30am run to Ketron, and the 11:10am AI departure. The 12:10pm Steilacoom departure will include a run to Ketron.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2161/637697323240000000</guid>
+	</item>
+	<item>
+		<title>Morning Fuel Run on Monday, October 18th to impact ferry schedule.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2160</link>
+		<pubDate>Wed, 13 Oct 2021 13:31:03 -0800</pubDate>
+		<description>Fuel service run on Oct 18 will cancel the following: 9:00am service provider run to Ketron, 9:30am Steilacoom departure, the 10:35am/11:30am run to Ketron, and the 11:10am AI departure. The 12:10pm Steilacoom departure will include a run to Ketron.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2160/637697322630000000</guid>
+	</item>
+	<item>
+		<title>8:55am departure from AI departed 10 min late. Expect on-time departure from Steilacoom at 12:10pm.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2158</link>
+		<pubDate>Wed, 06 Oct 2021 09:20:17 -0800</pubDate>
+		<description>The 8:55am departure from Anderson Island departed 10 minutes late. Expect an on-time departure from Steilacoom at 12:10pm.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2158/637691124170000000</guid>
+	</item>
+	<item>
+		<title>Expect to see Pierce County heavy equipment on ferry Oct. 6-7</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2157</link>
+		<pubDate>Wed, 06 Oct 2021 08:26:11 -0800</pubDate>
+		<description>Expect to see heavy equipment on the ferry today &amp; tomorrow. Expect to see 2 brush cutters &amp; 2 dump trucks on the 8:20am run from Steilacoom. Expect to see 2 dump trucks on the 10:05am run from AI &amp; 2 brush cutters on the 3:15pm run from AI.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2157/637691091710000000</guid>
+	</item>
+	<item>
+		<title>Paving work for Steilacoom roundabout on Oct. 5</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2156</link>
+		<pubDate>Mon, 04 Oct 2021 15:20:29 -0800</pubDate>
+		<description>There will be paving along the recently installed curb lines throughout the area on Oct 5. The following areas may impact ferry passengers: Lane #1 at Lafayette St, east side of Union Ave at Rainier St, and along Union Ave south of Martin St.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2156/637689612290000000</guid>
+	</item>
+	<item>
+		<title>Morning fuel service run to impact ferry schedule today.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2155</link>
+		<pubDate>Mon, 04 Oct 2021 07:39:43 -0800</pubDate>
+		<description>Fuel service run today, Oct 4, will cancel the following: 9:00am service provider run to Ketron, 9:30am Steilacoom departure, the 10:35am/11:30am run to Ketron &amp; the 11:10am AI departure. The 12:10pm Steilacoom departure will include a run to Ketron.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2155/637689335830000000</guid>
+	</item>
+	<item>
+		<title>Expect to see Pierce County heavy equipment on ferry Oct. 1</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2154</link>
+		<pubDate>Thu, 30 Sep 2021 15:19:03 -0800</pubDate>
+		<description>Expect to see heavy equipment on the ferry Oct. 1. Expect to see 2 brush cutters &amp; 2 dump trucks on the 8:20 am run departing Steilacoom. Expect to see 2 dump trucks on the 10:05 am run departing AI &amp; 2 brush cutters on the 3:15 pm run departing AI.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2154/637686155430000000</guid>
+	</item>
+	<item>
+		<title>Morning fuel service run to impact ferry schedule on Monday, October 4th.</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2153</link>
+		<pubDate>Wed, 29 Sep 2021 12:41:05 -0800</pubDate>
+		<description>Fuel service run on Oct 4 will cancel the following: 9:00am service provider run to Ketron, 9:30am Steilacoom departure, the 10:35am/11:30am run to Ketron, and the 11:10am AI departure. The 12:10pm Steilacoom departure will include a run to Ketron.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2153/637685196650000000</guid>
+	</item>
+	<item>
+		<title>Expect to see Pierce County heavy equipment on ferry Sept. 27-30</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2146</link>
+		<pubDate>Fri, 24 Sep 2021 13:13:31 -0800</pubDate>
+		<description>Expect to see heavy equipment on the ferry Sept. 27-30. Expect to see 2 brush cutters &amp; 4 dump trucks on the 8:20am run from Steilacoom. Expect to see 4 dump trucks on the 10:05am &amp; 2 brush cutters on the 3:15pm run from Anderson Island.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2146/637680896110000000</guid>
+	</item>
+	<item>
+		<title>Expect to see Pierce County heavy equipment on ferry Sept. 23 and 24</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2145</link>
+		<pubDate>Thu, 23 Sep 2021 07:43:48 -0800</pubDate>
+		<description>Ferry riders should expect to see Pierce County heavy equipment on the ferry today &amp; tomorrow. Expect to see 1 pickup &amp; 4 dump trucks on the 8:20 Steilacoom run. Expect to see 4 dump trucks on the 10:05 &amp; 1 pickup on the 3:15 Anderson Island runs.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2145/637679834280000000</guid>
+	</item>
+	<item>
+		<title>Expect construction activity in Steilacoom on Thursday &amp; Friday; travel with extreme caution</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2144</link>
+		<pubDate>Wed, 22 Sep 2021 15:16:32 -0800</pubDate>
+		<description>On Sept. 23 &amp; 24, the contractor working on the Town of Steilacoom’s roundabout project will be working on the sidewalk at Lafayette Street by the Steilacoom loading lanes. Please travel with extreme caution and follow the flaggers’ instructions.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2144/637679241920000000</guid>
+	</item>
+	<item>
+		<title>Expect to see Pierce County work trucks and heavy equipment on ferry Sept. 22</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2143</link>
+		<pubDate>Tue, 21 Sep 2021 16:25:16 -0800</pubDate>
+		<description>Ferry riders should expect to see Pierce County work trucks and heavy equipment on the ferry Sept. 22.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2143/637678419160000000</guid>
+	</item>
+	<item>
+		<title>Expect to see Pierce County heavy equipment on ferry Sept. 20 and 21</title>
+		<link>https://www.piercecountywa.gov/AlertCenter.aspx?AID=2142</link>
+		<pubDate>Fri, 17 Sep 2021 15:28:03 -0800</pubDate>
+		<description>Paving on Eckenstam Johnson Road will take place Sept. 20 &amp; 21 if weather allows. Expect to see trucks on the 5:45am, 7:05am &amp; 8:20am departures from Steilacoom. Expect to see trucks on the 11:10am, 12:45pm, &amp; 3:15 pm departures from Anderson Island.</description>
+		
+		<guid isPermaLink="false">https://www.piercecountywa.gov/AlertCenter.aspx?AID=2142/637674928830000000</guid>
+	</item>
+</channel></rss>

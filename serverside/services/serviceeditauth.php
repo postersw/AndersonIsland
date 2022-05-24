@@ -20,13 +20,24 @@
     <b>
     <?php echo $_GET['business']; ?> 
     </b><br/><br/>
-   <label class="w3-label">Password: </label><input class="w3-input w3-border" type="text" name="password"  size="20" required="required"  maxlength="20" /> <br/>
-    If you forgot your password, send an email to <a href="mailto:support@anderson-island.org">support@anderson-island.org</a><br/>
+   <label class="w3-label">Password: </label><input class="w3-input w3-border" type="text" name="password"  id="password" size="20" required="required"  maxlength="20" /> <br/>
+    </label><input class="w3-check w3-border" type="checkbox" name="forgotpw" id="forgotpw" value="yes" onclick="DeleteM()"/>I forgot my password. (An email with your password will be sent to your email address of record) <br/><br/>
 <br />
     <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" />
     <input type="submit" value="Next" />
 
 </form>
 </div>
+<script>
+    /////////////////////////////////////////////////////////////////////////
+    //  DeleteM - fill in the pw
+        function DeleteM() {
+        if(document.getElementById('forgotpw').checked == true) {
+            document.getElementById('password').value = "X";
+            return;
+        }
+
+    }
+</script>
 </body>
 </html>

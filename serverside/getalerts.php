@@ -20,19 +20,19 @@
 //  <ferryposition.txt file>
 //  FERRYPOSITIONEND
 //  REFRESH
-//  <time stamp from refresh.txt file>
+//  <time stamp from refresh.txt file, e.g. 5/15/22. 1214. This is a text string>
 //  REFRESHEND
 // if a file is empty or does not exist, the labels are omitted
 //  Note about REFRESH: set this file to a unique value or timestamp. It will force a refresh/reload of dailycache.txt and the currentevents.txt file.
 //
 //  2/11/19. RFB. Added REFRESH and emergencymessage.txt.
 //  1/1/21.  RFB. Added FERRYPOSITION
+//  5/15/22  RFB. Added access control allow origin *
+
+header("Access-Control-Allow-Origin: *");  // added 5/15/22
 
 // special case for FERRY. Put the EmergencyMessage file in front of the ferry alert.
-//
-//copyfile("alert.txt", "FERRY");
 $emergencyfile = "emergencymessage.txt";
-
 $d1 = "";
 if(file_exists($emergencyfile)) $d1 = file_get_contents($emergencyfile);
 $d2 = file_get_contents("alert.txt");

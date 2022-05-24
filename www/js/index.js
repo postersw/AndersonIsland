@@ -74,8 +74,12 @@
         1.29.072920. Strikethrough flame on burn ban.
     2021
         1.29.010121. Display Ferry position.
+        1.30.021621. Do not remember ferry position between startups. Display ketron run time on main page until after we leave ketron.
+                     Always adjust time to PST/PDT. Use DST dates in dailyconfig.
+    2022
+        1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
  * 
- * Copyright 2016-2021, Robert Bedoll, Poster Software, LLC
+ * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -95,9 +99,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.29.010221";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.051722";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2021 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -235,6 +239,7 @@ var gMonth;  // month: 1-12. note starts with 1
 var gDayofMonth; // day of month: 1-31
 var gMonthDay; // mmdd: 0101-1231
 var gYYmmdd; // yymmdd: 160101 - 301231
+var gTimeZone; // PST or PDT
 var laborday = 0; // first monday in sept.  we need to compute this dyanmically
 var memorialday;  // last monday in may
 var thanksgiving;
@@ -247,6 +252,7 @@ var scheduledate = ["5/1/2014"];
 
 // global variables (gXxxxxx). Since this entire app is one page and one program, these variables hold for the entire execution.
 
+var reloadreasontext = "Reused old";  // reason for reloading the cache.
 
 var gisPhoneGap; // true if phonegap
 var gisAndroid; // true if android
@@ -328,7 +334,9 @@ function DebugLog(msg) {
 // initilize all date variables.  
 // entry: dateincr = 0 for today, 1 to go to last date + 1 (i.e. increment date by 1 and reset time).
 //          mm/dd/yyyy for an arbitrary date
-// sets the date globals above
+// sets the date globals above.
+// Automatically adjusts to PST/PDT if dateincr=0.  
+//
 function InitializeDates(dateincr) {
     if (dateincr == 0) Gd = new Date();
     else if (dateincr == 1) {
@@ -338,6 +346,11 @@ function InitializeDates(dateincr) {
         Gd = new Date(dateincr);
     }
     gTimeStampms = Gd.getTime(); // milisec since 1970
+    // hack for other time zones - resets the date by the number of milliseconds. Works for U.S. Fails in wierd Pacific time zones.
+    var fmtdate = Gd.toString();
+    if (fmtdate.indexOf("Daylight") > 0) gTimeZone = "PDT";
+    else gTimeZone = "PST";
+    if ((dateincr == 0) && fmtdate.indexOf("Pacific") < 0) AdjustTimeZone();  // if not Pacific time, adjust it
     gDayofWeek = Gd.getDay();  // day of week in 0-6
     gLetterofWeek = "0123456".charAt(gDayofWeek); // letter for day of week
     gTimehh = Gd.getHours();
@@ -353,6 +366,34 @@ function InitializeDates(dateincr) {
     if (dateincr == 0 && laborday == 0) BuildHoliday(gYear);
     // compute holidays
     holiday = IsHoliday(gMonthDay);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+//  AdjustTimeZone - Adjusts the Gd object to force it to be Pacific PDT or PST
+//          tests for WA Daylight Savings Time by checking the date against the DST start / end dates in dailyconfig
+//  entry   Gd is set
+//          dst = local storage object from dailyconfig DST:  mmdd,mmdd   date of WA DST start, date of Wa DST end.
+//                  if no DST use "none"
+//  exit    Gd = global date object reset for new time zone
+//          gTimeStampms = new millisec
+function AdjustTimeZone() {
+    var gTimeZoneOffset = Gd.getTimezoneOffset()// in minutes; returns 300 for EST
+    var myTZoffset = 8 * 60; // Pacific standard time UTC-8
+    // determine if it is Daylight savings time
+    var d = LSget("dst");  // saved DST from dailyconfig.
+    if (d != "none") { 
+        if (d == "") d = "314,1107";  // if none, use 2021 dates
+        var a = d.split(",");   // a[0]=start, a[1]=end
+        if (a.length != 2) alert("Error in DST in dailyconfig");
+        var md = (Gd.getMonth() + 1) * 100 + Gd.getDate(); // day of month 1-31
+        if (md >= Number(a[0]) && md < Number(a[1])) {
+            gTimeZone = "PDT";
+            myTZoffset = 7 * 60; // Pacific daylight savings time UTC-7
+        }
+    }
+    // adjust for offset
+    Gd = new Date(gTimeStampms + (gTimeZoneOffset - myTZoffset) * 60000);// adjust for the time zone delta
+    gTimeStampms = Gd.getTime(); // milisec since 1970
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -401,10 +442,10 @@ function BuildHoliday(year) {
     else if (memday == 0) memorialday = 526;  // monday = 1... Sat=6
     else memorialday = 525;
     // thanksgiving calculation.  Fixed on 01/05/18.
-    // thanksgiving = 11/22 – 11/28
+    // thanksgiving = 11/22 ï¿½ 11/28
     var dthanksdate, dthanks;
     dthanksdate = new Date(year, 10, 1);// 1st day of nov
-    dowthanks = dthanksdate.getDay(); // 0 – 6, thur=4
+    dowthanks = dthanksdate.getDay(); // 0 ï¿½ 6, thur=4
     if (dowthanks <= 4) thanksgiving = 1126 - dowthanks;//  4 = 22,3=23,2=24,1=25,0=26
     else thanksgiving = 1133 - dowthanks;;//  5 ->1128,  6->11/27
 }
@@ -678,6 +719,8 @@ var ferrytimeA2 = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225
 var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
 
 var gFerryDate2 = 0;  // cutover time to ferrytimex2
+var gFerryPosition = ""; // ferry position text message
+var gFerryPositionTime = 0; // time of ferry position text message (unix ms)
 
 // OpenHours Array object. Array of openhours for the store hours.  This array is loaded by a JSON.parse
 //      of the OpenHoursJSON string in 'dailycache'
@@ -1162,7 +1205,8 @@ function HandleAlertReply(r) {
     SaveFerryAlert(s);
     parseCacheRemove(r, 'burnbanalert', "BURNBAN", "BURNBANEND");
     parseCacheRemove(r, 'tanneroutagealert', "TANNER", "TANNEREND");
-    parseCacheRemove(r, 'ferryposition', "FERRYPOSITION", "FERRYPOSITIONEND");
+    gFerryPosition = parseCacheOptional(r, 'ferryposition', "FERRYPOSITION", "FERRYPOSITIONEND"); // get the ferry position - NOT stored between sessions, so it always starts out empty because it must be refreshed every 3 min.
+    gFerryPositionTime = gTimeStampms; // save time
     var oldrefreshrequest = LSget('refreshrequest'); // current value of refresh request
     var newrefreshrequest = parseCacheRemove(r, 'refreshrequest', "REFRESH", "REFRESHEND");  // new value of refresh request. Note this is cleared every night by getgooglecron.
     DisplayAlertInfo();
@@ -1274,10 +1318,13 @@ function GetDailyCache() {
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         "&P=" + pagehits);
 
-    // ajax request without jquery
+    // ajax request without jquery.  Normal finish is readyState=4,status=200.
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
-        if (xhttp.readyState == 4 && xhttp.status == 200) HandleDailyCacheReply(xhttp.responseText);
+        if (xhttp.readyState == 4) {  // if it's done...
+            if(xhttp.status != 200) alert("ERROR: DailyCache fetch failed. Status=" + xhttp.status.toString() + "," + xhttp.statusText); 
+            HandleDailyCacheReply(xhttp.responseText); 
+        }
     }
     xhttp.open("GET", myurl, true);
     xhttp.send();
@@ -1311,12 +1358,16 @@ function HandleDailyCacheReply(data) {
 
 function ParseDailyCache(data) {
     var s;
-
+    if(data.length==0) {
+        alert("Data length = " + data.length.toString()); //////////////////////////////////////////DEBUG 05/10/22
+        reloadreasontext = "daily cache length=0";
+        return;
+    }
     data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
     //var rows = data.split("\n"); //split into lines
     if (data.substring(0, 10) != "DAILYCACHE") {
-        //alert("could not load updated values for ferry times and open hours");
-        document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
+        alert("Dailycache header is bad.");
+        reloadreasontext = "Daily cache header bad";
         return;
     }
 
@@ -1372,8 +1423,10 @@ function ParseDailyCache(data) {
     parseCacheRemove(data, "parkslink", "PARKSLINK", "\n"); // parks link
     parseCacheRemove(data, "parksinfo", "PARKSINFO", "\n"); // parks info - goes on main page parks line
     parseCacheRemove(data, "newslink", "NEWSLINK", "\n"); // news link
-    parseCacheRemove(data, "customtidelink", "CUSTOMTIDELINK", "\n"); // custom tide link
+    parseCacheRemove(data, "customtidelinka", "CUSTOMTIDELINKA", "\n"); // custom tide link
     parseCacheRemove(data, "noaalink", "NOAALINK", "\n"); // CUSTOM TIDES schedule
+    parseCacheRemove(data, "dst", "DST", "\n"); // Daylight Savings Time start/end schedule
+
     //parseCacheRemove(data, "maintablerows", "MAINTABLEROWS", "MAINTABLEEND");  // extra rows for main table
     parseCacheOptional(data, "moon", "MOON", "MOONEND");  // moon - added 8/18/18
 
@@ -1491,7 +1544,7 @@ function timerUp() {
     InitializeDates(0);
     gLastUpdatems = Date.now();
     gUpdateCounter++;
-    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
+    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm) + " " + gTimeZone;
 
     // special handling for other than the main page
     switch (gDisplayPage) {
@@ -1646,9 +1699,8 @@ var gReloadCachedDataButtonInProgress = false;
 function ReloadCachedDataButton() {
     if (gMenuOpen) CloseMenu();  // close the menu            if (gMenuOpen) CloseMenu();  // close the men
     gReloadCachedDataButtonInProgress = true;
-
+    reloadreasontext = "user requested"; 
     ReloadCachedData();
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1656,8 +1708,8 @@ function ReloadCachedDataButton() {
 function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "<br/>Stats:<br/>App started " + gAppStartedDate +
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
-        ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") +
-        ", Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
+        ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext +
+        "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
@@ -1774,7 +1826,7 @@ function WriteNextFerryTimes() {
     // at this point, i = the next valid ferry run
 
     var str;
-    var v = "";
+    var v = "";  // text string to display
     gFerryDelayMin = 0;
     TXTS.FerryTime = "";
     BIGTX.FerryTime = "";
@@ -1792,9 +1844,10 @@ function WriteNextFerryTimes() {
             if (gFerryDelayMin > 60) gFerryDelayMin = 60; // maximum of 60
         }
     }
-
-    var s = localStorage.getItem('ferryposition');
-    if (!IsEmpty(s)) v = v + s + "<br/>";  // display ferry position
+    if (gFerryPositionTime != 0 && (gTimeStampms - gFerryPositionTime) < 8 * 60000) { // IF time of ferry position is less than 8 minutes old, 
+        if (gFerryPosition != "") v = v + gFerryPosition;  // display ferry position
+    }
+    v = v + "<br/>"; // always leave a line above the ferry time so display doesn't jump.
 
     var SteilHighlight = ""; var AIHighlight = "";
     if (gFerryHighlight == 1) {     // && gLatitude > 0) {
@@ -1834,6 +1887,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     // roll through the ferry times, skipping runs that are not valid for today
     for (i = 0; i < ferrytimes.length; i = i + 2) {
         if (adjustedcurrenttime > ferrytimes[i]) continue;  // skip ferrys that have alreaedy run
+
         // now determine if the next run will run today.  If it is a valid run, break out of loop.
         if (ValidFerryRun(ferrytimes[i + 1], ferrytimes[i])) {
             var tcolor = "";
@@ -1851,11 +1905,14 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
                 if (rtd <= 15) ft = ft + "<span style='font-weight:normal;color:red'> (" + ftd + ")</span>";  // if < 15 min, make time red
                 else ft = ft + "<span style='font-weight:normal'> (" + ftd + ")</span>";
             }
-            // Ketron special case 
+            // Ketron special case for current or previous AI run.
             if (ferrytimeK != "") { // add ketron time for this run
                 if ((ferrytimeK[i] != 0) && (ValidFerryRun(ferrytimeK[i + 1], ferrytimeK[i]))) {
                     ketron = true;
                     ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i]) + "</td>";
+                } else if (!ketron && (i > 0) && (ferrytimeK[i - 2] != 0) && (ValidFerryRun(ferrytimeK[i-1], ferrytimeK[i-2])) && (adjustedcurrenttime <= ferrytimeK[i-2])) {
+                    ketron = true;
+                    ketront = ketront + "<td style='padding:0;margin:0;'>" + ShortTime(ferrytimeK[i-2]) + "</td>";
                 } else ketront = ketront + "<td style='padding:0;margin:0;'>------</td>";
             }
             ft = ft + "&nbsp;&nbsp;</td>";
@@ -1870,7 +1927,7 @@ function FindNextFerryTime(ferrytimes, ferrytimeK, SA) {
     if (i >= ferrytimes.length) ft = ft + FindNextFerryTimeTomorrow(SA, nruns);
 
     // ketron only if there is a ketron run, and it is valid. note iketron ponts to 1st run
-    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:gray'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
+    if ((ferrytimeK != null) && ketron) ft = ft + "</tr><tr style='font-weight:bold;color:#608f9f'><td style='padding:0px;margin:0;'>Ketron:</td>" + ketront;
     return ft;
 }
 
@@ -2053,14 +2110,6 @@ function StartTicketApp() {
             var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
             window.plugins.launcher.launch({ packageName: pkg }, successCallback, errorCallback);
 
-            ////  com.lampa.startapp
-            //var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
-            //var sApp = startApp.set({ "package": pkg});
-            //sApp.start(function () { /* success */
-            //}, function (error) { /* fail */
-            //    var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
-            //    window.open(link, '_system');
-            //});
         } else {
             // IOS:
             // Default handlers "com.hutchind.cordova.plugins.launcher"
@@ -2073,14 +2122,6 @@ function StartTicketApp() {
             var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
             window.plugins.launcher.launch({ uri: pkg }, successCallback, errorCallback);
 
-            //  com.lampa.startapp
-            //var pkg = GetLink("iosinternalticketlink", "ttpapps.pcf://"); // IOS custom URL for ticket package
-            //var sApp = startApp.set(pkg);
-            //sApp.start(function () { /* success */
-            //}, function (error) { /* fail */
-            //    var link = GetLink("iosticketlink", 'https://itunes.apple.com/us/app/pierce-county-ferry-tickets/id1107727955?mt=8');
-            //    window.open(link, '_system');
-            //});
         }
     } else {
         // WEB
@@ -2550,15 +2591,23 @@ function FormatOneBusiness(Oh, mmdd, showall) {
             for (var j = 0; j < 7; j++) {
                 var opentimetoday = H[j * 2]; // hhmm-hhmm open today
                 var closetimetoday = H[j * 2 + 1]; // hhmm-hhmm open today
+                var listbold = false;
+                // make it bold if day of week is correct and date is in range.
+                if (j == gDayofWeek) { // if normal Jan - March
+                    if (Oh.Sc[i].From < Oh.Sc[i].To) {
+                        if ((mmdd >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) listbold = true;
+                    }  // if March - Jan
+                    else if ((mmdd >= Oh.Sc[i].To) || (mmdd <= Oh.Sc[i].From)) listbold = true;
+                }
                 if (opentimetoday > 0) {
-                    if (j == gDayofWeek) openlist += "<strong>"; // bold today
+                    if (listbold) openlist += "<strong>"; // bold today
                     if (opentimetoday == 1 && closetimetoday == 2359) openlist += "<nobr>" + gDayofWeekShort[j] + ": 24 hours";
                     else openlist += "<nobr>" + gDayofWeekShort[j] + ":" + VeryShortTime(opentimetoday) + "-" + VeryShortTime(H[j * 2 + 1]);
                     if (H2 != null) {
                         if (H2[j * 2] > 0) openlist += ", " + VeryShortTime(H2[j * 2]) + "-" + VeryShortTime(H2[j * 2 + 1]);
                     }
                     openlist += "</nobr>";
-                    if (j == gDayofWeek) openlist += "</strong>";
+                    if (listbold) openlist += "</strong>";
                     if (j < 6) openlist += ", ";
                 }
             } // for loop for each day
@@ -4145,13 +4194,10 @@ function GetDateCancel() {
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// getCustomTideData get tide data using the aeris api and returning a jsonp structure. 
-// This is used to get custom tide data from NOAA, via my web site.
+// getCustomTideData get tide data using ide data from NOAA directly
 // used only for custom date queries, not for normal tides.
 //  Entry   fromdate =  starting date for the tides as: mm/dd/yyyy
 //          stationname = NOAA tide station name (not the number)
-//  gCustomTides = 0 for customtidelink or AERIS
-//                  1 for NOAA direct link
 //  data is used to display tide data. It is not stored.
 const gCustomTides = 1; // NOAA direct tide request
 const YomanPointStation = "9446705"; // NOAA Yoman point station
@@ -4190,14 +4236,10 @@ function getCustomTideData(fromdate, station) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // build link
-    if (gCustomTides == 1) { // NOAA direct
-        fromdate = gCustomTideFromDate.substr(6, 4) + gCustomTideFromDate.substr(0, 2) + gCustomTideFromDate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
-        var myurl = "https://tidesandcurrents.noaa.gov/api/datagetter?station=" + gCustomTideStation + "&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
+    fromdate = gCustomTideFromDate.substr(6, 4) + gCustomTideFromDate.substr(0, 2) + gCustomTideFromDate.substr(3, 2);  //  mm/dd/yyyy -> yyyymmdd
+    var myurl = GetLink("customtidelinka", "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter") + "?station=" + gCustomTideStation + "&product=predictions&units=english&time_zone=lst_ldt&application=ports_screen&format=json&datum=MLLW&interval=hilo&begin_date="
             + fromdate + '%2000:00&range=72';
-    } else {  //customtidelink for AERIS
-        var myurl = GetLink("customtidelink", 'http://api.aerisapi.com/tides/' + gCustomTideStation + '?client_id=U7kp3Zwthe8dc19cZkFUz&client_secret=4fHoJYS6m9T7SERu7kkp7iVwE0dewJo5zVF38tfW');
-        myurl = myurl + '&from=' + fromdate + '&to=+48hours';
-    }
+    
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4 && xhttp.status == 200) HandleCustomTidesReply(xhttp.responseText);
@@ -4972,7 +5014,7 @@ function StartApp() {
     gAppStartedTime = gTimeStampms;
     gAppStartedDate = gMonthDay * 10000 + gTimehhmm;
     gLastUpdatems = gTimeStampms;
-    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm);
+    document.getElementById("updatetime").innerHTML = "Updated " + FormatTime(gTimehhmm) + " " + gTimeZone;
     gForceCacheReload = false; // cache reload not needed
     gForceTideReload = false;
     InstallAvailable();  // point user to google play only if a mobile browser that is NOT PhoneGap
@@ -5007,18 +5049,18 @@ function StartApp() {
 
     // -------------  after main page has been displayed ---------------------------
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
-    var reloadreason = "";
+
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
     if (dailycacheloaded == null) {
         gForceCacheReload = true;
-        reloadreason = "initial cache load";
+        reloadreasontext = "initial cache load";
     } else if (Number(dailycacheloaded) != gMonthDay) {
-        reloadreason = "dailycacheloaded != monthday";
+        reloadreasontext = "dailycacheloaded != monthday";
         gForceCacheReload = true;
     }
 
     if (gForceCacheReload) {
-        document.getElementById("reloadreason").innerHTML = reloadreason;
+        //document.getElementById("reloadreason").innerHTML = "<br/>Cache Load: " + reloadreasontext;
         ReloadCachedData();  // reload daily cache, alerts (always), weather (always)
     } else {
         // show Alert and Weather immediately.
