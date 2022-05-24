@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.30.042822"
+        version="1.31.052422"
         android-versionCode="2252"
-        android:versionName="1.30.042922">
-  <!--4/26/22 Android debug version successfully build using volt.build. ver 1.40.042422-->
+        android:versionName="1.31.052422">
+
   <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->      
-  <!-- versionCode 2252 for 1.30.042422 for Volt.Build (no code changes) ANDROID ONLY -->
+  <!-- versionCode 2252 for 1.31.052422 for Volt.Build (no code changes) ANDROID ONLY -->
   <!-- versionCode 2251 for 1.30.011021 for ferry position -->
   <!-- versionCode 2250 for 1.29 7/29/20 for ferry position -->
   <!-- versionCode 2249 for 1.28 6/06/20 for https -->
