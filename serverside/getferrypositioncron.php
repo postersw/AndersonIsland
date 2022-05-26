@@ -20,8 +20,9 @@
 //  1.30 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
 //  1.32 5/25/21 Make font dark blue.
 //  1.33 7/19/21 Make text italic
+//  1.34 5/26/22 Make text red if ferry is delayed.
 
-$ver = "1.33";  // 7/19/21
+$ver = "1.34";  // 5/26/22
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -32,6 +33,7 @@ $DAItoSt = ($longSt-$longAI) + ($latAI-$latSt)*.67; // total distance in longitu
 
 $ferrypositionfile = "ferryposition.html";
 $log = 'ferrypositionlog.csv';
+$ferryalertfile = "alert.txt";
 $crossingtime = 20; // nominal crossing time in minutes
 $MMSICA = 366659730;  // Christine Anderson
 $MMSIS2 = 367153930; // Steilacoom II
@@ -99,7 +101,11 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 // write to ferry position file
 
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller;color:darkblue'>Ferry $p</div>");  // html file for iframe
-$pstr = "<span style='color:darkblue'>$pstr</span>";
+
+$ferrycolor = "darkblue";
+$alert = file_get_contents($ferryalertfile);  // if the ferry is delayed, set the font color to red.
+if(strpos($alert, "DELAYED:") > 0) $ferrycolor = "red";
+$pstr = "<span style='color:$ferrycolor'>$pstr</span>";
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 
 // log it to csv file 

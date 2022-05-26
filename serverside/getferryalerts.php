@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  getferryalerts - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
+//  getferryalertsTEST - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
 //  Run by cron every 4 minutes.
 //  Alerts are cleared after 4 hours or if they are removed from the rss feed.
 //  To change the default message (from "") change $DefaultMessage in function ClearAlertFile().
@@ -22,22 +22,17 @@
 //      10/17/21. Temporary. RSS feed is read from file FerryRSSfile.txt, which is manually updated.
 //      10/22/21. Use email instead of RSS feed.  RSS feed is commented out for now, till it works again. It is broken due to Cloudflare security.
 //      10/27/21. Activated full email use.
+//       5/16/22. Switched to use hornblower feed. 
+//       5/26/22. Change Delay string match to ignore case.
 //
-//  Sample RSS feed:
-//<rss version="2.0">
-//<channel>
-//<title>Pierce County, WA - Alert Center - Pierce County Ferry Rider Alert</title>
-//<link>http://www.co.pierce.wa.us/AlertCenter.aspx</link>
-//<lastBuildDate>Sun, 02 Apr 2017 16:47:11 -0800</lastBuildDate>
-//<description>Pierce County, WA - Get the latest alerts</description>
-//<language>en-us</language>
-//<item>
-//<title>The ferry is currently running 22 minutes late.</title>
-//<link>http://www.co.pierce.wa.us/AlertCenter.aspx?AID=548</link>
-//<pubDate>Sat, 02 Jul 2016 16:58:06 -0800</pubDate>
-//<description>The ferry is currently running 22 minutes late. Thank you for your patience.</description>
-//</channel>
-//</rss>
+//  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+//[{"createdDate":"1652555109859",
+// "expirationDate":"1653177600000",
+// "notificationBody":"Extreme low tides are predicted this summer beginning the week of May 16, 2022. ... \n\nRiders...\n",
+// "notificationTitle":"Service Alert – Extreme Low Tides beginning Monday, May 16",
+// "reasonForNotification":" ",
+// "notificationType":" "},...
+// ]
 //
 //  NOTIFICATION MESSAGE FORMAT SENT TO PHONE:
 //  hh:mm DELAYED nn: <ferry message title>
@@ -50,6 +45,7 @@ class Alert{
     public $notifymsg;  // msg to send via OneSignal.  No link.
     public $detail;  // detail displayed in detail msg.  If there is more than the title.
     public $timestamp; // date/time of alert, unix time stamp.
+    public $expiration;  // expiration. unix time stamp.
 }
 
 chdir("/home/postersw/public_html");
@@ -58,36 +54,36 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 $alertclearhours = 4;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
+$alerthistory = "alerthistory.txt";
 
 //  Get the alert. returned in $AlertObj
-//$AlertObj = getRSSalert();  // doesnt work after 10/20/21
-$AlertObj = getEmailAlert();  //read the email
-
+$AlertObj = getAlertsfromHornblower() ;
 // no response so clear the alert file.
 if($AlertObj->title == "") {
 	ClearAlertFile($alertfile, $alertlog);
-	logalertlast("no title");
+	logAlertLast("no title");
 	exit("No ferry alert title"); // if no reply
 }
-
+ 
 // check time. If alert is >4 hrs old, clear it and stop.
-$t=time(); // current seconds in PDT I hope
+$t=time(); // current seconds UCT
 $talert = $AlertObj->timestamp;
-//echo("  |current:" . $t . "|"); echo(date("Y-m-d-H-i-s", $t));// debug
+//echo("  |alert timestamp:" . $talert . "|"); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
+//echo("  |current:" . $t . "|"); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
 $deltat = $t - $talert;
 //echo (" delta t hrs = " . ($deltat/3600));
-// if alert is >4 hrs old, clear it and stop  TEMPORARILY DISABLED FOR DEBUG> REINSTATE IT.
+// if alert is >4 hrs old, clear it and stop 
 if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
-    //echo " Alert is > $alertclearhours hours old ";
+    logAlertLast(" Alert is > $alertclearhours hours old");
     ClearAlertFile($alertfile, $alertlog);
     exit(0);
 }
 
-// test for a delay
+// test for a delay and add to alert string
 $delay = "";
 $title = $AlertObj->title;
 $desc = $AlertObj->detail;
-if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($title, " delay") > 0) ) {
+if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripos($title, "delay") > 0) ) {
     $delay = "DELAYED: ";
     $matches = "";
     if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
@@ -95,7 +91,7 @@ if((strpos($title, " late") > 0) || (strpos($title, " behind") > 0) || (strpos($
     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
 
-// log it
+// build message
 if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
 $alertdatestring = date("m/d h:ia", $talert); // date/time of alert
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
@@ -104,27 +100,17 @@ $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
 // exit if the message is not being changed.
 $alc = file_get_contents($alertfile);  // read the alert file
 if($alc == $alertstring) {
-	logalertlast("alert already written");
+	logAlertLast("alert already written");
 	exit(0); // if already written
 }
 
-var_dump($AlertObj);
-
-// write it to the alertfile, and log it
-$fh = fopen($alertfile, 'w');
-fwrite($fh, $alertstring);
-fclose($fh);
-
-// log it
-$fhl = fopen($alertlog, 'a');
-fwrite($fhl, date("Y/m/d H:i:s") . "|" . $alertstring . "\n");
-fclose($fhl);
+// write it to the alertfile, alerthistory, and log it
+file_put_contents($alertfile, $alertstring);  // alert file for getalerts.php app display
+addAlertHistory($alerthistory, $alertObj);    // alert history for getalerthistory.php
+file_put_contents($alertlog, date("Y/m/d H:i:s") . "|" . $alertstring . "\n", FILE_APPEND);  // log 
 echo ("wrote to file: " . $alertstring);
-logalertlast("wrote to alert file");
-
-// now send alert using Pushbots.  Removed 10/9/18.
-//$pbwarn = "Upgrade to AIA ver 1.21 to continue receiving alerts: ";
-//PushANotification(  $pbwarn . $alerthr . $alertmin . $alertam . " " . $delay . $title );
+logAlertLast("wrote to alert file");
+//var_dump($AlertObj);
 
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
 $msgtitle = "FERRY ALERT";
@@ -141,7 +127,6 @@ exit(0);
 function ClearAlertFile($alertfile, $alertlog) {
     $DefaultMessage = "";
     //$DefaultMessage = "<span style='color:black;'>8/22: Both Ferry Lane Webcams are now UP.</span>";
-     logalertlast("cleared alert file");
      $alc = file_get_contents($alertfile);
      //if($alc=="") return; // if already empty
      if($alc==$DefaultMessage) return; // if already empty
@@ -154,44 +139,9 @@ function ClearAlertFile($alertfile, $alertlog) {
      $fhl = fopen($alertlog, 'a');
      fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file and wrote: $DefaultMessage.\n");
      fclose($fhl);
-	 logalertlast("physically cleared alert file");
+	 logAlertLast("wrote '$defaultMessage' to alert file");
      //echo("ClearAlertFile wrote to log");
 }
-
-/////////////////////////////////////////////////////////////////
-//  loglastalert - writes an  string to the alertlast file
-//
-function logalertlast($s) {
-	$alertlast = "alertlast.txt";
-    $fh = fopen($alertlast, 'w');
-    fwrite($fh, date("Y/m/d H:i:s") . $s);
-    fclose($fh);
-}
-
-
-////////////////////////////////////////////////////////////////////////
-//  Push notification - send a notificatyion using Pushbots to all android users
-//  Removed 10/9/18. Deactivated because I switched to OneSignal to avoid paying $29/m.
-//function PushANotification($note) {
-//    // Push The notification with parameters
-//    require_once('PushBots.class.php');
-//    $pb = new PushBots();
-//    // Application ID
-//    $appID = '570ab8464a9efaf47a8b4568';
-//    // Application Secret
-//    $appSecret = '297abd3ebd83cd643ea94cbc4536318d';
-//    $pb->App($appID, $appSecret);
-
-//    // Notification Settings
-//    $pb->Alert($note);
-//    $pb->Platform(array("0","1"));  // android
-//    $pb->Badge("0"); // DON'T BUMP BADGE 7/9/18
-//    // Push it !
-//    $res = $pb->Push();
-//    echo($res['status']);
-//    echo($res['code']);
-//    echo($res['data']);
-//}
 
 /////////////////////////////////////////////////////////
 //  PushOneSignalNotification. 5/25/18
@@ -235,62 +185,84 @@ function PushOSNotification($title, $msg) {
     return $response;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-//  getEmail - get ferry alert via email.  Created 10/22/21 after security blocked the RSS feed.
-//
-//  Exit    returns an Alert object based on the newest message in the mailbox.
+///////////////////////////////////////////////////////////////////////////////////////////
+//  getAlertsfromHornblower - get the Hornblower web feed. works as of 5/16/22.
 //  
-function getEmailAlert() {
-    $yourEmail = "alerts@anderson-island.org";
-    $yourEmailPassword = "alerts";
-    //echo ($yourEmail);
-
-    // read mailbox
-    $mailbox = imap_open("{mail.anderson-island.org:993/imap/ssl/novalidate-cert}", $yourEmail, $yourEmailPassword) or die("can't connect: " . imap_last_error());
-    $emailnumberarray = imap_search($mailbox, "ALL") or die("no mail returned");  // return array
-    $emailnum = max($emailnumberarray);  // get the highest email
-    //echo ("highest emailnum=$emailnum \n");
-    // read the newest email
-    //foreach($emailnumberarray as $emailnum) {
-
-    $email_headers = imap_headerinfo($mailbox, $emailnum); // read the header
-    $subject = $email_headers->subject;
-    $from = trim($email_headers->fromaddress);
-    $date = $email_headers->date;
-    //echo ("emailnum=$emailnum, subject=$subject, from=$from, date=$date\n ");
-    $talert=strtotime($date); // covert to unix timestamp
-    //echo (" converted date=". date("m/d/y H:i:s", $talert) . "|");
-    if($from!='"listserv@civicplus.com" <listserv@civicplus.com>') Bailout("first email is from $from, not listserv@civicplus.com <listserv@civicplus.com>");
-    $subject = str_replace("for www.piercecountywa.gov", "", $subject);  // get rid of web reference
-    $body = imap_body($mailbox, $emailnum);
-    $body = imap_qprint($body);  // decode quoted printables like =
-    //echo ("body= $body");exit(0);
-
-    // get the link to the message
-    // $link = "";
-    // $i = stripos($body, "https://www.piercecountywa.gov/");  // find the link to the message
-    // if($i > 1) {
-    //     $iend = stripos($body, "\r", $i);  // find end of link
-    //     //echo (" link found at position $i to $iend ");
-    //     //echo (" at $iend, char=" . substr($body, $iend, 1) . " code=" . ord(substr($body, $iend, 1)) ); 
-    //     $link = substr($body, $i, $iend-$i); // link
-    // }
-    //echo ("link=$link|");
-    //imap_setflag_full($mailbox, $mail[0], "\\Seen \\Flagged");
-    imap_close($mailbox);
-
-    // return the object
+//  exit    returns Alert object
+//          if no alert, alertObj->title=""
+//
+//  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+//[{"createdDate":"1652555109859",
+// "expirationDate":"1653177600000",
+// "notificationBody":"Extreme low tides are predicted this summer beginning the week of May 16, 2022. ... \n\nRiders...\n",
+// "notificationTitle":"Service Alert – Extreme Low Tides beginning Monday, May 16",
+// "reasonForNotification":" ",
+// "notificationType":" "},...
+// ]
+function getAlertsfromHornblower() {
+    $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
     $alertobj = new Alert(); // create alert object
-    $alertobj->title = $subject. '. Tap "Alerts" button for more';  // title includes link
-    $alertobj->notifymsg = $subject;
-    $alertobj->detail = $subject;
-    $alertobj->timestamp = $talert; // unix date stamp of the alert
+    $alertobj->title = "";
+
+    //  Read the hornblower feed. Isn't this easy! php is great.
+    $x = file_get_contents($alertrssurl);
+    if($x === false || $x=="") {
+        echo " load failed from $alertrssurl. ";
+        return $alertobj;
+    }
+
+    //  decode json return and check for errors and no data
+    $a = json_decode($x);
+    if($a==null) {
+        echo "json decode returned null";
+        return $alertobj;
+    }
+    $i = count($a) - 1;  // last element
+    if($i<0) {
+        echo "json decode i=$i";
+        return $alertobj; 
+    }
+
+    // return the last message in the list.  I hope that is correct but who knows...
+    $v = $a[$i];
+    //echo "<br/>i=$i<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
+    //echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
+    //echo "<br/>________________________<br>";
+    $i++;
+    // fill an alert object
+    $alertobj->title = $v->notificationTitle;
+    $alertobj->notifymsg = $v->notificationTitle;
+    $alertobj->detail = $v->notificationBody;
+    $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
+    $alertobj->expiration = intval($v->expriationDate)/1000;
     return $alertobj;
 
+    // foreach($a as $v) {
+    //     echo "<br/>created Date: " . $v->createdDate;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  addAlertHistory - adds the new alert to the beginning of the alert history file.
+//  entry   $alerthistory = file name
+//          alertObj = alert object
+//  exit    added to front of $alerthistory
+//
+function addAlertHistory($alerthistory, $alertObj) {
+    $ah = file_get_contents($alerthistory);
+    $ah = "<b>" . date("m/d/y h:ia", $alertObj->createdDate) . ": " . $alertObj->notificationTitle . "</b><br/>" . $alertObj->notificationBody . "<br/><br/>" . $ah;
+    file_put_contents($alerthistory, $ah);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//  logAlertLast - write a message to the alertlast file
+//  entry   $s = string to write
+//  exit    $s written to alertlast.txt. overwrites previous string.
+function logAlertLast($s) {
+    file_put_contents("alertlast.txt", date("Y/m/d H:i:s ") . $s);  
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  getRSS - get the RSS feed.  Temporarily deprecated 10/20/21 due to CloudFlare security.
+//  getRSS - get the RSS feed.  Deprecated 10/20/21 due to CloudFlare security.
 //  
 //  exit    returns Alert object
 // function getRSS() {
@@ -342,4 +314,5 @@ function getEmailAlert() {
 //     return $alertobj;
 
 // }
+
 ?>
