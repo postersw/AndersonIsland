@@ -107,13 +107,19 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller;color:darkblue'>Ferry $p</div>");  // html file for iframe
 
+// if official ferry late alert from the ferry system, make the time red.
 $ferrycolor = "darkblue";
 $alert = file_get_contents($ferryalertfile);  // if the ferry is delayed, set the font color to red.
 if(strpos($alert, "DELAYED:") > 0) $ferrycolor = "red";
 $pstr = "<span style='color:$ferrycolor'>$pstr</span>";
 
 //  calculate if ferry is late and add message
-if(count($fa)==1) $pstr = checkforLateFerry() + $pstr;  // if 1 boat only, check for late
+if(count($fa)==1) {  // if 1 boat running
+    $ferrylate = checkforLateFerry();
+    $pstr = $ferrylate . $pstr;  // add late msg
+    if($ferrylate != "") file_put_contents("ferrylatelog.txt", date('c') . $ferrylate . "\n");
+}
+
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 
 // log it to csv file 
@@ -357,9 +363,11 @@ function abortme($msg) {
 //////////////////////////////////////////////////////////////////////////////
 // check for late - check for ferry being late and adds a message
 //      Don't call if running 2 ferrys. Its too confusing.
-//  entry   $ferrystate, 
-//          $timetoarrival
+//  entry   globals $ferrystate = atST, toAI, atAI, toST
+//          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message, or ""
+//  side effects:  default time zone = PST/PDT
+//
 function checkforLateFerry() {
     global $ferrystate, $timetoarrival;
     
@@ -368,40 +376,36 @@ function checkforLateFerry() {
     $loadtime = 5; // time to unload & load the ferry
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
-    $now = loctime[2] * 60 + loctime[1];  // local time in minutes since midnight.
+    $now = $loctime[2] * 60 + $loctime[1] -4;  // local time in minutes since midnight.  Back off 4 minutes because of delay in reporting position.
 
     // All arithmetic is done in minutes since midnight.
     switch($ferrystate) {
         case "atST": // docked at ST
-            $STtime = getTimeofNextRun($now, "ST");  // next run time minutes since midnight seconds. up to 20 minutes late for next run.
-            if($now <= $STtime) return "";
-            $delaytime = $now - $STtime;
-            //if(($now + $traveltime + $loadtime) < $AItime) return ""; // if ferry will not be late
-            //$delaytime = (($now + $traveltime + $loadtime) - $AItime)/60;  // calculate delay
+            $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight seconds. up to 20 minutes late for next run.
+            $delaytime = $now - $nextrun;
             break;
 
         case "toAI": // travelling to AI
-            $AItime = getTimeofNextRun($now, "AI"); // next run time minutes since midnight second
-            if(($now + $traveltime + $loadtime) < $AItime) return ""; // if ferry will not be late
-            $delaytime = (($now + $traveltime + $loadtime) - $AItime)/60;  // calculate delay
+            $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
+            $delaytime = (($now + $traveltime + $loadtime) - $nextrun);  // calculate delay
             break;
 
         case "atAI": // docked at AI
-            $AItime = getTimeofNextRun($now, "AI");  // next run time minutes since midnight second
-            if($now < $AItime) return ""; // if ferry will not be late
-            $delaytime = $now - $AItime;  // calculate delay
+            $nextrun = getTimeofNextRun("AI");  // next run time minutes since midnight second
+            $delaytime = $now - $nextrun;  // calculate delay
             break;
 
         case "toST": // travelling to ST
-            $STtime = getTimeofNextRun($now, "ST");  // next run time minutes since midnight second
-            if(($now + $traveltime + $loadtime) < $STtime) return ""; // if ferry will not be late
-            $delaytime = (($now + $traveltime + $loadtime) - $STtime)/60;  // calculate delay
+            $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight second
+            $delaytime = (($now + $traveltime + $loadtime) - $nextrun);  // calculate delay
             break;
     }
 
-    // $delaytime = delay in minutes
-    if ($delaytime <4) return "";
-    return "<span style='color:red'>DELAYED $delaymin min.</span><br/>";
+    // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
+    echo "$ferrystate: time=$now,  nextrun=$nextrun, traveltime=$traveltime, delaytime=$delaytime ";
+    if ($delaytime <5) return "";
+    echo " DELAYED $delaytime min ";
+    return "<span style='color:red'>DELAYED $delaytime min.</span><br/>";
 }
 
 
@@ -409,46 +413,40 @@ function checkforLateFerry() {
 // getTimeofNextSTRun();  next run time in unix seconds. up to 30 minutes late for next run.
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
-//  entry   $now = UTC timestamp seconds
-//          $STAI = "AI" or "ST"
+//  entry   $STAI = "AI" or "ST"
 //  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm
 //  CAUTION: resets global timezone to PT
 // 
-function getTimeofNextRun ($now, $STAI)  {
+function getTimeofNextRun ($STAI)  {
 
     // this array also used in getferryoverflow.php
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
-
-    // convert UTC to PT
-    // NOTE we probably can use the set timezone at this point since we are almost done
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $utc = time(); // UTC time
     $loctime = localtime($utc - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     if($loctime[6]>5) $s = 1; // skip early runs on sat, sun (d=-6, d=7)
-    $lt = loctime[2] * 100 + loctime[1];  // local time in hhmm.
+    $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
 
-    if($STAI = "ST") {
+    if($STAI == "ST") {
         // loop through steilacoom
         for($i=$s; $i<count($ST); $i++){
-            if($lt < $ST[i]) break;
+            if($lt < $ST[$i]) break;
         }
-        return (floor($ST[i]/100)*60) + ($ST[i]%100);
+        echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
+        return (floor($ST[$i]/100)*60) + ($ST[$i]%100);
 
     } else {
          // loop through AI
         for($i=$s; $i<count($AI); $i++){
-            if($lt < $AI[i]) break;
+            if($lt < $AI[$i]) break;
         }
-        return (floor($AI[i]/100)*60) + ($AI[i]%100);      
+        echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
+        return (floor($AI[$i]/100)*60) + ($AI[$i]%100);      
     }
     return 0;
 }
-
-
-}
-
 
 ?>
