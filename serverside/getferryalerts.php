@@ -24,6 +24,7 @@
 //      10/27/21. Activated full email use.
 //       5/16/22. Switched to use hornblower feed. 
 //       5/26/22. Change Delay string match to ignore case.
+//       6/07/22. Exit normally if no title.  This is the normal return if no alerts exist.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -58,11 +59,11 @@ $alerthistory = "alerthistory.txt";
 
 //  Get the alert. returned in $AlertObj
 $AlertObj = getAlertsfromHornblower() ;
-// no response so clear the alert file.
+// if no response clear the alert file.
 if($AlertObj->title == "") {
 	ClearAlertFile($alertfile, $alertlog);
 	logAlertLast("no title");
-	exit("No ferry alert title"); // if no reply
+	exit(0); // if no reply
 }
  
 // check time. If alert is >4 hrs old, clear it and stop.
@@ -214,7 +215,7 @@ function getAlertsfromHornblower() {
     //  decode json return and check for errors and no data
     $a = json_decode($x);
     if($a==null) {
-        echo "json decode returned null";
+        //echo "json decode returned null";  null is retrned normally if no alert
         return $alertobj;
     }
     $i = count($a) - 1;  // last element
