@@ -117,7 +117,6 @@ $pstr = "<span style='color:$ferrycolor'>$pstr</span>";
 if(count($fa)==1) {  // if 1 boat running
     $ferrylate = checkforLateFerry();
     $pstr = $ferrylate . $pstr;  // add late msg
-    if($ferrylate != "") file_put_contents("ferrylatelog.txt", date('c') . $ferrylate . "\n");
 }
 
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
@@ -365,8 +364,8 @@ function abortme($msg) {
 //      Don't call if running 2 ferrys. Its too confusing.
 //  entry   globals $ferrystate = atST, toAI, atAI, toST
 //          $timetoarrival = min to arrival if state = toAI/toST
-//  exit    returns prefix to ferry message, or ""
-//  side effects:  default time zone = PST/PDT
+//  exit    returns prefix to ferry message (DELAYED nn min), or ""
+//  side effects:  if late, writes to ferrylatelog.txt and stdout
 //
 function checkforLateFerry() {
     global $ferrystate, $timetoarrival;
@@ -404,15 +403,17 @@ function checkforLateFerry() {
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
 
     if($nextrun==0) return "";
-    if ($delaytime <5) return "";
-    echo date('c') . " $ferrystate: time=$now,  nextrun=$nextrun, traveltime=$traveltime, delaytime=$delaytime ";
-    echo " DELAYED $delaytime min ";
+    if($delaytime <5) return "";
+    $fnextrun = ($nextrun/60) . ":" . ($nextrun%60);
+    $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=$fnextrun, traveltime=$traveltime, delaytime=$delaytime ";
+    echo $latedebug;
+    file_put_contents("ferrylatelog.txt",  $latedebug . "\n", FILE_APPEND);
     return "<span style='color:red'>DELAYED $delaytime min.</span><br/>";
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////
-// getTimeofNextSTRun();  next run time in unix seconds. up to 30 minutes late for next run.
+// getTimeofNextSTRun();  next run time in unix seconds. up to 35 minutes late for next run.
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
 //  entry   $STAI = "AI" or "ST"
@@ -427,7 +428,7 @@ function getTimeofNextRun ($STAI)  {
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $utc = time(); // UTC time
-    $loctime = localtime($utc - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    $loctime = localtime($utc - 35*60);  // Backup 35 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     if($loctime[6]>5) $s = 1; // skip early runs on sat, sun (d=-6, d=7)
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
