@@ -402,8 +402,9 @@ function checkforLateFerry() {
     }
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
-    echo "$ferrystate: time=$now,  nextrun=$nextrun, traveltime=$traveltime, delaytime=$delaytime ";
+
     if ($delaytime <5) return "";
+    echo date('c') . " $ferrystate: time=$now,  nextrun=$nextrun, traveltime=$traveltime, delaytime=$delaytime ";
     echo " DELAYED $delaytime min ";
     return "<span style='color:red'>DELAYED $delaytime min.</span><br/>";
 }
@@ -435,7 +436,7 @@ function getTimeofNextRun ($STAI)  {
         for($i=$s; $i<count($ST); $i++){
             if($lt < $ST[$i]) break;
         }
-        echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
+        //echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
         return (floor($ST[$i]/100)*60) + ($ST[$i]%100);
 
     } else {
@@ -443,7 +444,7 @@ function getTimeofNextRun ($STAI)  {
         for($i=$s; $i<count($AI); $i++){
             if($lt < $AI[$i]) break;
         }
-        echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
+        //echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
         return (floor($AI[$i]/100)*60) + ($AI[$i]%100);      
     }
     return 0;
