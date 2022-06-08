@@ -403,6 +403,7 @@ function checkforLateFerry() {
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
 
+    if($nextrun==0) return "";
     if ($delaytime <5) return "";
     echo date('c') . " $ferrystate: time=$now,  nextrun=$nextrun, traveltime=$traveltime, delaytime=$delaytime ";
     echo " DELAYED $delaytime min ";
@@ -415,7 +416,7 @@ function checkforLateFerry() {
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
 //  entry   $STAI = "AI" or "ST"
-//  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm
+//  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
 //  CAUTION: resets global timezone to PT
 // 
 function getTimeofNextRun ($STAI)  {
@@ -436,6 +437,7 @@ function getTimeofNextRun ($STAI)  {
         for($i=$s; $i<count($ST); $i++){
             if($lt < $ST[$i]) break;
         }
+        if($i == count($ST)) return 0;
         //echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
         return (floor($ST[$i]/100)*60) + ($ST[$i]%100);
 
@@ -444,6 +446,7 @@ function getTimeofNextRun ($STAI)  {
         for($i=$s; $i<count($AI); $i++){
             if($lt < $AI[$i]) break;
         }
+        if($i == count($AI)) return 0;
         //echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
         return (floor($AI[$i]/100)*60) + ($AI[$i]%100);      
     }
