@@ -23,8 +23,9 @@
 //  1.34 5/26/22 Make text red if ferry is delayed.
 //  1.35 6/07/22 Detect a late ferry and add a LATE message
 //  1.36 6/9/22. Use 30 minutes to find a late run.
+//  1.37 6/9/22. Moved logging to subroutine.
 
-$ver = "1.36";  // 6/08/22
+$ver = "1.37";  // 6/08/22
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -39,7 +40,7 @@ $ferryalertfile = "alert.txt";
 $crossingtime = 20; // nominal crossing time in minutes
 $MMSICA = 366659730;  // Christine Anderson
 $MMSIS2 = 367153930; // Steilacoom II
-$MMSI = $MMSIST; // use steilacoom
+$MMSI = $MMSIS2; // use steilacoom
 $APIkey = "e5c425e79c24d1c960955f251b0146e361eca917";  // subscription key from MarineTraffic.com
 $ferryname = ""; // based on MMSI
 $fa = []; // ferry array, 0, 1, or 2 arrays of data
@@ -106,41 +107,20 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // write to ferry position file
 
-file_put_contents($ferrypositionfile, "<div style='font-family:sans-serif;font-size:smaller;color:darkblue'>Ferry $p</div>");  // html file for iframe
-
-// if official ferry late alert from the ferry system, make the time red.
+// if official ferry DELAY alert from the ferry system, or if ferry is actually late, make the time red.
+$ferrylate = "";
+if(count($fa)==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
 $ferrycolor = "darkblue";
-$alert = file_get_contents($ferryalertfile);  // if the ferry is delayed, set the font color to red.
-if(strpos($alert, "DELAYED:") > 0) $ferrycolor = "red";
-$pstr = "<span style='color:$ferrycolor'>$pstr</span>";
-
-//  calculate if ferry is late and add message
-if(count($fa)==1) {  // if 1 boat running
-    $ferrylate = checkforLateFerry();
-    $pstr = $ferrylate . $pstr;  // add late msg
-}
+if($ferrylate == "")  {  // if ferry is NOT late, check the official DELAY announcement
+    $alert = file_get_contents($ferryalertfile);  // if the ferry is delayed, set the font color to red.
+    if(strpos($alert, "DELAYED:") > 0) $ferrycolor = "red";
+} else $ferrycolor = "red";  // ferry is late, make sure it is red
+$pstr = "<span style='color:$ferrycolor'>" . $ferrylate . $pstr . "</span>";  // build message as <ferrylate> <pstr>
 
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
 
 // log it to csv file 
-
-$tlh = fopen($log, 'a');
-$s1 = ""; $s2 = "";
-if($fa[0][0] == $MMSICA) {  // if 1st boat is CA
-    $s1 =  implode(",", $fa[0]) . "," . $px[0];
-    if(count($fa)>1) $s2 = implode(",", $fa[1]) . "," . $px[1];
-    else $s2 = ",,,,,,,,,,,,";
-} else  { // if 1st boat is S2
-    if(strpos($px[0], "'S2'") < 0) {
-        $t = $px[0]; $px[0] = $px[1]; $px[1] = $t;
-    }
-    $s2 =  implode(",", $fa[0]) . "," . $px[0];
-    if(count($fa)>1) $s1 = implode(",", $fa[1]) . "," . $px[1];
-    else $s1 = ",,,,,,,,,,,,";
-}
-date_default_timezone_set("America/Los_Angeles"); // set UTC
-fwrite($tlh, date('c') . ",$ver,$s1,$s2," . round($deltamin,1) ."\n");
-fclose($tlh);
+logPosition($log);
 return;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -360,12 +340,44 @@ function abortme($msg) {
     exit($msg);
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// logPosition - writes position to CSV file in 2 columns so it is easy to view with excel
+//
+//  entry   $log = log file name
+//          fa = array of ferry position  0, 1, or 2 entries
+//          px = array of ferry messages
+//  exit    writes to $log
+//
+function logPosition($log) {
+    global $fa, $px, $MMSICA;
+    global $ver, $deltamin;
+
+    $tlh = fopen($log, 'a');  // append to log
+    $s1 = ""; $s2 = "";
+    //  this mess is to ensure that the boats are always in the same column if there are 2 boats
+    if($fa[0][0] == $MMSICA) {  // if 1st boat is CA
+        $s1 =  implode(",", $fa[0]) . "," . $px[0];
+        if(count($fa)>1) $s2 = implode(",", $fa[1]) . "," . $px[1];
+        else $s2 = ",,,,,,,,,,,,";
+    } else  { // if 1st boat is S2
+        if(strpos($px[0], "'S2'") < 0) {
+            $t = $px[0]; $px[0] = $px[1]; $px[1] = $t;
+        }
+        $s2 =  implode(",", $fa[0]) . "," . $px[0];
+        if(count($fa)>1) $s1 = implode(",", $fa[1]) . "," . $px[1];
+        else $s1 = ",,,,,,,,,,,,";
+    }
+    date_default_timezone_set("America/Los_Angeles"); // set UTC
+    fwrite($tlh, date('c') . ",$ver,$s1,$s2," . round($deltamin,1) ."\n");
+    fclose($tlh);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // check for late - check for ferry being late and adds a message
 //      Don't call if running 2 ferrys. Its too confusing.
 //  entry   globals $ferrystate = atST, toAI, atAI, toST
 //          $timetoarrival = min to arrival if state = toAI/toST
-//  exit    returns prefix to ferry message (DELAYED nn min), or ""
+//  exit    returns prefix to ferry message (LATE nn min), or ""
 //  side effects:  if late, writes to ferrylatelog.txt and stdout
 //
 function checkforLateFerry() {
@@ -376,7 +388,7 @@ function checkforLateFerry() {
     $loadtime = 5; // time to unload & load the ferry
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
-    $now = $loctime[2] * 60 + $loctime[1] -4;  // local time in minutes since midnight.  Back off 4 minutes because of delay in reporting position.
+    $now = $loctime[2] * 60 + $loctime[1] - 3;  // local time in minutes since midnight.  Back off 3 minutes because of delay in reporting position.
 
     // All arithmetic is done in minutes since midnight.
     switch($ferrystate) {
@@ -403,13 +415,13 @@ function checkforLateFerry() {
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
 
-    if($nextrun==0) return "";
-    if($delaytime <5) return "";
-    $fnextrun = ($nextrun/60) . ":" . ($nextrun%60);
+    if($nextrun==0) return "";  // if no nextrun
+    if($delaytime <5) return "";  // give 5 minutes of grace for a late boat
+    $fnextrun = floor($nextrun/60) . ":" . ($nextrun%60);
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=$fnextrun, traveltime=$traveltime, delaytime=$delaytime ";
     echo $latedebug;
     file_put_contents("ferrylatelog.txt",  $latedebug . "\n", FILE_APPEND);
-    return "<span style='color:red'>DELAYED $delaytime min.</span><br/>";
+    return "LATE $delaytime min.<br/>";
 }
 
 
