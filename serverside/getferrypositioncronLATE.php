@@ -22,8 +22,9 @@
 //  1.33 7/19/21 Make text italic
 //  1.34 5/26/22 Make text red if ferry is delayed.
 //  1.35 6/07/22 Detect a late ferry and add a LATE message
+//  1.36 6/9/22. Use 30 minutes to find a late run.
 
-$ver = "1.35";  // 6/07/22
+$ver = "1.36";  // 6/08/22
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -413,22 +414,22 @@ function checkforLateFerry() {
 
 
 //////////////////////////////////////////////////////////////////////////////////
-// getTimeofNextSTRun();  next run time in unix seconds. up to 35 minutes late for next run.
+// getTimeofNextSTRun();  next run time in unix seconds. up to 30 minutes late for next run.
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
 //  entry   $STAI = "AI" or "ST"
 //  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
 //  CAUTION: resets global timezone to PT
-// 
+//  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
+//    30 minutes late.  After 30 minutes late it will find the next run.
 function getTimeofNextRun ($STAI)  {
-
-    // this array also used in getferryoverflow.php
+    // this array also used in getferryoverflow.php and should be in a shared file.
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $utc = time(); // UTC time
-    $loctime = localtime($utc - 35*60);  // Backup 35 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    $loctime = localtime($utc - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     if($loctime[6]>5) $s = 1; // skip early runs on sat, sun (d=-6, d=7)
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
