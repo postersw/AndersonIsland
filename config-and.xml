@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.31.061722"
-        android-versionCode="2252"
-        android:versionName="1.31.061722">
+        version="1.31.061822"
+        android-versionCode="2253"
+        android:versionName="1.31.061822">
 
   <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->      
   <!-- versionCode 2252 for 1.31.052422 for Volt.Build (no code changes) ANDROID ONLY -->

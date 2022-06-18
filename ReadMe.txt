@@ -121,6 +121,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
 03/02/21.                  Google Play production rollout. 
 05/23/22. Ver 1.31.052322. New branch created from master after merge of 1.30.
+06/18/22. Ver 1.31.061822. Volt Build. Google Play Beta. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
