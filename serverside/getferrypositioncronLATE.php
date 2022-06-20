@@ -23,7 +23,11 @@
 //  1.34 5/26/22 Make text red if ferry is delayed.
 //  1.35 6/07/22 Detect a late ferry and add a LATE message
 //  1.36 6/9/22. Use 30 minutes to find a late run.
+<<<<<<< HEAD
 //  1.37 6/9/22. Moved logging to subroutine.
+=======
+//  1.37 612/22. Fix test for Sunday,
+>>>>>>> 2ad375394672b0efb683aa5064930d27b66b64c1
 
 $ver = "1.37";  // 6/08/22
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
@@ -443,7 +447,7 @@ function getTimeofNextRun ($STAI)  {
     $utc = time(); // UTC time
     $loctime = localtime($utc - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
-    if($loctime[6]>5) $s = 1; // skip early runs on sat, sun (d=-6, d=7)
+    if($loctime[6]==6 || $loctime[6]==0) $s = 1; // skip early runs on sat, sun (d=0 or 6)
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
 
     if($STAI == "ST") {

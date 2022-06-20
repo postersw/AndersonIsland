@@ -235,7 +235,7 @@ function getAlertsfromHornblower() {
     $alertobj->notifymsg = $v->notificationTitle;
     $alertobj->detail = $v->notificationBody;
     $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
-    $alertobj->expiration = intval($v->expriationDate)/1000;
+    $alertobj->expiration = intval($v->expirationDate)/1000;
     return $alertobj;
 
     // foreach($a as $v) {
