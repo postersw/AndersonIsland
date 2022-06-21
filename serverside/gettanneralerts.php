@@ -195,7 +195,7 @@ function gettimeoflaststatus() {
     //echo $str . "\n"; // debug
     // look for tanner time stamp
     $i = strpos($str, '"tannerelectric"');
-    echo "i=$i \n";
+    //echo "i=$i \n";
     if($i===false) {
         echo "No tanner time stamp from $tannerstatus: $str";
         return 0;
@@ -204,8 +204,7 @@ function gettimeoflaststatus() {
     // get time time and convert it to a unix time stamp
     $iDate = strrpos($str, "receivedDate", $i-strlen($str));  //search backward from $i to find receivedDate
     $ts = substr($str, $iDate+15, 20);
-    echo "iDate=$iDate, ts=$ts\n";
-    //echo "ts=$ts \n";
+    //echo "iDate=$iDate, ts=$ts\n";
     $uts = strtotime($ts);  // unit time stamp in GMT in SECONDS
     //echo "uts=$uts \n";
     //echo date("m/d/y H:i:s \n", $uts); 
