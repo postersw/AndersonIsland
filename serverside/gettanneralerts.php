@@ -37,6 +37,7 @@
 //       8/08/21. Fixed 'No Outages' test so that state change is always logged.
 //       9/14/21. Get date/time of last tanner feed from odin.
 //       10/28/21. Don't log outage message if it hasn't changeed.
+//       6/20/22. Fixed for change to status format.
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -182,6 +183,7 @@ function TagValue($s, $tag) {
 //          0 if no tanner time stamp
 // https://odin.ornl.gov/odi/status returns 
 // {"receivedDate":"2021-09-14T20:11:09Z","utility":"tannerelectric","vendor":"nisc"},
+// {"receivedDate":"2022-06-21T00:10:24.117+00:00","eiaId":"tannerelectric","name":"Tanner Electric Coop","dataId":"b4778a9a-6350-48af-bc5f-053abae78da5","hasError":false},
     
 function gettimeoflaststatus() {
     $tannerstatus = "https://odin.ornl.gov/odi/status";
@@ -192,17 +194,17 @@ function gettimeoflaststatus() {
     }
     //echo $str . "\n"; // debug
     // look for tanner time stamp
-    $i = strpos($str, '"utility":"tannerelectric"');
-    //echo "i=$i \n";
+    $i = strpos($str, '"tannerelectric"');
+    echo "i=$i \n";
     if($i===false) {
         echo "No tanner time stamp from $tannerstatus: $str";
         return 0;
     }
     date_default_timezone_set("UCT"); // set UCT
     // get time time and convert it to a unix time stamp
-    //$ts = strrpos($str, "receivedDate", -(strlen($str)-$i));  //search backward from $i
-    //echo "ts=$ts \n";
-    $ts = substr($str, $i-22, 20);
+    $iDate = strrpos($str, "receivedDate", $i-strlen($str));  //search backward from $i to find receivedDate
+    $ts = substr($str, $iDate+15, 20);
+    echo "iDate=$iDate, ts=$ts\n";
     //echo "ts=$ts \n";
     $uts = strtotime($ts);  // unit time stamp in GMT in SECONDS
     //echo "uts=$uts \n";
