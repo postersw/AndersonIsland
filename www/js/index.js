@@ -78,7 +78,7 @@
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
     2022
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
-        1.31.061722. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30.
+        1.31.070822. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.
         * 
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.061822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.070822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -1583,6 +1583,7 @@ function timerUp() {
     // reload daily stuff - ferry schedule, store hours, coming events, tides
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
     if ((dailycacheloaded == null) || (Number(dailycacheloaded) != gMonthDay)) {
+        reloadreasontext = "timerup"; 
         ReloadCachedData();
     }
 
@@ -2830,20 +2831,23 @@ function DisplayNextEvents(CE) {
         //if (aCEmonthday != gMonthDay && datefmt != "") return datefmt; // don't return tomorrow if we all the stuff for today
         if ((aCEyymmdd != DisplayDate) && (nEvents >= 2) && (datefmt != "")) return datefmt; // don't return tomorrow if we all the stuff for today
 
-        if (gIconSwitch == 1) CEvent = FormatEvent(Evt, "14");
+        if (gIconSwitch == 1) CEvent = "&nbsp;&nbsp; " + FormatEvent(Evt, "14");  // extra 2 spaces is kludge for hanging indent bug  outdenting the event text
         else CEvent = Evt.title;
+
+        //ep = "&nbsp;";
+        var ep = "<div class='hi'>" // hanging indent
 
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
             if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
             if (Evt.cancelled) {
-                datefmt += "&nbsp;<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span><br/>";
+                datefmt += ep + "<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span></div>";
                 TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
             } else if (Number(Evt.startt) <= gTimehhmm) {
-                datefmt += "&nbsp;<span style='font-weight:bold;color:green'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</span>: " + CEvent + " @ " + Evt.loc + "<br/>";
+                datefmt += ep + "<span style='color:green'><b>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</b>: " + CEvent + " @ " + Evt.loc + "</span></div>";
                 TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
             } else {
-                datefmt += "&nbsp;<strong>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</strong>&nbsp;" + CEvent + " @ " + Evt.loc + "<br/>";
+                datefmt += ep + "<b>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + "</b>: " + CEvent + " @ " + Evt.loc + "</div>";
                 if (nEvents < 1) TXTS.Next = " at " + FormatTime(Evt.startt) + ", " + Evt.title + " at " + Evt.loc + "."; // text to speech
             }
             //nEvents = 99; // ensure only today
@@ -2860,9 +2864,9 @@ function DisplayNextEvents(CE) {
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
         if (Evt.cancelled) {
-            datefmt += "&nbsp;<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span><br/>";
+            datefmt += ep + "<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span></div>";
         } else {
-            datefmt += "&nbsp;" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "<br/>";
+            datefmt += ep + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</div>";
         }
         if (nEvents < 1) TXTS.Next = gDayofWeekName[GetDayofWeek(Evt.date)] + " at " + FormatTime(Evt.startt) + ", " + Evt.title + " at " + Evt.loc + "."; // text to speech
         DisplayDate = aCEyymmdd;

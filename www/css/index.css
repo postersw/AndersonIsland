@@ -162,6 +162,8 @@ h1 {
 .mpicon { font-size:36px;}
 .mptext {font-size: 15px;}
 .bizicon {font-size: 24px;}
+/* hanging indent for events */
+.hi{padding-left:15px; text-indent:-15px;}  
 
 /* TOGGLE Switches from wc3*/
 

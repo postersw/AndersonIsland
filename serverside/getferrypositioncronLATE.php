@@ -419,7 +419,7 @@ function checkforLateFerry() {
     if($delaytime <5) return "";  // give 5 minutes of grace for a late boat
     $fnextrun = floor($nextrun/60) . ":" . ($nextrun%60);
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=$fnextrun, traveltime=$traveltime, delaytime=$delaytime ";
-    echo $latedebug;
+    echo $latedebug . "\n LATE $delaytime min.";
     file_put_contents("ferrylatelog.txt",  $latedebug . "\n", FILE_APPEND);
     return "LATE $delaytime min.<br/>";
 }
