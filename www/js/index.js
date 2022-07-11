@@ -1582,7 +1582,8 @@ function timerUp() {
 
     // reload daily stuff - ferry schedule, store hours, coming events, tides
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
-    if ((dailycacheloaded == null) || (Number(dailycacheloaded) != gMonthDay)) {
+    // reload every day and every hour (every hour added 7/11/22)
+    if ((dailycacheloaded == null) || (Number(dailycacheloaded) != gMonthDay)|| (Math.floor(Number(localStorage.getItem("dailycacheloadedtime"))/100) != gTimehh)) {
         reloadreasontext = "timerup"; 
         ReloadCachedData();
     }
@@ -5056,11 +5057,12 @@ function StartApp() {
     //reload the 'dailycache' cache + coming events + tides + forecast if the day or MyVer has changed .
 
     var dailycacheloaded = localStorage.getItem("dailycacheloaded");
+    // reload every day and every hour (every hour added 7/11/22)
     if (dailycacheloaded == null) {
         gForceCacheReload = true;
         reloadreasontext = "initial cache load";
-    } else if (Number(dailycacheloaded) != gMonthDay) {
-        reloadreasontext = "dailycacheloaded != monthday";
+    } else if ((Number(dailycacheloaded) != gMonthDay) || (Math.floor(Number(localStorage.getItem("dailycacheloadedtime"))/100) != gTimehh)) {
+        reloadreasontext = "dailycacheloaded != monthday or hour";
         gForceCacheReload = true;
     }
 
