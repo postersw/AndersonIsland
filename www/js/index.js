@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.070822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.071122";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -267,6 +267,7 @@ var gFocusTime = 0; // saved value in sec
 var gResumeCounter = 0;
 var gResumeTime = 0;// saved value in sec
 var gDailyCacheLoadedms = 0;
+var DailyCacheFetchError = ""; // error from daily cache fetch
 
 // Location set by gelocation for phone only
 gLatitude = 0.0; // NS
@@ -1323,8 +1324,8 @@ function GetDailyCache() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4) {  // if it's done...
-            if(xhttp.status != 200) alert("ERROR: DailyCache fetch failed. Status=" + xhttp.status.toString() + "," + xhttp.statusText); 
-            HandleDailyCacheReply(xhttp.responseText); 
+            if(xhttp.status != 200) DailyCacheFetchError = gTimehhmm.toString() + " ERROR: DailyCache fetch failed. Status=" + xhttp.status.toString() + "," + xhttp.statusText; 
+            else HandleDailyCacheReply(xhttp.responseText); 
         }
     }
     xhttp.open("GET", myurl, true);
@@ -1711,7 +1712,7 @@ function ReloadCachedDataButton() {
 function DisplayLoadTimes() {
     document.getElementById("reloadtime").innerHTML = "<br/>Stats:<br/>App started " + gAppStartedDate +
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
-        ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext +
+        ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext + " " + DailyCacheFetchError + 
         "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
