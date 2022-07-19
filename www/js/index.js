@@ -78,7 +78,7 @@
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
     2022
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
-        1.31.070822. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.
+        1.31.071822. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
         * 
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.071122";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.071822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -1164,14 +1164,13 @@ function DisplayAlertInfo() {
 //          REFRESH\n refresh time stamp \nREFRESHEND
 //
 //  Entry   'alerthide' = true to hide the alert in 'alerttext'
+//          gAlertTime = time last getalert was issued. 0 to force getalert. 
 //  Exit    'alerttext', 'alertdetail' set.  'alerthide' cleared if the alert has changed.
 //          'burnbanalert' = burn ban alert info
 //          'tanneralert' = tanner alert info
 //          'refreshrequest' = last force- refresh request stamp. REFRESH\n unique stamp\n REFRESHEND. 
 function getAlertInfo() {
-    //var alerttimeout = 480; // alert timeout in sec 8 minutes
     var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
-    //var timestamp = Date.now() / 1000; // time in sec
     if ((Date.now() - gAlertTime) < alerttimeout) return; // gets alert async every min.
     //DebugLog("getAlertInfo");
     var myurl = FixURL('getalerts.php');
@@ -1183,6 +1182,7 @@ function getAlertInfo() {
         if (xhttp.readyState == 4 && xhttp.status == 0) MarkOffline(true); // this one works when net is disconnected
     }
     try {
+        gAlertTime = Date.now(); // don't call again for 60 secs
         xhttp.open("GET", myurl, true);
         xhttp.timeout = 12000;  // 12 second timeout; this doesn't seem to work
         xhttp.ontimeout = function () { MarkOffline(true); }  // after 12 seconds, show the offline msg
@@ -1200,7 +1200,7 @@ function getAlertInfo() {
 function HandleAlertReply(r) {
     //DebugLog("HandleAlertReply ")
     MarkOffline(false);
-    gAlertTime = Date.now(); // time in ms
+    //gAlertTime = Date.now(); // time in ms
     //localStorage.setItem("alerttime", timestamp); // save the cache time so we don't keep asking forever
     gAlertCounter++; // count the alert reply
     var s = parseCacheOptional(r, "", "FERRY", "FERRYEND");
@@ -1307,6 +1307,7 @@ function DegToCompassPointsTTS(d) {
 //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND, etc. 
 //  Entry gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
 //
+var gGetCache1=0, gGetCache2=0, gGetCache3=0;  // cache load timestamps
 function GetDailyCache() {
     //DebugLog("GetDailyCache");
     gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
@@ -1328,6 +1329,7 @@ function GetDailyCache() {
             else HandleDailyCacheReply(xhttp.responseText); 
         }
     }
+    gGetCache1 = Date.now();
     xhttp.open("GET", myurl, true);
     xhttp.send();
 }
@@ -1337,6 +1339,7 @@ function GetDailyCache() {
 //  entry   data = dailycache.php data stream
 //  exit    data saved in separate localstorage locations
 function HandleDailyCacheReply(data) {
+    gGetCache2 = Date.now();
     InitializeDates(0);
     //DebugLog("HandleDailyCacheReply");
     localStorage.setItem("Cmain", "0");  // clear page count
@@ -1440,7 +1443,6 @@ function ParseDailyCache(data) {
     parseCache(data, "comingactivities", "ACTIVITIES", "COMINGEVENTSEND");
     ParseEventsList(localStorage.getItem("comingactivities"), ActA);
     localStorage.setItem("comingeventsloaded", gMonthDay); // save event loaded date/time
-
     document.getElementById("nextevent").innerHTML = DisplayNextEvents(EvtA);
     document.getElementById("nextactivity").innerHTML = DisplayNextEvents(ActA);
 
@@ -1450,6 +1452,7 @@ function ParseDailyCache(data) {
     localStorage.setItem("jsontidesgPeriods", JSON.stringify(gPeriods)); // store the gPeriods array as a json string
     localStorage.setItem("tidesloadedmmdd", gMonthDay);
     ShowNextTides();
+    gGetCache3 = Date.now();
 
     if (gReloadCachedDataButtonInProgress) {
         gReloadCachedDataButtonInProgress = false;
@@ -1722,7 +1725,8 @@ function DisplayLoadTimes() {
         "<br/>Focus " + DispElapsedSec(gFocusTime) + " #" + gFocusCounter.toFixed(0) +
         ", Resume " + DispElapsedSec(gResumeTime) + " #" + gResumeCounter.toFixed(0) +
         "<br/>Long:" + gLongitude + ",Lat:" + gLatitude + ",OnAI:" + gLocationOnAI +
-        "<br/>ScreenWidth:" + window.screen.width;
+        "<br/>ScreenWidth:" + window.screen.width + 
+        "<br/>Cache:fetch=" + (gGetCache2 - gGetCache1).toFixed(0) + ",loadcache=" + (gGetCache3 - gGetCache2).toFixed(0);
 
 }
 
