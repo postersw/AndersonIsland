@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.071822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.31.071922";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -1170,7 +1170,7 @@ function DisplayAlertInfo() {
 //          'tanneralert' = tanner alert info
 //          'refreshrequest' = last force- refresh request stamp. REFRESH\n unique stamp\n REFRESHEND. 
 function getAlertInfo() {
-    var alerttimeout = 60000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.
+    var alerttimeout = 50000; // alert timeout in ms. 1 min  as of 4/8/17, v1.11.  Slightly less than the 1 mninute timer.
     if ((Date.now() - gAlertTime) < alerttimeout) return; // gets alert async every min.
     //DebugLog("getAlertInfo");
     var myurl = FixURL('getalerts.php');
