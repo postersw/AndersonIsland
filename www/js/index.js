@@ -2115,7 +2115,7 @@ function StartTicketApp() {
                 var link = GetLink("googleplayticketlink", 'https://play.google.com/store/apps/details?id=com.ttpapps.pcf');
                 window.open(link, '_system');
             };
-            var pkg = GetLink("androidpackageticketlink", "com.ttpapps.pcf"); // android ticket package
+            var pkg = GetLink("androidpackageticketlink", "com.hornblower.hornblower"); // android ticket package
             window.plugins.launcher.launch({ packageName: pkg }, successCallback, errorCallback);
 
         } else {
