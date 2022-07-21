@@ -1345,6 +1345,7 @@ function HandleDailyCacheReply(data) {
     localStorage.setItem("Cmain", "0");  // clear page count
     localStorage.setItem("pagehits", "");
     ParseDailyCache(data);
+    
     localStorage.setItem("dailycacheloaded", gMonthDay); // save event loaded date/time
     localStorage.setItem("dailycacheloadedtime", gTimehhmm); // save event loaded date/time
     localStorage.setItem("myver", gMyVer);  // save the app version
