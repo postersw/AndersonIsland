@@ -141,14 +141,16 @@ GIT CREATE NEW BRANCH
 		1. Select 'master' in the Branch dropdown.   
 		2. Select the Branch dropdown again, and fill in the name of the new branch, e.g. Ver131. Then select Create.
 		3. Then go to  Visual Studio Code on local machine and create a new local branch from this branch: 
-		    Select soure control -> ... -> Branch -> Create Branch From
-			Enter the name of the new branch, e.g. Ver131
-			Enter the name of the source branch, e.g. origin/Ver131.
-			Alternate way - not guaranteed:
 			Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
 			Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
 			Select origin/newbranchname, e.g. origin/Ver131
 			This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
+			
+			Alternate way: Doesn't work as well because it creates 2 branches with same name.
+			Select soure control -> ... -> Branch -> Create Branch From
+			Enter the name of the new branch, e.g. Ver131
+			Enter the name of the source branch, e.g. origin/Ver131.
+			After making changes, Commit, then Publish Branch, then Sync.  I don't think I should have published branch because now I have 2 branches.
 	2a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch

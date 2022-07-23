@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.071922";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.32.072222";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -2841,11 +2841,11 @@ function DisplayNextEvents(CE) {
         else CEvent = Evt.title;
 
         //ep = "&nbsp;";
-        var ep = "<div class='hi'>" // hanging indent
+        var ep = "<div class='hi'>&nbsp;" // hanging indent
 
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
-            if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
+            if (datefmt == "") datefmt += "<span style='color:green'><b>TODAY</b></span><br/>";  // mark the 1st entry only as TODAY
             if (Evt.cancelled) {
                 datefmt += ep + "<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span></div>";
                 TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
@@ -2864,8 +2864,8 @@ function DisplayNextEvents(CE) {
         // if not today, display day of week. Do NOT display > 6 days (1 week) ahead because it is too confusing.
         if (aCEyymmdd != DisplayDate) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
-            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
-            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</strong><br/>";  // fails on month chagne
+            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<span style='color:darkmagenta'><b>TOMORROW</b></span><br/>";
+            else if (aCEyymmdd <= yymmddP6) datefmt += "<span style='color:darkmagenta'><b>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</span></b><br/>";  // fails on month chagne
             else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
