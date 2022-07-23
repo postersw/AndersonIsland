@@ -28,8 +28,12 @@
 //  2/11/19. RFB. Added REFRESH and emergencymessage.txt.
 //  1/1/21.  RFB. Added FERRYPOSITION
 //  5/15/22  RFB. Added access control allow origin *
+//  7/18/22  RFB. Added getalertlog.txt to track calls for statistics.
 
 header("Access-Control-Allow-Origin: *");  // added 5/15/22
+$alertlog = "getalertlog.txt";
+chdir("/home/postersw/public_html");
+date_default_timezone_set("America/Los_Angeles"); // set PDT
 
 // special case for FERRY. Put the EmergencyMessage file in front of the ferry alert.
 $emergencyfile = "emergencymessage.txt";
@@ -47,6 +51,8 @@ copyfile("burnban.txt", "BURNBAN");
 copyfile("tanneroutage.txt", "TANNER");
 copyfile("ferryposition.txt", "FERRYPOSITION");
 copyfile("refresh.txt", "REFRESH");
+//$msg = date("Y/m/d H:i:s ") . $_SERVER['REMOTE_ADDR'] . "\n";
+//file_put_contents($alertlog, $msg, FILE_APPEND);  // log the call
 return;
 
 // copyfile from file to stdout
@@ -63,4 +69,4 @@ function copyfile($diskfile, $label) {
 }
 
 
-?>
+?>+

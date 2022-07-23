@@ -120,6 +120,9 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable so an old line is not displayed.
 02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
 03/02/21.                  Google Play production rollout. 
+05/23/22. Ver 1.31.052322. New branch created from master after merge of 1.30.
+06/18/22. Ver 1.31.061822. Volt Build. Google Play Beta. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar.
+07/21/22. Ver 1.31.072122. Android Production. Volt Build. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar. Load daily cache hourly. Hanging indent on events/activities.
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -134,28 +137,25 @@ GIT CREATE NEW BRANCH
 		2. Switch Current branch to Master: Screen "Branches". Select 'master'.
 		3. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
 		4. Sync.
-	2. Create new branch directly on GetHub. github.com/postersw.
-		Select 'master' in the Branch dropdown.   
-		Select the Branch dropdown again, and fill in the name of the new branch. Then select Create.
-		Then go to  Visual Studio on local machine and create a new local branch from this branch: 
-			Select Branches menu in VS. Select Master.  
-			Go to Sync screen.  sync.
-			Go back to Branches screen.  Under remotes/origin, the new branch (Vernnn) should be visible.
-			Double click remotes/origin->the new branch.  
-			This will create a new local branch of the same name and check it out and set it to track the remote.
-	2a. Alternative to #2: Create new branch (e.g. Ver19) directly in Visual Studio. 
+	2. Create new branch directly on GitHub. github.com/postersw.
+		1. Select 'master' in the Branch dropdown.   
+		2. Select the Branch dropdown again, and fill in the name of the new branch, e.g. Ver131. Then select Create.
+		3. Then go to  Visual Studio Code on local machine and create a new local branch from this branch: 
+			Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
+			Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
+			Select origin/newbranchname, e.g. origin/Ver131
+			This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
+	2a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
 		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
 		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
  		   Then it will appear in the 'remotes/origin' list.
-	3. New branch will be on this PC. Be sure to Publish it from the Branches screen. Be sure to use it on other PCs.
-	4. Switch phonegap.build to new branch (e.g. Ver19). NOTE: branch name must match existing GitHub branch. CASE SENSITIVE.
-	   If it doesn't you get a message "Cannot access Github repository".
-	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio GIT/Branches list, 
-	   try switching to the Sync screen and running Fetch. Or set the VS branch to Master, and then run Fetch.
+	3. New branch will be on GitHub as origin/newbranchname.  Be sure to use it on other PCs.
+	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio Code GIT/Branches list, 
+	   try  running Fetch. Or set the VS branch to Master, and then run Fetch.
 	   If that doesn't work, try 'git fetch' from the command line.
-	   or run GitUI and click on "Remote -> Fetch from Origin" which will update things. Then restart Visual Studio.
+	   or run GitUI and click on "Remote -> Fetch from Origin" which will update things. Then restart Visual Studio Code.
 
 ------------------------------------------------------------------------------------------------------------------------
 BUILD/DEBUG
@@ -170,7 +170,7 @@ WEB LOCAL DEBUG
 	Use Developer tools to debug.
 
 ANDROID DEBUG/BUILD
-	Build on PhoneGap build.  Then download the apk using the bar code scanner to open the download web page.
+	Build on Volt build.  Then download the apk using the bar code scanner to open the download web page.
 	Alernatively run PhoneGap build on the phone and click on the apk icon to download it.
 	Download.  Then find the downloaded file and click on it, which will install it.
 	Test on: 1 My phone, 2 Sue's phone, 3 my old motorola E phone

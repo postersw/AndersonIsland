@@ -23,17 +23,20 @@
 //      Rev 10/17/21. look for RSS feed for bun ban.  This fails as of 10/15/21, locked out by cloudflair security of <piercecountywa class="gov">
 //                   Currently the only way to set the fire safety burn ban is to set it in file fireburnbanstatus.txt.
 //      12/18/21:  Messages improved.  No data from Outdoor bun ban will not about the script. No data from Air Quailty WILL abort the script.
+//      6/19/22:  Removed fire burn ban automated check.
 
     $burnbanlink = "https://secure.pscleanair.org/AirQuality/BurnBan";
     $firebblink = "https://www.piercecountywa.gov/982/Outdoor-Burning?PREVIEW=YES";//  
     $fireburnbanRSS = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=1&CID=All-newsflash.xml";  //rss feed
     $burnbanfile = "burnban.txt";
+    $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban</a>";
 
     chdir("/home/postersw/public_html");  // move to web root
 
     $bb = getAirQuality($burnbanlink);  // air quallity
 
-    $firebb = getFireSafetyRSS($fireburnbanRSS);  // fire safety
+    //$firebb = getFireSafetyRSS($fireburnbanRSS);  // fire safety  DOESNT WORK. removed 6/18/22.
+
 
     // write to file if it changed, and issue to email
     $airqual = "Air quality: " . $bb;
