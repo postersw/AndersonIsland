@@ -141,6 +141,10 @@ GIT CREATE NEW BRANCH
 		1. Select 'master' in the Branch dropdown.   
 		2. Select the Branch dropdown again, and fill in the name of the new branch, e.g. Ver131. Then select Create.
 		3. Then go to  Visual Studio Code on local machine and create a new local branch from this branch: 
+		    Select soure control -> ... -> Branch -> Create Branch From
+			Enter the name of the new branch, e.g. Ver131
+			Enter the name of the source branch, e.g. origin/Ver131.
+			Alternate way - not guaranteed:
 			Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
 			Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
 			Select origin/newbranchname, e.g. origin/Ver131
