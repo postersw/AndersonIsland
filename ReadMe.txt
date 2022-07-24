@@ -146,11 +146,11 @@ GIT CREATE NEW BRANCH
 			Select origin/newbranchname, e.g. origin/Ver131
 			This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
 			
-			Alternate way: Doesn't work as well because it creates 2 branches with same name.
+			Alternate way: 
 			Select soure control -> ... -> Branch -> Create Branch From
 			Enter the name of the new branch, e.g. Ver131
 			Enter the name of the source branch, e.g. origin/Ver131.
-			After making changes, Commit, then Publish Branch, then Sync.  I don't think I should have published branch because now I have 2 branches.
+			After making changes, Commit, then then Sync.  If it says 'Publish branch' then you made a mistake with the branch name.l
 	2a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
