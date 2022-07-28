@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.32.072222";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.32.072722";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -669,11 +669,30 @@ var onGeoSuccess = function (position) {
     if ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS)) locationOnAI = 1;
     UpdateLocation(locationOnAI);
 }
-
-// Error callback. Sets gLocationOnAI = 99.
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Error callback. 
+//  Exit: gLocationOnAI = 99.  
+//  Turns off location if permission is denied.
+//  NOTE: Android: error code 1 or 2 are both permission denied and turn off Locatation
+//        iOS: error code PERMISSION DENIED only turns off location
 var onGeoError = function (error) {
     gLatitude = 0.0;
     gLongitude = 0.0;
+    if(isAndroid()) {
+        if(error.code==1 || error.code==2) {  //Android: error code 1 or 2 are both permission denied and turn off Locatation
+            //alert("debug: Android location permission denied =" + error.message + " " + error.code); 
+            LocationPrevent() ;
+        } else {
+            //alert("debug: Andriod location error ignored =" + error.message + " " + error.code); 
+        }
+    } else { // is IOS
+        if(error.code == error.PERMISSION_DENIED ) {  //PositionError.PERMISSION_DENIED) {
+            alert("debug: iOS location permission denied" + error.message + " " + error.code); 
+            LocationPrevent() ;
+        } else {
+            alert("ok iOS location error = ignored" + error.message + " " + error.code); 
+        }
+    }
     UpdateLocation(99);
 }
 
@@ -865,12 +884,14 @@ function FerryHighlightToggle() {
 
 ////////////////////////////////////////////////////////////////////////
 // MenuSetup - setup the initial menu settings based on g values. 
+//  Called whenever the menu is called.
 //  Assumes all menu items start out as OFF
 function MenuSetup() {
     // ferry countdown
     if (gFerryShowIn == 1) document.getElementById("ferrycdtog").checked = true;
     // ferry highlight
-    if (gFerryHighlight == 1) document.getElementById("ferryhltog").checked = true;
+    document.getElementById("ferryhltog").checked = (gFerryHighlight==1?true:false);
+    //alert("debug menu gFerryHighlight=" + gFerryHighlight + ",localstorage=" + LSget("ferryhighlight"));
     // 2/3 times/row
     if (gFerryShow3 == 1) document.getElementById("ferry3ttog").checked = true;
     // notify.   set the notify switch. hide it for web.
@@ -887,9 +908,7 @@ function MenuSetup() {
 
 }
 
-function MenuCheck(id, truefalse) {
-    document.getElementById(id).checked = truefalse;
-}
+////////////////////////////////////////////////////////////////////////////////
 //  MenuIfChecked (id) returns 1 if id is checked, 0 if id if not checked
 function MenuIfChecked(id) {
     if (document.getElementById(id).checked == true) return 1;
@@ -1252,6 +1271,7 @@ function OpenMenu() {
         ShowMainPage();
         return;
     }
+    MenuSetup();  // setup the menu every time
     document.getElementById("sidemenu").style.width = "85%";
     SetPageHeader("Settings");
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
@@ -4768,8 +4788,9 @@ TXTS.InitializeSpeechMessage = function () {
 
 /////////////////////////////////////////////////////////////
 //  FirstTimeMsg - issue first time message, which is a DIV in index.html. This prevents timeouts from the alert.
+//      turned off in 1.32, 7/27/22
 TXTS.FirstTimeMsg = function () {
-    Show("speechdialog");
+    //Show("speechdialog");  // turned off in 1.32, 7/27/22
     //alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
     TXTS.FirstTime = false;
 }
@@ -4876,7 +4897,7 @@ function TTSTannerOutage() {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//  FerryInitialize - set switches and ask user for geolocate permission.
+//  FerryInitialize - set switches and ask user for geolocate permission.  Called on MainPage startup.
 //  Note: "ferryhighlight" controls highlighting and is also the 1st time flag for geolocation.
 //      if user declines location permission, ferryhighlight is set to 0.
 //  Exit:   Sets gFerryShow3, gFerryShowIn, gFerryHight, gLocationOnAI
@@ -4889,6 +4910,10 @@ function FerryInitialize() {
 
     s = localStorage.getItem("ferryhighlight");
     if (s != null) gFerryHighlight = Number(s);
+    else {   // default to allowing location. 
+        gFerryHighlight = 1;
+        localStorage.setItem("ferryhighlight", "1");
+    }
 
     if (gFerryHighlight) {
         s = localStorage.getItem("glocationonai");  // restore last 'on ai' setting
@@ -4903,16 +4928,21 @@ function FerryInitialize() {
 //    }
 //    else gFerryHighlight = 0;
 //    localStorage.setItem("ferryhighlight", gFerryHighlight);
+
+////////////////////////////////////////////////////////////
+// LocationAllow - turn on location highlighting and get the current location - which could get permission denied and call location pervent to turn off highlighting
 function LocationAllow() {
     gFerryHighlight = 1;
     localStorage.setItem("ferryhighlight", "1");
+    //if(document.getElementById("locationdialog").style.width != "0") document.getElementById("locationdialog").style.width = "0";
     getGeoLocation();
-    document.getElementById("locationdialog").style.width = "0";
 }
+///////////////////////////////////////////////////////////////
+// LocationPrevent - turns OFF highlighting and closes any location dialog.
 function LocationPrevent() {
     gFerryHighlight = 0;
     localStorage.setItem("ferryhighlight", "0");
-    document.getElementById("locationdialog").style.width = "0";
+    //if(document.getElementById("locationdialog").style.width != "0") document.getElementById("locationdialog").style.width = "0";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5082,10 +5112,17 @@ function StartApp() {
         getForecast(); // updates forecast every 2 hrs
 
     }
+    //  if phone, get location if it is enabled.  Note that first time (null) defaults to 1.  Then we get location which will ask user if necessary.
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
-        if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
-        else if (gFerryHighlight) getGeoLocation();
+        //alert("ferryhighlight=" + s);
+        if(s==null) {  // if first time, default to 1
+            localStorage.setItem("ferryhighlight", 1); 
+            s = "1";
+        }
+        gFerryHighlight = Number(s);
+        //if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
+        if  (gFerryHighlight) getGeoLocation();
     }
 
     // set refresh timners
@@ -5096,7 +5133,7 @@ function StartApp() {
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
     //DisplayLoadTimes();
-    MenuSetup(); // setup the menu switches
+    //MenuSetup(); // setup the menu switches.  Called by OpenMenu as of 1.32.
 
     // show the page
     Show("mainpage");  // now display the main page
