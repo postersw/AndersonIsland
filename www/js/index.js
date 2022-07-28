@@ -78,8 +78,8 @@
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
     2022
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
-        1.31.071822. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
-        * 
+        1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
+        1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -100,7 +100,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.32.072722";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.32.072822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
@@ -687,10 +687,10 @@ var onGeoError = function (error) {
         }
     } else { // is IOS
         if(error.code == error.PERMISSION_DENIED ) {  //PositionError.PERMISSION_DENIED) {
-            alert("debug: iOS location permission denied" + error.message + " " + error.code); 
+            //alert("debug: iOS location permission denied" + error.message + " " + error.code); 
             LocationPrevent() ;
         } else {
-            alert("ok iOS location error = ignored" + error.message + " " + error.code); 
+            //alert("ok iOS location error = ignored" + error.message + " " + error.code); 
         }
     }
     UpdateLocation(99);
