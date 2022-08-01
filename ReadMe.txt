@@ -217,7 +217,27 @@ ANDROID ADAPTIVE ICONS.
 	4. They were built from C:\Users\Bob\Documents\icon.png on Edgewood.
 
 ------------------------------------------------------------------------------------------------------------
-IOS DEBUG/BUILD    USE XCODE 12.2 (1/2/21)
+IOS DEBUG/BUILD   
+  USE VOLT BUILDER 7/20/22  for ver 1.32
+  As of ver 1.32 I am using VoltBuilder, not XCODE to do the build. 
+  Volt Builder will build AND generate an installable debug version, OR upload directly to the App Store for testflight or production! Amazing.
+  NOTE: the magic is in AIAssistant\AIAVoltBuilod\voltbuilder.json.  
+    If 'release' says 'debug' it will build a debug version you can install using the QR code.
+	If 'release' says 'release' it will upload directly to the app store, using the itunes account.  Then you can 
+	  use that build in Testflight or Production.
+
+
+
+ USE XCODE 12.2 (1/2/21)
+
+	App Store Install:  
+	Using Volt Builder (done 7/29/22 for ver 1.32):
+	1. set the build type in volt.json to 'release'.  This will cause volt builder to automatically upload the build to the app store,
+	   and it will appear in the list of builds available to Testflight and Production.
+	2. Go to step 9 below.  NOTE: I suggest first installing the build in TESTFLIGHT.  Then use the Testflight app on your iPhone
+	   to install the build, and verify it.  After a day or so of testing, create a new production version and use the same build
+	   to install in production.  The build will appear in the list of available builds.
+
    Note: since 4/15/20 I have been doing customizations manually in XCODE and in the aia/aia/platforms/ios/www ... directory.
          I have NOT been running Cordova Prepare or build, since it rewrites all this information.
 		 XCODE alone works fine and you can run it on the simulator, or Archive (development) and load it using diawi.com, 
@@ -326,6 +346,14 @@ IOS DEBUG/BUILD    USE XCODE 12.2 (1/2/21)
 	Macincloud:  Start windows utilities->remote desktop to LA051.macincloud.com, then login as user901584 pw= pwd29837
 
 	App Store Install:  (allow 15 minutes)
+	Using Volt Builder (done 7/29/22 for ver 1.32):
+	1. set the build type in volt.json to 'release'.  This will cause volt builder to automatically upload the build to the app store,
+	   and it will appear in the list of builds available to Testflight and Production.
+	2. Go to step 9 below.  NOTE: I suggest first installing the build in TESTFLIGHT.  Then use the Testflight app on your iPhone
+	   to install the build, and verify it.  After a day or so of testing, create a new production version and use the same build
+	   to install in production.  The build will appear in the list of available builds.
+
+	Install from MacInCloud:
 	0. Windows Accessories -> Remote Desktop Connection -> LA051.macincloud.com:6000.
 	   Log in as user901584 pw= pwd29837.  Start Safari. Go to build.phonegap.com. 
 	   on phonegap build
@@ -465,36 +493,40 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 
 ------------------------------------------------------------------------------------------------------------------------
 APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 7/13/21. Expires 8/12/2022.
-Last updated 7/13/21.
+Last updated 8/1/22.
 
 For OneSignal 7/13/21. Allow about 1 hour.
-1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to LA051.macincloud.com:6000, then login as user901584 pw= pwd29837
-												I didn't use  LA952.macincloud.com:6000 because the certSigningRequest is on LA051.
+1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to 	LA952.macincloud.com,user pw=pxt77203. This is the $25/m virtual mac.
 2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
 ) -> Certificates,Identifiers...
 3. I selected "Certificates +" at the top of the page.
-4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE
+4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE (top right of page)
 5. Under Create A new Certificate I ensured that my App ID for andersion-island.andersonislandassistant was selected. Then I clicked on Continue.
 6. Under Create A New Certificate - Upload a Certificate Signing Request' I chose the existing AIAAPN2018.certSigningRequest instead of creating a new one. 
+   8/1/22: Uploaded posterswprod.certSigningRequest from LA952.  This didn't seem to work because the certificate shows as Untrusted in Keychain.
+   Next time use the AIAAPN2018 certSigningRequest or create a new one.
 7. I clicked on CONTINUE to uploaded it.
 8. The next panel was "Download Your Certificate". I downloaded the new cer. It is named "aps.cer". 
-9. I named it apsPushProd06[yy].cer. So the next one should be apsPushProd0622, ... (on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
+9. I named it apsPushProd08[yy].cer. So the next one should be apsPushProd0823, ... 
+     (on 8/1/22 I generated apsPushProd0822, on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
 10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, 
-    type: ApplePushServices, exp 8/12/22. 
+    type: ApplePushServices, exp 8/12/23. NOTE: 8/1/22 the certificate says UNTRUSTED. I don't know why.
 11. I immediately right clicked on that certificate in KeychainAccess and selected 'Export ...".
-12. That brings up a Save As dialog with file format p12. I set the file name to APNProd06yy.p12
+12. That brings up a Save As dialog with file format p12. I set the file name to APNProd08yy.p12
     When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
-	You may be prompted for the login  password pwd29837
-	The file will be generated as APNProd06yy.p12 on the desktop.
+	You may be prompted for the login  password pxt77203
+	The file will be generated as APNProd08yy.p12 on the desktop.
 13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. DD1 Select my app.
 14. Click on 'SETTINGS' at top of screen..  Then click on Apple IOS.
 15. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Scroll down and then click on 'Choose File..."
-16. Choose the APNProd06yy.p12 file. Then click on SAVE or NEXT.   
+16. Choose the APNProd08yy.p12 file. Then click on SAVE or NEXT.   
 17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Cordova' icon. Then you get to another SAVE dialog.
-18. The Apple IOS status will now show the new certificate with 'expires August 12, 2022'.
+18. The Apple IOS status will now show the new certificate with 'expires August 31, 2023'.
 19. For grins, save the P12 file on onedrive. Using Safari, go to onedrive.live.com. login to my account. 
 20. Go to files->Documents->PhoneGap->Keys and drag the file from my desktop onto the web browser window.
 21. You are done. Elapsed time 48 minutes.
+22. CAUTION: 8/1/22: will this work? Keychain shows it as untrusted. This bothers me but I can't generate another certificate according
+    to the web site. Maybe because the old one has not expried yet?
 
 TESTING:
 See OneSignal Test below
@@ -508,7 +540,6 @@ OneSignal test
    and add them to the TEST segment.  You can pick them out by the "Player ID", but easier to use App Version. 
 2. To test: select Messages, New Push, Segment "TEST". Enter the message. THen click on CONFIRM. Note the number of users it will send to.
 3. To test from the API, use the pushtest.php script, which sends to 'Test Devices', which is my phone. 4/8/19.
-
 New iPhone7 added 4/21/20.
 
 Note: The OneSignal API Key is stored under root/private/OneSignal.php
