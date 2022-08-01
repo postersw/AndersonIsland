@@ -496,7 +496,7 @@ APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 7/13/21. Expir
 Last updated 8/1/22.
 
 For OneSignal 7/13/21. Allow about 1 hour.
-1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to 	LA952.macincloud.com,user pw=pxt77203. This is the $25/m virtual mac.
+1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to 	LA952.macincloud.com,user168917, pw=pxt77203. This is the $25/m virtual mac.
 2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
 ) -> Certificates,Identifiers...
 3. I selected "Certificates +" at the top of the page.
