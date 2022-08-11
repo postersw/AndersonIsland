@@ -80,6 +80,7 @@
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
         1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
         1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
+        1.33.081022. Fix Cordova detection for iPad.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -100,11 +101,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.32.072822";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.33.081022";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
+
 
 var app = {
     // Application Constructor
@@ -118,12 +120,13 @@ var app = {
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
-    // deviceready Event Handler
+    // deviceready Event Handler.  Only fired by Cordova.
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
+        gisPhoneGap = true; // only fired by Cordova
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
             switch (gNotification) {
                 case 1: // pushbots
@@ -255,7 +258,7 @@ var scheduledate = ["5/1/2014"];
 
 var reloadreasontext = "Reused old";  // reason for reloading the cache.
 
-var gisPhoneGap; // true if phonegap
+var gisPhoneGap = false; // true if phonegap. Set in OnDeviceReady. See above.
 var gisAndroid; // true if android
 var gisMobile; // true if mobile (even if a browser)
 
@@ -919,8 +922,7 @@ function MenuIfChecked(id) {
 // Determine whether the file loaded from PhoneGap or the web
 //  exit    true if phonegap, otherwise undefined. So test for true only.
 function isPhoneGap() {
-    //var test = /^file:\/{3}[^\/]/i.test(window.location.href)
-    //&& /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    // set on device ready
     return gisPhoneGap;
 }
 function isAndroid() {
@@ -936,9 +938,8 @@ function isMobile() {
 
 //isMobile - Initialize the switches gisMobile, gisPhoneGap, gisAndroid
 function initializeMobile() {
-    gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
-    gisPhoneGap = /^file:\/{3}[^\/]/i.test(window.location.href)
-        && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);  NO LONGER ACCURATE  
+    gisPhoneGap = /^file:/i.test(window.location.href);//     && gisMobile check removed 8/11/22 because it fails on iPad.       
     gisAndroid = ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
         (navigator.userAgent.toLowerCase().indexOf('android') > -1));
 }
@@ -1738,7 +1739,7 @@ function DisplayLoadTimes() {
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext + " " + DailyCacheFetchError + 
         "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
-        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
+        "<br/>k=" + DeviceInfo() + " " + window.location.href + "<br/>UserAgent=" + navigator.userAgent + "<br/>n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
         ", CurrentWeather:" + DispElapsedMin("currentweathertime") + " #" + gWeatherCurrentCount.toFixed(0) +
         "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +

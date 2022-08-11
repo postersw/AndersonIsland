@@ -290,7 +290,7 @@ IOS DEBUG/BUILD    USE XCODE 12.2 (1/2/21)
  	Or add a new version to the app on the app page. The build should appear.
 	Note you will get an email link for testers that you can send out - but they have to use TestFlight.
 
-	REGISTER A NEW iPHONE FOR DEBUG (added iPhone7 on 4/20/20): 
+	REGISTER A NEW iPHONE FOR DEBUG (added iPhone7 on 4/20/20. Added iPhone7 on 5/9/22. Added iPad on 8/11/22: 
 	1. log in to developer.apple.com -> certificates -> Devices -> iPhone -> + -> enter the device UDID. 
 	2. You will need the UDID.  To get the UDID:   on the iphone safari browser, enter get.udid.io.  Accept the certificate. 
 	  then it gives you the UDID.  
