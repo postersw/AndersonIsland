@@ -938,7 +938,7 @@ function isMobile() {
 
 //isMobile - Initialize the switches gisMobile, gisPhoneGap, gisAndroid
 function initializeMobile() {
-    gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);  NO LONGER ACCURATE  
+    gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);  //NO LONGER ACCURATE  
     gisPhoneGap = /^file:/i.test(window.location.href);//     && gisMobile check removed 8/11/22 because it fails on iPad.       
     gisAndroid = ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
         (navigator.userAgent.toLowerCase().indexOf('android') > -1));
