@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets"
         id="org.anderson-island.andersonislandassistant"
-        version="1.32.0072822" ios-CFBundleVersion="132">
+        version="1.33.081022" ios-CFBundleVersion="132">
   <!-- versionCode 2252 for 1.30.051522 for Volt.Build IOS (no code changes)-->
   <!-- versionCode 2251 for 1.30.011021 for ferry position -->
   <!-- versionCode 2250 for 1.29 7/29/20 for ferry position -->

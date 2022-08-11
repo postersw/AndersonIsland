@@ -3,7 +3,7 @@
         id="org.anderson-island.andersonislandassistant"
         version="1.32.072722"
         android-versionCode="2255"
-        android:versionName="1.32.072722">
+        android:versionName="1.33.081022">
 
   <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->      
   <!-- versionCode 2254 for 1.31.071922 for Volt.Build  -->
