@@ -80,7 +80,7 @@
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
         1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
         1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
-        1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null.
+        1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -1341,8 +1341,10 @@ function GetDailyCache() {
     // ajax async request to get cache and upload stats
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         "&P=" + pagehits);
+    if(LSget("dailycacheloaded") =="") Dialog("Loading data from Server"); // display load msg the very first time
 
     // ajax request without jquery.  Normal finish is readyState=4,status=200.
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4) {  // if it's done...
@@ -1360,6 +1362,7 @@ function GetDailyCache() {
 //  entry   data = dailycache.php data stream
 //  exit    data saved in separate localstorage locations
 function HandleDailyCacheReply(data) {
+    ModalClose(); // clear any dialog
     gGetCache2 = Date.now();
     InitializeDates(0);
     //DebugLog("HandleDailyCacheReply");
