@@ -1085,6 +1085,7 @@ function Hide(divid) {
 ///////////////////////////////////////////////////////////////////////////////
 //  MarkOffline - mark the app offline
 //      offline = true if offline, false if online
+
 function MarkOffline(offline) {
     var ofl = "Offline. ";
     var tle = document.getElementById("topline");
