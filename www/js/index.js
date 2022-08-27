@@ -78,8 +78,9 @@
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
     2022
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
-        1.31.071822. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
-        * 
+        1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
+        1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
+        1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -100,11 +101,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.31.071922";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.33.081222";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
+
 
 var app = {
     // Application Constructor
@@ -118,12 +120,13 @@ var app = {
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
-    // deviceready Event Handler
+    // deviceready Event Handler.  Only fired by Cordova.
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
+        gisPhoneGap = true; // only fired by Cordova
         if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
             switch (gNotification) {
                 case 1: // pushbots
@@ -255,7 +258,7 @@ var scheduledate = ["5/1/2014"];
 
 var reloadreasontext = "Reused old";  // reason for reloading the cache.
 
-var gisPhoneGap; // true if phonegap
+var gisPhoneGap = false; // true if phonegap. Set in OnDeviceReady. See above.
 var gisAndroid; // true if android
 var gisMobile; // true if mobile (even if a browser)
 
@@ -669,11 +672,30 @@ var onGeoSuccess = function (position) {
     if ((gLongitude > edgeW) && (gLongitude < edgeE) && (gLatitude < edgeN) && (gLatitude > edgeS)) locationOnAI = 1;
     UpdateLocation(locationOnAI);
 }
-
-// Error callback. Sets gLocationOnAI = 99.
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Error callback. 
+//  Exit: gLocationOnAI = 99.  
+//  Turns off location if permission is denied.
+//  NOTE: Android: error code 1 or 2 are both permission denied and turn off Locatation
+//        iOS: error code PERMISSION DENIED only turns off location
 var onGeoError = function (error) {
     gLatitude = 0.0;
     gLongitude = 0.0;
+    if(isAndroid()) {
+        if(error.code==1 || error.code==2) {  //Android: error code 1 or 2 are both permission denied and turn off Locatation
+            //alert("debug: Android location permission denied =" + error.message + " " + error.code); 
+            LocationPrevent() ;
+        } else {
+            //alert("debug: Andriod location error ignored =" + error.message + " " + error.code); 
+        }
+    } else { // is IOS
+        if(error.code == error.PERMISSION_DENIED ) {  //PositionError.PERMISSION_DENIED) {
+            //alert("debug: iOS location permission denied" + error.message + " " + error.code); 
+            LocationPrevent() ;
+        } else {
+            //alert("ok iOS location error = ignored" + error.message + " " + error.code); 
+        }
+    }
     UpdateLocation(99);
 }
 
@@ -713,12 +735,12 @@ var gDaysInMonth = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 //  2. 0-6 = day of week that run is valid on.
 //  3. Starts with a '(': it is the special case rules run with 'eval'
 
-var ferrytimeS = [445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1420, "*", 1520, "*", 1620, "*", 1730, "*", 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeA = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1450, "*", 1550, "*", 1650, "*", 1800, "*", 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeK = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeS2 = [445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1230, 50, 1350, 50, 1420, "*", 1450, 50, 1520, "*", 1550, 50, 1620, "*", 1650, 50, 1730, "*", 1800, 50, 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeA2 = [515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1300, 50, 1420, 50, 1450, "*", 1520, 50, 1550, "*", 1620, 50, 1650, "*", 1730, 50, 1800, "*", 1840, 50, 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
-var ferrytimeK2 = [0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeS = [0, ""]; //[445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1420, "*", 1520, "*", 1620, "*", 1730, "*", 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeA = [0, ""]; //[515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1450, "*", 1550, "*", 1650, "*", 1800, "*", 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeK = [0, ""]; //[0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeS2 = [0, ""]; //[445, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 545, "123456", 645, "*", 800, "*", 900, "*", 1000, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1200, "*", 1230, 50, 1350, 50, 1420, "*", 1450, 50, 1520, "*", 1550, 50, 1620, "*", 1650, 50, 1730, "*", 1800, 50, 1840, "*", 2040, "*", 2200, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2300, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeA2 = [0, ""]; //[515, "((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,thanksgiving))", 615, "123456", 730, "*", 830, "*", 930, "*", 1030, "((gDayofWeek!=3)||!InList(gWeekofMonth,1,3))", 1230, "*", 1300, 50, 1420, 50, 1450, "*", 1520, 50, 1550, "*", 1620, 50, 1650, "*", 1730, 50, 1800, "*", 1840, 50, 1910, "*", 2110, "*", 2230, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2330, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
+var ferrytimeK2 = [0, ""]; //[0, "", 0, "", 655, "*", 0, "", 0, "", 1010, "((gDayofWeek==2)&&InList(gWeekofMonth,1,3))", 1255, "*", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 0, "", 1935, "*", 0, "", 2250, "( (gDayofWeek==6)|| ((gDayofWeek==5)&&!((gMonthDay>=701)&&(gMonthDay<=laborday))) ||InList(gMonthDay,1231,101,memorialday,703,704,laborday,thanksgiving,1224,1225))", 2350, "((gDayofWeek==5)&&(gMonthDay>=701)&&(gMonthDay<=laborday))"];
 
 var gFerryDate2 = 0;  // cutover time to ferrytimex2
 var gFerryPosition = ""; // ferry position text message
@@ -865,12 +887,14 @@ function FerryHighlightToggle() {
 
 ////////////////////////////////////////////////////////////////////////
 // MenuSetup - setup the initial menu settings based on g values. 
+//  Called whenever the menu is called.
 //  Assumes all menu items start out as OFF
 function MenuSetup() {
     // ferry countdown
     if (gFerryShowIn == 1) document.getElementById("ferrycdtog").checked = true;
     // ferry highlight
-    if (gFerryHighlight == 1) document.getElementById("ferryhltog").checked = true;
+    document.getElementById("ferryhltog").checked = (gFerryHighlight==1?true:false);
+    //alert("debug menu gFerryHighlight=" + gFerryHighlight + ",localstorage=" + LSget("ferryhighlight"));
     // 2/3 times/row
     if (gFerryShow3 == 1) document.getElementById("ferry3ttog").checked = true;
     // notify.   set the notify switch. hide it for web.
@@ -887,9 +911,7 @@ function MenuSetup() {
 
 }
 
-function MenuCheck(id, truefalse) {
-    document.getElementById(id).checked = truefalse;
-}
+////////////////////////////////////////////////////////////////////////////////
 //  MenuIfChecked (id) returns 1 if id is checked, 0 if id if not checked
 function MenuIfChecked(id) {
     if (document.getElementById(id).checked == true) return 1;
@@ -900,8 +922,7 @@ function MenuIfChecked(id) {
 // Determine whether the file loaded from PhoneGap or the web
 //  exit    true if phonegap, otherwise undefined. So test for true only.
 function isPhoneGap() {
-    //var test = /^file:\/{3}[^\/]/i.test(window.location.href)
-    //&& /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    // set on device ready
     return gisPhoneGap;
 }
 function isAndroid() {
@@ -917,9 +938,8 @@ function isMobile() {
 
 //isMobile - Initialize the switches gisMobile, gisPhoneGap, gisAndroid
 function initializeMobile() {
-    gisMobile = /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
-    gisPhoneGap = /^file:\/{3}[^\/]/i.test(window.location.href)
-        && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
+    gisMobile = /Mobile/i.test(navigator.userAgent); ///ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);  //NO LONGER ACCURATE  
+    gisPhoneGap = /^file:/i.test(window.location.href);  //    PhoneGap always loads from file && gisMobile check removed 8/11/22 because it fails on iPad.       
     gisAndroid = ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
         (navigator.userAgent.toLowerCase().indexOf('android') > -1));
 }
@@ -1065,6 +1085,7 @@ function Hide(divid) {
 ///////////////////////////////////////////////////////////////////////////////
 //  MarkOffline - mark the app offline
 //      offline = true if offline, false if online
+
 function MarkOffline(offline) {
     var ofl = "Offline. ";
     var tle = document.getElementById("topline");
@@ -1252,6 +1273,7 @@ function OpenMenu() {
         ShowMainPage();
         return;
     }
+    MenuSetup();  // setup the menu every time
     document.getElementById("sidemenu").style.width = "85%";
     SetPageHeader("Settings");
     //document.getElementByID("mainpage").onclick = function () { CloseMenu(); }; /////////////
@@ -1320,8 +1342,10 @@ function GetDailyCache() {
     // ajax async request to get cache and upload stats
     var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         "&P=" + pagehits);
+    if(LSget("dailycacheloaded") =="") Dialog("Loading data from Server"); // display load msg the very first time
 
     // ajax request without jquery.  Normal finish is readyState=4,status=200.
+
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
         if (xhttp.readyState == 4) {  // if it's done...
@@ -1339,6 +1363,7 @@ function GetDailyCache() {
 //  entry   data = dailycache.php data stream
 //  exit    data saved in separate localstorage locations
 function HandleDailyCacheReply(data) {
+    ModalClose(); // clear any dialog
     gGetCache2 = Date.now();
     InitializeDates(0);
     //DebugLog("HandleDailyCacheReply");
@@ -1718,7 +1743,7 @@ function DisplayLoadTimes() {
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext + " " + DailyCacheFetchError + 
         "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
         ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
-        "<br/>k=" + DeviceInfo() + " n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
+        "<br/>k=" + DeviceInfo() + " " + window.location.href + "<br/>UserAgent=" + navigator.userAgent + "<br/>n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
         ", CurrentWeather:" + DispElapsedMin("currentweathertime") + " #" + gWeatherCurrentCount.toFixed(0) +
         "<br/>Alerts: " + DispElapsedSec(gAlertTime) + " #" + gAlertCounter.toFixed(0) +
@@ -2841,11 +2866,11 @@ function DisplayNextEvents(CE) {
         else CEvent = Evt.title;
 
         //ep = "&nbsp;";
-        var ep = "<div class='hi'>" // hanging indent
+        var ep = "<div class='hi'>&nbsp;" // hanging indent
 
         // if Today: bold time. if current, make time green.  
         if (aCEyymmdd == gYYmmdd) {
-            if (datefmt == "") datefmt += "<span style='color:green'><strong>TODAY</strong></span><br/>";  // mark the 1st entry only as TODAY
+            if (datefmt == "") datefmt += "<span style='color:green'><b>TODAY</b></span><br/>";  // mark the 1st entry only as TODAY
             if (Evt.cancelled) {
                 datefmt += ep + "<span style='color:gray'>" + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ": " + CEvent + " @ " + Evt.loc + "</span></div>";
                 TXTS.Next = " now, " + Evt.title + " at " + Evt.loc + ".";
@@ -2864,8 +2889,8 @@ function DisplayNextEvents(CE) {
         // if not today, display day of week. Do NOT display > 6 days (1 week) ahead because it is too confusing.
         if (aCEyymmdd != DisplayDate) {
             if (nEvents >= 3) break;  // don't start a new date if we have shown 3 events
-            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<strong>TOMORROW</strong><br/>";
-            else if (aCEyymmdd <= yymmddP6) datefmt += "<strong>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</strong><br/>";  // fails on month chagne
+            if (aCEyymmdd == (gYYmmdd + 1)) datefmt += "<span style='color:darkmagenta'><b>TOMORROW</b></span><br/>";
+            else if (aCEyymmdd <= yymmddP6) datefmt += "<span style='color:darkmagenta'><b>" + gDayofWeekName[GetDayofWeek(Evt.date)] + "</span></b><br/>";  // fails on month chagne
             else break; // if >6 days, don't show it.
         }
         // Not today: display at least 3 events. Always Display ALL events for a day. 
@@ -4768,8 +4793,9 @@ TXTS.InitializeSpeechMessage = function () {
 
 /////////////////////////////////////////////////////////////
 //  FirstTimeMsg - issue first time message, which is a DIV in index.html. This prevents timeouts from the alert.
+//      turned off in 1.32, 7/27/22
 TXTS.FirstTimeMsg = function () {
-    Show("speechdialog");
+    //Show("speechdialog");  // turned off in 1.32, 7/27/22
     //alert("This app now has SPEECH and BIG TEXT.\nFor speech or big text, tap the LEFT side of a row.\nFor details, tap the RIGHT side.\nTo turn off speech select:\n     Menu -> Speech -> Off\nTo turn on BIG TEXT, select:\n     Menu -> Big Text -> On");
     TXTS.FirstTime = false;
 }
@@ -4876,7 +4902,7 @@ function TTSTannerOutage() {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//  FerryInitialize - set switches and ask user for geolocate permission.
+//  FerryInitialize - set switches and ask user for geolocate permission.  Called on MainPage startup.
 //  Note: "ferryhighlight" controls highlighting and is also the 1st time flag for geolocation.
 //      if user declines location permission, ferryhighlight is set to 0.
 //  Exit:   Sets gFerryShow3, gFerryShowIn, gFerryHight, gLocationOnAI
@@ -4889,6 +4915,10 @@ function FerryInitialize() {
 
     s = localStorage.getItem("ferryhighlight");
     if (s != null) gFerryHighlight = Number(s);
+    else {   // default to allowing location. 
+        gFerryHighlight = 1;
+        localStorage.setItem("ferryhighlight", "1");
+    }
 
     if (gFerryHighlight) {
         s = localStorage.getItem("glocationonai");  // restore last 'on ai' setting
@@ -4903,16 +4933,21 @@ function FerryInitialize() {
 //    }
 //    else gFerryHighlight = 0;
 //    localStorage.setItem("ferryhighlight", gFerryHighlight);
+
+////////////////////////////////////////////////////////////
+// LocationAllow - turn on location highlighting and get the current location - which could get permission denied and call location pervent to turn off highlighting
 function LocationAllow() {
     gFerryHighlight = 1;
     localStorage.setItem("ferryhighlight", "1");
+    //if(document.getElementById("locationdialog").style.width != "0") document.getElementById("locationdialog").style.width = "0";
     getGeoLocation();
-    document.getElementById("locationdialog").style.width = "0";
 }
+///////////////////////////////////////////////////////////////
+// LocationPrevent - turns OFF highlighting and closes any location dialog.
 function LocationPrevent() {
     gFerryHighlight = 0;
     localStorage.setItem("ferryhighlight", "0");
-    document.getElementById("locationdialog").style.width = "0";
+    //if(document.getElementById("locationdialog").style.width != "0") document.getElementById("locationdialog").style.width = "0";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5082,10 +5117,17 @@ function StartApp() {
         getForecast(); // updates forecast every 2 hrs
 
     }
+    //  if phone, get location if it is enabled.  Note that first time (null) defaults to 1.  Then we get location which will ask user if necessary.
     if (isPhoneGap()) {
         s = localStorage.getItem("ferryhighlight");
-        if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
-        else if (gFerryHighlight) getGeoLocation();
+        //alert("ferryhighlight=" + s);
+        if(s==null) {  // if first time, default to 1
+            localStorage.setItem("ferryhighlight", 1); 
+            s = "1";
+        }
+        gFerryHighlight = Number(s);
+        //if (s == null) document.getElementById("locationdialog").style.width = "100%";// the 1st time, ask user for permission
+        if  (gFerryHighlight) getGeoLocation();
     }
 
     // set refresh timners
@@ -5096,7 +5138,7 @@ function StartApp() {
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
     //DisplayLoadTimes();
-    MenuSetup(); // setup the menu switches
+    //MenuSetup(); // setup the menu switches.  Called by OpenMenu as of 1.32.
 
     // show the page
     Show("mainpage");  // now display the main page

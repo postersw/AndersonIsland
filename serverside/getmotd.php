@@ -9,8 +9,8 @@
 //  <MOTD>
 //  Optional motd messages to always include. only 1 line up to the \n,  \n is stripped.
 //  </MOTD>
-//  <DATE mmddstart mmddend>
-//   optional motd message to include, starting mmddstart, and ending mmddend.  only 1 line up to the \n. \n is stripped.
+//  <DATE mmddstart-mmddend [mmddstart-mmddend] ... >
+//   optional motd message to include, starting mmddstart, and ending mmddend.  As many time ranges may be added as needed.  only 1 line up to the \n. \n is stripped.
 //  </DATE>
 //  .... repeated as necessary
 //  <MOTDLAST>
@@ -18,7 +18,7 @@
 //  </MOTDLAST>
 //
 //  10/3/21. RFB. Initial version.
-//
+//  7/21/22  RFB. Accept multiple date ranges for the same message.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
@@ -38,7 +38,7 @@ $i = strpos($dcout, "MOTD\n");
 if($i > 10) {
     $j = strpos($dcout, "\n", $i+6);  // $j = end of motd
     $dcout = substr_replace($dcout, "", $i, ($j-$i+1));  // delete the motd;
-    echo (" Deleted motd from $i to $j ");
+    echo (" Deleted motd from $i to $j\n ");
 }
 
 // check motd.txt file
@@ -58,18 +58,29 @@ if($ln != "</MOTD>\n") {
 if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 
 
-// check for MOTD date rows:   <DATE mmdd,mmdd>\n msg \n</DATE> ...
+// check for MOTD date rows:   <DATE mmdd1-mmdd2 [mmdd3-mmdd4] ... >\n msg \n</DATE> ...
 while(true) {
     $ln = fgets($motdf);
     if(substr($ln, 0, 5)== "<DATE") {
-        $dates = explode(" ", $ln);  // get the dates
-        $ln = fgets($motdf);
+        $dateranges = explode(" ", substr($ln, 6));  // get the date ranges
+        if(count($dateranges) == 0) exit("no data range for $ln");
+        $ln = fgets($motdf);  // check the next line
         if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
-        echo (" ds=$dates[1], de=$dates[2].  ");
-        if(checkmotddate(preg_replace('~\D~', '', $dates[1]), preg_replace('~\D~', '', $dates[2]))) {  // if date is active
-            $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
-            echo (" Added $ln ");
-        } else echo (" Skipped $ln ");
+        // loop through the date ranges mmdd1-mmdd2
+        foreach($dateranges as $dl) {
+            if($dl=="") continue;
+            if($dl==">") break;
+            $dates = explode("-", $dl);  // split mmdd1-mmdd2 on the dash
+            $ds = preg_replace('~\D~', '', $dates[0]);  // strip all non digits
+            if($ds=="") continue;
+            if(count($dates)==1) $de = $ds;  // if just mmdd1
+            else $de = preg_replace('~\D~', '', $dates[1]); // else use mmdd2
+            echo ("$dl: ds=$ds, de=$de  \n");
+            if(checkmotddate($ds, $de)) {  // if date is active
+                $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
+                echo (" Added ds=$ds-$de: $ln ");
+            } //else echo (" Skipped $ln ");
+        }
         $ln = fgets($motdf);  // read line after msg. should be </DATE>
         if($ln != "</DATE>\n") exit("no ending /Date for $ln");
     }
@@ -93,6 +104,7 @@ echo ("MOTD:\n$motdout <br/>\n");  // if there is an motd
 if($motdout != "") {
     $dcout = substr_replace($dcout, "MOTD\n" . $motdout . "\n", 11, 0); // insert motd after DAILYCACHE\n
 } 
+//exit("stop before writint dailycache");
 
 //  copy dcout to dailycache
 $i = file_put_contents($dailycachefile, $dcout);
