@@ -139,27 +139,23 @@ GIT CREATE NEW BRANCH
 		2. Switch Current branch to Master: Screen "Branches". Select 'master'.
 		3. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
 		4. Sync.
-	2. Create new branch directly on GitHub. github.com/postersw.
+	2. Before creating a new branch, be sure to create a GitHub Release for the previous release. Create a tag, e.g. v1.34, then create a Release, v1.34, with the release notes.
+	3. Create new branch directly on GitHub. github.com/postersw.
 		1. Select 'master' in the Branch dropdown.   
 		2. Select the Branch dropdown again, and fill in the name of the new branch, e.g. Ver131. Then select Create.
 		3. Then go to  Visual Studio Code on local machine and create a new local branch from this branch: 
-			Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
-			Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
-			Select origin/newbranchname, e.g. origin/Ver131
-			This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
-			
-			Alternate way: 
-			Select soure control -> ... -> Branch -> Create Branch From
-			Enter the name of the new branch, e.g. Ver131
-			Enter the name of the source branch, e.g. origin/Ver131.
-			After making changes, Commit, then then Sync.  If it says 'Publish branch' then you made a mistake with the branch name.l
-	2a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
+			a. Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
+			b. Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
+			c. Select origin/newbranchname, e.g. origin/Ver131
+			   This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
+
+	3a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
 		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
 		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
  		   Then it will appear in the 'remotes/origin' list.
-	3. New branch will be on GitHub as origin/newbranchname.  Be sure to use it on other PCs.
+	4. New branch will be on GitHub as origin/newbranchname.  Be sure to use it on other PCs.
 	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio Code GIT/Branches list, 
 	   try  running Fetch. Or set the VS branch to Master, and then run Fetch.
 	   If that doesn't work, try 'git fetch' from the command line.
