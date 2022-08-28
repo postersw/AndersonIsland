@@ -120,12 +120,13 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable so an old line is not displayed.
 02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
 03/02/21.                  Google Play production rollout. 
-05/23/22. Ver 1.31.052322. New branch created from master after merge of 1.30.
+05/23/22. Ver 1.31.052322. Branch 1.31 created. from master after merge of 1.30.
 06/18/22. Ver 1.31.061822. Volt Build. Google Play Beta. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar.
 07/21/22. Ver 1.31.072122. Android Production. Volt Build. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar. Load daily cache hourly. Hanging indent on events/activities.
 07/28/22. Ver 1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
-----------------------------------------------------------------------------------------------------------------------------------------
+08/27/22. Ver 1.34		   Branch Ver134 created.
+---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
