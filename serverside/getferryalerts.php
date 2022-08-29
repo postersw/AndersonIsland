@@ -188,6 +188,7 @@ function PushOSNotification($title, $msg) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  getAlertsfromHornblower - get the Hornblower web feed. works as of 5/16/22.
+//  8/28/22: return newest message
 //  
 //  exit    returns Alert object
 //          if no alert, alertObj->title=""
@@ -236,6 +237,68 @@ function getAlertsfromHornblower() {
     $alertobj->detail = $v->notificationBody;
     $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
     $alertobj->expiration = intval($v->expirationDate)/1000;
+    return $alertobj;
+
+    // foreach($a as $v) {
+    //     echo "<br/>created Date: " . $v->createdDate;
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+//  getNewestAlertfromHornblower - get the Hornblower web feed. works as of 5/16/22.
+//  8/28/22: return newest message
+//  
+//  exit    returns Alert object
+//          if no alert, alertObj->title=""
+//
+//  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+//[{"createdDate":"1652555109859",
+// "expirationDate":"1653177600000",
+// "notificationBody":"Extreme low tides are predicted this summer beginning the week of May 16, 2022. ... \n\nRiders...\n",
+// "notificationTitle":"Service Alert – Extreme Low Tides beginning Monday, May 16",
+// "reasonForNotification":" ",
+// "notificationType":" "},...
+// ]
+function getNewestAlertfromHornblower() {
+    $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+    $alertobj = new Alert(); // create alert object
+    $alertobj->title = "";
+
+    //  Read the hornblower feed. Isn't this easy! php is great.
+    $x = file_get_contents($alertrssurl);
+    if($x === false || $x=="") {
+        echo " load failed from $alertrssurl. ";
+        return $alertobj;
+    }
+
+    //  decode json return and check for errors and no data
+    $a = json_decode($x);
+    if($a==null) {
+        //echo "json decode returned null";  null is retrned normally if no alert
+        return $alertobj;
+    }
+    $i = count($a) - 1;  // last element
+    if($i<0) {
+        echo "json decode i=$i";
+        return $alertobj; 
+    }
+    $msgtime = 0;
+    for(i=0; i<count($a); i++) {
+        // return the newest message in the list.  I hope that is correct but who knows...
+        $v = $a[$i];
+        //echo "<br/>i=$i<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
+        //echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
+        //echo "<br/>________________________<br>";
+        // fill an alert object
+        if(intval($v->createdDate) > msgtime) {  // get newest message
+            
+            $msgtime = intval($v->createdDate);
+            $alertobj->title = $v->notificationTitle;
+            $alertobj->notifymsg = $v->notificationTitle;
+            $alertobj->detail = $v->notificationBody;
+            $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
+            $alertobj->expiration = intval($v->expirationDate)/1000;
+        }
+    }
+}
     return $alertobj;
 
     // foreach($a as $v) {
