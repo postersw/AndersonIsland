@@ -281,15 +281,14 @@ function getNewestAlertfromHornblower() {
         return $alertobj; 
     }
     $msgtime = 0;
-    for(i=0; i<count($a); i++) {
+    for($i=0; $i<count($a); $i++) {
         // return the newest message in the list.  I hope that is correct but who knows...
         $v = $a[$i];
         //echo "<br/>i=$i<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
         //echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
         //echo "<br/>________________________<br>";
         // fill an alert object
-        if(intval($v->createdDate) > msgtime) {  // get newest message
-            
+        if(intval($v->createdDate) > $msgtime) {  // get newest message
             $msgtime = intval($v->createdDate);
             $alertobj->title = $v->notificationTitle;
             $alertobj->notifymsg = $v->notificationTitle;
