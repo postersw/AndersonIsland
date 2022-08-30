@@ -71,11 +71,11 @@ if($AlertObj->title == "") {
 $t=time(); // current seconds UCT
 $talert = $AlertObj->timestamp;
 $texpire = $AlertObj->expiration;
-echo("  |alert timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
-echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
-echo("  |expiration date: " . $texpire . " = " . date("Y-m-d-H-i-s", $texpire));// debug print in PDT
+//echo("  |alert timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
+//echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
+//echo("  |expiration date: " . $texpire . " = " . date("Y-m-d-H-i-s", $texpire));// debug print in PDT
 $deltat = $t - $talert;
-echo ("  |delta t hrs = " . ($deltat/3600));
+//echo ("  |delta t hrs = " . ($deltat/3600));
 // if alert is >4 hrs old, clear it and stop 
 if(($deltat > ($alertclearhours*3600)) || ($t > $texpire)) { // if > 4 hours old OR expired
     logAlertLast(" Alert is > $alertclearhours hours old");
@@ -250,9 +250,11 @@ function getAlertsfromHornblower() {
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  getNewestAlertfromHornblower - get the Hornblower web feed. 
 //  8/28/22: return newest message based on createdDate.  ALL TIME UCT.
+//      also create the ferrymessage.txt file.
 //  
 //  exit    returns Alert object
 //          if no alert, alertObj->title=""
+//          creates ferrymessage.txt
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -264,6 +266,8 @@ function getAlertsfromHornblower() {
 // ]
 function getNewestAlertfromHornblower() {
     $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
+    $ferrymsgfile = "ferrymessage.txt";
+    $ferrymsg = "";
     $alertobj = new Alert(); // create alert object
     $alertobj->title = "";
 
@@ -284,6 +288,7 @@ function getNewestAlertfromHornblower() {
     }
     $msgtime = 0; // created date
     $msgi = 0;
+
     // return the newest message in the list based on created date 
     for($i=0; $i<$maxi; $i++) {
         $v = $a[$i];
@@ -293,12 +298,13 @@ function getNewestAlertfromHornblower() {
             $msgi = $i;
             $msgtime = $cd;
         }
+        $ferrymsg .= date("m/d ", $cd/1000) . $v->notificationTitle . "<br/>";  // build ferry msg
     }
     // fill an alert object
     $v = $a[$msgi];
-    echo "<br/>i=$msgi of $maxi<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
-    echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
-    echo "<br/>________________________<br>";
+    //echo "<br/>i=$msgi of $maxi<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
+    //echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
+    //echo "<br/>________________________<br>";
 
     $alertobj->title = $v->notificationTitle;
     $alertobj->notifymsg = $v->notificationTitle;
@@ -306,6 +312,8 @@ function getNewestAlertfromHornblower() {
     $alertobj->timestamp = $msgtime/1000; // unix date stamp
     $alertobj->expiration = intval($v->expirationDate)/1000;
 
+    // write out all the active alerts for dailycache
+    file_put_contents($ferrymsgfile, $ferrymsg);
     return $alertobj;
 }
 
