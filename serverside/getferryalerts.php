@@ -1,8 +1,9 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  getferryalertsTEST - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
+//  also creates the ferrymessageinclude.txt file which contains all active alerts.
 //  Run by cron every 4 minutes.
-//  Alerts are cleared after 4 hours or if they are removed from the rss feed.
+//  Alerts are cleared after 24 hours or if they are removed from the rss feed.
 //  To change the default message (from "") change $DefaultMessage in function ClearAlertFile().
 //
 //  Bob Bedoll. 3/13/16.
@@ -26,6 +27,7 @@
 //       5/26/22. Change Delay string match to ignore case.
 //       6/07/22. Exit normally if no title.  This is the normal return if no alerts exist.
 //       8/30/22. Use most recent Hornblower msg based on time stamp. Keep msg for 24 hours. Expire based on expiration stamp.
+//                Create ferrymessageinclude.txt which contains all active alerts.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -41,6 +43,9 @@
 //
 //  NOTIFICATION MESSAGE WRITTEN TO ALERT FILE:
 //  hh:mm DELAYED nn: <ferry message title> \n <ferry message description>
+//
+//  MESSAGES WRITTEN TO ferrymessageinclude.txt file:
+//  mm/dd <ferry message title><br/> ...
 
 class Alert{
     public $title;  // the title line.  Includes link to full msg.
@@ -248,9 +253,9 @@ function getAlertsfromHornblower() {
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  getNewestAlertfromHornblower - get the Hornblower web feed. 
+//  getNewestAlertfromHornblower - get the Hornblower web feed which consists of all active alerts. 
 //  8/28/22: return newest message based on createdDate.  ALL TIME UCT.
-//      also create the ferrymessage.txt file.
+//      also create the ferrymessageinclude.txt file that contains all active alerts.
 //  
 //  exit    returns Alert object
 //          if no alert, alertObj->title=""
@@ -266,7 +271,7 @@ function getAlertsfromHornblower() {
 // ]
 function getNewestAlertfromHornblower() {
     $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
-    $ferrymsgfile = "ferrymessage.txt";
+    $ferrymsgfile = "ferrymessageinclude.txt";
     $ferrymsg = "";
     $alertobj = new Alert(); // create alert object
     $alertobj->title = "";

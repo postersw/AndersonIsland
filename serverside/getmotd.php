@@ -1,10 +1,8 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
-// getmotd.php merges the motd.txt file into the dailycache.txt file every night.
+// getmotd.php writes the motd.txt file commands to motdinclude.txt file every night.
 //  run by cron at 12:02am nightly.
-// ALWAYS replaces all messages between MOTD and the ending /nl
-// Strips out all \n.   Always end a message with a </br>
-// input file: dailycache.txt.   If there is an MOTD, it MUST be in line 2 as MOTD, and the MOTD must immediately follow it until the next \n.
+//
 // input file: motd.txt
 //  <MOTD>
 //  Optional motd messages to always include. only 1 line up to the \n,  \n is stripped.
@@ -17,29 +15,33 @@
 //   optional messages to include after the scheduled messages. Only 1 line up to the \n
 //  </MOTDLAST>
 //
+//  exit: writes all relevant motd lines to the 'motdinclude.txt' file as one long line ending with \n.  All messages must end with <br/> to provide formatting.
+//        the 'motdinclude.txt' file is included into the dailycache.txt file using a '<include motdinclude.txt>' line in dailycache.txt.
+//
 //  10/3/21. RFB. Initial version.
 //  7/21/22  RFB. Accept multiple date ranges for the same message.
+//  8/30/22. RFB. Create an motdinclude.txt file.  Do not change dailycache.txt anymore.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
-$dailycachefile = "dailycache.txt";
-if($test) $dailycachefile = "dailycache_test.txt";
+//$dailycachefile = "dailycache.txt";
+//if($test) $dailycachefile = "dailycache_test.txt";
 date_default_timezone_set('America/Los_Angeles');
 chdir("/home/postersw/public_html");  // move to web root
 
-//  read dailycache into buffer $dcout
-$dcout = file_get_contents($dailycachefile);
-if($dcout==false) exit("$dailycachefile does not exist");
-if($dcout=="") exit("$dailycachefile is empty");
-if(substr($dcout, 0, 11) !="DAILYCACHE\n") exit ("first line of $dailycachefile is not DAILYCACHE");
+    //  read dailycache into buffer $dcout
+    //$dcout = file_get_contents($dailycachefile);
+    //if($dcout==false) exit("$dailycachefile does not exist");
+    //if($dcout=="") exit("$dailycachefile is empty");
+    //if(substr($dcout, 0, 11) !="DAILYCACHE\n") exit ("first line of $dailycachefile is not DAILYCACHE");
 
-// find MOTD and delete it from $dcout
-$i = strpos($dcout, "MOTD\n");
-if($i > 10) {
-    $j = strpos($dcout, "\n", $i+6);  // $j = end of motd
-    $dcout = substr_replace($dcout, "", $i, ($j-$i+1));  // delete the motd;
-    echo (" Deleted motd from $i to $j\n ");
-}
+    // find MOTD and delete it from $dcout
+    // $i = strpos($dcout, "MOTD\n");
+    // if($i > 10) {
+    //     $j = strpos($dcout, "\n", $i+6);  // $j = end of motd
+    //     $dcout = substr_replace($dcout, "", $i, ($j-$i+1));  // delete the motd;
+    //     echo (" Deleted motd from $i to $j\n ");
+    // }
 
 // check motd.txt file
 $motdout = "";
@@ -100,15 +102,17 @@ if($ln != "") {
 
 // insert motd into $dcout
 fclose($motdf);   // close modfile
-echo ("MOTD:\n$motdout <br/>\n");  // if there is an motd
-if($motdout != "") {
-    $dcout = substr_replace($dcout, "MOTD\n" . $motdout . "\n", 11, 0); // insert motd after DAILYCACHE\n
-} 
-//exit("stop before writint dailycache");
+file_put_contents("motdinclude.txt", $motdout . "\n");
 
-//  copy dcout to dailycache
-$i = file_put_contents($dailycachefile, $dcout);
-echo ("wrote $i chars to $dailycachefile ");
+echo ("MOTD:\n$motdout <br/>\n");  // if there is an motd
+    // if($motdout != "") {
+    //     $dcout = substr_replace($dcout, "MOTD\n" . $motdout . "\n", 11, 0); // insert motd after DAILYCACHE\n
+    // } 
+    //exit("stop before writint dailycache");
+
+    //  copy dcout to dailycache
+    // $i = file_put_contents($dailycachefile, $dcout);
+    // echo ("wrote $i chars to $dailycachefile ");
 exit();
 
 
