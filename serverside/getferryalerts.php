@@ -25,6 +25,7 @@
 //       5/16/22. Switched to use hornblower feed. 
 //       5/26/22. Change Delay string match to ignore case.
 //       6/07/22. Exit normally if no title.  This is the normal return if no alerts exist.
+//       8/30/22. Use most recent Hornblower msg based on time stamp. Keep msg for 24 hours. Expire based on expiration stamp.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -45,20 +46,20 @@ class Alert{
     public $title;  // the title line.  Includes link to full msg.
     public $notifymsg;  // msg to send via OneSignal.  No link.
     public $detail;  // detail displayed in detail msg.  If there is more than the title.
-    public $timestamp; // date/time of alert, unix time stamp.
-    public $expiration;  // expiration. unix time stamp.
+    public $timestamp; // date/time of alert, unix time stamp in seconds
+    public $expiration;  // expiration. unix time stamp in seconds.
 }
 
 chdir("/home/postersw/public_html");
 //chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
 date_default_timezone_set("America/Los_Angeles"); // set PDT
-$alertclearhours = 4;  // hours to clear an alert
+$alertclearhours = 24;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 $alerthistory = "alerthistory.txt";
 
 //  Get the alert. returned in $AlertObj
-$AlertObj = getAlertsfromHornblower() ;
+$AlertObj = getNewestAlertfromHornblower();  //getAlertsfromHornblower() ;
 // if no response clear the alert file.
 if($AlertObj->title == "") {
 	ClearAlertFile($alertfile, $alertlog);
@@ -66,15 +67,17 @@ if($AlertObj->title == "") {
 	exit(0); // if no reply
 }
  
-// check time. If alert is >4 hrs old, clear it and stop.
+// check time. ALL TIME IS UCT. If alert is >$alertclearhours hrs old, clear it and stop.
 $t=time(); // current seconds UCT
 $talert = $AlertObj->timestamp;
-//echo("  |alert timestamp:" . $talert . "|"); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
-//echo("  |current:" . $t . "|"); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
+$texpire = $AlertObj->expiration;
+echo("  |alert timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
+echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
+echo("  |expiration date: " . $texpire . " = " . date("Y-m-d-H-i-s", $texpire));// debug print in PDT
 $deltat = $t - $talert;
-//echo (" delta t hrs = " . ($deltat/3600));
+echo ("  |delta t hrs = " . ($deltat/3600));
 // if alert is >4 hrs old, clear it and stop 
-if($deltat > ($alertclearhours*3600)) { // if > 4 hours old
+if(($deltat > ($alertclearhours*3600)) || ($t > $texpire)) { // if > 4 hours old OR expired
     logAlertLast(" Alert is > $alertclearhours hours old");
     ClearAlertFile($alertfile, $alertlog);
     exit(0);
@@ -188,7 +191,7 @@ function PushOSNotification($title, $msg) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //  getAlertsfromHornblower - get the Hornblower web feed. works as of 5/16/22.
-//  8/28/22: return newest message
+//  unused as of 8/30/22.
 //  
 //  exit    returns Alert object
 //          if no alert, alertObj->title=""
@@ -242,9 +245,11 @@ function getAlertsfromHornblower() {
     // foreach($a as $v) {
     //     echo "<br/>created Date: " . $v->createdDate;
 }
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  getNewestAlertfromHornblower - get the Hornblower web feed. works as of 5/16/22.
-//  8/28/22: return newest message
+//  getNewestAlertfromHornblower - get the Hornblower web feed. 
+//  8/28/22: return newest message based on createdDate.  ALL TIME UCT.
 //  
 //  exit    returns Alert object
 //          if no alert, alertObj->title=""
@@ -271,37 +276,37 @@ function getNewestAlertfromHornblower() {
 
     //  decode json return and check for errors and no data
     $a = json_decode($x);
-    if($a==null) {
-        //echo "json decode returned null";  null is retrned normally if no alert
-        return $alertobj;
-    }
-    $i = count($a) - 1;  // last element
-    if($i<0) {
-        echo "json decode i=$i";
+    if($a==null) return $alertobj;  //echo "json decode returned null";  null is retrned normally if no alert
+    $maxi = count($a);  //  element count
+    if($maxi<=0) {
+        echo "json decode i=$maxi";
         return $alertobj; 
     }
-    $msgtime = 0;
-    for($i=0; $i<count($a); $i++) {
-        // return the newest message in the list.  I hope that is correct but who knows...
+    $msgtime = 0; // created date
+    $msgi = 0;
+    // return the newest message in the list based on created date 
+    for($i=0; $i<$maxi; $i++) {
         $v = $a[$i];
-        //echo "<br/>i=$i<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
-        //echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
-        //echo "<br/>________________________<br>";
-        // fill an alert object
-        if(intval($v->createdDate) > $msgtime) {  // get newest message
-            $msgtime = intval($v->createdDate);
-            $alertobj->title = $v->notificationTitle;
-            $alertobj->notifymsg = $v->notificationTitle;
-            $alertobj->detail = $v->notificationBody;
-            $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
-            $alertobj->expiration = intval($v->expirationDate)/1000;
+        $cd = intval($v->createdDate);
+        if($cd < 2) echo "invalid created date " . $v->createdDate;
+        if($cd > $msgtime) {  // get newest message
+            $msgi = $i;
+            $msgtime = $cd;
         }
     }
-}
-    return $alertobj;
+    // fill an alert object
+    $v = $a[$msgi];
+    echo "<br/>i=$msgi of $maxi<br/>created Date: " . $v->createdDate . "<br/>expriationDate: " . $v->expirationDate;
+    echo "<br/>notification Title: " . $v->notificationTitle . "<br/>notification Body: " . $v->notificationBody;
+    echo "<br/>________________________<br>";
 
-    // foreach($a as $v) {
-    //     echo "<br/>created Date: " . $v->createdDate;
+    $alertobj->title = $v->notificationTitle;
+    $alertobj->notifymsg = $v->notificationTitle;
+    $alertobj->detail = $v->notificationBody;
+    $alertobj->timestamp = $msgtime/1000; // unix date stamp
+    $alertobj->expiration = intval($v->expirationDate)/1000;
+
+    return $alertobj;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
