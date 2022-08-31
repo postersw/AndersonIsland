@@ -303,7 +303,7 @@ function getNewestAlertfromHornblower() {
             $msgi = $i;
             $msgtime = $cd;
         }
-        $ferrymsg .= date("m/d ", $cd/1000) . $v->notificationTitle . "<br/>";  // build ferry msg
+        $ferrymsg .= "<b>" . date("m/d ", $cd/1000) . "</b>" . $v->notificationTitle . "<br/>";  // build ferry msg
     }
     // fill an alert object
     $v = $a[$msgi];
