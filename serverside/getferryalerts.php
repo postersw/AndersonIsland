@@ -72,9 +72,6 @@ $t=time(); // current seconds UCT
 $alerttimestamp = file_get_contents($alerttimestampfile);  // read posted time
 $talert = intval($alerttimestamp); // time it was posted
 if($talert == 0) $talert = $t; 
-echo("  |alert timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print in PDT
-echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print in PDT
-
 
 // if no new alert, clear the alert file after 12 hours
 if($AlertObj->title == "") {
@@ -114,6 +111,10 @@ if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripo
     else if(preg_match('/delayed \d\d minutes/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
+
+echo("  |alert timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print 
+echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print
+echo("  |expires:" . $t . "="); echo(date("Y-m-d-H-i-s", $AlertObj->expirationDate));// debug print
 
 // build message
 if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
@@ -344,11 +345,11 @@ function getNewestAlertfromHornblower() {
         //     $msgi = $i;
         //     $msgtime = $cd;
         // }
-        $ferrymsg .= "<b>" . date("m/d ", intval($v->createdDate)/1000) . "</b>" . $v->notificationTitle . "<br/>";  // build ferry msg
+        $ferrymsg .= "<b>" . date("m/d-", intval($v->createdDate)/1000) . date("m/d", intval($v->expirationDate)/1000) .":</b> " . $v->notificationTitle . "<br/>";  // build ferry msg
     }
 
-    echo "<br/>activemsglist = $newactivemsglist"; 
     // write out all the active alerts for dailycache
+    //echo "<br/>activemsglist = $newactivemsglist"; 
     file_put_contents($ferrymsgfile, $ferrymsg);
     file_put_contents($ferryactivemsgfile, $newactivemsglist); // write out the new active messages
     
@@ -365,7 +366,7 @@ function getNewestAlertfromHornblower() {
         $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
         $alertobj->expiration = intval($v->expirationDate)/1000;
     } else {
-        echo "No new alert object<br/>";
+        //echo "No new alert object<br/>";
     }
 
     return $alertobj;
