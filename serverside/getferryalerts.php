@@ -345,7 +345,7 @@ function getNewestAlertfromHornblower() {
         //     $msgi = $i;
         //     $msgtime = $cd;
         // }
-        $ferrymsg .= "<b>" . date("m/d-", intval($v->createdDate)/1000) . date("m/d", intval($v->expirationDate)/1000) .":</b> " . $v->notificationTitle . "<br/>";  // build ferry msg
+        $ferrymsg = "<b>" . date("m/d-", intval($v->createdDate)/1000) . date("m/d", intval($v->expirationDate)/1000) .":</b> " . $v->notificationTitle . "<br/>" . $ferrymsg;  // build ferry msg
     }
 
     // write out all the active alerts for dailycache
