@@ -21,6 +21,7 @@
 //  10/3/21. RFB. Initial version.
 //  7/21/22  RFB. Accept multiple date ranges for the same message.
 //  8/30/22. RFB. Create an motdinclude.txt file.  Do not change dailycache.txt anymore.
+//  9/4/22   RFB. Include "lowtidewarning.txt file.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
@@ -88,6 +89,10 @@ while(true) {
     }
     else break;
 }
+
+// include lowtidewarning.txt; note it must not have a \n
+$ltw = file_get_contents("lowtidewarning.txt");
+if($ltw <> "") $motdout .= str_replace("\n", "", $ltw);
 
 // check for MOTDLAST row after the date rows
 if($ln != "") {
