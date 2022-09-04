@@ -81,7 +81,7 @@
 
     function reformatdata($reply) {
         global $lowtidefile, $mtoday, $dtoday, $htoday;
-        $lowtidetrigger = -1.0;
+        $lowtidetrigger = -0.5;
         echo $reply . "<br/>"; ////////debug////
         $jreply = json_decode($reply);  // decode the json reply
         //var_dump($jreply);
