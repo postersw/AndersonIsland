@@ -111,9 +111,10 @@
                 if($tide->type == "L") { // if low tide
                     if(floatval($tide->v) <= $lowtidetrigger) { // if <= -1' 
                         $hr = intval(substr($t, 11, 2)); // tide hour
-                        if(($hr >5) && ($hr<23) && ($hr<= ($htoday+3))) { // if >5am and < 11pm  and less than 3 hours ago
+                        if(($hr >5) && ($hr<23) && ($htoday<=($hr+3))) { // if >5am and < 11pm  and less than 3 hours ago
                             $lowtidewarning = "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
                             echo $lowtidewarning; ///////DEBUG///////////
+                            echo "hr=$hr, htoday=$htoday ";
                         }
                     }
                 }
