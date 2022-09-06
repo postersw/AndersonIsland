@@ -1,10 +1,10 @@
 <?php
-/////////////////////////////////////////////////////////////
-//  gettidecron - gets the tides json structure from aerisapi.com
-//  web site and writes it to tides.txt.
-//  this file is picked up by the the app directly.
-//  note that 'dailycache.txt' has TIDESDATALINK set to tidedata.txt to get this file.
-//  Called by cron every 6 hours (4 times/day).  This gets around the 750 hits/day limit on the free account.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  gettidecron - gets the tides json structure from tidesandcurrents.noaa.gov
+//  web site and writes it to tidedata.txt in 'aeris' format.
+//  this file is included into 'dailycache.txt' by a <include directive. 
+//
+//  Called by cron every 6 hours (4 times/day). 
 //  AERIS format:
 //  {"success":true,"error":null,"response":{"id":"9446705",
 //  "periods": [ {"dateTimeISO": "2012-04-08T04:47:00-07:00","type": "l", "heightFT": -0.3},...]
@@ -12,10 +12,11 @@
 //
 //  rfb. 6/4/16. 6/6/16.
 //  rfb. 10/1/17. Call NOAA instead of Aeris because Aeris is no longer free.  But format the return to look like Aeris.
-//  rfb. 9/3/22.  Check for tides<-1' and issue a warning message to lowtidewarning.txt.  This file is pickedup by getmotd.txt.
+//  rfb. 9/3/22.  Check for tides<-0.5' and issue a warning message to lowtidewarninginclude.txt.  This file is pickedup by in include in getdailycache.txt.
+//  rfb. 9/6/22.  Change file to lowtideswarninginclude.
 //
     $file = "tidedata.txt";
-    $lowtidefile = "lowtidewarning.txt";
+    $lowtidefile = "lowtidewarninginclude.txt";
     chdir("/home/postersw/public_html");  // move to web root
     date_default_timezone_set('America/Los_Angeles');
 
@@ -82,13 +83,13 @@
     function reformatdata($reply) {
         global $lowtidefile, $mtoday, $dtoday, $htoday;
         $lowtidetrigger = -0.5;
-        echo $reply . "<br/>"; ////////debug////
+        //echo $reply . "<br/>"; //debug//
         $jreply = json_decode($reply);  // decode the json reply
         //var_dump($jreply);
         //echo count($jreply->predictions) . " items. <br/>";
 
         // if an error
-        if (count($jreply->predictions) == 0) {
+        if (is_null($jreply) || (count($jreply->predictions) == 0)) {
             echo "ERROR - no tides returned. \n";
             die( "ERROR - no tides returned.");
         }
@@ -110,8 +111,8 @@
                 if($tide->type == "L") { // if low tide
                     if(floatval($tide->v) <= $lowtidetrigger) { // if <= -1' 
                         $hr = intval(substr($t, 11, 2)); // tide hour
-                        if(($hr >5) && ($hr<23)) { // if >5am and < 11pm  && ($hr< ($htoday+2))
-                            $lowtidewarning = "<b>Ferry alert for trailers: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</b><br/>";
+                        if(($hr >5) && ($hr<23) && ($hr<= ($htoday+3))) { // if >5am and < 11pm  and less than 3 hours ago
+                            $lowtidewarning = "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
                             echo $lowtidewarning; ///////DEBUG///////////
                         }
                     }

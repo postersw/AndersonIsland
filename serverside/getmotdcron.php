@@ -15,13 +15,14 @@
 //   optional messages to include after the scheduled messages. Only 1 line up to the \n
 //  </MOTDLAST>
 //
-//  exit: writes all relevant motd lines to the 'motdinclude.txt' file as one long line ending with \n.  All messages must end with <br/> to provide formatting.
-//        the 'motdinclude.txt' file is included into the dailycache.txt file using a '<include motdinclude.txt>' line in dailycache.txt.
+//  exit: writes all relevant motd lines to the 'motdinclude.txt' file as one long line ending without \n.  All messages must end with <br/> to provide formatting.
+//        the 'motdinclude.txt' file is included into the dailycache.txt file using a '<include motdinclude.txt>' line in dailycache.txt, where a newline is also generated.
 //
 //  10/3/21. RFB. Initial version.
 //  7/21/22  RFB. Accept multiple date ranges for the same message.
 //  8/30/22. RFB. Create an motdinclude.txt file.  Do not change dailycache.txt anymore.
 //  9/4/22   RFB. Include "lowtidewarning.txt file.
+//  9/6/22.  RFB. Remove 'lowtidewarning.txt' file include.  Remove \n from output. \n must be in the dailycache.txt file.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
@@ -90,9 +91,9 @@ while(true) {
     else break;
 }
 
-// include lowtidewarning.txt; note it must not have a \n
-$ltw = file_get_contents("lowtidewarning.txt");
-if($ltw <> "") $motdout .= str_replace("\n", "", $ltw);
+// include lowtidewarning.txt; note it must not have a \n.  Removed 9/6/22.
+// $ltw = file_get_contents("lowtidewarning.txt");
+// if($ltw <> "") $motdout .= str_replace("\n", "", $ltw);
 
 // check for MOTDLAST row after the date rows
 if($ln != "") {
@@ -105,11 +106,11 @@ if($ln != "") {
     if($ln != "</MOTDLAST>" && $ln != "</MOTDLAST>\n" ) exit("no closing /MOTDLAST: $ln");
 }
 
-// insert motd into $dcout
+// create motdinclude.txt WITH NO LINE ENDING.   Dailycache.txt must supply the line ending.
 fclose($motdf);   // close modfile
-file_put_contents("motdinclude.txt", $motdout . "\n");
+file_put_contents("motdinclude.txt", $motdout);
 
-echo ("MOTD:\n$motdout <br/>\n");  // if there is an motd
+echo ("MOTD:\n$motdout <br/>");  // if there is an motd
     // if($motdout != "") {
     //     $dcout = substr_replace($dcout, "MOTD\n" . $motdout . "\n", 11, 0); // insert motd after DAILYCACHE\n
     // } 
