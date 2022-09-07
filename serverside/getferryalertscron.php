@@ -29,6 +29,7 @@
 //       8/30/22. Use most recent Hornblower msg based on time stamp. Keep msg for 24 hours. Expire based on expiration stamp.
 //                Create ferrymessageinclude.txt which contains all active alerts.
 //       9/2/22.  keep a running list of sent messages to identify active message.
+//       9/7/22.  Fix alert timestamp to always use current time.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -65,26 +66,25 @@ $alertlog = "alertlog.txt";
 $alerthistory = "alerthistory.txt";
 $alerttimestampfile = "alerttimestamp.txt";
 
-//  Get the alert. returned in $AlertObj
-$AlertObj = getNewestAlertfromHornblower();  //getAlertsfromHornblower() ;
+//  Get a new alert. returned in $AlertObj
+//  Always returns new alert only once!
+$AlertObj = getNewestAlertfromHornblower();  //
 
 $t=time(); // current seconds UCT
-$alerttimestamp = file_get_contents($alerttimestampfile);  // read posted time
-$talert = intval($alerttimestamp); // time it was posted
-if($talert == 0) $talert = $t; 
 
 // if no new alert, clear the alert file after 12 hours
 if($AlertObj->title == "") {
     // if alert is >alertclearhours hrs old, clear it and stop 
-    if((($t-$talert)> ($alertclearhours*3600))) { // if > x hours old 
+    $alerttimestamp = file_get_contents($alerttimestampfile);  // read posted time
+    if($alerttimestamp=="") exit(0); // if no time stamp, no alert is posted
+    $talert = intval($alerttimestamp); // time it was posted
+    if($talert == 0) exit(0); // if no timestamp   
+    if((($t-$talert)> ($alertclearhours*3600))) { // if > x hours old, clear it
         logAlertLast(" Alert is > $alertclearhours hours old");
         ClearAlertFile($alertfile, $alertlog);
-        exit(0);
-        // ClearAlertFile($alertfile, $alertlog);
-        // logAlertLast("no title");
-        // exit(0); // if no reply
+        file_put_contents($alerttimestampfile, "");  // clear the alert timestamp
     }
-    exit(0);  // if not >16 hours, leave it
+    exit(0);  // if not >12 hours, leave it
 }
  
 // // check time. ALL TIME IS UCT. If alert is >$alertclearhours hrs old, clear it and stop.
@@ -101,6 +101,7 @@ if($AlertObj->title == "") {
 // }
 
 // test for a delay and add to alert string
+$talert = $t; // for alert time, use current time.
 $delay = "";
 $title = $AlertObj->title;
 $desc = $AlertObj->detail;
@@ -112,9 +113,10 @@ if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripo
     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 }
 
-echo("  |alert timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print 
+echo("  |alert simulated timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print 
 echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print
-echo("  |expires:" . $t . "="); echo(date("Y-m-d-H-i-s", $AlertObj->expirationDate));// debug print
+echo("  |created:" . $AlertObj->timestamp . "="); echo(date("Y-m-d-H-i-s", $AlertObj->timestamp));// debug print
+echo("  |expires:" . $AlertObj->expiration . "="); echo(date("Y-m-d-H-i-s", $AlertObj->expiration));// debug print
 
 // build message
 if($AlertObj->notifymsg != $desc) $title = $title . " ...>";
@@ -122,22 +124,10 @@ $alertdatestring = date("m/d h:ia", $talert); // date/time of alert
 $alertstring = $alertdatestring . " " . $delay . $title . "\n" . $desc;
 echo " alertstring=$alertstring|";
 
-// exit if the message is not being changed.  Not needed because we only issue the message once, based on its time stamp
-// $alc = file_get_contents($alertfile);  // read the alert file
-// if($alc == $alertstring) {
-// 	logAlertLast("alert already written");
-// 	exit(0); // if already written
-// }
-
-/////////////////////////////////////////////////
-//exit();
-/////////////////////////////////////////////////
-
-
 // write it to the alertfile, alerthistory, and log it
 file_put_contents($alertfile, $alertstring);  // alert file for getalerts.php app display
-file_put_contents($alerttimestampfile, strval($t));  // save the posted time 
-addAlertHistory($alerthistory, $alertObj);    // alert history for getalerthistory.php
+file_put_contents($alerttimestampfile, strval($talert));  // save the posted time 
+addAlertHistory($alerthistory, $AlertObj);    // alert history for getalerthistory.php
 file_put_contents($alertlog, date("Y/m/d H:i:s") . "|" . $alertstring . "\n", FILE_APPEND);  // log 
 echo ("wrote to file: " . $alertstring);
 logAlertLast("wrote to alert file");
