@@ -7,6 +7,7 @@
 //  <MOTD>
 //  Optional motd messages to always include. only 1 line up to the \n,  \n is stripped.
 //  </MOTD>
+//  // comment always skipped.
 //  <DATE mmddstart-mmddend [mmddstart-mmddend] ... >
 //   optional motd message to include, starting mmddstart, and ending mmddend.  As many time ranges may be added as needed.  only 1 line up to the \n. \n is stripped.
 //  </DATE>
@@ -23,6 +24,7 @@
 //  8/30/22. RFB. Create an motdinclude.txt file.  Do not change dailycache.txt anymore.
 //  9/4/22   RFB. Include "lowtidewarning.txt file.
 //  9/6/22.  RFB. Remove 'lowtidewarning.txt' file include.  Remove \n from output. \n must be in the dailycache.txt file.
+//  9/11/22. RFB. Accept // for comments.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
@@ -65,11 +67,13 @@ if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 // check for MOTD date rows:   <DATE mmdd1-mmdd2 [mmdd3-mmdd4] ... >\n msg \n</DATE> ...
 while(true) {
     $ln = fgets($motdf);
+    if(substr($ln, 0, 2) == "//") continue;  // skip comments
     if(substr($ln, 0, 5)== "<DATE") {
         $dateranges = explode(" ", substr($ln, 6));  // get the date ranges
         if(count($dateranges) == 0) exit("no data range for $ln");
         $ln = fgets($motdf);  // check the next line
         if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
+        $skipped = true;
         // loop through the date ranges mmdd1-mmdd2
         foreach($dateranges as $dl) {
             if($dl=="") continue;
@@ -79,21 +83,20 @@ while(true) {
             if($ds=="") continue;
             if(count($dates)==1) $de = $ds;  // if just mmdd1
             else $de = preg_replace('~\D~', '', $dates[1]); // else use mmdd2
-            echo ("$dl: ds=$ds, de=$de  \n");
+            //echo ("$dl: ds=$ds, de=$de  \n");
             if(checkmotddate($ds, $de)) {  // if date is active
                 $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
-                echo (" Added ds=$ds-$de: $ln ");
-            } //else echo (" Skipped $ln ");
+                echo ("Added ds=$ds-$de: $ln \n");
+                $skipped = false;
+                break; // don't bother with any more date ranges
+            } 
         }
+        if($skipped) echo "Skipped: $ln\n";
         $ln = fgets($motdf);  // read line after msg. should be </DATE>
         if($ln != "</DATE>\n") exit("no ending /Date for $ln");
     }
     else break;
 }
-
-// include lowtidewarning.txt; note it must not have a \n.  Removed 9/6/22.
-// $ltw = file_get_contents("lowtidewarning.txt");
-// if($ltw <> "") $motdout .= str_replace("\n", "", $ltw);
 
 // check for MOTDLAST row after the date rows
 if($ln != "") {
