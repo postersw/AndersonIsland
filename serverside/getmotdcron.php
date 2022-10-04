@@ -25,6 +25,7 @@
 //  9/4/22   RFB. Include "lowtidewarning.txt file.
 //  9/6/22.  RFB. Remove 'lowtidewarning.txt' file include.  Remove \n from output. \n must be in the dailycache.txt file.
 //  9/11/22. RFB. Accept // for comments.
+//  10/3/22. RFB. Improve handling of // and blank lines.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
@@ -52,26 +53,25 @@ $motdout = "";
 $motdf = fopen($motdfile, "r"); 
 if($motdf==false) exit("No $motdfile");
 // check 1st line of motd.txt for <MOTD>
-$ln = fgets($motdf);
+$ln = fgetnc($motdf);
 if($ln == "") exit("Empty $motdfile");  // if no motd file, just quite
 if($ln != "<MOTD>\n")  exit("$motdfile missing &lt MOTD &gt and is skipped");
 // check 2nd line of motd.txt for </MOTD>
-$ln = fgets($motdf);
+$ln = fgetnc($motdf);
 if($ln != "</MOTD>\n") {
     $motdout = substr($ln, 0, strlen($ln)-1); // remove trailing \n
-    $ln = fgets($motdf);  // get next line
+    $ln = fgetnc($motdf);  // get next line
 }
 if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 
-
 // check for MOTD date rows:   <DATE mmdd1-mmdd2 [mmdd3-mmdd4] ... >\n msg \n</DATE> ...
 while(true) {
-    $ln = fgets($motdf);
+    $ln = fgetnc($motdf);
     if(substr($ln, 0, 2) == "//") continue;  // skip comments
     if(substr($ln, 0, 5)== "<DATE") {
         $dateranges = explode(" ", substr($ln, 6));  // get the date ranges
         if(count($dateranges) == 0) exit("no data range for $ln");
-        $ln = fgets($motdf);  // check the next line
+        $ln = fgetnc($motdf);  // check the next line
         if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
         $skipped = true;
         // loop through the date ranges mmdd1-mmdd2
@@ -92,7 +92,7 @@ while(true) {
             } 
         }
         if($skipped) echo "Skipped: $ln\n";
-        $ln = fgets($motdf);  // read line after msg. should be </DATE>
+        $ln = fgetnc($motdf);  // read line after msg. should be </DATE>
         if($ln != "</DATE>\n") exit("no ending /Date for $ln");
     }
     else break;
@@ -101,10 +101,10 @@ while(true) {
 // check for MOTDLAST row after the date rows
 if($ln != "") {
     if($ln != "<MOTDLAST>\n") exit("ill formed MOTDLAST: $ln");
-    $ln = fgets($motdf); // get motdlast
+    $ln = fgetnc($motdf); // get motdlast
     if($ln != "</MOTDLAST>\n")  {
         $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
-        $ln = fgets($motdf);
+        $ln = fgetnc($motdf);
     }
     if($ln != "</MOTDLAST>" && $ln != "</MOTDLAST>\n" ) exit("no closing /MOTDLAST: $ln");
 }
@@ -144,6 +144,19 @@ function checkmotddate($dstart, $dend) {
     //echo ("d1=$d1, d2=$d2, dnow=$dnow. ");
     if(($d1<=$dnow) && ($dnow<=$d2)) {return true;}
     return false;    
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// fgetnc - get string but ignore comments and blank lines
+//  entry   $f = file handle
+//  exit    returns next line, "" if eof
+//
+function fgetnc($fh) {
+    while($ln = fgets($fh)){
+        if(($ln!="\n") && substr($ln, 0,2)!="//") return $ln;
+    }
+    echo "fgetnc return null";
+    return "";
 }
 
 ?>
