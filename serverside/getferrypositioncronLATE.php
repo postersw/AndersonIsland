@@ -24,8 +24,9 @@
 //  1.35 6/07/22 Detect a late ferry and add a LATE message
 //  1.36 6/9/22. Use 30 minutes to find a late run.
 //  1.37 6/9/22. Moved logging to subroutine.
+//  1.38 10/7/22. Remove 3 min backoff wwhen at dock.
 
-$ver = "1.37";  // 6/08/22
+$ver = "1.38";  // 10/7/22
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -388,7 +389,7 @@ function checkforLateFerry() {
     $loadtime = 5; // time to unload & load the ferry
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
-    $now = $loctime[2] * 60 + $loctime[1] - 3;  // local time in minutes since midnight.  Back off 3 minutes because of delay in reporting position.
+    $now = $loctime[2] * 60 + $loctime[1]; // - 3;  // local time in minutes since midnight.  NO NOT Back off 3 minutes because of delay in reporting position.
 
     // All arithmetic is done in minutes since midnight.
     switch($ferrystate) {
@@ -399,7 +400,7 @@ function checkforLateFerry() {
 
         case "toAI": // travelling to AI
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
-            $delaytime = (($now + $traveltime + $loadtime) - $nextrun);  // calculate delay
+            $delaytime = (($now + $traveltime + $loadtime) - $nextrun -2);  // calculate delay. Remove 2 min to allow for delay in reporting position.
             break;
 
         case "atAI": // docked at AI
@@ -409,7 +410,7 @@ function checkforLateFerry() {
 
         case "toST": // travelling to ST
             $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight second
-            $delaytime = (($now + $traveltime + $loadtime) - $nextrun);  // calculate delay         
+            $delaytime = (($now + $traveltime + $loadtime) - $nextrun - 2);  // calculate delay. Remove 2 min to allow for delay in reporting position.        
             break;
     }
 
