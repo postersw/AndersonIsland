@@ -66,6 +66,10 @@ $alertlog = "alertlog.txt";
 $alerthistory = "alerthistory.txt";
 $alerttimestampfile = "alerttimestamp.txt";
 
+// skip alerts midnight - 4am
+$h =intval(date("H"));   // hour
+if($h < 4) exit(0);
+
 //  Get a new alert. returned in $AlertObj
 //  Always returns new alert only once!
 $AlertObj = getNewestAlertfromHornblower();  //
