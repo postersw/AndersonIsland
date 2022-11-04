@@ -1,0 +1,43 @@
+//  MOTD file.  Read each night by getmotdcron.php.  Generates file 'motdinclude.txt' that is included in the dailycache.php pull by the app.
+//  NOTE:  after modifying this file, run 'www.anderson-island.org/getmotdcron.php' to validate the file.
+//  FORMAT:   <MOTD>\n messages that should always appear. Must not contain a new line.  \n</MOTD>
+//            <DATE mmdd-mmdd ...>\n message \n</DATE>    Messages to be inserted for that day. Must not contain a newline. 
+//            <MOTDLAST>\n ending message \n <\MOTDLAST>
+//            Comments // and blank lines are ignored.
+
+<MOTD>
+//<button  style="text-align:left;font-weight:bold;padding:2px;margin:5px" onclick="window.open('https://www.anderson-island.org/displayferryoverflow.php', '_system');"><i class='material-icons'>&#xe532;</i> Overflow Pictures</button>&nbsp;&nbsp;<button  style="text-align:left;font-weight:bold;padding:2px;margin:2px" onclick="window.open('https://www.piercecountywa.gov/7691/All-Ferry-Alerts', '_system');"><i class='material-icons'>&#xe002;</i>Alerts</button><br/>
+<span style="color:red;font-weight:bold">
+</MOTD>
+
+<DATE 1014-1015>
+Ferry runs cancelled for ramp maintenance on Sat 10/15: Steilacoom: 10:20pm, AI 10:50pm.<br/>
+</DATE>
+<DATE 1118-1119>
+Ferry runs cancelled for ramp maintenance on 11/19: Steilacoom: 10:20pm, AI 11:50pm.<br/>
+</DATE>
+<DATE 801 814-815 904-905 919 1003 1017 1107 1121 1205 1219>
+Monday morning runs cancelled for fuel run: 9:30 am St, 11:10 am AI<br/>
+</DATE>
+<DATE 1005-1121>
+<span style="color:black">Ferry Christine Anderson in drydock till Nov 21.</span><br/>
+</DATE>
+<DATE 1011 1108 1213>
+Ketron stop at 9:15am this morning.<br/>
+</DATE>
+//<DATE 730-801 805-808 812-815 819-822 826-829 902-905>
+//<span style="color:blue">Two ferries Fri, Sun, Monday afternoon.</span><br/>
+//</DATE>
+//<DATE 602-606>
+//Second boat cancelled Friday-Monday due to mechanical issues.<br/>
+//</DATE>
+//<DATE 905-906>
+//Ferry peak fares end after 9/5<br/>
+//</DATE>
+<DATE 701>
+<span style="color:black"><a href="https://www.anderson-island.org/AImembers/AIHSSalmonBake.html">Salmon & Rib Bake Saturday 12-3pm.</a></span><br/>
+</DATE>
+
+<MOTDLAST>
+</span>
+</MOTDLAST>
