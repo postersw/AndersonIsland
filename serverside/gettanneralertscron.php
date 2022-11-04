@@ -38,6 +38,7 @@
 //       9/14/21. Get date/time of last tanner feed from odin.
 //       10/28/21. Don't log outage message if it hasn't changeed.
 //       6/20/22. Fixed for change to status format.
+//       11/4/22. Issue error if 'hasError'=true.
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -181,7 +182,7 @@ function TagValue($s, $tag) {
 //
 //  returns unix timestamp of the tanner feed from odin ornl gov odi status.
 //          0 if no tanner time stamp
-// https://odin.ornl.gov/odi/status returns 
+// https://odin.ornl.gov/odi/status returns json data structure:
 // {"receivedDate":"2021-09-14T20:11:09Z","utility":"tannerelectric","vendor":"nisc"},
 // {"receivedDate":"2022-06-21T00:10:24.117+00:00","eiaId":"tannerelectric","name":"Tanner Electric Coop","dataId":"b4778a9a-6350-48af-bc5f-053abae78da5","hasError":false},
     
@@ -189,7 +190,7 @@ function gettimeoflaststatus() {
     $tannerstatus = "https://odin.ornl.gov/odi/status";
     $str = file_get_contents($tannerstatus);
     if($str == "") {
-        //echo "No response to $tannerstatus";
+        echo "No response to $tannerstatus";
         return 0;
     }
     //echo $str . "\n"; // debug
@@ -197,10 +198,16 @@ function gettimeoflaststatus() {
     $i = strpos($str, '"tannerelectric"');
     //echo "i=$i \n";
     if($i===false) {
-        echo "No tanner time stamp from $tannerstatus: $str";
+        echo "No tannerelectric time stamp from $tannerstatus: $str";
         return 0;
     }
+    //echo substr($str, $i, 200);
+    $j = strpos($str, "hasError", $i);
+    $hasError = substr($str, $j+10,4); 
+    if($j===false) echo " Tanner hasError flag not found";
+    elseif ($hasError =! "fals") echo " Tanner hasError = $hasError.";
     date_default_timezone_set("UCT"); // set UCT
+    
     // get time time and convert it to a unix time stamp
     $iDate = strrpos($str, "receivedDate", $i-strlen($str));  //search backward from $i to find receivedDate
     $ts = substr($str, $iDate+15, 20);
