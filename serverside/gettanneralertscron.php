@@ -205,7 +205,7 @@ function gettimeoflaststatus() {
     $j = strpos($str, "hasError", $i);
     $hasError = substr($str, $j+10,4); 
     if($j===false) echo " Tanner hasError flag not found";
-    elseif ($hasError =! "fals") echo " Tanner hasError = $hasError.";
+    elseif ($hasError != "fals") echo " Tanner hasError = $hasError.";
     date_default_timezone_set("UCT"); // set UCT
     
     // get time time and convert it to a unix time stamp
