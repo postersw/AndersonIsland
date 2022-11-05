@@ -50,6 +50,7 @@
     $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with NO outage
     $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply if there is an outage
     $tannernooutage = '<PubOutages><outage/></PubOutages>';
+    $tannererror = ""; // no error
     $shorttime = date("g:i a");
     $shortdate = date("m/d/y");
     $dateday = date("g:i a D");
@@ -61,9 +62,15 @@
 
     $oldmsg = file_get_contents($tanneroutagefile);
     $str = file_get_contents($tanneroutagelink); // read the input
+    if($str=="") $tannererror = "No reply to $tanneroutagelink. ";
 
     // get the status of the last time
     $uts = gettimeoflaststatus();
+    if($uts==0) {  // if a status error, ignore the return status and treat it as status unavailable
+        echo $tannererror;
+        $str = "";  // 11/5/22: for now, treat as a fatal error by clearing the tanner outage report.  This might be wrong but is correct on 11/5/22.
+    }
+
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $statusdate = "none";
     if($uts > 0) {
@@ -78,8 +85,8 @@
     // NO RESPONSE - issue email first time. 
     if($str == "") {
         if(strpos($oldmsg, "Status Unavailable") === false) {
-            echo "$shortdate $shorttime Tanner Status 'Unavailable'. No response to $tanneroutagelink.starting now. Was '$oldmsg'";
-            file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Response. status date=$statusdate \n", FILE_APPEND);  // log it
+            echo "$shortdate $shorttime Tanner Status 'Unavailable'. $tannererror Was '$oldmsg'";
+            file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Response. $tannererror date=$statusdate \n", FILE_APPEND);  // log it
         }
         $msg = $shorttime . ": Status Unavailable.<p hidden>No Outages</p>";  // the hidden 'No Outages' ensures that the tanner icon is not turned red.
         file_put_contents($tanneroutagefile, $msg . $tweet);
@@ -181,16 +188,17 @@ function TagValue($s, $tag) {
 //  gettimeoflaststatus() get time of last status from the odin status endpoint
 //
 //  returns unix timestamp of the tanner feed from odin ornl gov odi status.
-//          0 if no tanner time stamp
+//          0 if no tanner time stamp or if a hasError = true.
 // https://odin.ornl.gov/odi/status returns json data structure:
 // {"receivedDate":"2021-09-14T20:11:09Z","utility":"tannerelectric","vendor":"nisc"},
 // {"receivedDate":"2022-06-21T00:10:24.117+00:00","eiaId":"tannerelectric","name":"Tanner Electric Coop","dataId":"b4778a9a-6350-48af-bc5f-053abae78da5","hasError":false},
     
 function gettimeoflaststatus() {
+    global $tannererror;
     $tannerstatus = "https://odin.ornl.gov/odi/status";
     $str = file_get_contents($tannerstatus);
     if($str == "") {
-        echo "No response to $tannerstatus";
+        $tannererror = "No response to $tannerstatus";
         return 0;
     }
     //echo $str . "\n"; // debug
@@ -198,14 +206,20 @@ function gettimeoflaststatus() {
     $i = strpos($str, '"tannerelectric"');
     //echo "i=$i \n";
     if($i===false) {
-        echo "No tannerelectric time stamp from $tannerstatus: $str";
+        $tannererror =  "No tannerelectric time stamp from $tannerstatus: $str";
         return 0;
     }
     //echo substr($str, $i, 200);
+
+    // check the hasError flag
     $j = strpos($str, "hasError", $i);
     $hasError = substr($str, $j+10,4); 
     if($j===false) echo " Tanner hasError flag not found";
-    elseif ($hasError != "fals") echo " Tanner hasError = $hasError.";
+    elseif ($hasError != "fals") {  // if an error
+        $tannererror = " Tanner hasError = $hasError.";
+        return 0;
+    }
+
     date_default_timezone_set("UCT"); // set UCT
     
     // get time time and convert it to a unix time stamp
