@@ -30,6 +30,7 @@
 //                Create ferrymessageinclude.txt which contains all active alerts.
 //       9/2/22.  keep a running list of sent messages to identify active message.
 //       9/7/22.  Fix alert timestamp to always use current time.
+//      11/30/22. Remove DELAYED message because it no longer contains a time and the ferry position script does a better job.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -109,13 +110,14 @@ $talert = $t; // for alert time, use current time.
 $delay = "";
 $title = $AlertObj->title;
 $desc = $AlertObj->detail;
-if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripos($title, "delay") > 0) ) {
-    $delay = "DELAYED: ";
-    $matches = "";
-    if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
-    else if(preg_match('/delayed \d\d minutes/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
-    else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
-}
+//  Delay text removed 11/30/22 because PCF no longer includes the delay time in their post.
+// if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripos($title, "delay") > 0) ) {
+//     $delay = "DELAYED: ";
+//     $matches = "";
+//     if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+//     else if(preg_match('/delayed \d\d minutes/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
+//     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+// }
 
 echo("  |alert simulated timestamp:" . $talert . "="); echo(date("Y-m-d-H-i-s", $talert));// debug print 
 echo("  |current:" . $t . "="); echo(date("Y-m-d-H-i-s", $t));// debug print
@@ -139,7 +141,8 @@ logAlertLast("wrote to alert file");
 
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
 $msgtitle = "FERRY ALERT";
-if($delay != "") $msgtitle = "FERRY " . $delay;
+//if($delay != "") $msgtitle = "FERRY " . $delay;
+if(stripos($title, "delay") > 0 ) $msgtitle = "FERRY DELAY";
 $push = date("H:i:s", $talert) . " " . $AlertObj->notifymsg;
 echo(" push=$push \n");
 PushOSNotification($msgtitle, $push );
