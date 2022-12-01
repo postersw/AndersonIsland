@@ -404,7 +404,7 @@ function checkforLateFerry() {
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
             $delaytime = (($now + $traveltime + $loadtime) - $nextrun);  // calculate delay.
             $ETD = $nextrun + $delaytime; // est time of departure in minutes.
-            $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. ETD: " . ftime($TED) . "<br/>";  
+            $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. ETD: " . ftime($ETD) . "<br/>";  
             break;
 
         case "atAI": // docked at AI
@@ -416,7 +416,7 @@ function checkforLateFerry() {
         case "toST": // travelling to ST
             $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight second
             $delaytime = (($now + $traveltime + $loadtime) - $nextrun);  // calculate delay. 
-            $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. ETD: " . ftime($TED) . "<br/>";  
+            $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. ETD: " . ftime($ETD) . "<br/>";  
             break;
     }
 
@@ -425,7 +425,7 @@ function checkforLateFerry() {
     if($nextrun==0) return "";  // if no nextrun
     if($delaytime <=5) return "";  // give 5 minutes of grace for a late boat
     $fnextrun = floor($nextrun/60) . ":" . ($nextrun%60);
-    $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=ftime($fnextrun), traveltime=$traveltime, delaytime=$delaytime |";
+    $laETDebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=ftime($fnextrun), traveltime=$traveltime, delaytime=$delaytime |";
     //$delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run<br/>";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
     echo $latedebug . "\n $delaymsg";
