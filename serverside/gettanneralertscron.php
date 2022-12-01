@@ -65,11 +65,16 @@
     if($str=="") $tannererror = "No reply to $tanneroutagelink. ";
 
     // get the status of the last time
+    // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
     $uts = gettimeoflaststatus();
-    if($uts==0) {  // if a status error, ignore the return status and treat it as status unavailable
-        echo $tannererror;
-        $str = "";  // 11/5/22: for now, treat as a fatal error by clearing the tanner outage report.  This might be wrong but is correct on 11/5/22.
+    if($uts==0) {  // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
+        //echo $tannererror;
+        $str = "";  // 11/30. Treat as an outage.
+        $msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: Tap for Map.</span>";
+        file_put_contents($tanneroutagefile, $msg . $tweet);
+        exit(0);
     }
+
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $statusdate = "none";
@@ -95,7 +100,6 @@
     }
 
     $strl = strlen($tannerreply);
-
 
     // look for the NO OUTAGE reply
     if((strpos($str, $tannernooutage) > 0) || (substr($str, 0, $strl) == $tannerreply)){  // if there is no reply past the header we assume no outage, which I don't like.
@@ -161,6 +165,7 @@
     //echo (" oldmsginspan=$oldmsginspan, msginspan=$msginspan ");  // debug
     if(($oldmsginspan=="") || (substr($msginspan, 10) != substr($oldmsginspan, 10))) {   // if a change in status (skip time)
         file_put_contents($tanneroutagelog,"$realdate $msg  status-date=$statusdate \n", FILE_APPEND);  // log it
+        
         //echo(" LOGGED MSG.");
     }
 
@@ -216,7 +221,7 @@ function gettimeoflaststatus() {
     $hasError = substr($str, $j+10,4); 
     if($j===false) echo " Tanner hasError flag not found";
     elseif ($hasError != "fals") {  // if an error
-        $tannererror = " Tanner hasError = $hasError.";
+        $tannererror = " Tanner has error=true.";
         return 0;
     }
 
