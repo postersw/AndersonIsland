@@ -119,7 +119,7 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // write to ferry position file
 
-// if official ferry DELAY alert from the ferry system, or if ferry is actually late, make the time red.
+// if ferry is actually late, make the time red.
 $ferrylate = "";
 if(count($fa)==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
 if($ferrylate == "") $ferrycolor = "darkblue";
@@ -127,6 +127,8 @@ else $ferrycolor = "red";  // ferry is late, make sure it is red
 $pstr = "<span style='color:$ferrycolor'>" . $ferrylate . $pstr . "</span>";  // build message as <ferrylate> <pstr>
 
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
+
+$SAVE['message'] = $pstr;        // message for debugging
 file_put_contents($ferryjsonsavefile, json_encode($SAVE));  // save persistant data,
 logPosition($log);// log it to csv file 
 return;
