@@ -6,7 +6,10 @@
 // Ferry position is retrieved from marinetraffic.com.  
 //
 //  Files: ferryposition.txt = message to display.
-//          <mmsi> = S if last port was Steilacoom, A if last port was AI.
+//          ferryjsonsave = saved and restored data in json format. in $SAVE[] as an associative array.
+//                          [MMSI id] = last port for that boat
+//                          [ferrystate] = last ferry state (toAI, atAI, toST, atST). Not valid if 2 boats running.
+//                          [arrivaltimeAI|ST] = arrival time at that port, in min since midnight
 //
 //  MarineTraffic.com data by subscription for Robert Bedoll:
 //  MMSI, IMO, SHIP_ID, LAT, LON, SPEED, HEADING, COURSE, STATUS, TIMESTAMP, DSRC, UTC_SECONDS
@@ -25,7 +28,8 @@
 //  1.36 6/9/22. Use 30 minutes to find a late run.
 //  1.37 6/9/22. Moved logging to subroutine.
 //  1.38 10/7/22. Remove 3 min backoff wwhen at dock.
-//  1.39 11/30/22. Add ETD for ToAI and ToST runs & Remove 2 minute subtraction.
+//  1.39 11/30/22. Add ETD for all runs. create persistant data in $SAVE/ferryjsonsave file.
+//                  
 
 $ver = "1.39"; // 11/30/22
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
@@ -39,6 +43,7 @@ $DAItoSt = ($longSt-$longAI) + ($latAI-$latSt)*.67; // total distance in longitu
 $ferrypositionfile = "ferryposition.html";
 $log = 'ferrypositionlog.csv';
 $ferryalertfile = "alert.txt";
+$ferryjsonsavefile = "ferryjsonsave";
 $crossingtime = 20; // nominal crossing time in minutes
 $MMSICA = 366659730;  // Christine Anderson
 $MMSIS2 = 367153930; // Steilacoom II
@@ -49,6 +54,7 @@ $fa = []; // ferry array, 0, 1, or 2 arrays of data
 $mi = "<i class='material-icons mptext'>";
 $ri = "";
 $debug = false;
+
 
 // instantanious position retrieved from maringtraffic.com
 $speed = 0;  // speed in  knots tenths
@@ -71,6 +77,10 @@ date_default_timezone_set("UTC"); // set UTC
 $lt = localtime();   // time in UTC:  [0]=sec,[1]=min,[2] = hour, [3]=minday,[4]=mon,[5]=year,[6]=weekay,[7]=yearday
 //echo " hour=" . $lt[2] . " ";
 if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7-12 UTC)
+
+// reload persistant data
+$SAVE = json_decode(file_get_contents($ferryjsonsavefile), TRUE); // load persistant data
+//var_dump($SAVE);  // print out what was loaded
 
 // get position
 $fa = getposition();
@@ -112,17 +122,13 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 // if official ferry DELAY alert from the ferry system, or if ferry is actually late, make the time red.
 $ferrylate = "";
 if(count($fa)==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
-$ferrycolor = "darkblue";
-if($ferrylate == "")  {  // if ferry is NOT late, check the official DELAY announcement
-    $alert = file_get_contents($ferryalertfile);  // if the ferry is delayed, set the font color to red.
-    if(strpos($alert, "DELAYED:") > 0) $ferrycolor = "red";
-} else $ferrycolor = "red";  // ferry is late, make sure it is red
+if($ferrylate == "") $ferrycolor = "darkblue";
+else $ferrycolor = "red";  // ferry is late, make sure it is red
 $pstr = "<span style='color:$ferrycolor'>" . $ferrylate . $pstr . "</span>";  // build message as <ferrylate> <pstr>
 
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
-
-// log it to csv file 
-logPosition($log);
+file_put_contents($ferryjsonsavefile, json_encode($SAVE));  // save persistant data,
+logPosition($log);// log it to csv file 
 return;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -145,6 +151,7 @@ function checktimestamp($ts) {
 ////////////////////////////////////////////////////////////////////////
 // timetocross compute and return remaining time to port
 //  entry   boat in route
+//          $MMSI = id of boat
 //  returns string indicating remaining time by computing percentage of crossing completed and multiplying by 20 min.
 //          adjusts time by deltamin, which is how old the data is.
 //          if time < 1, returns 'docking...'
@@ -154,6 +161,7 @@ function checktimestamp($ts) {
 function timetocross() {
     global $MMSI, $lat, $long, $longAI, $longSt,$latAI,$latSt,$latKe,$longKe, $DAItoSt, $crossingtime, $course, $deltamin, $ferryport, $speed, $mi, $ri;
     global $ferrystate, $timetoarrival;
+    global $SAVE; // persistant data
 
     $AItoSt = .074; // steilacoom to AI longitude
     $latKeIs = 47.1725; // Ketron course latitude flag. Just south of the Steilacoom dock
@@ -178,8 +186,8 @@ function timetocross() {
         else $ketron = "leaving Ketron  ";
     }
 
-    $ferryport = file_get_contents($MMSI); // get last ferry port
-
+    $ferryport = $SAVE[$MMSI];  // get last fort based on ship id
+    if($ferryport == "") $ferryport = file_get_contents($MMSI); // get last ferry port 
     // Default: if coming from S, it is headed to A, . Added 1.29 2/22/21
     // $courseto = destination port.  $ferryport = previous port
     if($ferryport=="S") $courseto = "A";
@@ -245,25 +253,31 @@ function timetocross() {
 function reportatdock() {
     global $MMSI, $lat, $long, $longAI, $latAI, $longSt, $latSt, $longKe, $longE, $mi, $ri, $lt, $DAItoSt;
     global $ferrystate, $timetoarrival;
+    global $SAVE;
 
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  
         // At AI
-        file_put_contents($MMSI, "A");
+        //file_put_contents($MMSI, "A");
+        $SAVE[$MMSI] = "A"; // remember last position of ferry
         $ri = "font_download";
         $ferrystate = "atAI";  // at AI
         return "docked @AI";
 
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         // At Steilacoom
-        file_put_contents($MMSI, "S");
+        //file_put_contents($MMSI, "S");
+        $SAVE[$MMSI] = "S"; 
         $ri = "home";
         $ferrystate = "atST";  // at steilacoom
         return "docked @Steilacoom";
 
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
         // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
-        if($lt[2]>=16 && $lt[2]<=17) file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
+        if($lt[2]>=16 && $lt[2]<=17) {
+            //file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
+            $SAVE[$MMSI] = "A";
+        }
         $ri = "do_not_disturb_on";
         $ferrystate = "toST"; // moving to ST;
         $timetoarrival = 10; // time to arrival at ST in minutes
@@ -381,15 +395,18 @@ function logPosition($log) {
 //          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message (LATE nn min), or ""
 //  side effects:  if late, writes to ferrylatelog.txt and stdout
-//          file "ferrystate" = ferry state: atST, atAI, toST, toAI
-//          ferry "ferrivarrivaltimeAI", "ferryarrivaltimeST" = arrival time in min since midnight
+//          $SAVE"ferrystate" = ferry state: atST, atAI, toST, toAI
+//          $SAVE"ferrivarrivaltimeAI", "ferryarrivaltimeST" = arrival time in min since midnight
 //
 function checkforLateFerry() {
     global $ferrystate, $timetoarrival;
+    global $SAVE;
     
     if($ferrystate=="") return "";  // unable to determine state;
-    $priorferrystate = file_get_contents("ferrystate");
-    if($ferrystate != $priorferrystate) file_put_contents("ferrystate", $ferrystate);  // save state
+    //$priorferrystate = file_get_contents("ferrystate");
+    //if($ferrystate != $priorferrystate) file_put_contents("ferrystate", $ferrystate);  // save state
+    $priorferrystate = $SAVE['ferrystate'];  // use the SAVE array to remember position
+    $SAVE['ferrystate'] = $ferrystate;  // update current ferry state
     $traveltime = $timetoarrival; // time to travel AI-St or St-AI in minutes
     $loadtime = 8; // time to unload & load the ferry
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -400,10 +417,10 @@ function checkforLateFerry() {
     // All arithmetic is done in minutes since midnight.
     switch($ferrystate) {
         case "atST": // docked at ST
-            if($priorferrystate=="toST") {  // if ferry was coming to ST, it has just arrived, so save its arrival time
+            if($priorferrystate != "atST") {  // if ferry was coming to ST, it has just arrived, so save its arrival time
                 $ferryarrivaltime = $now;
-                file_put_contents("ferryarrivaltimeST", $now);
-            } else $ferryarrivaltime = file_get_contents("ferryarrivaltimeST");
+                $SAVE['ferryarrivaltimeST'] = $now;  //  file_put_contents("ferryarrivaltimeST", $now);
+            } else $ferryarrivaltime = $SAVE['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
             $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight seconds. up to 20 minutes late for next run.
@@ -417,10 +434,10 @@ function checkforLateFerry() {
             break;
 
         case "atAI": // docked at AI
-            if($priorferrystate=="toAI") {  // if ferry was coming to AI, it has just arrived, so save its arrival time
+            if($priorferrystate != "atAI") {  // if ferry was coming to AI, it has just arrived, so save its arrival time
                 $ferryarrivaltime = $now;
-                file_put_contents("ferryarrivaltimeAI", $now);
-            } else $ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
+                $SAVE["ferryarrivaltimeAI"] = $now; //  file_put_contents("ferryarrivaltimeAI", $now);
+            } else $ferryarrivaltime = $SAVE["ferryarrivaltimeAI"]; //$ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
             $nextrun = getTimeofNextRun("AI");  // next run time minutes since midnight second
@@ -439,9 +456,11 @@ function checkforLateFerry() {
 
     if($nextrun==0) return "";  // if no nextrun
     if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
-    $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. ETD: " . ftime($ETD) . "<br/>";  
+    if($now > $ETD) $dETD = "";  // if the ETD is > now, display it. Otherwise don't.
+    else $dETD = "ETD: " . ftime($ETD);  
+    $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD<br/>";  
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
-        ftime($ferryarrivaltime) . " |";  
+        ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
     echo $latedebug . "\n $delaymsg";
     return $delaymsg;
