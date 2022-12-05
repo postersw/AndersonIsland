@@ -29,9 +29,9 @@
 //  1.37 6/9/22. Moved logging to subroutine.
 //  1.38 10/7/22. Remove 3 min backoff wwhen at dock.
 //  1.39 11/30/22. Add ETD for all runs. create persistant data in $SAVE/ferryjsonsave file.
-//                  
+//  1.40 12/5/22. Add "OnTime" to message.
 
-$ver = "1.39"; // 11/30/22
+$ver = "1.40"; // 12/5/22.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -117,17 +117,19 @@ elseif(strpos($px[0], "'S2'") > 0) $pstr = $px[1] . "<br/>" . $px[0];  // always
 else $pstr = $px[0] . "<br/>" . $px[1];
 //echo $pstr;
 
-// write to ferry position file
-
-// if ferry is actually late, make the time red.
+// if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-if(count($fa)==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
-if($ferrylate == "") $ferrycolor = "darkblue";
-else $ferrycolor = "red";  // ferry is late, make sure it is red
-$pstr = "<span style='color:$ferrycolor'>" . $ferrylate . $pstr . "</span>";  // build message as <ferrylate> <pstr>
+$ontime = "";
+$ferrycolor = "darkblue";
+if(count($fa)==1) {  // if running 1 ferry
+    $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+    if($ferrylate == "") $ontime = "OnTime";  // NOT late
+    else $ferrycolor = "red";  // ferry is late, make sure it is red
+}
+$pstr = "<span style='color:$ferrycolor'>$ferrylate $pstr $ontime</span>";  // build message as <ferrylate> <pstr>
 
+// save output and info
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
-
 $SAVE['message'] = $pstr;        // message for debugging
 file_put_contents($ferryjsonsavefile, json_encode($SAVE));  // save persistant data,
 logPosition($log);// log it to csv file 
@@ -411,6 +413,7 @@ function checkforLateFerry() {
     $SAVE['ferrystate'] = $ferrystate;  // update current ferry state
     $traveltime = $timetoarrival; // time to travel AI-St or St-AI in minutes
     $loadtime = 8; // time to unload & load the ferry
+    $dockingtime = 4; // time to dock the ferry and begin unloading
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $now = $loctime[2] * 60 + $loctime[1]; // - 3;  // local time in minutes since midnight. 
@@ -431,7 +434,7 @@ function checkforLateFerry() {
 
         case "toAI": // travelling to AI
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
-            $ETD = $now + $traveltime + $loadtime; // ESTIMATED TIME OF DEPARTURE
+            $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay    
             break;
 
@@ -448,7 +451,7 @@ function checkforLateFerry() {
 
         case "toST": // travelling to ST
             $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight second
-            $ETD = $now + $traveltime + $loadtime;  // ESTIMATED TIME OF DEPARTURE
+            $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay       
             break;
     }
@@ -459,8 +462,8 @@ function checkforLateFerry() {
     if($nextrun==0) return "";  // if no nextrun
     if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
     if($now > $ETD) $dETD = "";  // if the ETD is > now, display it. Otherwise don't.
-    else $dETD = "ETD: " . ftime($ETD);  
-    $delaymsg = "LATE $delaytime min. for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD<br/>";  
+    else $dETD = "ETD " . ftime($ETD);  
+    $delaymsg = "Late $delaytime m for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD<br/>";  
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
