@@ -119,14 +119,8 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-$ontime = "";
-$ferrycolor = "darkblue";
-if(count($fa)==1) {  // if running 1 ferry
-    $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
-    if($ferrylate == "") $ontime = "OnTime";  // NOT late
-    else $ferrycolor = "red";  // ferry is late, make sure it is red
-}
-$pstr = "<span style='color:$ferrycolor'>$ferrylate $pstr $ontime</span>";  // build message as <ferrylate> <pstr>
+if(count($fa)==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+$pstr = "$ferrylate<br><span style='color:darkblue'>&nbsp;&nbsp;$pstr</span>";  // build message as <pstr><ferrylate>
 
 // save output and info
 file_put_contents("ferryposition.txt", $pstr); // txt file for getalerts.php
@@ -235,11 +229,11 @@ function timetocross() {
             if($speed >=80) $t = 1;  // if boat is still running at full speed, always give 1 more minute
             else {
                 $ri = "skip_next"; //"arrow_drop_down_circle";
-                return "docking @Steilacoom";
+                return "docking @ST";
             }
         }
-        if($ferryport == "S") return $ketron . "returning to Steilacoom in $t m";    
-        return $ketron . "arriving @Steilacoom in $t m";
+        if($ferryport == "S") return $ketron . "returning to ST in $t m";    
+        return $ketron . "arriving @ST in $t m";
     }
 }
 
@@ -274,7 +268,7 @@ function reportatdock() {
         $SAVE[$MMSI] = "S"; 
         $ri = "home";
         $ferrystate = "atST";  // at steilacoom
-        return "docked @Steilacoom";
+        return "docked @ST";
 
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
         // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
@@ -460,10 +454,11 @@ function checkforLateFerry() {
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
 
     if($nextrun==0) return "";  // if no nextrun
-    if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
+    if($delaytime <=6) return "<span style='color:darkgreen'>OnTime for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
+    //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
     if($now > $ETD) $dETD = "";  // if the ETD is > now, display it. Otherwise don't.
     else $dETD = "ETD " . ftime($ETD);  
-    $delaymsg = "Late $delaytime m for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD<br/>";  
+    $delaymsg = "<span style='color:red'>Late $delaytime m for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD</span><br>";  
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
