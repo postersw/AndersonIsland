@@ -461,7 +461,7 @@ function checkforLateFerry() {
     //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
     if($now > $ETD) $dETD = "";  // if the ETD is > now, display it. Otherwise don't.
     else $dETD = "ETD " . ftime($ETD);  
-    $delaymsg = "<span style='color:red'>Late $delaytime m for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD</span><br>";  
+    $delaymsg = "<span style='color:red'>Late $delaytime m for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run. $dETD</span>";  
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
