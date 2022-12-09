@@ -401,16 +401,15 @@ function checkforLateFerry() {
     global $SAVE;
     
     if($ferrystate=="") return "";  // unable to determine state;
-    //$priorferrystate = file_get_contents("ferrystate");
-    //if($ferrystate != $priorferrystate) file_put_contents("ferrystate", $ferrystate);  // save state
     $priorferrystate = $SAVE['ferrystate'];  // use the SAVE array to remember position
     $SAVE['ferrystate'] = $ferrystate;  // update current ferry state
     $traveltime = $timetoarrival; // time to travel AI-St or St-AI in minutes
     $loadtime = 8; // time to unload & load the ferry
-    $dockingtime = 4; // time to dock the ferry and begin unloading
+    $dockingtime = 3; // time to dock the ferry and begin unloading - 1 3 min cycle
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $now = $loctime[2] * 60 + $loctime[1]; // - 3;  // local time in minutes since midnight. 
+    if($loctime[2] >= 20) $loadtime = 5; // if >8pm, load time is just 5 minutes. 
     $ferryarrivaltime = 0;
 
     // All arithmetic is done in minutes since midnight.
