@@ -454,7 +454,7 @@ function checkforLateFerry() {
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
 
     if($nextrun==0) return "";  // if no nextrun
-    if($delaytime <=6) return "<span style='color:darkgreen'>OnTime for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
+    if($delaytime <5) return "<span style='color:darkgreen'>OnTime for " . substr($ferrystate, 2) . " " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
     //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
     if($now > $ETD) $dETD = "";  // if the ETD is > now, display it. Otherwise don't.
     else $dETD = "ETD " . ftime($ETD);  
