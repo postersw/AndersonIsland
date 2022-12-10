@@ -383,7 +383,7 @@ function getNewestAlertfromHornblower() {
         $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
         $alertobj->expiration = intval($v->expirationDate)/1000;
     } else {
-        echo "No new alert object<br/>"; ////DEBUG/////
+        //echo "No new alert object<br/>"; ////DEBUG/////
     }
 
     return $alertobj;
