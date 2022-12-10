@@ -2,9 +2,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  getferryalertsTEST - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
 //  also creates the ferrymessageinclude.txt file which contains all active alerts.
-//  Run by cron every 4 minutes.
-//  Alerts are cleared after 24 hours or if they are removed from the rss feed.
+//  Run by cron every 5 minutes.
+//  Alerts are cleared after 12 hours.
 //  To change the default message (from "") change $DefaultMessage in function ClearAlertFile().
+//
+//  Files:
+//      alert.txt - alert file read by getalerts.php from AIA every minute
+//      alerthistory.txt - history of the alerts to be displayed by AIA. Not used since 9/22 and can probably be discarded.
+//      alertlog.txt - log of each alert issued and cleared.
+//      ferryalertsave.json - json save of persistent data.
+//
+//  ferryalertsave.json:
+//      alerttimestamp = numeric time of last alert
+//      alertmsglist = string list of messages sent (actually their time stamps)
 //
 //  Bob Bedoll. 3/13/16.
 //		4/09/16. Changed alertfile to alert.txt
@@ -31,6 +41,7 @@
 //       9/2/22.  keep a running list of sent messages to identify active message.
 //       9/7/22.  Fix alert timestamp to always use current time.
 //      11/30/22. Remove DELAYED message because it no longer contains a time and the ferry position script does a better job.
+//      12/10/22. Added ferryalertsave.json, json persistent storage. removed ferryalerttimestamp, ferryactivemessagelist..
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -61,33 +72,37 @@ class Alert{
 chdir("/home/postersw/public_html");
 //chdir("C:\A");////////////////// DEBUG for local PC //////////////////////////
 date_default_timezone_set("America/Los_Angeles"); // set PDT
-$alertclearhours = 16;  // hours to clear an alert
+$alertclearhours = 12;  // hours to clear an alert
 $alertfile = "alert.txt";  // alert file the phone reads
 $alertlog = "alertlog.txt";
 $alerthistory = "alerthistory.txt";
-$alerttimestampfile = "alerttimestamp.txt";
+//$alerttimestampfile = "alerttimestamp.txt";
+$ferryalertsavefile = "ferryalertsave.json";
 
 // skip alerts midnight - 4am
 $h =intval(date("H"));   // hour
 if($h < 5) exit(0);
+// reload persistant data
+$SAVED = json_decode(file_get_contents($ferryalertsavefile), TRUE); // load persistant data as associateive array
 
 //  Get a new alert. returned in $AlertObj
 //  Always returns new alert only once!
 $AlertObj = getNewestAlertfromHornblower();  //
-
-$t=time(); // current seconds UCT
+$t=time(); // current seconds PDT
 
 // if no new alert, clear the alert file after 12 hours
 if($AlertObj->title == "") {
     // if alert is >alertclearhours hrs old, clear it and stop 
-    $alerttimestamp = file_get_contents($alerttimestampfile);  // read posted time
-    if($alerttimestamp=="") exit(0); // if no time stamp, no alert is posted
-    $talert = intval($alerttimestamp); // time it was posted
+    //$alerttimestamp = file_get_contents($alerttimestampfile);  // read posted time Replaced 12/10/22 by $SAVED
+    $talert = 0;
+    if(array_key_exists("alerttimestamp", $SAVED)) $talert = $SAVED["alerttimestamp"];// time of last alert
     if($talert == 0) exit(0); // if no timestamp   
     if((($t-$talert)> ($alertclearhours*3600))) { // if > x hours old, clear it
         logAlertLast(" Alert is > $alertclearhours hours old");
         ClearAlertFile($alertfile, $alertlog);
-        file_put_contents($alerttimestampfile, "");  // clear the alert timestamp
+        $SAVED["alerttimestamp"] = 0;
+        file_put_contents($ferryalertsavefile, json_encode($SAVED));  // save persistant data,
+        //file_put_contents($alerttimestampfile, "");  // clear the alert timestamp
     }
     exit(0);  // if not >12 hours, leave it
 }
@@ -111,10 +126,7 @@ $delay = "";
 $title = $AlertObj->title;
 $desc = $AlertObj->detail;
 //  Delay text removed 11/30/22 because PCF no longer includes the delay time in their post.
-// if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripos($title, "delay") > 0) ) {
-//     $delay = "DELAYED: ";
-//     $matches = "";
-//     if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
+// if((stripos($title, " late") > 0) || (stripos($title, " behind") > 0) || (stripos($title, "delay") > 0) ) { $delay = "DELAYED: "; $matches = ""; if(preg_match('/\d\d (minutes|minuets|mins|min) (late|behind)/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 //     else if(preg_match('/delayed \d\d minutes/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 8, 2) . " MIN: ";
 //     else if(preg_match('/\d\d minute delay/', $title, $matches)) $delay = "DELAYED " . substr($matches[0], 0, 2) . " MIN: ";
 // }
@@ -132,11 +144,14 @@ echo " alertstring=$alertstring|";
 
 // write it to the alertfile, alerthistory, and log it
 file_put_contents($alertfile, $alertstring);  // alert file for getalerts.php app display
-file_put_contents($alerttimestampfile, strval($talert));  // save the posted time 
+//file_put_contents($alerttimestampfile, strval($talert));  // save the posted time 
 addAlertHistory($alerthistory, $AlertObj);    // alert history for getalerthistory.php
 file_put_contents($alertlog, date("Y/m/d H:i:s") . "|" . $alertstring . "\n", FILE_APPEND);  // log 
 echo ("wrote to file: " . $alertstring);
-logAlertLast("wrote to alert file");
+//logAlertLast("wrote to alert file");
+$SAVED["alerttimestamp"] = $talert;  // numeric
+$SAVED["alertstring"] = $alertstring;  //string
+file_put_contents($ferryalertsavefile, json_encode($SAVED));  // save persistant data,
 //var_dump($AlertObj);
 
 // send alert using OneSignal 5/24/18.  Message is 2 lines: The Delay, then the message
@@ -151,24 +166,26 @@ exit(0);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 //  ClearAlertFile - writes an empty string to the alert file
-//
+//  Entry   alertfile = file to write message to.
+//          alertlog = ferry to log message
+//  Exit    alertfile cleared and logged.
 function ClearAlertFile($alertfile, $alertlog) {
+    global $SAVED;
     $DefaultMessage = "";
     //$DefaultMessage = "<span style='color:black;'>8/22: Both Ferry Lane Webcams are now UP.</span>";
-     $alc = file_get_contents($alertfile);
-     //if($alc=="") return; // if already empty
-     if($alc==$DefaultMessage) return; // if already empty
+    $alc = file_get_contents($alertfile);
+    if($alc==$DefaultMessage) return; // if already empty
 
-     $fh = fopen($alertfile, 'w');
-     fwrite($fh, $DefaultMessage);
-     fclose($fh);
-     echo("ClearAlertFile cleared  $alertfile and wrote: $DefaultMessage");
-     // log it
-     $fhl = fopen($alertlog, 'a');
-     fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file and wrote: $DefaultMessage.\n");
-     fclose($fhl);
-	 logAlertLast("wrote '$defaultMessage' to alert file");
-     //echo("ClearAlertFile wrote to log");
+    $fh = fopen($alertfile, 'w');
+    fwrite($fh, $DefaultMessage);
+    fclose($fh);
+    echo("ClearAlertFile cleared  $alertfile and wrote: $DefaultMessage");
+    // log it
+    $fhl = fopen($alertlog, 'a');
+    fwrite($fhl, date("Y/m/d H:i:s") . " Cleared alert file and wrote: $DefaultMessage.\n");
+    fclose($fhl);
+    $SAVED["alertstring"] = $DefaultMessage;
+    //echo("ClearAlertFile wrote to log");
 }
 
 /////////////////////////////////////////////////////////
@@ -279,10 +296,11 @@ function PushOSNotification($title, $msg) {
 //      also create the ferrymessageinclude.txt file that contains all active alerts.
 //  9/2/22: return newest message based on list active messages which have been sent, because creation date is not reliable.
 //
-//  entry   ferryactivemessagefile.txt = list of active message creation dates
+//  entry   SAVED[ferryactivemsglist] = list of active message creation dates <nnnnnn><nnnnnn>
 //  exit    returns Alert object 
 //          if no new alert, alertObj->title=""
 //          creates ferrymessage.txt
+//          updates SAVED[ferryactivemsglist]
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -295,9 +313,10 @@ function PushOSNotification($title, $msg) {
 //
 // ferryactivemessagefile: <createddate>;...   just a list of created dates terminated by a semicolon
 function getNewestAlertfromHornblower() {
+    global $SAVED;
     $alertrssurl = "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
     $ferrymsgfile = "ferrymessageinclude.txt";
-    $ferryactivemsgfile = "ferryactivemessagelist.txt"; // create times of active messages on previous cycle
+    //$ferryactivemsgfile = "ferryactivemessagelist.txt"; // create times of active messages on previous cycle
     $ferrymsg = "";
     $alertobj = new Alert(); // create alert object
     $alertobj->title = "";
@@ -310,8 +329,8 @@ function getNewestAlertfromHornblower() {
     }
 
     // get the active messages from the last cycle
-    $ferryactivemsglist = file_get_contents($ferryactivemsgfile); 
-    if($ferryactivemsglist == false) $ferryactivemsglist = ""; 
+    //$ferryactivemsglist = file_get_contents($ferryactivemsgfile); 
+    $ferryactivemsglist = $SAVED['ferryactivemsglist'];  
 
     //  decode json return and check for errors and no data
     $a = json_decode($x);
@@ -348,8 +367,9 @@ function getNewestAlertfromHornblower() {
     // write out all the active alerts for dailycache
     //echo "<br/>activemsglist = $newactivemsglist"; 
     file_put_contents($ferrymsgfile, $ferrymsg);
-    file_put_contents($ferryactivemsgfile, $newactivemsglist); // write out the new active messages
-    
+    //file_put_contents($ferryactivemsgfile, $newactivemsglist); // write out the new active messages
+    $SAVED['ferryactivemsglist'] = $newactivemsglist;  // save new active messages
+
     // fill an alert object
     if($msgi > -1) {  // if a new alert is to be sent
         $v = $a[$msgi];
@@ -363,7 +383,7 @@ function getNewestAlertfromHornblower() {
         $alertobj->timestamp = intval($v->createdDate)/1000; // unix date stamp
         $alertobj->expiration = intval($v->expirationDate)/1000;
     } else {
-        //echo "No new alert object<br/>";
+        echo "No new alert object<br/>"; ////DEBUG/////
     }
 
     return $alertobj;
