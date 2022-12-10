@@ -22,11 +22,12 @@
 // The format of tanneroutage.txt is:  time: No Outages. Tap for Map.
 //                                or:  time OUTAGE: nn Houses Out (n%). Tap for map.
 // The format of tanneroutagelog.txt is:  time OUTAGE: nn Houses Out (n%). \n
-// The format of tanneroutagetime.txt is: hh:mm dow   and is set when an outage starts and cleared whenever there is no outage.
+// The format of tannersave.json is json and loads the $SAVED array:
+//              "outagestarttime"  hh:mm dow  string and is set when an outage starts and cleared whenever there is no outage.
 //  The cron script will email me every time the status changes.
 //
-//  This job is run by cron every 4 minutes:
-//    CRON: */4 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
+//  This job is run by cron every 5 minutes:
+//    CRON: */5 * * * * 	/usr/local/bin/php -q /home/postersw/public_html/gettanneralerts.php
 //
 //  RFB. 4/16/21
 //       5/7/21. Production live.
@@ -39,13 +40,15 @@
 //       10/28/21. Don't log outage message if it hasn't changeed.
 //       6/20/22. Fixed for change to status format.
 //       11/4/22. Issue error if 'hasError'=true.
+//       12/10/22. Implement tannersavefile.json to persist data in $SAVED
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $tanneroutagelink = "https://odin.ornl.gov/odi/nisc/tannerelectric";
     $tanneroutagefile = "tanneroutage.txt";  // one line outage info for the app
     $tanneroutagelog = "tanneroutagelog.txt";  // log file 
-    $tanneroutagetimefile = "tanneroutagetime.txt";
+    //$tanneroutagetimefile = "tanneroutagetime.txt";
+    $savefile = "tannersave.json"; // json persistant save file
     $tweet = "<br/><a href='http://twitter.com/tannerelectric'>Tap for Twitter feed</a>";
     $tannerreply = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#"/>';  // reply with NO outage
     $tannerreplyoutage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><PubOutages xmlns="http://iec.ch/TC57/2014/PubOutages#">';  // reply if there is an outage
@@ -59,9 +62,10 @@
     //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
     $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
     chdir("/home/postersw/public_html");  // move to web root
+    $SAVED = json_decode(file_get_contents($savefile), TRUE); // load persistant data
 
     $oldmsg = file_get_contents($tanneroutagefile);
-    $str = file_get_contents($tanneroutagelink); // read the input
+    $str = file_get_contents($tanneroutagelink); // read the outage status
     if($str=="") $tannererror = "No reply to $tanneroutagelink. ";
 
     // get the status of the last time
@@ -108,8 +112,13 @@
             file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
         }
         file_put_contents($tanneroutagefile, $msg . $tweet);
-        $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
-        if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
+        //$outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
+        $outagestarttime = $SAVED["outagestarttime"]; 
+        //if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
+        if($outagestarttime!=0) {   // clear the outage start time
+            $SAVED["outagestarttime"] = "";
+            SaveData();
+        }; 
         exit(0);
     }
 
@@ -119,17 +128,18 @@
     
     // there is a tanner outage, but not necessarily AI. 
 
-    //echo $str;  // display the string I get // DEBUG FOR NOW
     $i = strpos($str, $AI);  // AI Community Descriptor
-    //echo " <br/>community descriptor i = $i<br/>";
     if($i===FALSE){  // if there is no AI community descriptor we assume no outage, which I don't like.
+        // NO AI OUTAGE
         if(strpos($oldmsg, "No Outages.")=== false) {  // if previous status was an outage, log the change
             echo "$shortdate $shorttime Tanner Status 'No Outages' starting now. Was '$oldmsg'";
             file_put_contents($tanneroutagelog, "$realdate $shortdate $shorttime No Outages \n", FILE_APPEND);  // log it
         }
         file_put_contents($tanneroutagefile, $msg . $tweet);
-        $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
-        if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
+        //$outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
+        //if($outagestarttime!="") file_put_contents($tanneroutagetimefile, "");  // clear any outage time
+        $SAVED["outagestarttime"] = "";
+        SaveData();  // save it
         exit(0);
     }
 
@@ -140,10 +150,12 @@
     $nbrOut = TagValue($str, "metersAffected");  // number out
 
     // get or set outage start time
-    $outagestarttime = file_get_contents($tanneroutagetimefile);  // read saved outage start time
+    $outagestarttime = "";
+    if(array_key_exists("outagestarttime", $SAVED)) $outagestarttime = $SAVED["outagestarttime"]; //file_get_contents($tanneroutagetimefile);  // read saved outage start time
     if($outagestarttime=="") { // if no start time, create one
         $outagestarttime = $dateday; // hh:mm am ddd, eg 8:05 am Sun
-        file_put_contents($tanneroutagetimefile, $outagestarttime);  // save the outage start time
+        $SAVED["outagestarttime"] = $outagestarttime;
+        //file_put_contents($tanneroutagetimefile, $outagestarttime);  // save the outage start time
         echo "$shortdate $shorttime Tanner Outage starting now. $nbrOut Out. Was '$oldmsg'";
     }
     if($nbrOut == "") {
@@ -165,10 +177,9 @@
     //echo (" oldmsginspan=$oldmsginspan, msginspan=$msginspan ");  // debug
     if(($oldmsginspan=="") || (substr($msginspan, 10) != substr($oldmsginspan, 10))) {   // if a change in status (skip time)
         file_put_contents($tanneroutagelog,"$realdate $msg  status-date=$statusdate \n", FILE_APPEND);  // log it
-        
-        //echo(" LOGGED MSG.");
     }
 
+    SaveData();  // save $SAVED array
     return 0;
 
 //////////////////////////////////////////////////////////////////////
@@ -202,14 +213,13 @@ function gettimeoflaststatus() {
     global $tannererror;
     $tannerstatus = "https://odin.ornl.gov/odi/status";
     $str = file_get_contents($tannerstatus);
-    if($str == "") {
+    if(($str===false) || ($str == "")) {
         $tannererror = "No response to $tannerstatus";
         return 0;
     }
-    //echo $str . "\n"; // debug
+    
     // look for tanner time stamp
     $i = strpos($str, '"tannerelectric"');
-    //echo "i=$i \n";
     if($i===false) {
         $tannererror =  "No tannerelectric time stamp from $tannerstatus: $str";
         return 0;
@@ -242,5 +252,12 @@ function gettimeoflaststatus() {
     if(($now - $uts)> 20*60) echo ("time > 20 min");
     // return time in
     return $uts; 
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+//  SaveData - save the data in the global $SAVED array
+function SaveData() {
+    global $SAVED, $savefile;
+    file_put_contents($savefile, json_encode($SAVED));  // save persistant data,
 }
 ?>
