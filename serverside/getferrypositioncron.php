@@ -16,8 +16,8 @@
 //  [["304010417","9015462","359396","47.758499","-5.154223","74","329","327","0","2017-05-19T09:39:57","TER","54"],...]
 //
 //  Robert Bedoll. 12/26/20.  
-//  1.12 12/30  Include latitude in calculation
-//  1.26 1/23   Skip boat if docked at backup-boat dock. Always display CA before S2 if both active.
+//  1.12 12/30/20  Include latitude in calculation
+//  1.26 1/23/21   Skip boat if docked at backup-boat dock. Always display CA before S2 if both active.
 //  1.27 2/1/21 Case of boat returning to AI. Check course for a return heading.
 //  1.28 2/2/21 Make position log a csv file.
 //  1.30 2/11/21 Use heading to determine next port if it is unambiguous. Otherwise use previous port.
@@ -31,8 +31,9 @@
 //  1.39 11/30/22. Add ETD for all runs. create persistant data in $SAVED/ferryjsonsave file.
 //  1.40 12/5/22. Add "OnTime" to message.
 //  1.41 12/9/22. Change ST to St for getferryoverflowcron script.   Change $loadtime to 5 min after 8 pm.
+//  1.42 12/11/22. Change to use dailycache.txt for ferry schedule so we have the same run times as the app does.
 
-$ver = "1.41"; // 12/9/22.
+$ver = "1.42"; // 1211/22.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -131,8 +132,8 @@ logPosition($log);// log it to csv file
 return;
 
 ///////////////////////////////////////////////////////////////////////////
-// checktimnestamp - checks time stamp (UTC) to see if it is more than 5 min old
-// This is unnecessary now beccause the call excludes all data older than 10
+// checktimnestamp - checks time stamp (UTC) to get age of position data
+// 
 //  entry   timestamp
 //  returns $deltamin = how old the data is, in min.
 //
@@ -142,7 +143,7 @@ function checktimestamp($ts) {
     if($t == false) abortme("time stamp cannot be parsed");
     $tnow = time(); // current UTC time
     $deltamin = ($tnow - $t)/60;
-    //echo (" deltamin=$deltamin, ");
+    //echo (" deltamin=$deltamin<br> ");
     // if no data in 12 minutes, delete it. unnecessary because call filters it out.
     //if($deltamin > 12) abortme("data is $deltamin old. file deleted.");
 }
@@ -400,11 +401,12 @@ function logPosition($log) {
 function checkforLateFerry() {
     global $ferrystate, $timetoarrival;
     global $SAVED;
+    global $deltamin; // age of ferry status
     
     if($ferrystate=="") return "";  // unable to determine state;
     $priorferrystate = $SAVED['ferrystate'];  // use the SAVE array to remember position
     $SAVED['ferrystate'] = $ferrystate;  // update current ferry state
-    $traveltime = $timetoarrival; // time to travel AI-St or St-AI in minutes
+    $traveltime = $timetoarrival; // time to travel AI-St or St-AI in minutes. Already adjusted by $deltamin.
     $loadtime = 8; // time to unload & load the ferry
     $dockingtime = 3; // time to dock the ferry and begin unloading - 1 3 min cycle
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -417,8 +419,8 @@ function checkforLateFerry() {
     switch($ferrystate) {
         case "atST": // docked at ST
             if($priorferrystate != "atST") {  // if ferry was coming to ST, it has just arrived, so save its arrival time
-                $ferryarrivaltime = $now;
-                $SAVED['ferryarrivaltimeST'] = $now;  //  file_put_contents("ferryarrivaltimeST", $now);
+                $ferryarrivaltime = $now - $deltamin; // adjust for age of ferry position data
+                $SAVED['ferryarrivaltimeST'] = $ferryarrivaltime;  //  file_put_contents("ferryarrivaltimeST", $now);
             } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
@@ -429,15 +431,15 @@ function checkforLateFerry() {
 
         case "toAI": // travelling to AI
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
-            $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE
+            $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
             $delaytime = $ETD - $nextrun;  // calculate delay    
             $ferryport = "AI";
             break;
 
         case "atAI": // docked at AI
             if($priorferrystate != "atAI") {  // if ferry was coming to AI, it has just arrived, so save its arrival time
-                $ferryarrivaltime = $now;
-                $SAVED["ferryarrivaltimeAI"] = $now; //  file_put_contents("ferryarrivaltimeAI", $now);
+                $ferryarrivaltime = $now -$deltamin;  // adjust for age of ferry position message
+                $SAVED["ferryarrivaltimeAI"] = $ferryarrivaltime; //  file_put_contents("ferryarrivaltimeAI", $now);
             } else $ferryarrivaltime = $SAVED["ferryarrivaltimeAI"]; //$ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
@@ -454,9 +456,7 @@ function checkforLateFerry() {
             break;
     }
 
-
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
-
     if($nextrun==0) return "";  // if no nextrun
     if($delaytime <5) return "<span style='color:darkgreen'>OnTime for $ferryport " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
     //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
@@ -476,49 +476,49 @@ function ftime($t) {
     return  floor($t/60) . ":" . sprintf("%02d", ($t%60));
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-// getTimeofNextSTRun();  next run time in unix seconds. up to 30 minutes late for next run.
-// Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
-//
-//  entry   $STAI = "AI" or "ST"
-//  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
-//  CAUTION: resets global timezone to PT
-//  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
-//    30 minutes late.  After 30 minutes late it will find the next run.
-function getTimeofNextRun ($STAI)  {
-    // this array also used in getferryoverflow.php and should be in a shared file.
-    $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
-    $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
+// //////////////////////////////////////////////////////////////////////////////////
+// // getTimeofNextSTRun();  next run time in unix seconds. up to 30 minutes late for next run.
+// // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
+// //
+// //  entry   $STAI = "AI" or "ST"
+// //  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
+// //  CAUTION: resets global timezone to PT
+// //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
+// //    30 minutes late.  After 30 minutes late it will find the next run.
+// function getTimeofNextRun($STAI)  {
+//     // this array also used in getferryoverflow.php and should be in a shared file.
+//     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
+//     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
 
-    date_default_timezone_set("America/Los_Angeles"); // set PDT
-    $utc = time(); // UTC time
-    $loctime = localtime($utc - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
-    $s = 0;
-    if($loctime[6]==6 || $loctime[6]==0) $s = 1; // skip early runs on sat, sun (d=0 or 6)
-    $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
+//     date_default_timezone_set("America/Los_Angeles"); // set PDT
+//     $utc = time(); // UTC time
+//     $loctime = localtime($utc - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+//     $s = 0;
+//     if($loctime[6]==6 || $loctime[6]==0) $s = 1; // skip early runs on sat, sun (d=0 or 6)
+//     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
 
-    if($STAI == "ST") {
-        // loop through steilacoom
-        for($i=$s; $i<count($ST); $i++){
-            if($lt < $ST[$i]) break;
-        }
-        if($i == count($ST)) return 0;
-        //echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
-        return (floor($ST[$i]/100)*60) + ($ST[$i]%100);
+//     if($STAI == "ST") {
+//         // loop through steilacoom
+//         for($i=$s; $i<count($ST); $i++){
+//             if($lt < $ST[$i]) break;
+//         }
+//         if($i == count($ST)) return 0;
+//         //echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
+//         return (floor($ST[$i]/100)*60) + ($ST[$i]%100);
 
-    } else {
-         // loop through AI
-        for($i=$s; $i<count($AI); $i++){
-            if($lt < $AI[$i]) break;
-        }
-        if($i == count($AI)) return 0;
-        //echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
-        return (floor($AI[$i]/100)*60) + ($AI[$i]%100);      
-    }
-    return 0;
-}
+//     } else {
+//          // loop through AI
+//         for($i=$s; $i<count($AI); $i++){
+//             if($lt < $AI[$i]) break;
+//         }
+//         if($i == count($AI)) return 0;
+//         //echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
+//         return (floor($AI[$i]/100)*60) + ($AI[$i]%100);      
+//     }
+//     return 0;
+// }
 
-////////////  Use Dailycache.txt 12/6/22. NOT DEBUGGED YET.
+////////////  Use Dailycache.txt 12/6/22. ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,221,memorialday,619,704,laborday,1111,thanksgiving,thanksgiving+1,1224,1225);545;*;705;*;820;*;
 //930;(!(gDayofWeek==1&&(gWeekofMonth==1||gWeekofMonth==3)));1035;*;1210;*;
 //1230;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1445;*;
@@ -534,7 +534,8 @@ $gWeekofMonth = 0;
 //////////////////////////////////////////////////////////////////////////////////
 // getTimeofNextRun2();  
 // Returns time of next run, using the ferry times in dailycache.txt.
-//  Once each half hour, this will read the schedule form dailycache.txt, extract the ferry schedule, and evaluate it
+//  That way dailycache.txt rules are used by the AndersonIslandAssistant AND this code.
+//  Once each half hour, this will read the schedule from dailycache.txt, extract the ferry schedule, and evaluate it
 //  to determine the next scheduled run.  Based on the code in index.js in the app.
 // 
 // next run time in unix seconds. up to 30 minutes late for next run.
@@ -545,8 +546,9 @@ $gWeekofMonth = 0;
 //  CAUTION: resets global timezone to PT
 //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
 //    30 minutes late.  After 30 minutes late it will find the next run.
-function getTimeofNextRun2 ($STAI)  {
+function getTimeofNextRun($STAI)  {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
+    global $SAVED;  // persistent data
 
     $dailycache = "dailycache.txt";
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -554,57 +556,65 @@ function getTimeofNextRun2 ($STAI)  {
     $loctime = localtime($gtimestamp - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
+    //echo "lt=$lt <br>";//DEBUG
 
     //  Steilacoom
     if($STAI == "ST") { // if Steilacoom
-      $nextSTRun = $SAVED['NextSTRun']; // last saved time
-      // FIX GETTING STUCK AT THE START OF THE DAY WHEN nextSTRUN
-      if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // return min since midnight
-	  $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
-	  $ST = explode(";", $STschedule); //create array
+        $nextSTRun = intval($SAVED['NextSTRun']); // last saved time
+        echo " Saved nextSTRun = $nextSTRun<br>";
+        // FIX GETTING STUCK AT THE START OF THE DAY WHEN nextSTRUN
+        if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // return min since midnight
+        if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
+	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
+        echo "---ST Schedule read.<br>";  // DEBUG
+	    $ST = explode(";", $STschedule); //create array
         // loop through steilacoom and find the next scheduled run
         for($i=0; $i<count($ST); $i=$i+2){
-            if($lt < $ST[$i]) {
+            if($lt < intval($ST[$i])) {
+                echo " ST found = {$ST[$i]}<br>";  // debug
 			    if(ValidFerryRun($ST[$i+1]))break;
 		    }
         }
-        if($i == count($ST)) return 0; 
-        $nextSTRun = $ST[$i];
+        if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
+        else $nextSTRun = $ST[$i];
         $SAVED['NextSTRun'] = $nextSTRun;  // save it
-        //echo "Local time-30m $lt. Next Run " . $ST[$i]; // DEBUG
+        echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
         return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // convert hhmm to min since midnight
 
     } else {
 
         //  Anderson Island
-        $nextAIRun = $SAVED['NextAIRun']; // last saved time
+        $nextAIRun = intval($SAVED['NextAIRun']); // last saved time
+        echo " Saved nextAIRun = $nextAIRun<br>";
         if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return (floor($nextAIRun/100)*60) + ($nextAIRun%100);  // return min since midnight
+        if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
         $AIschedule = getschedule($dailycache, "FERRYTA");
+        echo "---AI schedule read<br>";  // DEBUG
 	    $AI = explode(";", $AIschedule); //create array
         // loop through AI
         for($i=0; $i<count($AI); $i=$i+2){
-           if($lt < $AI[$i]) {
+           if($lt < intval($AI[$i])) {
                 if(ValidFerryRun($AI[$i+1]))break;
            }
         }
-        if($i == count($AI)) return 0;
-        $nextAIRun = $AI[$i];  // save it
+        if($i == count($AI)) $nextAIRun = 0;
+        else $nextAIRun = $AI[$i];  // save it
         $SAVED['NextAIRun'] = $nextAIRun;
-        //echo "$STAI Local time-30m $lt. Next Run " . $AI[$i]; // DEBUG
+        echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
         return (floor($nextAIRun/100)*60) + ($nextAIRun%100);      // convert hhmm to min since midnight
    }
    return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-//  ValidFerryRun - matches routine in index.js.  Use Eval to determine valid run.
+//  ValidFerryRun - matches the ValidFerryRun routine in index.js.  Use Eval to determine valid run.
 // ValidFerryRun return true if a valid ferry time, else false.
 //  alternate to having the rules special cased
-// flag: *=always, (xxxx) = eval rules in javascript
-// ferrytime: ferry run time
-//  eval rules are javascript, returning true for a valid run, else false
-//    can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
-//    e.g. ((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123))
+//  Entry: flag is the rules for the ferry time:  *=always, (xxxx) = eval rules in javascript
+//  Exit   returns true if $flag evaluates true, else false
+//       eval rules are javascript, returning true for a valid run, else false
+//      can use global variables gMonthDay, gDayofWeek, gWeekofMonth,...
+//      e.g. ((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123))
 function ValidFerryRun($flag) {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
 	if($flag == "") return false;
@@ -612,24 +622,27 @@ function ValidFerryRun($flag) {
 	if(substr($flag, 0,1) != "(") return false;  // if not an expression
 	// eval rules
     CalcDays();
-	str_replace("gD", "$gD", $flag);
-	str_replace("gM", "$gM", $flag);
-	str_replace("gW", "$gW", $flag);
-	str_replace("memorialday", "529", $flag);
-	str_replace("laborday", "904", $flag);
-	str_replace("thanksgiving", "1123", $flag);
-	return eval($flag);
+	$flag = str_replace("gD", '$gD', $flag);
+	$flag = str_replace("gM", '$gM', $flag);
+	$flag = str_replace("gW", '$gW', $flag);
+	$flag = str_replace("memorialday", "529", $flag);
+	$flag = str_replace("laborday", "904", $flag);
+	$flag = str_replace("thanksgiving", "1123", $flag);
+    $r = eval('return' . $flag . ";");
+    echo " eval=$r for $flag<br>";  // debug
+    return $r;
 }
+
 /////////////////////////////////////////////////////////////////////////////
 // CakcDays - calculate the special days used in the rules
 function CalcDays() {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
-    $gtimestamp = time();
     $gDayofWeek = date( "w", $gtimestamp);
     $gDayofMonth = date("d", $gtimestamp);
     $gMonthDay = date("m", $gtimestamp) * 100 + $gDayofMonth;
-    $gWeekofMonth = Math.floor(($gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
+    $gWeekofMonth = floor(($gDayofMonth - 1) / 7) + 1;  // nth occurance of day within month: 1,2,3,4,5
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////
 //  InList check for an argument in the list. Matches function in index.js.
 //  entry   a = value
@@ -639,21 +652,44 @@ function InList() {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
     $arguments = func_get_args();
     $n = func_num_args(); // number of arguments
-    for ($i = 1; $i < $n; $i++) { if ($arguments[0] == $arguments[$i]) return true; }
+    for ($i = 1; $i < $n; $i++) { 
+        //echo " Inlist {$arguments[0]},  {$arguments[$i]}<br>";
+        if ($arguments[0] == $arguments[$i]) return true; 
+    }
+    //echo "Inlist returns false<br>";
     return false;
 }
+
 ///////////////////////////////////////////////////////////////////////////
-// GetSchedule - read dailycache and extract the ferry schedule, which is one line
+// GetSchedule - read dailycache.txt and extract the ferry schedule, which is one line
 //  entry   file
 //          keyword
 //  exit    schedule string
 function GetSchedule($file, $keyword) {
     $f = file_get_contents($file);
+    if($f===false) die("could not read $file");
     $i = strpos($f, $keyword);
     if($i < 1) die("no $keyword in file string");
+    $i += strlen($keyword) + 1;  // skip keyword
     $j = strpos($f, "\n", $i);
     if($j < $i) die ("no end of line in file string");
-    return substr($f, $i+strlen($keyword)+1, $j-$i); // return the substring
+    return substr($f, $i, $j-$i); // return the substring
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// testgetnextrun
+//
+function testgetnextrun() {
+    global $gtimestamp;
+    $gtimestamp = time();  // time in seconds
+    date_default_timezone_set("America/Los_Angeles"); // set PDT
+    for($i=0; $i<(24*6); $i++) {
+        $gtimestamp += 10*60;  // add 10 min
+        $hhmm = date("H:m", $gtimestamp);
+        $nrST = getTimeofNextRun2("ST");
+        $nrAI = getTimeofNextRun2("AI");
+        echo "$hhmm ST=" . ftime($nrST) . ", AI=" . ftime($nrAI) . "<br><br>";
+    }
 }
 
 
