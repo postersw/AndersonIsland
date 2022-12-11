@@ -576,7 +576,7 @@ function getTimeofNextRun($STAI)  {
 		    }
         }
         if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
-        else $nextSTRun = $ST[$i];
+        else $nextSTRun = intval($ST[$i]);
         $SAVED['NextSTRun'] = $nextSTRun;  // save it
         echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
         return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // convert hhmm to min since midnight
@@ -598,7 +598,7 @@ function getTimeofNextRun($STAI)  {
            }
         }
         if($i == count($AI)) $nextAIRun = 0;
-        else $nextAIRun = $AI[$i];  // save it
+        else $nextAIRun = intval($AI[$i]);  // save it
         $SAVED['NextAIRun'] = $nextAIRun;
         echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
         return (floor($nextAIRun/100)*60) + ($nextAIRun%100);      // convert hhmm to min since midnight
