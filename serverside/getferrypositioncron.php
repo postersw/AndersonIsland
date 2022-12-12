@@ -425,13 +425,13 @@ function checkforLateFerry() {
             } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight seconds. up to 20 minutes late for next run.
+            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight. up to 20 minutes late for next run.
             $delaytime = $ETD - $nextrun;
             $ferryport = "St";
             break;
 
         case "toAI": // travelling to AI
-            if($priorferrystate == "atSt" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . "\n", FILE_APPEND); // if ferry just left
+            if($priorferrystate == "atSt" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
             $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
             $delaytime = $ETD - $nextrun;  // calculate delay    
@@ -451,8 +451,8 @@ function checkforLateFerry() {
             break;
 
         case "toST": // travelling to ST
-            if($priorferrystate == "atAI" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . "\n", FILE_APPEND);  // if ferry just left
-            $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight second
+            if($priorferrystate == "atAI" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND);  // if ferry just left
+            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight 
             $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "St";
