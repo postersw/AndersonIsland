@@ -397,6 +397,7 @@ function logPosition($log) {
 //  side effects:  if late, writes to ferrylatelog.txt and stdout
 //          $SAVED["ferrystate"] = ferry state: atST, atAI, toST, toAI
 //          $SAVED["ferrivarrivaltimeAI"], "ferryarrivaltimeST" = arrival time in min since midnight
+//          $SAVED["delaytime"] = $delaytime in min
 //
 function checkforLateFerry() {
     global $ferrystate, $timetoarrival;
@@ -430,6 +431,7 @@ function checkforLateFerry() {
             break;
 
         case "toAI": // travelling to AI
+            if($priorferrystate == "atSt" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . "\n", FILE_APPEND); // if ferry just left
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
             $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
             $delaytime = $ETD - $nextrun;  // calculate delay    
@@ -449,6 +451,7 @@ function checkforLateFerry() {
             break;
 
         case "toST": // travelling to ST
+            if($priorferrystate == "atAI" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . "\n", FILE_APPEND);  // if ferry just left
             $nextrun = getTimeofNextRun("ST");  // next run time minutes since midnight second
             $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay       
@@ -457,6 +460,7 @@ function checkforLateFerry() {
     }
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
+    $SAVED["delaytime"] = $delaytime;  
     if($nextrun==0) return "";  // if no nextrun
     if($delaytime <5) return "<span style='color:darkgreen'>OnTime for $ferryport " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
     //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
@@ -561,8 +565,7 @@ function getTimeofNextRun($STAI)  {
     //  Steilacoom
     if($STAI == "ST") { // if Steilacoom
         $nextSTRun = intval($SAVED['NextSTRun']); // last saved time
-        echo " Saved nextSTRun = $nextSTRun<br>";
-        // FIX GETTING STUCK AT THE START OF THE DAY WHEN nextSTRUN
+        //echo " Saved nextSTRun = $nextSTRun<br>";
         if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // return min since midnight
         if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
 	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
@@ -585,7 +588,7 @@ function getTimeofNextRun($STAI)  {
 
         //  Anderson Island
         $nextAIRun = intval($SAVED['NextAIRun']); // last saved time
-        echo " Saved nextAIRun = $nextAIRun<br>";
+        //echo " Saved nextAIRun = $nextAIRun<br>";
         if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return (floor($nextAIRun/100)*60) + ($nextAIRun%100);  // return min since midnight
         if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
         $AIschedule = getschedule($dailycache, "FERRYTA");
