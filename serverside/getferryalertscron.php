@@ -42,6 +42,7 @@
 //       9/7/22.  Fix alert timestamp to always use current time.
 //      11/30/22. Remove DELAYED message because it no longer contains a time and the ferry position script does a better job.
 //      12/10/22. Added ferryalertsave.json, json persistent storage. removed ferryalerttimestamp, ferryactivemessagelist..
+//      12/13/22. Fix errors in ferrylogmessage.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -367,7 +368,6 @@ function getNewestAlertfromHornblower() {
     // write out all the active alerts for dailycache
     //echo "<br/>activemsglist = $newactivemsglist"; 
     file_put_contents($ferrymsgfile, $ferrymsg);
-    //file_put_contents($ferryactivemsgfile, $newactivemsglist); // write out the new active messages
     $SAVED['ferryactivemsglist'] = $newactivemsglist;  // save new active messages
 
     // fill an alert object
@@ -390,15 +390,14 @@ function getNewestAlertfromHornblower() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-//  addAlertHistory - adds the new alert to the beginning of the alert history file.
+//  addAlertHistory - adds the new alert to the end of the alerthistoryfile
 //  entry   $alerthistory = file name
 //          alertObj = alert object
 //  exit    added to front of $alerthistory
 //
 function addAlertHistory($alerthistory, $alertObj) {
-    $ah = file_get_contents($alerthistory);
-    $ah = "<b>" . date("m/d/y h:ia", $alertObj->createdDate) . ": " . $alertObj->notificationTitle . "</b><br/>" . $alertObj->notificationBody . "<br/><br/>" . $ah;
-    file_put_contents($alerthistory, $ah);
+    $ah = date("m/d/y h:ia") . ": " . $alertObj->notifymsg . ", " . $alertObj->detail . "\n";
+    file_put_contents($alerthistory, $ah, FILE_APPEND);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

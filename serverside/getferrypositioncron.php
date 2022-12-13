@@ -580,7 +580,7 @@ function getTimeofNextRun($STAI)  {
         if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
         else $nextSTRun = intval($ST[$i]);
         $SAVED['NextSTRun'] = $nextSTRun;  // save it
-        echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
+        //echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
         return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // convert hhmm to min since midnight
 
     } else {
@@ -602,7 +602,7 @@ function getTimeofNextRun($STAI)  {
         if($i == count($AI)) $nextAIRun = 0;
         else $nextAIRun = intval($AI[$i]);  // save it
         $SAVED['NextAIRun'] = $nextAIRun;
-        echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
+        //echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
         return (floor($nextAIRun/100)*60) + ($nextAIRun%100);      // convert hhmm to min since midnight
    }
    return 0;
@@ -631,7 +631,7 @@ function ValidFerryRun($flag) {
 	$flag = str_replace("laborday", "904", $flag);
 	$flag = str_replace("thanksgiving", "1123", $flag);
     $r = eval('return' . $flag . ";");
-    echo " eval=$r for $flag<br>";  // debug
+    //echo " eval=$r for $flag<br>";  // debug
     return $r;
 }
 
