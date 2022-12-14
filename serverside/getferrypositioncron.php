@@ -568,7 +568,7 @@ function getTimeofNextRun($STAI)  {
         if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // return min since midnight
         if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
 	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
-        echo "---ST Schedule read.<br>";  // DEBUG
+        //echo "---ST Schedule read.<br>";  // DEBUG
 	    $ST = explode(";", $STschedule); //create array
         // loop through steilacoom and find the next scheduled run
         for($i=0; $i<count($ST); $i=$i+2){
@@ -591,7 +591,7 @@ function getTimeofNextRun($STAI)  {
         if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return (floor($nextAIRun/100)*60) + ($nextAIRun%100);  // return min since midnight
         if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
         $AIschedule = getschedule($dailycache, "FERRYTA");
-        echo "---AI schedule read<br>";  // DEBUG
+        //echo "---AI schedule read<br>";  // DEBUG
 	    $AI = explode(";", $AIschedule); //create array
         // loop through AI
         for($i=0; $i<count($AI); $i=$i+2){
