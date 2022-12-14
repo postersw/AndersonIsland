@@ -143,7 +143,7 @@ function checktimestamp($ts) {
     $t = strtotime($ts);
     if($t == false) abortme("time stamp cannot be parsed");
     $tnow = time(); // current UTC time
-    $deltamin = ($tnow - $t)/60;
+    $deltamin = ($tnow-$t)/60; // age of data, in minutes, rounded
     //echo (" deltamin=$deltamin<br> ");
     // if no data in 12 minutes, delete it. unnecessary because call filters it out.
     //if($deltamin > 12) abortme("data is $deltamin old. file deleted.");
@@ -419,7 +419,7 @@ function checkforLateFerry() {
     switch($ferrystate) {
         case "atST": // docked at ST
             if($priorferrystate != "atST") {  // if ferry was coming to ST, it has just arrived, so save its arrival time
-                $ferryarrivaltime = $now - $deltamin; // adjust for age of ferry position data
+                $ferryarrivaltime = $now - floor($deltamin); // adjust for age of ferry position data
                 $SAVED['ferryarrivaltimeST'] = $ferryarrivaltime;  //  file_put_contents("ferryarrivaltimeST", $now);
             } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
@@ -439,7 +439,7 @@ function checkforLateFerry() {
 
         case "atAI": // docked at AI
             if($priorferrystate != "atAI") {  // if ferry was coming to AI, it has just arrived, so save its arrival time
-                $ferryarrivaltime = $now -$deltamin;  // adjust for age of ferry position message
+                $ferryarrivaltime = $now -floor($deltamin);  // adjust for age of ferry position message
                 $SAVED["ferryarrivaltimeAI"] = $ferryarrivaltime; //  file_put_contents("ferryarrivaltimeAI", $now);
             } else $ferryarrivaltime = $SAVED["ferryarrivaltimeAI"]; //$ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
