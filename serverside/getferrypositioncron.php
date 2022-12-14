@@ -573,7 +573,7 @@ function getTimeofNextRun($STAI)  {
         // loop through steilacoom and find the next scheduled run
         for($i=0; $i<count($ST); $i=$i+2){
             if($lt < intval($ST[$i])) {
-                echo " ST found = {$ST[$i]}<br>";  // debug
+                //echo " ST found = {$ST[$i]}<br>";  // debug
 			    if(ValidFerryRun($ST[$i+1]))break;
 		    }
         }
