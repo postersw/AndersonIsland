@@ -33,6 +33,7 @@
 //  1.41 12/9/22. Change ST to St for getferryoverflowcron script.   Change $loadtime to 5 min after 8 pm.
 //  1.42 12/11/22. Change to use dailycache.txt for ferry schedule so we have the same run times as the app does.
 //  1.43 12/12/22. Revise ketron latitude.
+//  1.44 12/16/22. Add debug printouts under control of $debug to make it easy to turn on debug.
 
 $ver = "1.43"; // 12/12/22.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
@@ -87,6 +88,7 @@ $SAVED = json_decode(file_get_contents($ferryjsonsavefile), TRUE); // load persi
 
 // get position
 $fa = getposition();
+if($debug) echo ("ferry count = " . count($fa) . "<br>");
 $p = ""; $pi = 0; $pstr = "";
 
 // loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
@@ -122,7 +124,7 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-if(count($fa)==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+if($pi==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
 $pstr = "$ferrylate<br><span style='color:darkblue'>&nbsp;&nbsp;$pstr</span>";  // build message as <pstr><ferrylate>
 
 // save output and info
@@ -357,7 +359,7 @@ function abortme($msg) {
 
 /////////////////////////////////////////////////////////////////////////////
 // logPosition - writes position to CSV file in 2 columns so it is easy to view with excel
-//
+//  I think this is strill wrong on 12/16/22 because px can have just 1 entry even if fa has 2 if boat is out of bounds
 //  entry   $log = log file name
 //          fa = array of ferry position  0, 1, or 2 entries
 //          px = array of ferry messages
@@ -372,14 +374,14 @@ function logPosition($log) {
     //  this mess is to ensure that the boats are always in the same column if there are 2 boats
     if($fa[0][0] == $MMSICA) {  // if 1st boat is CA
         $s1 =  implode(",", $fa[0]) . "," . $px[0];
-        if(count($fa)>1) $s2 = implode(",", $fa[1]) . "," . $px[1];
+        if(count($fa)>1 && count($px)>1) $s2 = implode(",", $fa[1]) . "," . $px[1];
         else $s2 = ",,,,,,,,,,,,";
     } else  { // if 1st boat is S2
         if(strpos($px[0], "'S2'") < 0) {
             $t = $px[0]; $px[0] = $px[1]; $px[1] = $t;
         }
         $s2 =  implode(",", $fa[0]) . "," . $px[0];
-        if(count($fa)>1) $s1 = implode(",", $fa[1]) . "," . $px[1];
+        if(count($fa)>1 && count($px)>1) $s1 = implode(",", $fa[1]) . "," . $px[1];
         else $s1 = ",,,,,,,,,,,,";
     }
     date_default_timezone_set("America/Los_Angeles"); // set UTC
@@ -402,7 +404,9 @@ function checkforLateFerry() {
     global $ferrystate, $timetoarrival;
     global $SAVED;
     global $deltamin; // age of ferry status
+    global $debug;
     
+    if($debug) echo "ferrystate=$ferrystate<br>";
     if($ferrystate=="") return "";  // unable to determine state;
     $priorferrystate = $SAVED['ferrystate'];  // use the SAVE array to remember position
     $SAVED['ferrystate'] = $ferrystate;  // update current ferry state
@@ -460,6 +464,7 @@ function checkforLateFerry() {
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
     $SAVED["delaytime"] = $delaytime;  
+    if($debug) echo "delaytime=$delaytime<br>";
     if($nextrun==0) return "";  // if no nextrun
     if($delaytime <5) return "<span style='color:darkgreen'>OnTime for $ferryport " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
     //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
@@ -552,6 +557,7 @@ $gWeekofMonth = 0;
 function getTimeofNextRun($STAI)  {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
     global $SAVED;  // persistent data
+    global $debug;
 
     $dailycache = "dailycache.txt";
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -559,7 +565,7 @@ function getTimeofNextRun($STAI)  {
     $loctime = localtime($gtimestamp - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
-    //echo "lt=$lt <br>";//DEBUG
+    if($debug) echo "lt=$lt <br>";//DEBUG
 
     //  Steilacoom
     if($STAI == "ST") { // if Steilacoom
@@ -568,30 +574,30 @@ function getTimeofNextRun($STAI)  {
         if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // return min since midnight
         if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
 	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
-        //echo "---ST Schedule read.<br>";  // DEBUG
+        if($debug) echo "---ST Schedule read.<br>";  // DEBUG
 	    $ST = explode(";", $STschedule); //create array
         // loop through steilacoom and find the next scheduled run
         for($i=0; $i<count($ST); $i=$i+2){
             if($lt < intval($ST[$i])) {
-                //echo " ST found = {$ST[$i]}<br>";  // debug
+                if($debug) echo " ST found = {$ST[$i]}<br>";  // debug
 			    if(ValidFerryRun($ST[$i+1]))break;
 		    }
         }
         if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
         else $nextSTRun = intval($ST[$i]);
         $SAVED['NextSTRun'] = $nextSTRun;  // save it
-        //echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
+        if($debug) echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
         return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // convert hhmm to min since midnight
 
     } else {
 
         //  Anderson Island
         $nextAIRun = intval($SAVED['NextAIRun']); // last saved time
-        //echo " Saved nextAIRun = $nextAIRun<br>";
+        if($debug) echo " Saved nextAIRun = $nextAIRun<br>";
         if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return (floor($nextAIRun/100)*60) + ($nextAIRun%100);  // return min since midnight
         if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
         $AIschedule = getschedule($dailycache, "FERRYTA");
-        //echo "---AI schedule read<br>";  // DEBUG
+        if($debug) echo "---AI schedule read<br>";  // DEBUG
 	    $AI = explode(";", $AIschedule); //create array
         // loop through AI
         for($i=0; $i<count($AI); $i=$i+2){
@@ -602,7 +608,7 @@ function getTimeofNextRun($STAI)  {
         if($i == count($AI)) $nextAIRun = 0;
         else $nextAIRun = intval($AI[$i]);  // save it
         $SAVED['NextAIRun'] = $nextAIRun;
-        //echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
+        if($debug) echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
         return (floor($nextAIRun/100)*60) + ($nextAIRun%100);      // convert hhmm to min since midnight
    }
    return 0;
@@ -619,6 +625,7 @@ function getTimeofNextRun($STAI)  {
 //      e.g. ((gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1225,101,704,laborday,1123))
 function ValidFerryRun($flag) {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
+    global $debug;
 	if($flag == "") return false;
 	if($flag == "*") return true; // if good every day
 	if(substr($flag, 0,1) != "(") return false;  // if not an expression
@@ -631,7 +638,7 @@ function ValidFerryRun($flag) {
 	$flag = str_replace("laborday", "904", $flag);
 	$flag = str_replace("thanksgiving", "1123", $flag);
     $r = eval('return' . $flag . ";");
-    //echo " eval=$r for $flag<br>";  // debug
+    if($debug) echo " eval=$r for $flag<br>";  // debug
     return $r;
 }
 
