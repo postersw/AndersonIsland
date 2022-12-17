@@ -113,6 +113,7 @@ for($i=0; $i < count($fa); $i++) {
     $px[$pi] = "$mi$ri</i><i> $ferryname $s</i>";
     $pi++;
 }
+if($debug) echo "fa=" . count($fa) . ", pi=$pi<br>";
 
 // always display 'CA' before 'S2' when both are active.
 
