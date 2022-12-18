@@ -171,6 +171,8 @@ function timetocross() {
     $latKeIs = 47.1725; // Ketron course latitude flag. Just south of the Steilacoom dock
     $latKeNTip = 47.1673; // ketron northern tip
     $ketron = "";
+    $ketronDockTime = 6; // avg ketron dock time
+    $ketronToStTime = 11; // avg Ke to St time
 
     // Ketron Special Case:   (assumes any trip to Ketron then goes on to St)
     //   if below the tip of Ketron, OR if above the tip of ketron but headed SE
@@ -181,16 +183,16 @@ function timetocross() {
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
             if($t <= 0) {
-                $timetoarrival = 12; // time to arrival at steilacoom
+                $timetoarrival = $ketronDockTime + $ketronToStTime; // time to arrival at steilacoom
                 if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
-                else return "docking at Ketron";
+                else return "docking @Ke, arriving @St in $timetoarrival m";
             }
-            $timetoarrival = $t + 10; // time to arrival at steilacoom
-            return "stopping @Ketron in $t min";
+            $timetoarrival = $t + $ketronDockTime + $ketronToStTime; // time to arrival at steilacoom
+            return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
         } else { 
             // if not arriving, it must be leaving
-            $timetoarrival = 10; // time to arrive in steilacoom
-            $ketron = "leaving Ketron  ";
+            $timetoarrival = $ketronToStTime; // time to arrive in steilacoom
+            $ketron = "leaving Ke, ";
         }
     }
 
@@ -256,6 +258,8 @@ function reportatdock() {
     global $MMSI, $lat, $long, $longAI, $latAI, $longSt, $latSt, $longKe, $longE, $mi, $ri, $lt, $DAItoSt;
     global $ferrystate, $timetoarrival;
     global $SAVED;
+    $ketronDockTime = 6; // avg ketron dock time
+    $ketronToStTime = 11; // avg Ke to St time
 
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  
@@ -282,8 +286,8 @@ function reportatdock() {
         }
         $ri = "do_not_disturb_on";
         $ferrystate = "toST"; // moving to ST;
-        $timetoarrival = 12; // time to arrival at ST in minutes
-        return "at Ketron";  // allow for extended docking
+        $timetoarrival = $ketronDockTime/2 + $ketronToStTime; // time to arrival at ST in minutes
+        return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
 
     } else {
         // stopped somewhere. Report distance to AI or Steilacoom
