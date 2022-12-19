@@ -76,7 +76,7 @@
         //echo $tannererror;
         $str = "";  // 11/30. Treat as an outage.
         ///$msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: Tap for Map.</span>";
-        $shorttime . ": Status Unavailable. Tap for Map.<p hidden>No Outages</p>";
+        $msg = $shorttime . ": Status Unavailable. Tap for Map.<p hidden>No Outages</p>";
         file_put_contents($tanneroutagefile, $msg . $tweet);
         exit(0);
     }
