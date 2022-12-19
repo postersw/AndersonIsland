@@ -440,7 +440,10 @@ function checkforLateFerry() {
             break;
 
         case "toAI": // travelling to AI
-            if($priorferrystate == "atSt" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
+            if($priorferrystate == "atSt") {
+                echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
+                if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
+            }
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
             $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
             $delaytime = $ETD - $nextrun;  // calculate delay    
@@ -466,6 +469,9 @@ function checkforLateFerry() {
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "St";
             break;
+        
+        default:
+            echo "Error - invalid ferrystate = $ferrystate<br>";
     }
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
