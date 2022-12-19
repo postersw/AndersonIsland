@@ -41,6 +41,7 @@
 //       6/20/22. Fixed for change to status format.
 //       11/4/22. Issue error if 'hasError'=true.
 //       12/10/22. Implement tannersavefile.json to persist data in $SAVED
+//       12/18/22. Go back to status unavailable if hasError=true
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -74,7 +75,8 @@
     if($uts==0) {  // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
         //echo $tannererror;
         $str = "";  // 11/30. Treat as an outage.
-        $msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: Tap for Map.</span>";
+        ///$msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: Tap for Map.</span>";
+        $shorttime . ": Status Unavailable. Tap for Map.<p hidden>No Outages</p>";
         file_put_contents($tanneroutagefile, $msg . $tweet);
         exit(0);
     }
