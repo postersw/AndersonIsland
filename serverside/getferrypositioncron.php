@@ -183,16 +183,16 @@ function timetocross() {
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
             if($t <= 0) {
-                $timetoarrival = $ketronDockTime + $ketronToStTime; // time to arrival at steilacoom
+                $timetoarrival = $ketronDockTime + $ketronToStTime  - $deltamin; // time to arrival at steilacoom
                 if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
                 else return "docking @Ke, arriving @St in $timetoarrival m";
             }
-            $timetoarrival = $t + $ketronDockTime + $ketronToStTime; // time to arrival at steilacoom
+            $timetoarrival = $t + $ketronDockTime + $ketronToStTime - $deltamin; // time to arrival at steilacoom
             return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
         } else { 
             // if not arriving, it must be leaving
-            $timetoarrival = $ketronToStTime; // time to arrive in steilacoom
-            $ketron = "leaving Ke, ";
+            $timetoarrival = $ketronToStTime - $deltamin; // time to arrive in steilacoom
+            return "leaving Ke, arriving @St in $timetoarrival m";
         }
     }
 
@@ -220,7 +220,7 @@ function timetocross() {
                 return "docking @AI";
             }
         }
-        if($ferryport == "A") return $ketron . "returning to AI in $t m";
+        if($ferryport == "A") return "returning to AI in $t m";
         return $ketron . "arriving @AI in $t m";
 
     // Headed to Steilacoom
@@ -239,7 +239,7 @@ function timetocross() {
             }
         }
         if($ferryport == "S") return $ketron . "returning to St in $t m";    
-        return $ketron . "arriving @St in $t m";
+        return "arriving @St in $t m";
     }
 }
 
@@ -256,6 +256,7 @@ function timetocross() {
 
 function reportatdock() {
     global $MMSI, $lat, $long, $longAI, $latAI, $longSt, $latSt, $longKe, $longE, $mi, $ri, $lt, $DAItoSt;
+    global $deltamin;
     global $ferrystate, $timetoarrival;
     global $SAVED;
     $ketronDockTime = 6; // avg ketron dock time
@@ -286,7 +287,7 @@ function reportatdock() {
         }
         $ri = "do_not_disturb_on";
         $ferrystate = "toST"; // moving to ST;
-        $timetoarrival = $ketronDockTime/2 + $ketronToStTime; // time to arrival at ST in minutes
+        $timetoarrival = $ketronDockTime/2 + $ketronToStTime - $deltamin; // time to arrival at ST in minutes
         return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
 
     } else {
