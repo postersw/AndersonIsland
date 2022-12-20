@@ -440,7 +440,7 @@ function checkforLateFerry() {
             break;
 
         case "toAI": // travelling to AI
-            if($priorferrystate == "atSt") {
+            if($priorferrystate == "atST") {
                 echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
                 if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
             }
