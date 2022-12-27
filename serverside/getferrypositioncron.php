@@ -34,8 +34,9 @@
 //  1.42 12/11/22. Change to use dailycache.txt for ferry schedule so we have the same run times as the app does.
 //  1.43 12/12/22. Revise ketron latitude.
 //  1.44 12/16/22. Add debug printouts under control of $debug to make it easy to turn on debug.
+//  1.45 12/19/22  Improve Ketron times
 
-$ver = "1.43"; // 12/12/22.
+$ver = "1.45"; // 12/19/22.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -183,15 +184,15 @@ function timetocross() {
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
             if($t <= 0) {
-                $timetoarrival = $ketronDockTime + $ketronToStTime  - $deltamin; // time to arrival at steilacoom
+                $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
                 if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
                 else return "docking @Ke, arriving @St in $timetoarrival m";
             }
-            $timetoarrival = $t + $ketronDockTime + $ketronToStTime - $deltamin; // time to arrival at steilacoom
+            $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
             return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
         } else { 
             // if not arriving, it must be leaving
-            $timetoarrival = $ketronToStTime - $deltamin; // time to arrive in steilacoom
+            $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
             return "leaving Ke, arriving @St in $timetoarrival m";
         }
     }
@@ -287,7 +288,7 @@ function reportatdock() {
         }
         $ri = "do_not_disturb_on";
         $ferrystate = "toST"; // moving to ST;
-        $timetoarrival = $ketronDockTime/2 + $ketronToStTime - $deltamin; // time to arrival at ST in minutes
+        $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
         return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
 
     } else {
@@ -441,7 +442,7 @@ function checkforLateFerry() {
 
         case "toAI": // travelling to AI
             if($priorferrystate == "atST") {
-                echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
+                //echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
                 if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
             }
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
