@@ -15,7 +15,7 @@
     $str = file_get_contents($link);
     if($str===false) echo("no return from file get contents $link");
     $warning = CreateWeatherWarnings($str);
-    if($warning != "") $warning = "<span style='color:orange'>$warning</span>";  // make orange
+    if($warning != "") $warning = "<span style='color:magenta'>$warning</span>";  // make magenta
     file_put_contents("weatherwarninginclude.txt", $warning);
     exit();
 
@@ -123,6 +123,7 @@ function CreateWeatherWarnings($jsonforecastdata) {
         if($rainalert=="") {  // if no alert
             if(array_search($r->weather[0]->id, $alertids)!==false) {  // if id code found in alertids array
                 $rainalert = "<b>Weather alert for $dt: " . $r->weather[0]->description . "</b><br>";
+                echo $rainalert;
             }
         }
         //echo ("timef=$timef,$dt  wind=$wind from $winddir, lowtemp=$lowtemp, hightemp=$hightemp, rain=$rainalert<br>");
