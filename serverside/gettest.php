@@ -7,6 +7,17 @@
     
     chdir("/home/postersw/public_html");  // move to web root
 
+    date_default_timezone_set("UTC"); // set UTC
+    $utc = time();
+    echo " utc=" . date("m/d/y h:i:s", $utc);
+    date_default_timezone_set("America/Los_Angeles"); // set UTC
+    echo " pst" . date("m/d/y h:i:s", $utc);
+    return;
+    $pt = time();
+    echo " utc=" . date("m/d/y h:m:s");
+    $delta = ($pt-$utc) / 3600;
+    echo "utc=$utc, pt=$pt, delta=$delta";
+    return;
 // AIR QUALITY: read the Air Quality page and extract the data for peninsula
 
     $str = file_get_contents($link);

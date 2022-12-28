@@ -1,6 +1,9 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////
 //  getweathercron - gets weather alerts and post them to weatherwarninginclude.txt.
+//  reads weather from openweathermap.org and scans for weather alerts.
+//      values that exceed trigger values cause alerts to be written to weatherwarninginclude.txt.
+//      this file is ready by getdailycache.php.
 //
 //  rfb. 12/27/22. Initial version.
 
@@ -38,8 +41,8 @@ function CreateWeatherWarnings($jsonforecastdata) {
     $forecast = json_decode($jsonforecastdata);
     if ($forecast === FALSE) return;
     $utcadjustment = 8*3600; // convert to local time
-    $windtrigger = 22;
-    $lowtemptrigger = 20;
+    $windtrigger = 20;
+    $lowtemptrigger = 25;
     $hightemptrigger = 90;
     $windalert = "";
     $tempalert = "";
@@ -47,19 +50,16 @@ function CreateWeatherWarnings($jsonforecastdata) {
     //var_dump($forecast);
 
     $resp = $forecast->list;  // pick out the list of forecast periods
-    date_default_timezone_set("UTC"); // set UTC
-    $tnow = time();  // lcurrent time in UTC seconds
 
     //  check each weather period for the next 24 hours
     for ($i = 0; $i < 7; $i++) {
         $r = $resp[$i];  // get 1 weather period
         $timef = $r->dt;// unix gmt time in sec since 1970
-        $timeage = ($timef-$tnow)/3600; // age in hours
-        $dt = date("D g a", $timef-$utcadjustment);  // rely on PHP to adjust time zone
+        $dt = date("D g a", $timef);  // rely on PHP to adjust time zone. converts utc to current default_timezone
         echo ("dateUCT=$dt <br>");
         $wind = intval($r->wind->speed);
         if($wind>$windtrigger && $windalert == "") {
-            $windalert = "Wind alert for $dt: winds $wind mph, gusts " . intval($r->wind->gust) . "<br>";
+            $windalert = "<b>Wind alert for $dt: winds $wind mph, gusts " . intval($r->wind->gust) . "</b><br>";
             echo $windalert;
         }
         $winddir = $r->wind->deg;
@@ -68,14 +68,14 @@ function CreateWeatherWarnings($jsonforecastdata) {
         $lowtemp = intval($r->main->temp_min);
         $hightemp = intval($r->main->temp_max);
         if($lowtemp < $lowtemptrigger && $tempalert == "") {
-            $tempalert = "Low temp alert for $dt: $lowtemp degrees<br>";
+            $tempalert = "<b>Low temp alert for $dt: $lowtemp degrees</b><br>";
             echo $tempalert;
         }
         if($hightemp > $hightemptrigger && $tempalert == "") {
-            $tempalert = "High temp alert for $dt: $hightemp degrees<br>";
+            $tempalert = "<b>High temp alert for $dt: $hightemp degrees</b><br>";
             echo $tempalert;
         }
-        echo ("timef=$timef,age=$timeage,  wind=$wind from $winddir, lowtemp=$lowtemp, hightemp=$hightemp, rain=$rain<br>");
+        echo ("timef=$timef,$dt  wind=$wind from $winddir, lowtemp=$lowtemp, hightemp=$hightemp, rain=$rain<br>");
         //if (typeof r.rain == 'undefined' || typeof r.rain["3h"] == 'undefined') rain = 0;
         //else rain = (Number(r.rain["3h"]) / 25.4);
         //gWeatherPeriods[i] = new NewWeatherPeriod(timef, Number(r.main.temp_max), r.weather[0].description, icon, rain, Number(r.wind.deg), Number(r.wind.speed))
