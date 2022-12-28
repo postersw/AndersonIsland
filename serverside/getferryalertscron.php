@@ -43,6 +43,7 @@
 //      11/30/22. Remove DELAYED message because it no longer contains a time and the ferry position script does a better job.
 //      12/10/22. Added ferryalertsave.json, json persistent storage. removed ferryalerttimestamp, ferryactivemessagelist..
 //      12/13/22. Fix errors in ferrylogmessage.
+//      12/28/22. Add click to bring up details for ferry messages.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -367,6 +368,7 @@ function getNewestAlertfromHornblower() {
 
     // write out all the active alerts for dailycache
     //echo "<br/>activemsglist = $newactivemsglist"; 
+    if($ferrymsg!="") $ferrymsg = "<a href='https://www.piercecountywa.gov/7691/All-Ferry-Alerts'>$ferrymsg</a>"; // add click to bring up details
     file_put_contents($ferrymsgfile, $ferrymsg);
     $SAVED['ferryactivemsglist'] = $newactivemsglist;  // save new active messages
 
