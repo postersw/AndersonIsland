@@ -1,12 +1,17 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////
 //  getweathercron - gets weather alerts and post them to weatherwarninginclude.txt.
-//  reads weather from openweathermap.org and scans for weather alerts.
+//  Reads weather from openweathermap.org and scans for weather alerts.
+//  Run hourly by cron.
 //      values that exceed trigger values cause alerts to be written to weatherwarninginclude.txt.
 //      this file is ready by getdailycache.php.
 //
+//  Exit: Writes warning to "weatherwarninglog.txt".
+//        Writes log to "weatherwarninglog.txt"
+//
 //  rfb. 12/27/22. Initial version.
 //       12/28/22. Add weather conditions to alerts.
+//        1/4/22.  Add log file weatherwarninglog.txt.
 
     $link = 'https://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0'; 
     chdir("/home/postersw/public_html");  // move to web root
@@ -15,8 +20,12 @@
     $str = file_get_contents($link);
     if($str===false) echo("no return from file get contents $link");
     $warning = CreateWeatherWarnings($str);
-    if($warning != "") $warning = "<span style='color:magenta'>$warning</span>";  // make magenta
-    file_put_contents("weatherwarninginclude.txt", $warning);
+    if($warning != "") {
+        file_put_contents("weatherwarninglog.txt", date("m/d/y H:i:s ") . $warning . "\n", FILE_APPEND);  // log it
+        $warning = "<span style='color:magenta'>$warning</span>";  // make magenta
+    }
+    file_put_contents("weatherwarninginclude.txt", $warning);  // save warning for include in dailycache.txt
+    
     exit();
 
 
@@ -111,6 +120,7 @@ function CreateWeatherWarnings($jsonforecastdata) {
         // temperature alerts
         $lowtemp = intval($r->main->temp_min);
         $hightemp = intval($r->main->temp_max);
+        if($lowtemp==0) exit("invalid lowtemp $lowtemp for $r");
         if($lowtemp < $lowtemptrigger && $tempalert == "") {
             $tempalert = "<b>Low temp alert for $dt: $lowtemp degrees</b><br>";
             echo $tempalert;
