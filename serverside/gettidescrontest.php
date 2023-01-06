@@ -15,6 +15,7 @@
 //  rfb. 9/3/22.  Check for tides<-0.5' and issue a warning message to lowtidewarninginclude.txt.  This file is pickedup by in include in getdailycache.txt.
 //  rfb. 9/6/22.  Change file to lowtideswarninginclude.
 //  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
+//  rfb. 1/6/23.  Calculate low tide at ferry run times for the low tide warning.
 //
     $SAVED = [];  // saved data
     $debug = true; // true for debug print
@@ -150,40 +151,97 @@
 //  entry   $hr = hour of the day for low tide warning
 //  exit    returns ferry low tide warning message
 //
+// function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime){
+//     global $lowtidefile, $mtoday, $dtoday, $htoday;
+//     global $debug;
+//     $lowtidetrigger = -0.5; // low tide trigger in feet
+//     $lowtidewarning = "";
+//     //$hr = intval(substr($t, 11, 2)); // tide hour
+//     if(($hr >5) && ($hr<23) && ($htoday<=($hr+3))) { // if >5am and < 11pm  and less than 3 hours ago
+//         //  loop through all hours
+//         for($h=$hr-2;$h<$hr+3; $h++) {
+//             //  Steilacoom 
+//             $STft = getTimeofNextRun("ST", $h*100);  // read ferry schedule
+//             if($debug) echo "h=$h, STf=$STft <br>";
+//             if($STft > 0 && $oldSTft != $STft) {  // if a different next run
+//                 $oldSTft = $STft;
+//                 // Calculate Current Tide Height(next, previous ...)
+//                 if($STft>$lowtidetime) $STtide = CalculateCurrentTideHeight($hightidetime,$lowtidetime, $hightide,  $lowtide, $STft);  // kludge - reverse high and lowto get right side of curve 
+//                 else $STtide = CalculateCurrentTideHeight($lowtidetime, $hightidetime, $lowtide, $hightide,  $STft);
+//                 if($debug) echo "STtide = $STtide<br>";
+//                 if($STtide<$lowtidetrigger) {
+//                     $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($STtide, 1) . "' tide for ST " . ShortTime($STft) . " run</span><br/>";
+//                     echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
+//                 }
+//             }
+//             // Anderson Island
+//             $AIft = getTimeofNextRun("AI", $h*100);  // read ferry schedule
+//             if($debug) echo "h=$h, AIft=$AIft <br>";
+//             if($AIft> 0 && $oldAIft != $AIft) {
+//                 $oldAIft = $AIft;
+//                 // Calculate Current Tide Height(next, previous ...)
+//                 if($AIft>$lowtidetime) $AItide = CalculateCurrentTideHeight($hightidetime,$lowtidetime, $hightide,  $lowtide, $AIft);  // kludge - reverse high and lowto get right side of curve
+//                 else $AItide = CalculateCurrentTideHeight($lowtidetime, $hightidetime, $lowtide, $hightide,  $AIft);
+//                 if($debug) echo "AItide = $AItide<br>";
+//                 if($AItide<$lowtidetrigger) {
+//                     $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($AItide, 1) . "' tide for AI " . ShortTime($AIft) . " run</span><br/>";
+//                     echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
+//                 }
+//             }
+//         }
+//     }
+//     return $lowtidewarning;
+// }
+
+//////////////////////////////////////////////////////////////////////////////////
+//  FerryTrailerAlert - issue alert if low tides for ferry run
+//  Find the ferry run time for 2 hours on each side of the low tide time,
+//    and calculate the tide for each ferry run time.  If < 0.5 feet, issue a warning
+//    with the ferry run time and the tide at that time.
+//  entry   $hr = hour of the day for low tide warning
+//  exit    returns ferry low tide warning message
+//
 function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime){
     global $lowtidefile, $mtoday, $dtoday, $htoday;
     global $debug;
     $lowtidetrigger = -0.5; // low tide trigger in feet
     $lowtidewarning = "";
-    //$hr = intval(substr($t, 11, 2)); // tide hour
-    if(($hr >5) && ($hr<23) && ($htoday<=($hr+3))) { // if >5am and < 11pm  and less than 3 hours ago
-        //  loop through all hours
-        for($h=$hr-2;$h<$hr+3; $h++) {
-            //  Steilacoom 
-            $STft = getTimeofNextRun("ST", $h*100);  // read ferry schedule
-            if($debug) echo "h=$h, STf=$STft <br>";
-            if($STft > 0 && $oldSTft != $STft) {  // if a different next run
-                $oldSTft = $STft;
-                // Calculate Current Tide Height(next, previous ...)
-                if($STft>$lowtidetime) $STtide = CalculateCurrentTideHeight($hightidetime,$lowtidetime, $hightide,  $lowtide, $STft);  // kludge - reverse high and lowto get right side of curve 
-                else $STtide = CalculateCurrentTideHeight($lowtidetime, $hightidetime, $lowtide, $hightide,  $STft);
+    if($hr < 5) return ""; // if low tide is before 5 am
+    if($htoday > ($h+3)) return ""; // if > 3 hours past low tide
+    $f = file_get_contents("dailycache.txt");  // read daily cache
+    $STschedule = getschedule($f, "FERRYTS");  // get the schedule
+    $AIschedule = getschedule($f, "FERRYTA");
+    $ST = explode(";", $STschedule); //create array of run time, expression
+    $AI = explode(";", $AIschedule); //create array
+    $hmin = ($h-3)*100;  // min and max time as hh00
+    $hmax = ($h+3)*100;
+
+    // loop through ferry run times and find each scheduled run that falls within the low tide window of low tide time +- 3 hrs.
+    for($i=0; $i<count($ST); $i=$i+2){
+        // Steilacoom
+        $runtime = intval($ST[$i]);  // ferry run time
+        if($hmin < $runtime  && $runtime < $hmax) {  // if ferry run is within the low tide window
+            if($debug) echo " ST run = {$ST[$i]}<br>";  // debug
+            if(ValidFerryRun($ST[$i+1])) {  // if this ferry run is valid
+                if($runtime > $lowtidetime) $STtide = CalculateCurrentTideHeight($hightidetime,$lowtidetime, $hightide,  $lowtide, $runtime);  // kludge - reverse high and lowto get right side of curve 
+                else $STtide = CalculateCurrentTideHeight($lowtidetime, $hightidetime, $lowtide, $hightide,  $runtime);
                 if($debug) echo "STtide = $STtide<br>";
-                if($STtide<$lowtidetrigger) {
-                    $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($STtide, 1) . "' tide for ST " . ShortTime($STft) . " run</span><br/>";
+                if($STtide < $lowtidetrigger) {
+                    $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($STtide, 1) . "' tide for ST " . ShortTime($runtime) . " run</span><br/>";
                     echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
                 }
             }
-            // Anderson Island
-            $AIft = getTimeofNextRun("AI", $h*100);  // read ferry schedule
-            if($debug) echo "h=$h, AIft=$AIft <br>";
-            if($AIft> 0 && $oldAIft != $AIft) {
-                $oldAIft = $AIft;
-                // Calculate Current Tide Height(next, previous ...)
-                if($AIft>$lowtidetime) $AItide = CalculateCurrentTideHeight($hightidetime,$lowtidetime, $hightide,  $lowtide, $AIft);  // kludge - reverse high and lowto get right side of curve
-                else $AItide = CalculateCurrentTideHeight($lowtidetime, $hightidetime, $lowtide, $hightide,  $AIft);
+        }
+        // Anderson Island
+        $runtime = intval($AI[$i]);
+        if($hmin < $runtime  && $runtime < $hmax) {  // if ferry run is within the low tide window
+            if($debug) echo " AI run = {$AI[$i]}<br>";  // debug
+            if(ValidFerryRun($AI[$i+1])) {  // if this ferry run is valid
+                if($runtime > $lowtidetime) $AItide = CalculateCurrentTideHeight($hightidetime,$lowtidetime, $hightide,  $lowtide, $runtime);  // kludge - reverse high and lowto get right side of curve 
+                else $AItide = CalculateCurrentTideHeight($lowtidetime, $hightidetime, $lowtide, $hightide,  $runtime);
                 if($debug) echo "AItide = $AItide<br>";
-                if($AItide<$lowtidetrigger) {
-                    $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($AItide, 1) . "' tide for AI " . ShortTime($AIft) . " run</span><br/>";
+                if($AItide < $lowtidetrigger) {
+                    $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($AItide, 1) . "' tide for AI " . ShortTime($runtime) . " run</span><br/>";
                     echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
                 }
             }
@@ -191,6 +249,7 @@ function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime
     }
     return $lowtidewarning;
 }
+
 ///////////////////////////////////////////////////////////////////////////
 //  ShortTime - convert hhmm to hh:mm string
 //  entry   $ft = time in hhmm
@@ -243,60 +302,60 @@ $gWeekofMonth = 0;
 //  exit    returns time of scheduled run, as hhmm.  0 if no run.
 //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
 //    30 minutes late.  After 30 minutes late it will find the next run.
-function getTimeofNextRun($STAI, $lt)  {
-    global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
-    global $SAVED;  // persistent data
-    global $debug;
+// function getTimeofNextRun($STAI, $lt)  {
+//     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
+//     global $SAVED;  // persistent data
+//     global $debug;
 
-    $dailycache = "dailycache.txt";
-    if($debug) echo "lt=$lt <br>";//DEBUG
+//     $dailycache = "dailycache.txt";
+//     if($debug) echo "lt=$lt <br>";//DEBUG
 
-    //  Steilacoom
-    if($STAI == "ST") { // if Steilacoom
-        $nextSTRun = intval($SAVED['NextSTRun']); // last saved time
-        //echo " Saved nextSTRun = $nextSTRun<br>";
-        if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return $nextSTRun;  // return min since midnight
-        if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
-	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
-        if($debug) echo "---ST Schedule read.<br>";  // DEBUG
-	    $ST = explode(";", $STschedule); //create array
-        // loop through steilacoom and find the next scheduled run
-        for($i=0; $i<count($ST); $i=$i+2){
-            if($lt < intval($ST[$i])) {
-                if($debug) echo " ST found = {$ST[$i]}<br>";  // debug
-			    if(ValidFerryRun($ST[$i+1]))break;
-		    }
-        }
-        if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
-        else $nextSTRun = intval($ST[$i]);
-        $SAVED['NextSTRun'] = $nextSTRun;  // save it
-        if($debug) echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
-        return $nextSTRun; // convert hhmm to min since midnight
+//     //  Steilacoom
+//     if($STAI == "ST") { // if Steilacoom
+//         $nextSTRun = intval($SAVED['NextSTRun']); // last saved time
+//         //echo " Saved nextSTRun = $nextSTRun<br>";
+//         if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return $nextSTRun;  // return min since midnight
+//         if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
+// 	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
+//         if($debug) echo "---ST Schedule read.<br>";  // DEBUG
+// 	    $ST = explode(";", $STschedule); //create array
+//         // loop through steilacoom and find the next scheduled run
+//         for($i=0; $i<count($ST); $i=$i+2){
+//             if($lt < intval($ST[$i])) {
+//                 if($debug) echo " ST found = {$ST[$i]}<br>";  // debug
+// 			    if(ValidFerryRun($ST[$i+1]))break;
+// 		    }
+//         }
+//         if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
+//         else $nextSTRun = intval($ST[$i]);
+//         $SAVED['NextSTRun'] = $nextSTRun;  // save it
+//         if($debug) echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
+//         return $nextSTRun; // convert hhmm to min since midnight
 
-    } else {
+//     } else {
 
-        //  Anderson Island
-        $nextAIRun = intval($SAVED['NextAIRun']); // last saved time
-        if($debug) echo " Saved nextAIRun = $nextAIRun<br>";
-        if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return $nextAIRun;  // return min since midnight
-        if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
-        $AIschedule = getschedule($dailycache, "FERRYTA");
-        if($debug) echo "---AI schedule read<br>";  // DEBUG
-	    $AI = explode(";", $AIschedule); //create array
-        // loop through AI
-        for($i=0; $i<count($AI); $i=$i+2){
-           if($lt < intval($AI[$i])) {
-                if(ValidFerryRun($AI[$i+1]))break;
-           }
-        }
-        if($i == count($AI)) $nextAIRun = 0;
-        else $nextAIRun = intval($AI[$i]);  // save it
-        $SAVED['NextAIRun'] = $nextAIRun;
-        if($debug) echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
-        return $nextAIRun;     
-   }
-   return 0;
-}
+//         //  Anderson Island
+//         $nextAIRun = intval($SAVED['NextAIRun']); // last saved time
+//         if($debug) echo " Saved nextAIRun = $nextAIRun<br>";
+//         if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return $nextAIRun;  // return min since midnight
+//         if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
+//         $AIschedule = getschedule($dailycache, "FERRYTA");
+//         if($debug) echo "---AI schedule read<br>";  // DEBUG
+// 	    $AI = explode(";", $AIschedule); //create array
+//         // loop through AI
+//         for($i=0; $i<count($AI); $i=$i+2){
+//            if($lt < intval($AI[$i])) {
+//                 if(ValidFerryRun($AI[$i+1]))break;
+//            }
+//         }
+//         if($i == count($AI)) $nextAIRun = 0;
+//         else $nextAIRun = intval($AI[$i]);  // save it
+//         $SAVED['NextAIRun'] = $nextAIRun;
+//         if($debug) echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
+//         return $nextAIRun;     
+//    }
+//    return 0;
+// }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //  ValidFerryRun - matches the ValidFerryRun routine in index.js.  Use Eval to determine valid run.
@@ -355,11 +414,11 @@ function InList() {
 
 ///////////////////////////////////////////////////////////////////////////
 // GetSchedule - read dailycache.txt and extract the ferry schedule, which is one line
-//  entry   file
-//          keyword
+//  entry   f = dailycache.txt contents
+//          keyword to find
 //  exit    schedule string
-function GetSchedule($file, $keyword) {
-    $f = file_get_contents($file);
+function GetSchedule($f, $keyword) {
+    //$f = file_get_contents($file);
     if($f===false) die("could not read $file");
     $i = strpos($f, $keyword);
     if($i < 1) die("no $keyword in file string");
