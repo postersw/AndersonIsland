@@ -241,6 +241,7 @@ function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime
     $hmin = ($hr-3)*100;  // min and max time as hh00
     $hmax = ($hr+3)*100;
     if($debug) echo "ferrytraileralert hmin=$hmin, hmax=$hmax<br>";
+    CalcDays();     // eval rules setup
 
     // loop through ferry run times and find each scheduled run that falls within the low tide window of low tide time +- 3 hrs.
     for($i=0; $i<count($ST); $i=$i+2){
@@ -254,7 +255,7 @@ function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime
                 if($debug) echo "STtide = $STtide<br>";
                 if($STtide < $lowtidetrigger) {
                     $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($STtide, 1) . "' tide for ST " . ShortTime($runtime) . " run</span><br/>";
-                    echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
+                    echo $lowtidewarning; echo "hr=$hr, htoday=$htoday <br>";
                 }
             }
         }
@@ -268,7 +269,7 @@ function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime
                 if($debug) echo "AItide = $AItide<br>";
                 if($AItide < $lowtidetrigger) {
                     $lowtidewarning .= "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($AItide, 1) . "' tide for AI " . ShortTime($runtime) . " run</span><br/>";
-                    echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
+                    echo $lowtidewarning; echo "hr=$hr, htoday=$htoday <br>";
                 }
             }
         }
@@ -392,8 +393,6 @@ function ValidFerryRun($flag) {
 	if($flag == "") return false;
 	if($flag == "*") return true; // if good every day
 	if(substr($flag, 0,1) != "(") return false;  // if not an expression
-	// eval rules
-    CalcDays();
 	$flag = str_replace("gD", '$gD', $flag);
 	$flag = str_replace("gM", '$gM', $flag);
 	$flag = str_replace("gW", '$gW', $flag);
@@ -406,9 +405,10 @@ function ValidFerryRun($flag) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CakcDays - calculate the special days used in the rules
+// CakcDays - calculate the special days used in the ferry eval rules
 function CalcDays() {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
+    $gtimestamp = time(); 
     $gDayofWeek = date( "w", $gtimestamp);
     $gDayofMonth = date("d", $gtimestamp);
     $gMonthDay = date("m", $gtimestamp) * 100 + $gDayofMonth;
