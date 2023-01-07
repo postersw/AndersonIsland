@@ -19,8 +19,8 @@
 //
     $SAVED = [];  // saved data
     $debug = true; // true for debug print
-    $file = "tidedataTEST.txt";
-    $lowtidefile = "lowtidewarningincludeTEST.txt";
+    $file = "tidedata.txt";
+    $lowtidefile = "lowtidewarninginclude.txt";
     chdir("/home/postersw/public_html");  // move to web root
     date_default_timezone_set('America/Los_Angeles');
 
@@ -36,6 +36,9 @@
     $m = date ("m", $ts); // month with leading zero
     $d = date("d", $ts); // day with leading zero
     $link = $link . "&begin_date=" . date("Ymd%20H:i", $ts) . "&range=200";
+
+    if($debug) echo "today=$mtoday/$dtoday $htoday, link=$y/$m/$d<br>";
+
 
     // try 10 times to get the noaa tide data
     for ($x = 0; $x <= 10; $x++) {
@@ -83,6 +86,7 @@
 
     function reformatdata($reply) {
         global $lowtidefile, $mtoday, $dtoday, $htoday;
+        global $debug;
         $lowtidetrigger = -0.5; // low tide trigger in feet
         $hightidetrigger = 14.6; // high tide trigger in feet
         //echo $reply . "<br/>"; //debug//
@@ -107,7 +111,7 @@
             // convert to AERIS format for backward compatibility
             $str = $str . '{"dateTimeISO": "' . substr($t, 0, 10) . "T" . substr($t, 11, 5) . ':00-07:00",' .
                 '"type": "' . strtolower($tide->type) . '", "heightFT": ' . number_format($tide->v, 1) . "}"; 
-            
+            if($debug) echo "tide time=$t<br>";
             // check for extreme low or high tides TODAY
             if((intval($mtoday)==intval(substr($t,5,2))) && (intval($dtoday)==intval(substr($t,8,2)))) {  // if today
                 switch ($tide->type){
@@ -115,6 +119,7 @@
                     case "L":  // if low tide
                         $lowtide = floatval($tide->v);
                         $lowtidetime = intval(substr($t, 11, 2)) * 100 + intval(substr($t, 14, 2)); // low tide in hhmm
+                        echo "lowtide=$lowtide<br>";
                         if($lowtide <= $lowtidetrigger) { // if <= -1' 
                             $hr = intval(substr($t, 11, 2)); // tide hour
                             $lowtidewarning = FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime);
@@ -201,20 +206,41 @@
 //  entry   $hr = hour of the day for low tide warning
 //  exit    returns ferry low tide warning message
 //
+//  uses ferry schedule in dailycache.txt:
+// 445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,221,memorialday,619,704,laborday,1111,thanksgiving,thanksgiving+1,1224,1225);
+// 545;*;
+// 705;*;
+// 820;*;
+// 930;(!(gDayofWeek==1&&(gWeekofMonth==1||gWeekofMonth==3)));
+// 1035;*;
+// 1210;*;
+// 1230;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));
+// 1445;*;
+// 1515;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));
+// 1550;*;
+// 1625;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));
+// 1700;*;
+// 1735;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));
+// 1810;*;
+// 1920;*;
+// 2035;*;
+// 2220;(!InList(gMonthDay,1015,1113))
+//
 function FerryTrailerAlert($hr, $hightide, $hightidetime, $lowtide, $lowtidetime){
     global $lowtidefile, $mtoday, $dtoday, $htoday;
     global $debug;
     $lowtidetrigger = -0.5; // low tide trigger in feet
     $lowtidewarning = "";
     if($hr < 5) return ""; // if low tide is before 5 am
-    if($htoday > ($h+3)) return ""; // if > 3 hours past low tide
+    if($htoday > ($hr+3)) return ""; // if > 3 hours past low tide
     $f = file_get_contents("dailycache.txt");  // read daily cache
     $STschedule = getschedule($f, "FERRYTS");  // get the schedule
     $AIschedule = getschedule($f, "FERRYTA");
     $ST = explode(";", $STschedule); //create array of run time, expression
     $AI = explode(";", $AIschedule); //create array
-    $hmin = ($h-3)*100;  // min and max time as hh00
-    $hmax = ($h+3)*100;
+    $hmin = ($hr-3)*100;  // min and max time as hh00
+    $hmax = ($hr+3)*100;
+    if($debug) echo "ferrytraileralert hmin=$hmin, hmax=$hmax<br>";
 
     // loop through ferry run times and find each scheduled run that falls within the low tide window of low tide time +- 3 hrs.
     for($i=0; $i<count($ST); $i=$i+2){
@@ -275,13 +301,7 @@ function timeampm($t) {
 }
 
 ////////////  Use Dailycache.txt 12/6/22. ////////////////////////////////////////////////////////////////////////////////////////////////////////
-//445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,221,memorialday,619,704,laborday,1111,thanksgiving,thanksgiving+1,1224,1225);545;*;705;*;820;*;
-//930;(!(gDayofWeek==1&&(gWeekofMonth==1||gWeekofMonth==3)));1035;*;1210;*;
-//1230;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1445;*;
-//1515;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1550;*;
-//1625;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1700;*;
-//1735;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1810;*;
-//1920;*;2035;*;2220;(!InList(gMonthDay,1015,1113))
+
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
