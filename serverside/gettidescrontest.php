@@ -1,7 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  gettidecron - gets the tides json structure from tidesandcurrents.noaa.gov
-//  web site and writes it to tidedata.txt in 'aeris' format.
+//  web site and writes it to tidedatainclude.txt in 'aeris' format.
 //  this file is included into 'dailycache.txt' by a <include directive. 
 //
 //  Called by cron every 6 hours (4 times/day). 
@@ -16,10 +16,11 @@
 //  rfb. 9/6/22.  Change file to lowtideswarninginclude.
 //  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
 //  rfb. 1/6/23.  Calculate low tide at ferry run times for the low tide warning.
+//  rfb. 1/7/23.  Change include file to tidedatainclude.txt
 //
     $SAVED = [];  // saved data
     $debug = true; // true for debug print
-    $file = "tidedata.txt";
+    $file = "tidedatainclude.txt";
     $lowtidefile = "lowtidewarninginclude.txt";
     chdir("/home/postersw/public_html");  // move to web root
     date_default_timezone_set('America/Los_Angeles');

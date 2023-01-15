@@ -5,12 +5,13 @@
 //  this file is picked up by the the app directly.
 //  Called by cron every morning at midnight
 //  Bob Bedoll. 10/31/19  Replaced the navy site because it is down till april 2020. Free account at here.com.
+//  1/15/23. Changed file name to moondatainclude.txt.
 //
 //  API RETURN:
 //  {"astronomy":{"astronomy":[{"sunrise":"7:51AM","sunset":"5:55PM","moonrise":"11:58AM","moonset":"8:45PM","moonPhase":0.105,"moonPhaseDesc":"Waxing crescent","iconName":"cw_waxing_crescent"
 //}
 //
-$file = "moondata.txt";
+$file = "moondatainclude.txt";
 chdir("/home/postersw/public_html");  // move to web root
 
 // code to get moon rise/set & phase
