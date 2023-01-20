@@ -14,6 +14,7 @@
 //  rfb. 10/1/17. Call NOAA instead of Aeris because Aeris is no longer free.  But format the return to look like Aeris.
 //  rfb. 9/3/22.  Check for tides<-0.5' and issue a warning message to lowtidewarninginclude.txt.  This file is pickedup by in include in getdailycache.txt.
 //  rfb. 9/6/22.  Change file to lowtideswarninginclude.
+//  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
 //
     $file = "tidedata.txt";
     $lowtidefile = "lowtidewarninginclude.txt";
@@ -32,9 +33,8 @@
     $m = date ("m", $ts); // month with leading zero
     $d = date("d", $ts); // day with leading zero
     $link = $link . "&begin_date=" . date("Ymd%20H:i", $ts) . "&range=200";
-    //echo $link; //debug
-    //return 0;///////////////////////////////////////////////////////////
 
+    // try 10 times to get the noaa tide data
     for ($x = 0; $x <= 10; $x++) {
         $str = "";
         $str = file_get_contents($link);
@@ -50,11 +50,9 @@
         echo("tide cron run: NOAA ERROR !!!\n $str");
         return 0;
     }
-    // write to data file
-    //echo $str; // debug
 
-    $strout = reformatdata($str);  // reformat
-
+    // write data to tidedata.txt file
+    $strout = reformatdata($str);  // reformat to aeris format
     $j = file_put_contents($file, $strout);  // save the data
     if($j <= 0) {  // if not success
         echo("tide cron run: file_put_contents ERROR !!!\n $j $strout");
@@ -82,7 +80,8 @@
 
     function reformatdata($reply) {
         global $lowtidefile, $mtoday, $dtoday, $htoday;
-        $lowtidetrigger = -0.5;
+        $lowtidetrigger = -0.5; // low tide trigger in feet
+        $hightidetrigger = 14.6; // high tide trigger in feet
         //echo $reply . "<br/>"; //debug//
         $jreply = json_decode($reply);  // decode the json reply
         //var_dump($jreply);
@@ -95,6 +94,7 @@
         }
         $str = '{"success":true,"error":null,"response":{"id":"9446705","periods":[';
         $lowtidewarning = "";
+        $hightidewarning = "";
         $n = 0;
 
         // loop through tide predictions from NOAA
@@ -103,26 +103,38 @@
             $t = $tide->t;  //"2017-10-01 04:15" -> "2012-04-08T04:47:00-07:00"
             // convert to AERIS format for backward compatibility
             $str = $str . '{"dateTimeISO": "' . substr($t, 0, 10) . "T" . substr($t, 11, 5) . ':00-07:00",' .
-                '"type": "' . strtolower($tide->type) . '", "heightFT": ' . number_format($tide->v, 1) . "}";
+                '"type": "' . strtolower($tide->type) . '", "heightFT": ' . number_format($tide->v, 1) . "}"; 
             
-            // if today low tide < -1', create a warning message.  Added 9/1/22.
+            // check for extreme low or high tides TODAY
             if((intval($mtoday)==intval(substr($t,5,2))) && (intval($dtoday)==intval(substr($t,8,2)))) {  // if today
-                //echo "today=$t "; // debug
-                if($tide->type == "L") { // if low tide
-                    if(floatval($tide->v) <= $lowtidetrigger) { // if <= -1' 
-                        $hr = intval(substr($t, 11, 2)); // tide hour
-                        if(($hr >5) && ($hr<23) && ($htoday<=($hr+3))) { // if >5am and < 11pm  and less than 3 hours ago
-                            $lowtidewarning = "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
-                            echo $lowtidewarning; ///////DEBUG///////////
-                            echo "hr=$hr, htoday=$htoday ";
+                switch ($tide->type){
+                    // if today low tide < -.5', create a warning message.  Added 9/1/22
+                    case "L":  // if low tide
+                        if(floatval($tide->v) <= $lowtidetrigger) { // if <= -1' 
+                            $hr = intval(substr($t, 11, 2)); // tide hour
+                            if(($hr >5) && ($hr<23) && ($htoday<=($hr+3))) { // if >5am and < 11pm  and less than 3 hours ago
+                                $lowtidewarning = "<span style='color:red;font-weight:bold'>Ferry alert for trailers: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
+                                echo $lowtidewarning; echo "hr=$hr, htoday=$htoday ";
+                            }
                         }
-                    }
+                        break;
+                    // if today high tide > 14.5', create a warning
+                    case "H": // if high tide issue a warning
+                        if(floatval($tide->v) >= $hightidetrigger) { // if >= 14.5' 
+                            $hr = intval(substr($t, 11, 2)); // tide hour
+                            if(($htoday<=($hr+2))) { // if  less than 2 hours ago
+                                $hightidewarning = "<span style='color:black;font-weight:bold'>High tide alert: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
+                                echo $hightidewarning; echo "hr=$hr, htoday=$htoday ";
+                            }
+                        }
+                        break;
                 }
             }
+            
             $n = $n + 1;
         }
         $str = $str . "]}}";
-        file_put_contents($lowtidefile, $lowtidewarning);
+        file_put_contents($lowtidefile, $lowtidewarning . $hightidewarning);  // issue low & high tide warnings
         return $str;
     }
 
