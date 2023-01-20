@@ -35,8 +35,9 @@
 //  1.43 12/12/22. Revise ketron latitude.
 //  1.44 12/16/22. Add debug printouts under control of $debug to make it easy to turn on debug.
 //  1.45 12/19/22  Improve Ketron times
+//  1.46 1/20/23.  Change ketron times to not assume boat will always go to ST.  Use previous port to determine next port.
 
-$ver = "1.45"; // 12/19/22.
+$ver = "1.46"; // 1/20/23.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -174,30 +175,40 @@ function timetocross() {
     $ketron = "";
     $ketronDockTime = 6; // avg ketron dock time
     $ketronToStTime = 11; // avg Ke to St time
+    $ketronToAITime = 18; // avg Ke to AI time
+    $ferryport = $SAVED[$MMSI];  // get last port based on ship id
 
     // Ketron Special Case:   (assumes any trip to Ketron then goes on to St)
     //   if below the tip of Ketron, OR if above the tip of ketron but headed SE
     //      do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if(($lat <= $latKeNTip) || ($lat<47.177 && $long>-122.640 && $long<-122.624 && $course>100 && $course <180 )) { // if southerly westerly course, assume arriving.
-        $ferrystate = "toST"; // travelling to steilacoom but via ketron
+        // set ferry state based on previous port. Assume ferry will continue to next port after Ketron.
+        $ferrystate = ($ferryport=="A" ? "toST": "toAI"); // set ferry state based on previous port. Assume ferry will continue to next port after Ketron.
         if(($long<$longKe) || ($course>99 & $course < 340))  { // if southerly westerly course, assume arriving.
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
-            if($t <= 0) {
-                $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
-                if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
-                else return "docking @Ke, arriving @St in $timetoarrival m";
+            //    $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
+            //    if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
+            //    else return "docking @Ke, arriving @St in $timetoarrival m";
+            if($ferrystate = "toST") {  // if headint to St
+                $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
+                return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
+            } else {  // heading to AI
+                $timetoarrival = floor($t + $ketronDockTime + $ketronToAITime - $deltamin); // time to arrival at steilacoom
+                return "stopping @Ke in $t m, arriving @AI in $timetoarrival m";    
             }
-            $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
-            return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
         } else { 
             // if not arriving, it must be leaving
-            $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
-            return "leaving Ke, arriving @St in $timetoarrival m";
+            if($ferrystate = "toST") {  // heading to St
+                $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
+                return "leaving Ke, arriving @St in $timetoarrival m";
+            } else {  // heading to AI
+                $timetoarrival = floor($ketronToAITime - $deltamin); // time to arrive in steilacoom
+                return "leaving Ke, arriving @AI in $timetoarrival m";    
+            }
         }
     }
 
-    $ferryport = $SAVED[$MMSI];  // get last fort based on ship id
     // Default: if coming from S, it is headed to A, . Added 1.29 2/22/21
     // $courseto = destination port.  $ferryport = previous port
     if($ferryport=="S") $courseto = "A";
@@ -262,11 +273,11 @@ function reportatdock() {
     global $SAVED;
     $ketronDockTime = 6; // avg ketron dock time
     $ketronToStTime = 11; // avg Ke to St time
+    $ketronToAITime = 18; // avg Ke to AI time
 
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  
         // At AI
-        //file_put_contents($MMSI, "A");
         $SAVED[$MMSI] = "A"; // remember last position of ferry
         $ri = "font_download";
         $ferrystate = "atAI";  // at AI
@@ -274,22 +285,24 @@ function reportatdock() {
 
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         // At Steilacoom
-        //file_put_contents($MMSI, "S");
         $SAVED[$MMSI] = "S"; 
         $ri = "home";
         $ferrystate = "atST";  // at steilacoom
         return "docked @St";
 
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
-        // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
-        if($lt[2]>=16 && $lt[2]<=17) {
-            //file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
-            $SAVED[$MMSI] = "A";
-        }
+        // At Ketron
         $ri = "do_not_disturb_on";
-        $ferrystate = "toST"; // moving to ST;
-        $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
-        return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
+        //ferrystate = "toST"; // moving to ST;  disabled 1/20/23 to allow for stops in run from ST to AI
+        if($SAVED[$MMSI] == "A"){  // if boat came from AI, assume it will continue to ST
+            $ferrystate = "toST";
+            $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
+            return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
+        } else {  // boat was at ST, assume it will go to AI
+            $ferrystate = "toAI";
+            $timetoarrival =  floor($ketronDockTime/2 + $ketronToAITime - $deltamin); // time to arrival at ST in minutes
+            return "docked @Ke, arriving @AI in $timetoarrival m";  // allow for extended docking
+        }
 
     } else {
         // stopped somewhere. Report distance to AI or Steilacoom
@@ -398,8 +411,8 @@ function logPosition($log) {
 
 //////////////////////////////////////////////////////////////////////////////
 // check for late - check for ferry being late and adds a message
-//      Don't call if running 2 ferrys. Its too confusing.
-//  entry   globals $ferrystate = atST, toAI, atAI, toST
+//      Don't call if running 2 ferrys. Its too confusing and $ferrystate is unsafe for multiple boats.
+//  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
 //          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
 //  side effects:  if late, writes to ferrylatelog.txt and stdout
