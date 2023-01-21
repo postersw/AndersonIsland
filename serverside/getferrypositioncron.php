@@ -388,7 +388,8 @@ function abortme($msg) {
 function logPosition($log) {
     global $fa, $px, $MMSICA;
     global $ver, $deltamin;
-
+    
+    if(count($fa)==0) return; // if no poisiton data
     $tlh = fopen($log, 'a');  // append to log
     $s1 = ""; $s2 = "";
     //  this mess is to ensure that the boats are always in the same column if there are 2 boats

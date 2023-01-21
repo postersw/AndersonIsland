@@ -16,7 +16,7 @@
 //  rfb. 9/6/22.  Change file to lowtideswarninginclude.
 //  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
 //
-    $file = "tidedata.txt";
+    $file = "tidedatainclude.txt";
     $lowtidefile = "lowtidewarninginclude.txt";
     chdir("/home/postersw/public_html");  // move to web root
     date_default_timezone_set('America/Los_Angeles');
