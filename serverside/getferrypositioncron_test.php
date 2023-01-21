@@ -436,7 +436,15 @@ function checkforLateFerry() {
             } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight. up to 20 minutes late for next run.
+            $priorrun = $SAVED['nextrunST'];
+            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight. up to 30 minutes late for next run.
+            // if ferry didn't take next run, use prior run as time of next run
+            if($now < $nextrun) {  // if its before the next run, then did it sail on previous run
+                if($ferryarrivaltime>0 && ($now-$ferryarrivaltime>30))  { // if it didn't sail on previous run
+                    $nextrun = $priorrun;
+                } 
+            }
+            $SAVED['nextrunST'] = $nextrun; // save time of next run
             $delaytime = $ETD - $nextrun;
             $ferryport = "St";
             break;
