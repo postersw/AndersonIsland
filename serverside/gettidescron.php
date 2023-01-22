@@ -124,7 +124,10 @@
                     case "H": // if high tide issue a warning
                         if(floatval($tide->v) >= $hightidetrigger) { // if >= 14.5' 
                             $hr = intval(substr($t, 11, 2)); // tide hour
-                            $hightidewarning = "<span style='color:blueviolet;font-weight:bold'>High tide alert: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
+                            $dfuture = intval(substr($t,8,2));  // tide date
+                            if($dfuture==$dtoday) $day = " today";
+                            else $day = " tomorrow";
+                            $hightidewarning = "<span style='color:blueviolet;font-weight:bold'>High tide alert: " . number_format($tide->v, 1) . "' at " . timeampm(substr($t, 11,5)) . $day . "</span><br/>";
                             echo $hightidewarning; echo "hr=$hr, htoday=$htoday ";
                         }
                         break;
@@ -145,7 +148,7 @@
 //  exit    diff in hours
 function TimeHrDiff($t) {
     global $mtoday, $dtoday, $htoday; // now
-    $mfuture = intval(substr($t,5,2));
+    //$mfuture = intval(substr($t,5,2));
     $dfuture = intval(substr($t,8,2));
     $hfuture = intval(substr($t,11,2));
     if($dfuture<$dtoday) $dfuture = $dtoday + $dfuture; // if crossing a month barrier, use today + dfuture;
