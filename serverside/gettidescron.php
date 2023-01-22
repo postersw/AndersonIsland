@@ -15,6 +15,7 @@
 //  rfb. 9/3/22.  Check for tides<-0.5' and issue a warning message to lowtidewarninginclude.txt.  This file is pickedup by in include in getdailycache.txt.
 //  rfb. 9/6/22.  Change file to lowtideswarninginclude.
 //  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
+//  rfb. 1/21/23. Look 24 hrs ahead for warnings.
 //
     $file = "tidedatainclude.txt";
     $lowtidefile = "lowtidewarninginclude.txt";
@@ -106,7 +107,8 @@
                 '"type": "' . strtolower($tide->type) . '", "heightFT": ' . number_format($tide->v, 1) . "}"; 
             
             // check for extreme low or high tides TODAY
-            if((intval($mtoday)==intval(substr($t,5,2))) && (intval($dtoday)==intval(substr($t,8,2)))) {  // if today
+            $tdiff = TimeHrDiff($t);
+            if($tdiff>0 && $tdiff<24) {
                 switch ($tide->type){
                     // if today low tide < -.5', create a warning message.  Added 9/1/22
                     case "L":  // if low tide
@@ -122,10 +124,8 @@
                     case "H": // if high tide issue a warning
                         if(floatval($tide->v) >= $hightidetrigger) { // if >= 14.5' 
                             $hr = intval(substr($t, 11, 2)); // tide hour
-                            if(($htoday<=($hr+2))) { // if  less than 2 hours ago
-                                $hightidewarning = "<span style='color:black;font-weight:bold'>High tide alert: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
-                                echo $hightidewarning; echo "hr=$hr, htoday=$htoday ";
-                            }
+                            $hightidewarning = "<span style='color:blueviolet;font-weight:bold'>High tide alert: " . number_format($tide->v, 1) . "' tide at " . timeampm(substr($t, 11,5)) . "</span><br/>";
+                            echo $hightidewarning; echo "hr=$hr, htoday=$htoday ";
                         }
                         break;
                 }
@@ -137,6 +137,22 @@
         file_put_contents($lowtidefile, $lowtidewarning . $hightidewarning);  // issue low & high tide warnings
         return $str;
     }
+
+//////////////////////////////////////////////////////////////////////////
+// TimeHrDiff - returns the difference in hours as (future-now). $t is n hours ahead of now.
+//  entry   $t = future tidetime, as 2012-04-08T04:47:00-07:00
+//          uses global 'now' values
+//  exit    diff in hours
+function TimeHrDiff($t) {
+    global $mtoday, $dtoday, $htoday; // now
+    $mfuture = intval(substr($t,5,2));
+    $dfuture = intval(substr($t,8,2));
+    $hfuture = intval(substr($t,11,2));
+    if($dfuture<$dtoday) $dfuture = $dtoday + $dfuture; // if crossing a month barrier, use today + dfuture;
+    $delta = ($dfuture*24) + $hfuture - ($dtoday*24) - $htoday;  // future hours - current hours
+    echo "mdoay=$mtoday,dtoday=$dtoday,htoday=$htoday, future=$t, delta=$delta<br>";  // debug
+    return $delta;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //  timeampm - convert time to am/pm
