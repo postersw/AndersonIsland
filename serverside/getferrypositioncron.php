@@ -36,8 +36,9 @@
 //  1.44 12/16/22. Add debug printouts under control of $debug to make it easy to turn on debug.
 //  1.45 12/19/22  Improve Ketron times
 //  1.46 1/20/23.  Change ketron times to not assume boat will always go to ST.  Use previous port to determine next port.
+//  1.47 1/31/23.  Look back 50 minutes to find run time if At ST or At AI.
 
-$ver = "1.46"; // 1/20/23.
+$ver = "1.47"; // 1/31/23
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -60,7 +61,8 @@ $fa = []; // ferry array, 0, 1, or 2 arrays of data
 $mi = "<i class='material-icons mptext'>";
 $ri = "";
 $debug = false;
-
+//$debug = true; /////////////////////////////////////DEBUG
+if($debug) echo "$ver <br>";
 
 // instantanious position retrieved from maringtraffic.com
 $speed = 0;  // speed in  knots tenths
@@ -449,7 +451,7 @@ function checkforLateFerry() {
             } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight. up to 20 minutes late for next run.
+            $nextrun = getTimeofNextRun("ST", 50);  // next run time in minutes-since-midnight. up to 50 minutes late for next run.
             $delaytime = $ETD - $nextrun;
             $ferryport = "St";
             break;
@@ -472,7 +474,7 @@ function checkforLateFerry() {
             } else $ferryarrivaltime = $SAVED["ferryarrivaltimeAI"]; //$ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("AI");  // next run time minutes since midnight second
+            $nextrun = getTimeofNextRun("AI", 50);  // next run time minutes since midnight second. up to 50 min late.
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "AI";
             break;
@@ -577,19 +579,22 @@ $gWeekofMonth = 0;
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
 //  entry   $STAI = "AI" or "ST"
+//          $backup = how many minutes to turn back the clock to find the next run.
 //  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
 //  CAUTION: resets global timezone to PT
 //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
 //    30 minutes late.  After 30 minutes late it will find the next run.
-function getTimeofNextRun($STAI)  {
+function getTimeofNextRun($STAI, $backup=30)  {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
     global $SAVED;  // persistent data
     global $debug;
 
+    //$backup = 30;
+    //$backup = 50; // allowed late time.  This doesn't work because once a ferry sails it trys to find the next run, and this will find a previous run.
     $dailycache = "dailycache.txt";
     date_default_timezone_set("America/Los_Angeles"); // set PDT
-    $gtimestamp = time(); // time
-    $loctime = localtime($gtimestamp - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    $gtimestamp = time(); // time in seconds
+    $loctime = localtime($gtimestamp - $backup*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
     if($debug) echo "lt=$lt <br>";//DEBUG
