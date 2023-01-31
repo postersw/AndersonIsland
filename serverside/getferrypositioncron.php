@@ -176,7 +176,7 @@ function timetocross() {
     $latKeNTip = 47.1673; // ketron northern tip
     $ketron = "";
     $ketronDockTime = 6; // avg ketron dock time
-    $ketronToStTime = 11; // avg Ke to St time
+    $ketronToStTime = 8; // avg Ke to St time
     $ketronToAITime = 18; // avg Ke to AI time
     $ferryport = $SAVED[$MMSI];  // get last port based on ship id
 
