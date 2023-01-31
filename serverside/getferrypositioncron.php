@@ -274,7 +274,7 @@ function reportatdock() {
     global $ferrystate, $timetoarrival;
     global $SAVED;
     $ketronDockTime = 6; // avg ketron dock time
-    $ketronToStTime = 11; // avg Ke to St time
+    $ketronToStTime = 8; // avg Ke to St time
     $ketronToAITime = 18; // avg Ke to AI time
 
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
