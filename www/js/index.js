@@ -82,6 +82,8 @@
         1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
         1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time.
         1.34.083022. Add 'Load Test Data' button to call getdailycachetest.php.
+    2023
+        1.35.022523. Handle a null schedule for a fully cancelled ferry.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -102,9 +104,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.34.083022";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.35.022523";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -2029,6 +2031,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
 
     InitializeDates(0); // reset to today
     if (i < ferrytimes.length) return ft
+    return ft
 }
 
 
