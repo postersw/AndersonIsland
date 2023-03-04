@@ -503,7 +503,7 @@ function checkforLateFerry() {
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
-    echo $latedebug . "\n $delaymsg";
+    if($delaytime > 12) echo $latedebug . "\n $delaymsg";
     return $delaymsg;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
