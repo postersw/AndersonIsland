@@ -83,7 +83,7 @@
         1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time.
         1.34.083022. Add 'Load Test Data' button to call getdailycachetest.php.
     2023
-        1.35.022523. Handle a null schedule for a fully cancelled ferry.
+        1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -104,7 +104,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.35.022523";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.35.030723";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
@@ -1423,9 +1423,9 @@ function ParseDailyCache(data) {
     parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
     parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
     parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
-    ParseFerryTimes();
-
     parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
+    ParseFerryTimes();
+    
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
     if (!IsEmpty(s)) {
