@@ -12,6 +12,7 @@
 //  rfb. 12/27/22. Initial version.
 //       12/28/22. Add weather conditions to alerts.
 //        1/4/22.  Add log file weatherwarninglog.txt.
+//        4/6/23.  Don't issue snow warning unless temp is <33
 
     $link = 'https://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0'; 
     chdir("/home/postersw/public_html");  // move to web root
@@ -132,8 +133,9 @@ function CreateWeatherWarnings($jsonforecastdata) {
         // weather alerts
         if($rainalert=="") {  // if no alert
             if(array_search($r->weather[0]->id, $alertids)!==false) {  // if id code found in alertids array
-                $rainalert = "<b>Weather alert for $dt: " . $r->weather[0]->description . "</b><br>";
-                echo $rainalert;
+                if((strpos($r->weather[0]->description, "snow") == false) || ($lowtemp < 33))    // if snow, temp must be <33 to give warning
+                    $rainalert = "<b>Weather alert for $dt: " . $r->weather[0]->description . "</b><br>";
+                    echo $rainalert;
             }
         }
         //echo ("timef=$timef,$dt  wind=$wind from $winddir, lowtemp=$lowtemp, hightemp=$hightemp, rain=$rainalert<br>");
