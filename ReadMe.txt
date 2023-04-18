@@ -374,11 +374,14 @@ IOS DEBUG/BUILD
 
 -----------------------------------------------------------------------------------------------------------------------
 
-IOS CERTIFICATES  updated 5/5/22.
+IOS CERTIFICATES  updated 4/18/23.
 Certificates last just 1 year. Provisioning profiles last 1 year. certSigningRequests last 5 years.
 HISTORY
 These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac
  and the developer.apple.com web site.
+2024: Need to create new certificate signing requests.
+4/18/23 on LA952.New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest. 
+       AIADev0423.cer/p12. AndersonIslandDevPush.0423.MobileProvision.  AIAProd0423.cer/p12. AIADistributionPush0423.MobileProvision. Uploaded to OneDrive/AIAssistant/IOS
 5/5/22 on LA952. New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest.
 2/27/21 On LA952: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
@@ -424,11 +427,12 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 		Go to Certificate.  
 		Click on '+' to create a new certificate.  
 		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.  NOTE: expires 5/5/23.
-		PRODUCTION: click on 'Apple Distribution. Sign for App Store and Ad Hoc'.
+		PRODUCTION: click on 'iOS Distribution. Sign for App Store and Ad Hoc'.
  	Back to the Mac only if you don't already have a certSigningRequest file (you one for dev and a different one for prod). 
 		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
 		NOTE: I can use the existing CSR files for dev and prod that I created on 3/17. Upload it by dragging it into the 
 		'choose file' box on Safari.
+		NOTE: In 2024, I will have to create new CSR files. The ones from 3/17 will have expired.
 		
 		Create A CSR (I should not need to do the following:) : 
 		 To create a CSR file, follow the instructions below to create one using Keychain Access.
@@ -452,11 +456,13 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
 		Rename it to AIADevmmyy.cer or AIAProdmmyy.cer.
 	Back to the Mac.
-		Then double click the .cer file to install in Keychain Access.
+		Then Open KeyChain Access and go to the My Certificates page. Now pull to cer file into Keychain access
+		    OR double click the .cer file to install in Keychain Access.
 		It now shows up in Keychain Access- Certificates as
 			 'Apple Development: Robert Bedoll' or Apple Distribution: Robert Bedoll.  and it will expire 1 year from today.
 			 (last done on 2/28/21, expires on 2/28/22).
 			 5/5/22: shows up as iPhoneDeveloper ... Bedoll, expires 5/5/23. and iPhoneDistribution... expires 5/5/23
+			 4/18/23: shows up as iPhoneDeveloper ...Bedoll BVJ9PQP3UC expires 4/17/24 and iPhone Distribution 7EF5G3673A expires 4/17/24.
 	    KEYCHAIN ACCESS:
 		select Certificates (not Keys), and the certificate just added (iPhone Developer or iPhone Distribution).  
 		right click on Export.  Select the P12 File Format.
@@ -478,7 +484,7 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
 		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.
 			It has no pw because Pushbots does not accept a pw. 
-	Copy the p12 and mobileprovision to OneDrive: AIAssistant/IOS to use in VoltBuild.
+		Copy the p12 and mobileprovision to OneDrive: AIAssistant/IOS to use in VoltBuild.
 		NOW WHAT? I think I am done. 
 		
 
