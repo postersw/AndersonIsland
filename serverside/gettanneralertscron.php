@@ -42,6 +42,7 @@
 //       11/4/22. Issue error if 'hasError'=true.
 //       12/10/22. Implement tannersavefile.json to persist data in $SAVED
 //       12/18/22. Go back to status unavailable if hasError=true
+//       6/3/23.   Name change to TANNER ELECTRIC COOP
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -221,7 +222,7 @@ function gettimeoflaststatus() {
     }
     
     // look for tanner time stamp
-    $i = strpos($str, '"tannerelectric"');
+    $i = strpos($str, '"TANNER ELECTRIC COOP"');
     if($i===false) {
         $tannererror =  "No tannerelectric time stamp from $tannerstatus: $str";
         return 0;
