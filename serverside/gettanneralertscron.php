@@ -61,8 +61,8 @@
     $dateday = date("g:i a D");
     $realdate = date("m/d/y g:i a");
 
-    //$AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
-    $AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
+    $AI = "<communityDescriptor>53053</communityDescriptor>";  // pierce county FIPS number
+    //$AI = "<communityDescriptor>Anderson Island</communityDescriptor>";  // AI identifier
     chdir("/home/postersw/public_html");  // move to web root
     $SAVED = json_decode(file_get_contents($savefile), TRUE); // load persistant data
 
