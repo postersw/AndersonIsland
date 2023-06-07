@@ -24,13 +24,14 @@
 //                   Currently the only way to set the fire safety burn ban is to set it in file fireburnbanstatus.txt.
 //      12/18/21:  Messages improved.  No data from Outdoor bun ban will not about the script. No data from Air Quailty WILL abort the script.
 //      6/19/22:  Removed fire burn ban automated check.
+//      6/6/23:  Turn on burn ban.l
 
     $burnbanlink = "https://secure.pscleanair.org/AirQuality/BurnBan";
     $firebblink = "https://www.piercecountywa.gov/982/Outdoor-Burning?PREVIEW=YES";//  
     $fireburnbanRSS = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=1&CID=All-newsflash.xml";  //rss feed
     $burnbanfile = "burnban.txt";
-    $firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban (lifted 10/24/22)</a>";
-    //$firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban (8/4/22)</a>"; // 8/4/22
+    //$firebb = "<a href=\"$firebblink\" style=\"color:green;\">No Outdoor Burn Ban (lifted 10/24/22)</a>";
+    $firebb = "<a href=\"$firebblink\" style=\"color:red;font-weight:bold\">County-wide Outdoor Burn Ban (6/7/23)</a>"; // 8/4/22
 
     chdir("/home/postersw/public_html");  // move to web root
 
