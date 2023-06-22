@@ -43,6 +43,7 @@
 //       12/10/22. Implement tannersavefile.json to persist data in $SAVED
 //       12/18/22. Go back to status unavailable if hasError=true
 //       6/3/23.   Name change to TANNER ELECTRIC COOP
+//       6/22/23.  Remove call to check status because it wasn't working reliably.
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -72,15 +73,15 @@
 
     // get the status of the last time
     // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
-    $uts = gettimeoflaststatus();
-    if($uts==0) {  // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
-        //echo $tannererror;
-        $str = "";  // 11/30. Treat as an outage.
-        ///$msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: Tap for Map.</span>";
-        $msg = $shorttime . ": Status Unavailable. Tap for Map.<p hidden>No Outages</p>";
-        file_put_contents($tanneroutagefile, $msg . $tweet);
-        exit(0);
-    }
+    // $uts = gettimeoflaststatus();
+    // if($uts==0) {  // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
+    //     //echo $tannererror;
+    //     $str = "";  // 11/30. Treat as an outage.
+    //     ///$msg =  "<span style='color:red;font-weight:bold'>$shorttime OUTAGE: Tap for Map.</span>";
+    //     $msg = $shorttime . ": Status Unavailable. Tap for Map.<p hidden>No Outages</p>";
+    //     file_put_contents($tanneroutagefile, $msg . $tweet);
+    //     exit(0);
+    // }
 
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -222,7 +223,7 @@ function gettimeoflaststatus() {
     }
     
     // look for tanner time stamp
-    $i = strpos($str, '"TANNER ELECTRIC COOP"');
+    $i = strpos($str, 'TANNER ELECTRIC COOP');
     if($i===false) {
         $tannererror =  "No tannerelectric time stamp from $tannerstatus: $str";
         return 0;
