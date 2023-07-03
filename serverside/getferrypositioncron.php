@@ -527,9 +527,9 @@ function checkforTwoBoats() {
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     // Sun, Mon, Fri 12 - 1200 - 1800 
-    echo "loctime 6=" . $loctime[6] . ", loctime[2]=" . $loctime[2];
+    //echo "loctime 6=" . $loctime[6] . ", loctime[2]=" . $loctime[2];
     if(($loctime[6]==0 || $loctime[6]==1 || $loctime[6]==5) && ($loctime[2]>=12 && $loctime[2]<=18)) {
-        echo " two boats";
+        //echo " two boats";
         return "<span style='color:darkgreen'>Two boat service now.</span>"; 
     }
     return "";
