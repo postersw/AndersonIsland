@@ -37,8 +37,9 @@
 //  1.45 12/19/22  Improve Ketron times
 //  1.46 1/20/23.  Change ketron times to not assume boat will always go to ST.  Use previous port to determine next port.
 //  1.47 1/31/23.  Look back 50 minutes to find run time if At ST or At AI.
+//  1.48 7/3/23.   Add 2 boat message if 2 boats and Fri, Sun, Mon
 
-$ver = "1.47"; // 1/31/23
+$ver = "1.48"; // 7/3/23
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -129,7 +130,11 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-if($pi==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+if($pi==1) {
+    $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+} elseif($pi==2) {
+    $ferrylate = checkforTwoBoats();  // if running 2 boats, issue 2 boat msg on fri, sun, mon
+}
 $pstr = "$ferrylate<br><span style='color:darkblue'>&nbsp;&nbsp;$pstr</span>";  // build message as <pstr><ferrylate>
 
 // save output and info
@@ -511,6 +516,23 @@ function checkforLateFerry() {
 function ftime($t) {
     if($t >= 13*60) $t = $t - 12*60;
     return  floor($t/60) . ":" . sprintf("%02d", ($t%60));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//  checkforTwoBoats - returns message if two boats are running. Only call if pi=2.
+//  entry   none
+//  exit    returns 2 boat message if FRI,SAT,MON afternoon
+//
+function checkforTwoBoats() {
+    date_default_timezone_set("America/Los_Angeles"); // set PDT
+    $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    // Sun, Mon, Fri 12 - 1200 - 1800 
+    echo "loctime 6=" . $loctime[6] . ", loctime[2]=" . $loctime[2];
+    if(($loctime[6]==0 || $loctime[6]==1 || $loctime[6]==5) && ($loctime[2]>=12 && $loctime[2]<=18)) {
+        echo " two boats";
+        return "<span style='color:darkgreen'>Two boat service now.</span>"; 
+    }
+    return "";
 }
 
 // //////////////////////////////////////////////////////////////////////////////////
