@@ -70,6 +70,7 @@
     $oldmsg = file_get_contents($tanneroutagefile);
     $str = file_get_contents($tanneroutagelink); // read the outage status
     if($str=="") $tannererror = "No reply to $tanneroutagelink. ";
+    $uts = 0;
 
     // get the status of the last time
     // if a status error, ignore the return status and treat it as a tanner outage. Short term bug fix 11/30. Remove when tanner fixes the communityDescriptor.
