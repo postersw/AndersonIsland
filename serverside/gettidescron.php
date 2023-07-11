@@ -16,6 +16,7 @@
 //  rfb. 9/6/22.  Change file to lowtideswarninginclude.
 //  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
 //  rfb. 1/21/23. Look 24 hrs ahead for warnings.
+//  rfb. 7/11/23. High tide trigger to 14.2.
 //
     $file = "tidedatainclude.txt";
     $lowtidefile = "lowtidewarninginclude.txt";
@@ -82,7 +83,7 @@
     function reformatdata($reply) {
         global $lowtidefile, $mtoday, $dtoday, $htoday;
         $lowtidetrigger = -0.5; // low tide trigger in feet
-        $hightidetrigger = 14.6; // high tide trigger in feet
+        $hightidetrigger = 14.2; // high tide trigger in feet
         //echo $reply . "<br/>"; //debug//
         $jreply = json_decode($reply);  // decode the json reply
         //var_dump($jreply);
