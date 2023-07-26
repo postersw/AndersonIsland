@@ -152,10 +152,21 @@ function TimeHrDiff($t) {
     //$mfuture = intval(substr($t,5,2));
     $dfuture = intval(substr($t,8,2));
     $hfuture = intval(substr($t,11,2));
-    if($dfuture<$dtoday) $dfuture = $dtoday + $dfuture; // if crossing a month barrier, use today + dfuture;
+    if($dfuture<$dtoday) $dfuture = DaysInMonth($mtoday) + $dfuture; // if crossing a month barrier, add days in month to future date
     $delta = ($dfuture*24) + $hfuture - ($dtoday*24) - $htoday;  // future hours - current hours
-    echo "mdoay=$mtoday,dtoday=$dtoday,htoday=$htoday, future=$t, delta=$delta<br>";  // debug
+    echo "mtoday=$mtoday,dtoday=$dtoday,htoday=$htoday, future=$t, delta=$delta<br>";  // debug
     return $delta;
+}
+// return days in month ($m)
+function DaysInMonth($m) {
+    switch($m) {
+        case 9: return 30;
+        case 4: return 30;
+        case 6: return 30;
+        case 11: return 30;
+        case 2: return 28;
+        default: return 31;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
