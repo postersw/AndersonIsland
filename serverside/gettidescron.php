@@ -17,6 +17,7 @@
 //  rfb. 12/17/22. Add hightidewarning to 'lowtidewarninginclude.txt' if tide >= 14.5'. 
 //  rfb. 1/21/23. Look 24 hrs ahead for warnings.
 //  rfb. 7/11/23. High tide trigger to 14.2.
+//  rfb. 7/28/12. Change tide warning window to 14 hrs to avoid confusing messages for tomorrow.
 //
     $file = "tidedatainclude.txt";
     $lowtidefile = "lowtidewarninginclude.txt";
@@ -109,7 +110,7 @@
             
             // check for extreme low or high tides TODAY
             $tdiff = TimeHrDiff($t);
-            if($tdiff>0 && $tdiff<24) {
+            if($tdiff>0 && $tdiff<15) {
                 switch ($tide->type){
                     // if today low tide < -.5', create a warning message.  Added 9/1/22
                     case "L":  // if low tide
