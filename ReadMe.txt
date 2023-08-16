@@ -497,25 +497,29 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 
 
 ------------------------------------------------------------------------------------------------------------------------
-APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 7/13/21. Expires 8/12/2022.
-Last updated 8/1/22.
+APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 8/15/23.. Expires 9/15/24.
+Last updated 8/15/23.
+NOTE: There is a new way to do APN that does not require a yearly certificate renewal.  See OneSignal.
 
 For OneSignal 7/13/21. Allow about 1 hour.
 1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to 	LA952.macincloud.com,user168917, pw=pxt77203. This is the $25/m virtual mac.
-2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
+2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1)
 ) -> Certificates,Identifiers...
 3. I selected "Certificates +" at the top of the page.
 4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE (top right of page)
 5. Under Create A new Certificate I ensured that my App ID for andersion-island.andersonislandassistant was selected. Then I clicked on Continue.
 6. Under Create A New Certificate - Upload a Certificate Signing Request' I chose the existing AIAAPN2018.certSigningRequest instead of creating a new one. 
    8/1/22: Uploaded posterswprod.certSigningRequest from LA952.  This didn't seem to work because the certificate shows as Untrusted in Keychain.
-   Next time use the AIAAPN2018 certSigningRequest or create a new one.
+   8/15/23: uploaded RobertBedollA.certSigningRequest signing certificate (created 8/15/23).
 7. I clicked on CONTINUE to uploaded it.
 8. The next panel was "Download Your Certificate". I downloaded the new cer. It is named "aps.cer". 
 9. I named it apsPushProd08[yy].cer. So the next one should be apsPushProd0823, ... 
-     (on 8/1/22 I generated apsPushProd0822, on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
+     (on 8/15/23 I generated apsPushProd0823.cer, on 8/1/22 I generated apsPushProd0822, on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
 10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, 
-    type: ApplePushServices, exp 8/12/23. NOTE: 8/1/22 the certificate says UNTRUSTED. I don't know why.
+    type: ApplePushServices, exp 8/12/xx where xx is 1 year from today.
+	NOTE: If it doesn't show up in MyCertificates, but does show up in Certificates, then it is not tied to a private key on this machine.
+	You need to revoke it, then generate a new CSR from KeyChain Access->Certificate Assistance->Request a certificate from a certificate authority.
+	Then regenerate the APN cer starting at step 3 above. 
 11. I immediately right clicked on that certificate in KeychainAccess and selected 'Export ...".
 12. That brings up a Save As dialog with file format p12. I set the file name to APNProd08yy.p12
     When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
@@ -523,10 +527,10 @@ For OneSignal 7/13/21. Allow about 1 hour.
 	The file will be generated as APNProd08yy.p12 on the desktop.
 13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. DD1 Select my app.
 14. Click on 'SETTINGS' at top of screen..  Then click on Apple IOS.
-15. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Scroll down and then click on 'Choose File..."
+15. A CONFIGURE PLATFORM dialog appears.  Click on "Update Authentication".  Scroll down and then click on 'Choose File..."
 16. Choose the APNProd08yy.p12 file. Then click on SAVE or NEXT.   
 17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Cordova' icon. Then you get to another SAVE dialog.
-18. The Apple IOS status will now show the new certificate with 'expires August 31, 2023'.
+18. The Apple IOS status will now show the new certificate with 'Expires September 13, 2024'.
 19. For grins, save the P12 file on onedrive. Using Safari, go to onedrive.live.com. login to my account. 
 20. Go to files->Documents->PhoneGap->Keys and drag the file from my desktop onto the web browser window.
 21. You are done. Elapsed time 48 minutes.
