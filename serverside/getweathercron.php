@@ -4,7 +4,7 @@
 //  Reads weather from openweathermap.org and scans for weather alerts.
 //  Run hourly by cron.
 //      values that exceed trigger values cause alerts to be written to weatherwarninginclude.txt.
-//      this file is ready by getdailycache.php.
+//      this file is read by getdailycache.php.
 //
 //  Exit: Writes warning to "weatherwarninglog.txt".
 //        Writes log to "weatherwarninglog.txt"
@@ -13,6 +13,7 @@
 //       12/28/22. Add weather conditions to alerts.
 //        1/4/22.  Add log file weatherwarninglog.txt.
 //        4/6/23.  Don't issue snow warning unless temp is <33
+//        8/17/23. Set high temp alert to 93. 
 
     $link = 'https://api.openweathermap.org/data/2.5/forecast?id=5812092&units=imperial&APPID=f0047017839b75ed3d166440bef52bb0'; 
     chdir("/home/postersw/public_html");  // move to web root
@@ -93,7 +94,7 @@ function CreateWeatherWarnings($jsonforecastdata) {
     $utcadjustment = 8*3600; // convert to local time
     $windtrigger = 20;
     $lowtemptrigger = 25;
-    $hightemptrigger = 90;
+    $hightemptrigger = 93;
     $windalert = "";
     $tempalert = "";
     $rainalert = "";
