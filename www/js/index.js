@@ -84,6 +84,7 @@
         1.34.083022. Add 'Load Test Data' button to call getdailycachetest.php.
     2023
         1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
+        1.35.081823. Rebuilt with targetSdkVersion=33 for google requirement.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -104,7 +105,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.35.030723";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.35.081823";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
