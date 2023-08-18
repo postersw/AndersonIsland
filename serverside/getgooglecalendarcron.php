@@ -46,6 +46,8 @@
 //  05/17/2018 - 6 month lookahead. Change event limit to 999 but leave activity limit at 100.
 //  02/13/2019 - set or clear "refresh.txt" file.
 //  09/14/2019 - ignore \n in event description 
+//  12/1/2022 - fixed $me at line 60 in next year calculation
+//  1/21/2023 - allow for no description in event object
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -57,7 +59,7 @@ $ye = $y; // year end
 $me = $m + 6; // changed 5/18/18 from 3 months to 6 months
 $de = $d;
 if($me > 12) {  // if year rollover
-    $me = $m2 - 12;
+    $me = $me - 12;
     $ye = strval($y+1);
 }
 if($me == 2 && $de > 28) $de = 28;  // prevent illegal feb  date
@@ -128,7 +130,8 @@ function fcopy($etype, $ys) {
                 fwrite($fce, "0101;0000;0000;E;$ys Happy New Year\r\n");  // write year
                 echo "0101;0000;0000;E;$ys Happy New Year generated for event year change<br/>";
             }
-            $desc = str_replace("\n", " ", $event->description); // remove line feeds
+            if(property_exists($event, "description")) $desc = str_replace("\n", " ", $event->description); // remove line feeds
+            else $desc = "";
             $r = substr($event->start->dateTime,5,2) . substr($event->start->dateTime,8,2) . ";" . substr($event->start->dateTime,11,2) . substr($event->start->dateTime,14,2) . ";" .
                 substr($event->end->dateTime,11,2) . substr($event->end->dateTime,14,2)  . ";" .
                 $k . ";" . substr($event->summary, 2) . ";" . $event->location . ";" . $desc ;

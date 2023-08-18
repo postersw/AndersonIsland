@@ -120,12 +120,13 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 01/10/21. Ver 1.30.011021. Branch Ver130 created. Make ferry location a non-persistent variable so an old line is not displayed.
 02/27/21. Ver 1.30.022621. Google Play Beta (Android). Support use from other time zones. Built with PhoneGap Build.
 03/02/21.                  Google Play production rollout. 
-05/23/22. Ver 1.31.052322. New branch created from master after merge of 1.30.
+05/23/22. Ver 1.31.052322. Branch 1.31 created. from master after merge of 1.30.
 06/18/22. Ver 1.31.061822. Volt Build. Google Play Beta. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar.
 07/21/22. Ver 1.31.072122. Android Production. Volt Build. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar. Load daily cache hourly. Hanging indent on events/activities.
 07/28/22. Ver 1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
-----------------------------------------------------------------------------------------------------------------------------------------
+08/27/22. Ver 1.34		   Branch Ver134 created.
+---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
 	1. Merge current branch (e.g. Ver18) into Master:
@@ -139,27 +140,23 @@ GIT CREATE NEW BRANCH
 		2. Switch Current branch to Master: Screen "Branches". Select 'master'.
 		3. Select Merge.  Then set Merge from Branch "xxxx (e.g. Ver18)"  Into current Branch "Master" and commit changes after merging.  
 		4. Sync.
-	2. Create new branch directly on GitHub. github.com/postersw.
+	2. Before creating a new branch, be sure to create a GitHub Release for the previous release. Create a tag, e.g. v1.34, then create a Release, v1.34, with the release notes.
+	3. Create new branch directly on GitHub. github.com/postersw.
 		1. Select 'master' in the Branch dropdown.   
 		2. Select the Branch dropdown again, and fill in the name of the new branch, e.g. Ver131. Then select Create.
 		3. Then go to  Visual Studio Code on local machine and create a new local branch from this branch: 
-			Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
-			Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
-			Select origin/newbranchname, e.g. origin/Ver131
-			This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
-			
-			Alternate way: 
-			Select soure control -> ... -> Branch -> Create Branch From
-			Enter the name of the new branch, e.g. Ver131
-			Enter the name of the source branch, e.g. origin/Ver131.
-			After making changes, Commit, then then Sync.  If it says 'Publish branch' then you made a mistake with the branch name.l
-	2a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
+			a. Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
+			b. Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
+			c. Select origin/newbranchname, e.g. origin/Ver131
+			   This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
+
+	3a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
 		1. Select "Branches" menu
 		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
 		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
 		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
  		   Then it will appear in the 'remotes/origin' list.
-	3. New branch will be on GitHub as origin/newbranchname.  Be sure to use it on other PCs.
+	4. New branch will be on GitHub as origin/newbranchname.  Be sure to use it on other PCs.
 	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio Code GIT/Branches list, 
 	   try  running Fetch. Or set the VS branch to Master, and then run Fetch.
 	   If that doesn't work, try 'git fetch' from the command line.
@@ -377,11 +374,14 @@ IOS DEBUG/BUILD
 
 -----------------------------------------------------------------------------------------------------------------------
 
-IOS CERTIFICATES  updated 5/5/22.
+IOS CERTIFICATES  updated 4/18/23.
 Certificates last just 1 year. Provisioning profiles last 1 year. certSigningRequests last 5 years.
 HISTORY
 These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac
  and the developer.apple.com web site.
+2024: Need to create new certificate signing requests.
+4/18/23 on LA952.New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest. 
+       AIADev0423.cer/p12. AndersonIslandDevPush.0423.MobileProvision.  AIAProd0423.cer/p12. AIADistributionPush0423.MobileProvision. Uploaded to OneDrive/AIAssistant/IOS
 5/5/22 on LA952. New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest.
 2/27/21 On LA952: New Development Cert and new Prod cert and Updated Provisioning Profiles for org.anderson-island.andersonislandassistant
 	New Developement and Distribution certificates, using the OLD existing CertSigningRequest files.
@@ -427,11 +427,12 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 		Go to Certificate.  
 		Click on '+' to create a new certificate.  
 		DEVELOPMENT: Select 'iOS App Development'. Click on Continue.  NOTE: expires 5/5/23.
-		PRODUCTION: click on 'Apple Distribution. Sign for App Store and Ad Hoc'.
+		PRODUCTION: click on 'iOS Distribution. Sign for App Store and Ad Hoc'.
  	Back to the Mac only if you don't already have a certSigningRequest file (you one for dev and a different one for prod). 
 		To manually generate a Certificate, you need a Certificate Signing Request (CSR) file from your Mac. 
 		NOTE: I can use the existing CSR files for dev and prod that I created on 3/17. Upload it by dragging it into the 
 		'choose file' box on Safari.
+		NOTE: In 2024, I will have to create new CSR files. The ones from 3/17 will have expired.
 		
 		Create A CSR (I should not need to do the following:) : 
 		 To create a CSR file, follow the instructions below to create one using Keychain Access.
@@ -455,11 +456,13 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 		Download your certificate to your Mac desktop. It will be called ios_development.cer or ios_distribution.cer.
 		Rename it to AIADevmmyy.cer or AIAProdmmyy.cer.
 	Back to the Mac.
-		Then double click the .cer file to install in Keychain Access.
+		Then Open KeyChain Access and go to the My Certificates page. Now pull to cer file into Keychain access
+		    OR double click the .cer file to install in Keychain Access.
 		It now shows up in Keychain Access- Certificates as
 			 'Apple Development: Robert Bedoll' or Apple Distribution: Robert Bedoll.  and it will expire 1 year from today.
 			 (last done on 2/28/21, expires on 2/28/22).
 			 5/5/22: shows up as iPhoneDeveloper ... Bedoll, expires 5/5/23. and iPhoneDistribution... expires 5/5/23
+			 4/18/23: shows up as iPhoneDeveloper ...Bedoll BVJ9PQP3UC expires 4/17/24 and iPhone Distribution 7EF5G3673A expires 4/17/24.
 	    KEYCHAIN ACCESS:
 		select Certificates (not Keys), and the certificate just added (iPhone Developer or iPhone Distribution).  
 		right click on Export.  Select the P12 File Format.
@@ -481,7 +484,7 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 			The APN SSL Certificate (the push certificate) is ONLY FOR THE APN SERVER and validates the APN Server
 		  	(the Pushbots server) to the Apple APN Service. It is independent and separate from the code signing cert.
 			It has no pw because Pushbots does not accept a pw. 
-	Copy the p12 and mobileprovision to OneDrive: AIAssistant/IOS to use in VoltBuild.
+		Copy the p12 and mobileprovision to OneDrive: AIAssistant/IOS to use in VoltBuild.
 		NOW WHAT? I think I am done. 
 		
 
@@ -494,25 +497,29 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 
 
 ------------------------------------------------------------------------------------------------------------------------
-APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 7/13/21. Expires 8/12/2022.
-Last updated 8/1/22.
+APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 8/15/23.. Expires 9/15/24.
+Last updated 8/15/23.
+NOTE: There is a new way to do APN that does not require a yearly certificate renewal.  See OneSignal.
 
 For OneSignal 7/13/21. Allow about 1 hour.
 1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to 	LA952.macincloud.com,user168917, pw=pxt77203. This is the $25/m virtual mac.
-2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, XXX)
+2. Bring up Safari and log into the 'developer.apple.com' -> account (robertbedoll@gmail.com, DD1)
 ) -> Certificates,Identifiers...
 3. I selected "Certificates +" at the top of the page.
 4. Under Create a New Certificate I selected Services -> Apple Push Notification service SSL (Sandbox & Production) and clicked on CONTINUE (top right of page)
 5. Under Create A new Certificate I ensured that my App ID for andersion-island.andersonislandassistant was selected. Then I clicked on Continue.
 6. Under Create A New Certificate - Upload a Certificate Signing Request' I chose the existing AIAAPN2018.certSigningRequest instead of creating a new one. 
    8/1/22: Uploaded posterswprod.certSigningRequest from LA952.  This didn't seem to work because the certificate shows as Untrusted in Keychain.
-   Next time use the AIAAPN2018 certSigningRequest or create a new one.
+   8/15/23: uploaded RobertBedollA.certSigningRequest signing certificate (created 8/15/23).
 7. I clicked on CONTINUE to uploaded it.
 8. The next panel was "Download Your Certificate". I downloaded the new cer. It is named "aps.cer". 
 9. I named it apsPushProd08[yy].cer. So the next one should be apsPushProd0823, ... 
-     (on 8/1/22 I generated apsPushProd0822, on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
+     (on 8/15/23 I generated apsPushProd0823.cer, on 8/1/22 I generated apsPushProd0822, on 7/13/21 I generated apsPushProd0621.cer).  I moved it to the desktop. Apple name is:
 10. I double clicked on it which installed it in KeyChainAccess under MyCertificates as Apple Push Services:org.anderson-island.andersonislandassistant, 
-    type: ApplePushServices, exp 8/12/23. NOTE: 8/1/22 the certificate says UNTRUSTED. I don't know why.
+    type: ApplePushServices, exp 8/12/xx where xx is 1 year from today.
+	NOTE: If it doesn't show up in MyCertificates, but does show up in Certificates, then it is not tied to a private key on this machine.
+	You need to revoke it, then generate a new CSR from KeyChain Access->Certificate Assistance->Request a certificate from a certificate authority.
+	Then regenerate the APN cer starting at step 3 above. 
 11. I immediately right clicked on that certificate in KeychainAccess and selected 'Export ...".
 12. That brings up a Save As dialog with file format p12. I set the file name to APNProd08yy.p12
     When prompted for 'Enter a password which will be used to protect the exported items, DO NOT ENTER A PASSWORD (NO PASSWORD PROTECT)
@@ -520,10 +527,10 @@ For OneSignal 7/13/21. Allow about 1 hour.
 	The file will be generated as APNProd08yy.p12 on the desktop.
 13. I uploaded it to OneSignal using Safari on the Mac. www.onesignal.com. login as support@postersw.com. DD1 Select my app.
 14. Click on 'SETTINGS' at top of screen..  Then click on Apple IOS.
-15. A CONFIGURE PLATFORM dialog appears.  Click on "i'd like to replace my production .p12 certificate".  Scroll down and then click on 'Choose File..."
+15. A CONFIGURE PLATFORM dialog appears.  Click on "Update Authentication".  Scroll down and then click on 'Choose File..."
 16. Choose the APNProd08yy.p12 file. Then click on SAVE or NEXT.   
 17. A couple of 'NEXT' choices are necessary for 2 more dialogs. Make sure you choose the 'Cordova' icon. Then you get to another SAVE dialog.
-18. The Apple IOS status will now show the new certificate with 'expires August 31, 2023'.
+18. The Apple IOS status will now show the new certificate with 'Expires September 13, 2024'.
 19. For grins, save the P12 file on onedrive. Using Safari, go to onedrive.live.com. login to my account. 
 20. Go to files->Documents->PhoneGap->Keys and drag the file from my desktop onto the web browser window.
 21. You are done. Elapsed time 48 minutes.

@@ -81,6 +81,10 @@
         1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
         1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
         1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time.
+        1.34.083022. Add 'Load Test Data' button to call getdailycachetest.php.
+    2023
+        1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
+        1.35.081823. Rebuilt with targetSdkVersion=33 for google requirement.
  * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -101,9 +105,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.33.081222";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.35.081823";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
-const cr = "copyright 2016-2022 Robert Bedoll, Poster Software LLC";
+const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
 
@@ -1324,13 +1328,15 @@ function DegToCompassPointsTTS(d) {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //  GetDailyCache - retrieves the daily cache into the local storage objects and also uploads app stats
 //  Load from server using ajax async request. 
-//  calls getdailycache.php, which returns dailycache.txt, tides.txt, comingevents.txt.
+//  calls getdailycache.php, (or getdailycachetest.php) which returns dailycache.txt, tides.txt, comingevents.txt.
 //  also sends usage statistics to the server as parameters to the getdailycache.php request.
 //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND, etc. 
-//  Entry gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
+//  Entry testdata = false (if omitted). use getdailycache.php
+//                   true = use 'getdailycachetest.php'
+//        gVer = version, Cmain = page count, pagehits = 1 letter for each page and switch
 //
 var gGetCache1=0, gGetCache2=0, gGetCache3=0;  // cache load timestamps
-function GetDailyCache() {
+function GetDailyCache(testdata=false) {
     //DebugLog("GetDailyCache");
     gDailyCacheLoadedms = gTimeStampms; // same time of cache reload start to prevent reloading too often
     // mark state of switches for stats on icons, text to speech, bigtext
@@ -1340,7 +1346,9 @@ function GetDailyCache() {
     // gFerryShow3 = 0; // show 3 times. Set from "gferryshow3"
 
     // ajax async request to get cache and upload stats
-    var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
+    var cachefile = "getdailycache";
+    if(testdata) cachefile = "getdailycachetest";
+    var myurl = FixURL(cachefile + ".php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
         "&P=" + pagehits);
     if(LSget("dailycacheloaded") =="") Dialog("Loading data from Server"); // display load msg the very first time
 
@@ -1416,9 +1424,9 @@ function ParseDailyCache(data) {
     parseCache(data, "ferrytimess2", "FERRYTS2", "\n");
     parseCache(data, "ferrytimesa2", "FERRYTA2", "\n");
     parseCache(data, "ferrytimesk2", "FERRYTK2", "\n");
-    ParseFerryTimes();
-
     parseCache(data, "ferrydate2", "FERRYD2", "\n"); // cutover date to ferrytimes2 as 'mm/dd/yyyy'
+    ParseFerryTimes();
+    
     parseCacheRemove(data, "ferrymessage", "FERRYMESSAGE", "FERRYMESSAGEEND");
     s = parseCacheRemove(data, "message", "MOTD", "\n");  // message
     if (!IsEmpty(s)) {
@@ -1561,6 +1569,15 @@ function FixDates(itemname) {
 function ClearCacheandExit() {
     localStorage.clear();
     if (isPhoneGap()) navigator.app.exitApp();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+//  LoadTestData Load cache data from dailycachetest.txt instead of dailycache.txt
+//  exit    Data loaded from dailycachetest.txt
+function LoadTestData() {
+    gReloadCachedDataButtonInProgress = true;  // issue message when done
+    reloadreasontext = "user test requested"; 
+    GetDailyCache(true); // get test data
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -1709,11 +1726,10 @@ function ShowCachedData() {
 //  Forces reload of: Daily cache
 //                  Alerts, weather forecast, current weather
 //
-function
-    ReloadCachedData() {
+function ReloadCachedData(testdata = false) {
     //alert("reload cached data");
     InitializeDates(0);
-    GetDailyCache();  // no limit
+    GetDailyCache(testdata);  // no limit
     //GetComingEvents();// merged into GetDailyCache on 6/6/16
     gAlertTime = 0; // force alert reload
     getAlertInfo();
@@ -2016,6 +2032,7 @@ function FindNextFerryTimeTomorrow(SA, nruns) {
 
     InitializeDates(0); // reset to today
     if (i < ferrytimes.length) return ft
+    return ft
 }
 
 

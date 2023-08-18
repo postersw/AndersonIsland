@@ -14,7 +14,7 @@
 //
 header("Access-Control-Allow-Origin: *");  // added 5/15/22
 //$ns2 = hrtime(true);
-copybyline("dailycache.txt");
+copybyline("dailycachetest.txt");
 //$ns3 = hrtime(true);
 //echo "\r copy all at once=" . ($ns2-$ns1)/1000000000 . "\r copy by line=" . ($ns3-$ns2)/1000000000;
 

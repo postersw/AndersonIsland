@@ -35,11 +35,9 @@
 //  1.43 12/12/22. Revise ketron latitude.
 //  1.44 12/16/22. Add debug printouts under control of $debug to make it easy to turn on debug.
 //  1.45 12/19/22  Improve Ketron times
-//  1.46 1/20/23.  Change ketron times to not assume boat will always go to ST.  Use previous port to determine next port.
-//  1.47 1/31/23.  Look back 50 minutes to find run time if At ST or At AI.
-//  1.48 7/3/23.   Add 2 boat message if 2 boats and Fri, Sun, Mon
+//  1.46 1/9/23  Issue message if last ferry sailing didn't happen
 
-$ver = "1.48"; // 7/3/23
+$ver = "1.46"; // 1/9/23.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -62,8 +60,7 @@ $fa = []; // ferry array, 0, 1, or 2 arrays of data
 $mi = "<i class='material-icons mptext'>";
 $ri = "";
 $debug = false;
-//$debug = true; /////////////////////////////////////DEBUG
-if($debug) echo "$ver <br>";
+
 
 // instantanious position retrieved from maringtraffic.com
 $speed = 0;  // speed in  knots tenths
@@ -130,11 +127,7 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-if($pi==1) {
-    $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
-} elseif($pi==2) {
-    $ferrylate = checkforTwoBoats();  // if running 2 boats, issue 2 boat msg on fri, sun, mon
-}
+if($pi==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
 $pstr = "$ferrylate<br><span style='color:darkblue'>&nbsp;&nbsp;$pstr</span>";  // build message as <pstr><ferrylate>
 
 // save output and info
@@ -181,41 +174,31 @@ function timetocross() {
     $latKeNTip = 47.1673; // ketron northern tip
     $ketron = "";
     $ketronDockTime = 6; // avg ketron dock time
-    $ketronToStTime = 8; // avg Ke to St time
-    $ketronToAITime = 18; // avg Ke to AI time
-    $ferryport = $SAVED[$MMSI];  // get last port based on ship id
+    $ketronToStTime = 11; // avg Ke to St time
 
     // Ketron Special Case:   (assumes any trip to Ketron then goes on to St)
     //   if below the tip of Ketron, OR if above the tip of ketron but headed SE
     //      do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if(($lat <= $latKeNTip) || ($lat<47.177 && $long>-122.640 && $long<-122.624 && $course>100 && $course <180 )) { // if southerly westerly course, assume arriving.
-        // set ferry state based on previous port. Assume ferry will continue to next port after Ketron.
-        $ferrystate = ($ferryport=="A" ? "toST": "toAI"); // set ferry state based on previous port. Assume ferry will continue to next port after Ketron.
+        $ferrystate = "toST"; // travelling to steilacoom but via ketron
         if(($long<$longKe) || ($course>99 & $course < 340))  { // if southerly westerly course, assume arriving.
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
-            //    $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
-            //    if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
-            //    else return "docking @Ke, arriving @St in $timetoarrival m";
-            if($ferrystate = "toST") {  // if headint to St
-                $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
-                return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
-            } else {  // heading to AI
-                $timetoarrival = floor($t + $ketronDockTime + $ketronToAITime - $deltamin); // time to arrival at steilacoom
-                return "stopping @Ke in $t m, arriving @AI in $timetoarrival m";    
+            if($t <= 0) {
+                $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
+                if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
+                else return "docking @Ke, arriving @St in $timetoarrival m";
             }
+            $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
+            return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
         } else { 
             // if not arriving, it must be leaving
-            if($ferrystate = "toST") {  // heading to St
-                $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
-                return "leaving Ke, arriving @St in $timetoarrival m";
-            } else {  // heading to AI
-                $timetoarrival = floor($ketronToAITime - $deltamin); // time to arrive in steilacoom
-                return "leaving Ke, arriving @AI in $timetoarrival m";    
-            }
+            $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
+            return "leaving Ke, arriving @St in $timetoarrival m";
         }
     }
 
+    $ferryport = $SAVED[$MMSI];  // get last fort based on ship id
     // Default: if coming from S, it is headed to A, . Added 1.29 2/22/21
     // $courseto = destination port.  $ferryport = previous port
     if($ferryport=="S") $courseto = "A";
@@ -279,12 +262,12 @@ function reportatdock() {
     global $ferrystate, $timetoarrival;
     global $SAVED;
     $ketronDockTime = 6; // avg ketron dock time
-    $ketronToStTime = 8; // avg Ke to St time
-    $ketronToAITime = 18; // avg Ke to AI time
+    $ketronToStTime = 11; // avg Ke to St time
 
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  
         // At AI
+        //file_put_contents($MMSI, "A");
         $SAVED[$MMSI] = "A"; // remember last position of ferry
         $ri = "font_download";
         $ferrystate = "atAI";  // at AI
@@ -292,24 +275,22 @@ function reportatdock() {
 
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         // At Steilacoom
+        //file_put_contents($MMSI, "S");
         $SAVED[$MMSI] = "S"; 
         $ri = "home";
         $ferrystate = "atST";  // at steilacoom
         return "docked @St";
 
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
-        // At Ketron
-        $ri = "do_not_disturb_on";
-        //ferrystate = "toST"; // moving to ST;  disabled 1/20/23 to allow for stops in run from ST to AI
-        if($SAVED[$MMSI] == "A"){  // if boat came from AI, assume it will continue to ST
-            $ferrystate = "toST";
-            $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
-            return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
-        } else {  // boat was at ST, assume it will go to AI
-            $ferrystate = "toAI";
-            $timetoarrival =  floor($ketronDockTime/2 + $ketronToAITime - $deltamin); // time to arrival at ST in minutes
-            return "docked @Ke, arriving @AI in $timetoarrival m";  // allow for extended docking
+        // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
+        if($lt[2]>=16 && $lt[2]<=17) {
+            //file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
+            $SAVED[$MMSI] = "A";
         }
+        $ri = "do_not_disturb_on";
+        $ferrystate = "toST"; // moving to ST;
+        $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
+        return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
 
     } else {
         // stopped somewhere. Report distance to AI or Steilacoom
@@ -395,8 +376,7 @@ function abortme($msg) {
 function logPosition($log) {
     global $fa, $px, $MMSICA;
     global $ver, $deltamin;
-    
-    if(count($fa)==0) return; // if no poisiton data
+
     $tlh = fopen($log, 'a');  // append to log
     $s1 = ""; $s2 = "";
     //  this mess is to ensure that the boats are always in the same column if there are 2 boats
@@ -419,8 +399,8 @@ function logPosition($log) {
 
 //////////////////////////////////////////////////////////////////////////////
 // check for late - check for ferry being late and adds a message
-//      Don't call if running 2 ferrys. Its too confusing and $ferrystate is unsafe for multiple boats.
-//  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
+//      Don't call if running 2 ferrys. Its too confusing.
+//  entry   globals $ferrystate = atST, toAI, atAI, toST
 //          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
 //  side effects:  if late, writes to ferrylatelog.txt and stdout
@@ -456,7 +436,15 @@ function checkforLateFerry() {
             } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("ST", 50);  // next run time in minutes-since-midnight. up to 50 minutes late for next run.
+            $priorrun = $SAVED['nextrunST'];
+            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight. up to 30 minutes late for next run.
+            // if ferry didn't take next run, use prior run as time of next run
+            if($now < $nextrun) {  // if its before the next run, then did it sail on previous run
+                if($ferryarrivaltime>0 && ($now-$ferryarrivaltime>30))  { // if it didn't sail on previous run
+                    $nextrun = $priorrun;
+                } 
+            }
+            $SAVED['nextrunST'] = $nextrun; // save time of next run
             $delaytime = $ETD - $nextrun;
             $ferryport = "St";
             break;
@@ -464,6 +452,7 @@ function checkforLateFerry() {
         case "toAI": // travelling to AI
             if($priorferrystate == "atST") {
                 //echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
+                $SAVED["leftSTtime"] = $now; // left ST, in minutes since midnight
                 if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
             }
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
@@ -479,7 +468,7 @@ function checkforLateFerry() {
             } else $ferryarrivaltime = $SAVED["ferryarrivaltimeAI"]; //$ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("AI", 50);  // next run time minutes since midnight second. up to 50 min late.
+            $nextrun = getTimeofNextRun("AI");  // next run time minutes since midnight second
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "AI";
             break;
@@ -508,7 +497,7 @@ function checkforLateFerry() {
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
-    if($delaytime > 12) echo $latedebug . "\n $delaymsg";
+    echo $latedebug . "\n $delaymsg";
     return $delaymsg;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -516,23 +505,6 @@ function checkforLateFerry() {
 function ftime($t) {
     if($t >= 13*60) $t = $t - 12*60;
     return  floor($t/60) . ":" . sprintf("%02d", ($t%60));
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-//  checkforTwoBoats - returns message if two boats are running. Only call if pi=2.
-//  entry   none
-//  exit    returns 2 boat message if FRI,SAT,MON afternoon
-//
-function checkforTwoBoats() {
-    date_default_timezone_set("America/Los_Angeles"); // set PDT
-    $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
-    // Sun, Mon, Fri 12 - 1200 - 1800 
-    //echo "loctime 6=" . $loctime[6] . ", loctime[2]=" . $loctime[2];
-    if(($loctime[6]==0 || $loctime[6]==1 || $loctime[6]==5) && ($loctime[2]>=12 && $loctime[2]<=18)) {
-        //echo " two boats";
-        return "<span style='color:darkgreen'>Two boat service now.</span>"; 
-    }
-    return "";
 }
 
 // //////////////////////////////////////////////////////////////////////////////////
@@ -601,22 +573,19 @@ $gWeekofMonth = 0;
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
 //  entry   $STAI = "AI" or "ST"
-//          $backup = how many minutes to turn back the clock to find the next run.
 //  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
 //  CAUTION: resets global timezone to PT
 //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
 //    30 minutes late.  After 30 minutes late it will find the next run.
-function getTimeofNextRun($STAI, $backup=30)  {
+function getTimeofNextRun($STAI)  {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
     global $SAVED;  // persistent data
     global $debug;
 
-    //$backup = 30;
-    //$backup = 50; // allowed late time.  This doesn't work because once a ferry sails it trys to find the next run, and this will find a previous run.
     $dailycache = "dailycache.txt";
     date_default_timezone_set("America/Los_Angeles"); // set PDT
-    $gtimestamp = time(); // time in seconds
-    $loctime = localtime($gtimestamp - $backup*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    $gtimestamp = time(); // time
+    $loctime = localtime($gtimestamp - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
     if($debug) echo "lt=$lt <br>";//DEBUG
