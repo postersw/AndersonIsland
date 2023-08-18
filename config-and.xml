@@ -45,19 +45,11 @@
   </author>
   <!-- Define the main entry-point to the application -->
   <content src="index.html" />
-  <!--
-        If you do not want any permissions to be added to your app, add the
-        following tag to your config.xml; you will still have the INTERNET
-        permission on your app, which PhoneGap requires.
-    -->
-  <!--<preference name="permissions"                value="none"/>-->
-  <!-- Customize your app and platform with the preference element. -->
-  <!-- <preference name="SplashScreen"               value="Default.png" />-->
-  <preference name="SplashScreenDelay" value="1000" />  <!-- added 4/24/22 for volt.build-->
-  <preference name="AutoHideSplashScreen" value="true"/> <!-- added 4/24/22 for volt.build-->
-  <!--<preference name="SplashMaintainAspectRatio" value="true" /> -->
-  <!--<preference name="ShowSplashScreenSpinner" value="true" />  DEBUG TEST-->
-  <preference name="ShowSplashScreenSpinner" value="false" />
+  <preference name="SplashScreenDelay" value="1000" />  <!--added 4/24/22 for volt.build-->
+  <preference name="AutoHideSplashScreen" value="true"/>  <!--added 4/24/22 for volt.build-->
+  <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/splashTemplate.png" />
+  <preference name="AndroidWindowSplashScreenBackground" value="#000000" /> 
+
   <preference name="orientation" value="default" />
   <!-- all: default means both landscape and portrait are enabled -->
   <preference name="target-device" value="universal" />
@@ -75,25 +67,10 @@
    <!-- Plugins -->
   <!-- Core plugins -->
   <!-- converted from pushbots to onesignal 5/23/18 v1.19-->
-  <!-- <plugin name="cordova-plugin-cleartext" source="npm"/> --> <!-- Deleted 3/23/20 to test https: access. Added 3/20/20 ver 1.26 for android 9 support of cleartext web requests-->
-  <!--<gap:plugin name="org.apache.cordova.battery-status" />-->
-  <!--<gap:plugin name="org.apache.cordova.camera" />-->
-  <!--<gap:plugin name="org.apache.cordova.media-capture" />-->
-  <!--<gap:plugin name="org.apache.cordova.console" />-->
-  <!--<gap:plugin name="org.apache.cordova.contacts" />-->
-  <!--<plugin name="cordova-plugin-device"  source="npm"/> removed with cli=8.0 cause it fails. 8/18/18-->
-  <!--<gap:plugin name="org.apache.cordova.device-motion" />-->
-  <!--<gap:plugin name="org.apache.cordova.device-orientation" />-->
-  <!--<gap:plugin name="org.apache.cordova.dialogs" />-->
-  <!--<gap:plugin name="org.apache.cordova.file" />-->
-  <!--<gap:plugin name="org.apache.cordova.file-transfer" />-->
   <plugin name="cordova-plugin-geolocation" source="npm" />
   <plugin name="cordova-plugin-inappbrowser" source="npm" />
-  <!--<gap:plugin name="org.apache.cordova.media" />-->
-  <!--<gap:plugin name="org.apache.cordova.network-information" />-->
-  <!--<plugin name="cordova-plugin-splashscreen"/> --><!-- Restored 4/28/22 for volt.build. Removed 4/10/16 to speed up android loading by 2 sec-->
-  <!--<gap:plugin name="org.apache.cordova.vibration" />-->
-  <plugin name="onesignal-cordova-plugin" platform="android" spec="^2.4.0" source="npm" />
+  <!--<plugin name="onesignal-cordova-plugin" platform="android" spec="^2.4.0" source="npm" /> -->
+    <plugin name="onesignal-cordova-plugin" platform="android" source="npm" />
   <!--OneSignal added 5/23/18-->
   <!-- <plugin name="pushbots-cordova-plugin" source="npm"/> removed 5/23/18-->
   <plugin name="cordova-plugin-calendar" source="npm" /><!-- <plugin name="buildfire-cordova-plugin-calendar" platform="android" source="npm" /> skip for ios build 1.19 5/31/18-->
@@ -116,52 +93,12 @@
     <resource-file src="locales/android/drawable-xxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="locales/android/drawable-xxxhdpi/ic_stat_pushbots_sicon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_stat_onesignal_default.png" />
     <resource-file src="ic_pushbots_licon.png" target="app/src/main/res/drawable-xxxhdpi-v4/ic_onesignal_large_icon_default.png" />
-
-    <!--Adaptive Icons 11/29/18 - 4/28/22.   REMOVED 4/28/22 because they didn't work under Volt.Build, and Volt.Build will build them all!
-
-    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-      <application android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" />
-    </edit-config>
-
-    <icon src="www/locales/android/mipmap-mdpi/ic_launcher.png"/>  Default icon. Works as of 4/26/22 on VoltBuilder.
-    <resource-file src="www/locales/android/mipmap-ldpi/icon.png" target="app/src/main/res/mipmap-ldpi/icon.png" />
-
-    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/ic_launcher.png" />
-    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher.png" target="app/src/main/res/mipmap-mdpi/icon.png" />
-    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" />
-    <resource-file src="www/locales/android/mipmap-mdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-mdpi/ic_launcher_round.png" />
-    
-    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher.png" target="app/src/main/res/mipmap-hdpi/ic_launcher.png" />
-    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher.png" target="app/src/main/res/mipmap-hdpi/icon.png" />
-    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" />
-    <resource-file src="www/locales/android/mipmap-hdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-hdpi/ic_launcher_round.png" />
-    
-    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher.png" />
-    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xhdpi/icon.png" />
-    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" />
-    <resource-file src="www/locales/android/mipmap-xhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" />
-    
-    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher.png" />
-    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxhdpi/icon.png" />
-    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" />
-    <resource-file src="www/locales/android/mipmap-xxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" />
-    
-    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" />
-    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher.png" target="app/src/main/res/mipmap-xxxhdpi/icon.png" />
-    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_foreground.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" />
-    <resource-file src="www/locales/android/mipmap-xxxhdpi/ic_launcher_round.png" target="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" />
-    XML for Adaptive Icons
-    <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher.xml" target="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" />
-    <resource-file src="www/locales/android/mipmap-anydpi-v26/ic_launcher_round.xml" target="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" />
-    <resource-file src="www/locales/android/drawable/ic_launcher_background.xml" target="app/src/main/res/drawable/ic_launcher_background.xml" />
-    <resource-file src="www/locales/android/drawable-v24/ic_launcher_foreground.xml" target="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" />
-    <resource-file src="www/locales/android/values/ic_launcher_background.xml" target="app/src/main/res/values/ic_launcher_background.xml" />
-    -->
   </platform>
+
   <access origin="*" /><!-- a wildcard access tag allows access to all external resource.-->
   <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
   <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
-  <plugin name="cordova-plugin-whitelist" />
+  <!-- <plugin name="cordova-plugin-whitelist" /> Removed 8/18/23-->
   <allow-intent href="http://*/*" />
   <allow-intent href="https://*/*" />
   <allow-intent href="tel:*" />
@@ -171,5 +108,5 @@
   <platform name="android">
     <allow-intent href="market:*" />
   </platform>
- 
+ <engine name="android" spec="11.0.0" />
 </widget>
