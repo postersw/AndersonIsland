@@ -64,8 +64,8 @@
   <!-- all: possible values handset, tablet, or universal -->
   <preference name="fullscreen" value="false" />
   <!-- all: hides the status bar at the top of the screen -->
-   <preference name="android-minSdkVersion" value="16" />
-  <!-- android: changed from 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. -->
+   <preference name="android-minSdkVersion" value="21" />
+  <!-- android: 16->21 on 8/18/23. 14->15 on 4/15/18. 15->16 on 8/20/18. for pushbots. MIN SDK version supported on the target device. -->
   <preference name="android-targetSdkVersion" value="33" /><!-- changed to 33 on 8/18/23-->
   <preference name="android-installLocation" value="auto" />
   <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
