@@ -48,7 +48,7 @@
   <preference name="SplashScreenDelay" value="1000" />  <!--added 4/24/22 for volt.build-->
   <preference name="AutoHideSplashScreen" value="true"/>  <!--added 4/24/22 for volt.build-->
   <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/splashTemplate.png" />
-  <preference name="AndroidWindowSplashScreenBackground" value="#000000" /> 
+  <preference name="AndroidWindowSplashScreenBackground" value="#0000ff" /> 
 
   <preference name="orientation" value="default" />
   <!-- all: default means both landscape and portrait are enabled -->
