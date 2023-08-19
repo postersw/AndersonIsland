@@ -84,8 +84,8 @@
         1.34.083022. Add 'Load Test Data' button to call getdailycachetest.php.
     2023
         1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
-        1.35.081823. Rebuilt with targetSdkVersion=33 for google requirement.
- * Copyright 2016-2022, Robert Bedoll, Poster Software, LLC
+        1.36.081823. Rebuilt with targetSdkVersion=33 for google requirement. Fix IsPhonegap to test for localhost.. 
+ * Copyright 2016-2023, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -105,7 +105,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.35.081823";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.36.081823";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
@@ -147,7 +147,8 @@ var app = {
             localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
         }
         app.receivedEvent('deviceready');
-
+        //alert("OnDevice Ready");This never gets called.
+        //StartupContinue();  // resume startup process
     },
     // Update DOM on a Received Event. commented out on 2/16/16 because we don't need it.
     receivedEvent: function (id) {
@@ -943,7 +944,7 @@ function isMobile() {
 //isMobile - Initialize the switches gisMobile, gisPhoneGap, gisAndroid
 function initializeMobile() {
     gisMobile = /Mobile/i.test(navigator.userAgent); ///ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);  //NO LONGER ACCURATE  
-    gisPhoneGap = /^file:/i.test(window.location.href);  //    PhoneGap always loads from file && gisMobile check removed 8/11/22 because it fails on iPad.       
+    gisPhoneGap = /^file:/i.test(window.location.href) ||  /localhost/i.test(window.location.href);  //    PhoneGap always loads from file on IOS or localhost on android     
     gisAndroid = ((navigator.userAgent.toLowerCase().indexOf('chrome') > -1) ||
         (navigator.userAgent.toLowerCase().indexOf('android') > -1));
 }
@@ -5059,7 +5060,7 @@ function SetTideTitle() {
 //<script type="text/javascript">
 //======================================================================================================
 /////////////////////////////////////////////////////////////////////////////////////////////////
-//  MAIN APP CODE
+//  MAIN APP CODE.   This doesn't seem to be called until after OnReady.
 //
 function StartApp() {
     app.initialize();

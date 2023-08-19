@@ -125,7 +125,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 07/21/22. Ver 1.31.072122. Android Production. Volt Build. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar. Load daily cache hourly. Hanging indent on events/activities.
 07/28/22. Ver 1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
-08/27/22. Ver 1.34		   Branch Ver134 created.
+08/27/22. Ver 1.34		   Branch Ver134 created. This contains ver 1.34 and 1.35.
+08/18/23. Ver 1.36         Branch Ver136 created. Ver 1.36.xxxx
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
