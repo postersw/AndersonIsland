@@ -127,6 +127,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
 08/27/22. Ver 1.34		   Branch Ver134 created. This contains ver 1.34 and 1.35.
 08/18/23. Ver 1.36         Branch Ver136 created. Ver 1.36.xxxx
+08/28/23. Ver 1.36.        Android Beta. In review.
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
