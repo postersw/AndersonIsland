@@ -44,6 +44,7 @@
 //       12/18/22. Go back to status unavailable if hasError=true
 //       6/3/23.   Name change to TANNER ELECTRIC COOP
 //       6/22/23.  Remove call to check status because it wasn't working reliably.
+//       10/21/23. I give up. Tanner will not fix their problem. The tanner info never shows an outage, so just return "tap for details".
 //
 
     date_default_timezone_set("America/Los_Angeles"); // set PDT
@@ -264,5 +265,15 @@ function gettimeoflaststatus() {
 function SaveData() {
     global $SAVED, $savefile;
     file_put_contents($savefile, json_encode($SAVED));  // save persistant data,
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+// TapForDetails - just return tap for details
+//
+function TapForDetails() {
+    global $tanneroutagefile, $tweet;
+    $msg = "Tap for outage info.";
+    // write out status for the app
+    file_put_contents($tanneroutagefile, $msg . $tweet);
 }
 ?>
