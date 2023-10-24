@@ -38,6 +38,7 @@
 //  1.46 1/20/23.  Change ketron times to not assume boat will always go to ST.  Use previous port to determine next port.
 //  1.47 1/31/23.  Look back 50 minutes to find run time if At ST or At AI.
 //  1.48 7/3/23.   Add 2 boat message if 2 boats and Fri, Sun, Mon
+//  1.49 10/23/23. Change location of ferry times to 'ferryscheduleinclude.txt'
 
 $ver = "1.48"; // 7/3/23
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
@@ -591,8 +592,8 @@ $gDayofMonth = 0;
 $gMonthDay = 0;
 $gWeekofMonth = 0;
 //////////////////////////////////////////////////////////////////////////////////
-// getTimeofNextRun2();  
-// Returns time of next run, using the ferry times in dailycache.txt.
+// getTimeofNextRun();  
+// Returns time of next run, using the ferry times in ferryscheduleinclude.txt (formerly dailycache.txt.
 //  That way dailycache.txt rules are used by the AndersonIslandAssistant AND this code.
 //  Once each half hour, this will read the schedule from dailycache.txt, extract the ferry schedule, and evaluate it
 //  to determine the next scheduled run.  Based on the code in index.js in the app.
@@ -613,7 +614,7 @@ function getTimeofNextRun($STAI, $backup=30)  {
 
     //$backup = 30;
     //$backup = 50; // allowed late time.  This doesn't work because once a ferry sails it trys to find the next run, and this will find a previous run.
-    $dailycache = "dailycache.txt";
+    $dailycache = "ferryscheduleinclude.txt";
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $gtimestamp = time(); // time in seconds
     $loctime = localtime($gtimestamp - $backup*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
