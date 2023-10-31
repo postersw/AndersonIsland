@@ -122,7 +122,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 03/02/21.                  Google Play production rollout. 
 05/23/22. Ver 1.31.052322. Branch 1.31 created. from master after merge of 1.30.
 06/18/22. Ver 1.31.061822. Volt Build. Google Play Beta. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar.
-07/21/22. Ver 1.31.072122. Android Production. Volt Build. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar. Load daily cache hourly. Hanging indent on events/activities.
+07/21/22. Ver 1.31.072122. Android Production. Volt Build. Fix NOAA url for alternate tide locations/dates. Fix month when adding events to calendar.
+							 Load daily cache hourly. Hanging indent on events/activities.
 07/28/22. Ver 1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
 08/27/22. Ver 1.34		   Branch Ver134 created. This contains ver 1.34 and 1.35.
@@ -559,10 +560,17 @@ Note: The OneSignal API Key is stored under root/private/OneSignal.php
 
 DATA LOADS
 	Data is loaded from:
-	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded 1/day by the app getdailycache.php.
+	1. Daily Cache: dailycache.txt. manually maintained by rfb. loaded once/hour by the app calling getdailycache.php.
+	   NOTE: the app calls getdailycache.php script as an AJAX async HTTPS call.
+	         The script reads dailycache.txt and sends each line to the app - BUT
+			  The script filters out all comments.
+			  The script also reads <include file> and inserts the indicated file into the stream sent to the app.
+			   include files can be nested.
 	   RELOAD: To force a reload immediately: create file refresh.txt manually with 1 line that contains the date. This gets picked up by alerts.php.
+	   But its easier to just let the once/hour reload do it.
+	   INCLUDE FILES: dailycache.txt contains many <include xxx> directives, which read data from the indicated xxx file.
 	2. Coming Events: 
-		comingevents.txt is loaded 1/day by the app getdailycache.php (called by the app) as of 1.6. 
+		comingevents.txt is loaded once/hour by the app getdailycache.php (called by the app) as of 1.6. 
 		  It is copied directly into the dailycache data stream.
 		comingevents.txt is created daily by getgooglecalendarcron.php cron once/day.  
 		It Reads google AndersonIsland calendar and extracts 6 months of events and activities (co-mingled)
@@ -571,7 +579,7 @@ DATA LOADS
 		 burnban.txt (filled by getburnbanalerts.php cron every 15 min) to stdout.
 		 refresh.txt  (TO FORCE A REFRESH DATA, create this file manually with 1 line that contains the date. This gets turned into REFRESH\ndate\nREFRESHEND\n)  
 		 run every 1 minutes by the app as of 1.6.
-	4. tidedata.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/day by the getdailycache.php script as of 1.6.
+	4. tidedatainclude.txt  which is filled by gettidescron.php every 6 hrs.loaded 1/hour by the getdailycache.php script as of 1.6.
 	5. openweathermap.com which returns json structures for current weather and forecast.
 		current loaded every 15 min by the app. forecast loaded every 30 min by the app.
 
@@ -580,7 +588,7 @@ DATA FORMAT: DAILY CACHE (including coming events and tides)
 	<data>
 	KEYWORDEND
 
-DATA FORMAT: FERRY SCHEDULE (part of daily cache)
+DATA FORMAT: FERRY SCHEDULE (part of ferryinclude.txt)
 	FERRYS
 	<schedule> which is hhmm,rule,hhmm,rule,...  
 	  rule = empty if no run; * if every day; 0123456 for specific day of week; (javascript rule) which returns true for run
@@ -600,12 +608,12 @@ DATA FORMAT: COMING EVENTS  (getgooglecal.php->comingevents.txt->getdailycache.p
 	mmdd;hhmm start time;hhmm end time;type;title;location;sponsor;additional info. for hyperlinks just use http://xxxxxxx without the <a. <br/> is ok
 	type = Events: M (meeting), E (event), S (show) ; Activties: A(activity),C(craft),G(game)
 
-DATA FORMAT: TIDES (gettidescron.php->tides.txt->getdailycache.php->daily cache stream)
+DATA FORMAT: TIDES (gettidescron.php->tidedatainclude.txt->getdailycache.php->daily cache stream)
 	TIDES
 	JSON format as defined by AERIS
 	TIDESEND
 
-DATA FORMAT: WEATHER  (not part of daily cache. direct return from www.openweathermap.com)
+DATA FORMAT: WEATHER  (NOT part of daily cache. direct return from www.openweathermap.com)
 	JSON format as defined by OpenWeatherMap
 
 	DAILYCACHE.TXT
@@ -656,7 +664,7 @@ DATA FORMAT: WEATHER  (not part of daily cache. direct return from www.openweath
     var json = JSON.parse(parseCache(data, "", "TIDES", "TIDESEND"));
 
 	DAILYCACHE.PHP
-	1. Called 1/day per app starting with ver 1.6 on 6/6/16.
+	1. Called once/hour per app starting with ver 1.31 7/21/22.  Prior to that loaded 1/day. 
 	2. Retrieves dailycache.txt, comingevents.txt, tidesdata.txt and returns them as one data string with keywords.
 	3. Replaces separate loads of dailycache.txt, comingevents.php (which loaded comingevents.txt), and the call to 
 		aerisweather.com to load the daily tides (which was replaed in early june by gettidescron.php which runs 
