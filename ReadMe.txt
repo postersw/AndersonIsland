@@ -128,7 +128,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
 08/27/22. Ver 1.34		   Branch Ver134 created. This contains ver 1.34 and 1.35.
 08/18/23. Ver 1.36         Branch Ver136 created. Ver 1.36.xxxx
-08/28/23. Ver 1.36.        Android Beta. In review.
+08/28/23. Ver 1.36.        Android Beta.
+11/01/23. Ver 1.37		   On branch 1.36. Fix OneSignal notifications for Android.
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -556,6 +557,11 @@ New iPhone7 added 4/21/20.
 
 Note: The OneSignal API Key is stored under root/private/OneSignal.php
 
+-------------------------------------------------------------------------------------------------------------------------
+ONESIGNAL HISTORY
+1. 05/23/18. Ver 1.19. Branch V119 created.  Move from Pushbots to OneSignal for Notifications.
+	Used original Google key.
+2. 10/8/23. Converted Android to new Firebase message scheme.  NOW Push->Android doesn't work anymore.
 -------------------------------------------------------------------------------------------------------------------------
 
 DATA LOADS

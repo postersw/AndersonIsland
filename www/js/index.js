@@ -78,13 +78,16 @@
                      Always adjust time to PST/PDT. Use DST dates in dailyconfig.
     2022
         1.30.051522. Switch to using build.volt.com. Minor source changes for debugging GetDailyCache issues on iOS (CORS issues fixed by Access Allow Origin *).
-        1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.  Reload dailycache every hour.  Change alert timer location.
+        1.31.071822. Android. Fixed NOAA tide address. Fixed month when adding event to calendar.  target sdk=30. Hanging indent on events.
+                     Reload dailycache every hour.  Change alert timer location.
         1.32.072822. iOS. Remove location & speech prompts. Handle permission error reply from location. Make Event day color magenta.
         1.33.081222. Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time.
         1.34.083022. Add 'Load Test Data' button to call getdailycachetest.php.
     2023
         1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
         1.36.081823. Rebuilt with targetSdkVersion=33 for google requirement. Fix IsPhonegap to test for localhost.. 
+        1.37.103123. Fix OneSignal Init to ensure it is called.
+
  * Copyright 2016-2023, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
  *
@@ -105,12 +108,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.36.081923";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.37.103123";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
 const gNotification = 2;  // 0=no notification. 1=pushbots. 2=OneSignal
-
 
 var app = {
     // Application Constructor
@@ -130,24 +132,24 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
+
         gisPhoneGap = true; // only fired by Cordova
-        if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-            switch (gNotification) {
-                case 1: // pushbots
-                    //window.plugins.PushbotsPlugin.initialize("570ab8464a9efaf47a8b4568", { "android": { "sender_id": "577784876912" } });
-                    //window.plugins.PushbotsPlugin.resetBadge();  // clear ios counter
-                    break;
-                case 2:  // OneSignal v1.19 5/23/18 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-                    window.plugins.OneSignal
-                        .startInit("a0619723-d045-48d3-880c-6028f8cc6006")
-                        .endInit();
-                    window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
-                    break;
-            }
-            localStorage.setItem("pushbotstime", gTimeStampms.toFixed(0));
-        }
+        //if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
+        // OneSignal v9 10/31/23. v.37 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
+        //alert("before OS init");
+        window.plugins.OneSignal.initialize("a0619723-d045-48d3-880c-6028f8cc6006");
+        // window.plugins.OneSignal.startInit("a0619723-d045-48d3-880c-6028f8cc6006").endInit();
+        var Gd = new Date();
+        localStorage.setItem("pushbotstime", Gd.getTime().toFixed(0)); // save OneSignal init time.
+        alert("after OS init");
+        //window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
+        //alert("after OS clearnotifications");
+           //Prompts the user for notification permissions.
+        //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt for notification permission (See step 6) to better communicate to your users what notifications they will get.
+        //window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function(accepted) {alert("User accepted notifications: " + accepted);});
+        alert("OnDevice Ready");//This never gets called.
+        //}
         app.receivedEvent('deviceready');
-        //alert("OnDevice Ready");This never gets called.
         //StartupContinue();  // resume startup process
     },
     // Update DOM on a Received Event. commented out on 2/16/16 because we don't need it.
@@ -1759,7 +1761,7 @@ function DisplayLoadTimes() {
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext + " " + DailyCacheFetchError + 
         "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit:" + (isPhoneGap() ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
+        ", PBotsInit: " + (Number(LSget("pushbotstime")) ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " " + window.location.href + "<br/>UserAgent=" + navigator.userAgent + "<br/>n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
         ", CurrentWeather:" + DispElapsedMin("currentweathertime") + " #" + gWeatherCurrentCount.toFixed(0) +

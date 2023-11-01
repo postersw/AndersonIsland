@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android"
         id="org.anderson-island.andersonislandassistant"
-        version="1.36.081823"
-        android-versionCode="2256"
-        android:versionName="1.36.081823">
+        version="1.37.103123"
+        android-versionCode="2257"
+        android:versionName="1.37.103123">
 
-  <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->     
+  <!-- ANDROID ONLY VERSION (for VoltBuild) 4/25/22 -->
+  <!-- versionCode 2257 for 1.37.103123 vor Volt.Build -->     
   <!-- vercionCode 2256 for 1.36.081823 for Volt.Builde--> 
   <!-- versionCode 2254 for 1.31.071922 for Volt.Build  -->
   <!-- versionCode 2251 for 1.30.011021 for ferry position -->
@@ -48,7 +49,7 @@
   <preference name="SplashScreenDelay" value="1000" />  <!--added 4/24/22 for volt.build-->
   <preference name="AutoHideSplashScreen" value="true"/>  <!--added 4/24/22 for volt.build-->
   <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/splashTemplate.png" />
-  <preference name="AndroidWindowSplashScreenBackground" value="#0000ff" /> 
+  <preference name="AndroidWindowSplashScreenBackground" value="#183be7" /> 
 
   <preference name="orientation" value="default" />
   <!-- all: default means both landscape and portrait are enabled -->
@@ -108,5 +109,5 @@
   <platform name="android">
     <allow-intent href="market:*" />
   </platform>
- <engine name="android" spec="11.0.0" />
+ <!--<engine name="android" spec="11.0.0" /> REMOVED 10/31/23 1.37 -->
 </widget>
