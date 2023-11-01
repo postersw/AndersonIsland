@@ -108,7 +108,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.37.103123";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.37.1101230350";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
@@ -134,17 +134,18 @@ var app = {
         //navigator.splashscreen.hide();
 
         gisPhoneGap = true; // only fired by Cordova
+        window.plugins.OneSignal.Debug.setAlertLevel(2);  // DEBUG via alert messages. 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
         //if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
         // OneSignal v9 10/31/23. v.37 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-        //alert("before OS init");
+        alert("before OS init");
         window.plugins.OneSignal.initialize("a0619723-d045-48d3-880c-6028f8cc6006");
         // window.plugins.OneSignal.startInit("a0619723-d045-48d3-880c-6028f8cc6006").endInit();
         var Gd = new Date();
         localStorage.setItem("pushbotstime", Gd.getTime().toFixed(0)); // save OneSignal init time.
         alert("after OS init");
-        //window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
-        //alert("after OS clearnotifications");
-           //Prompts the user for notification permissions.
+        // window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
+        window.plugins.OneSignal.Notifications.clearAll();
+        //Prompts the user for notification permissions.
         //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt for notification permission (See step 6) to better communicate to your users what notifications they will get.
         //window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function(accepted) {alert("User accepted notifications: " + accepted);});
         alert("OnDevice Ready");//This never gets called.
@@ -1761,7 +1762,7 @@ function DisplayLoadTimes() {
         ", Update " + DispElapsedSec(gLastUpdatems) + " #" + gUpdateCounter +
         ",<br/>Cached reloaded " + localStorage.getItem("dailycacheloaded") + " @" + localStorage.getItem("dailycacheloadedtime") + " Reason:" + reloadreasontext + " " + DailyCacheFetchError + 
         "<br/>Tides loaded:" + localStorage.getItem("tidesloadedmmdd") +
-        ", PBotsInit: " + (Number(LSget("pushbotstime")) ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
+        ", OneSigInit: " + (Number(LSget("pushbotstime")) ? (((gTimeStampms - Number(LSget("pushbotstime"))) / 3600000).toFixed(2) + " hr ago") : "none.") +
         "<br/>k=" + DeviceInfo() + " " + window.location.href + "<br/>UserAgent=" + navigator.userAgent + "<br/>n=" + localStorage.getItem("Cmain") + " p=" + localStorage.getItem("pagehits") +
         "<br/>Forecast:" + DispElapsedMin("forecasttime") + " #" + gWeatherForecastCount.toFixed(0) +
         ", CurrentWeather:" + DispElapsedMin("currentweathertime") + " #" + gWeatherCurrentCount.toFixed(0) +
