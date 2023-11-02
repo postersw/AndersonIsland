@@ -86,7 +86,7 @@
     2023
         1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
         1.36.081823. Rebuilt with targetSdkVersion=33 for google requirement. Fix IsPhonegap to test for localhost.. 
-        1.37.103123. Fix OneSignal Init to ensure it is called.
+        1.37.110123. Fix OneSignal Init to ensure it is called. Use Android 13 engine.
 
  * Copyright 2016-2023, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -108,7 +108,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.37.1101230350";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.37.110123";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
@@ -132,24 +132,21 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function () {
         //navigator.splashscreen.hide();
-
         gisPhoneGap = true; // only fired by Cordova
         window.plugins.OneSignal.Debug.setAlertLevel(2);  // DEBUG via alert messages. 0 = None, 1 = Fatal, 2 = Errors, 3 = Warnings, 4 = Info, 5 = Debug, 6 = Verbose
-        //if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
-        // OneSignal v9 10/31/23. v.37 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
-        alert("before OS init");
-        window.plugins.OneSignal.initialize("a0619723-d045-48d3-880c-6028f8cc6006");
-        // window.plugins.OneSignal.startInit("a0619723-d045-48d3-880c-6028f8cc6006").endInit();
-        var Gd = new Date();
-        localStorage.setItem("pushbotstime", Gd.getTime().toFixed(0)); // save OneSignal init time.
-        alert("after OS init");
-        // window.plugins.OneSignal.clearOneSignalNotifications();  // clear all notifications from the shade
-        window.plugins.OneSignal.Notifications.clearAll();
-        //Prompts the user for notification permissions.
-        //    * Since this shows a generic native prompt, we recommend instead using an In-App Message to prompt for notification permission (See step 6) to better communicate to your users what notifications they will get.
-        //window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function(accepted) {alert("User accepted notifications: " + accepted);});
-        alert("OnDevice Ready");//This never gets called.
-        //}
+        if (localStorage.getItem("notifyoff") == null) { // if notify isn't off
+            // OneSignal v9 10/31/23. v.37 .  App id=a0619723-d045-48d3-880c-6028f8cc6006
+            //alert("before OS init"); // Debug
+            window.plugins.OneSignal.initialize("a0619723-d045-48d3-880c-6028f8cc6006");
+            // window.plugins.OneSignal.startInit("a0619723-d045-48d3-880c-6028f8cc6006").endInit();
+            var Gd = new Date();
+            localStorage.setItem("pushbotstime", Gd.getTime().toFixed(0)); // save OneSignal init time.
+            //alert("after OS init"); // Debug
+            window.plugins.OneSignal.Notifications.clearAll();
+            //Prompts the user for notification permissions. Does not work on Android.
+            //window.plugins.OneSignal.promptForPushNotificationsWithUserResponse(function(accepted) {alert("User accepted notifications: " + accepted);});
+            //alert("OnDevice Ready");  // debug
+        }
         app.receivedEvent('deviceready');
         //StartupContinue();  // resume startup process
     },
