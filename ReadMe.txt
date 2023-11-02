@@ -128,8 +128,8 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/12/22. Ver 1.33.081222. iOS. (Still on Ver132 branch) Fix Cordova detection for iPad. Initialize ferry schedule to null. Data Loading dialog the first time. Font to Helvetica.
 08/27/22. Ver 1.34		   Branch Ver134 created. This contains ver 1.34 and 1.35.
 08/18/23. Ver 1.36         Branch Ver136 created. Ver 1.36.xxxx
-08/28/23. Ver 1.36.        Android Beta.
-11/01/23. Ver 1.37		   On branch 1.36. Fix OneSignal notifications for Android.
+09/06/23. Ver 1.36.081823  Android Production. Note this probably broke android notifications because of new OneSignal library.
+11/01/23. Ver 1.37		   Built on branch 1.36. Fix OneSignal notifications for Android by updating library calls.
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
@@ -555,13 +555,20 @@ OneSignal test
 3. To test from the API, use the pushtest.php script, which sends to 'Test Devices', which is my phone. 4/8/19.
 New iPhone7 added 4/21/20.
 
-Note: The OneSignal API Key is stored under root/private/OneSignal.php
+Note about "Unsubscribed" users: The Mobile Push Subscription ID will never change. 
+However, a new Subscription ID will be assigned to the that same user's device 
+when: Uninstalling and re-installing the mobile app on the same device. 
+In this case, the original Subscription ID will eventually be marked as unsubscribed.
 
+Note: The OneSignal API Key is stored under root/private/OneSignal.php
 -------------------------------------------------------------------------------------------------------------------------
 ONESIGNAL HISTORY
 1. 05/23/18. Ver 1.19. Branch V119 created.  Move from Pushbots to OneSignal for Notifications.
 	Used original Google key.
-2. 10/8/23. Converted Android to new Firebase message scheme.  NOW Push->Android doesn't work anymore.
+2. 10/8/23. Converted Android to new Firebase message scheme.  NOW Push->Android doesn't work anymore but 
+            I think it broke in Sept 6 when I updated Android. But evidence for this is sketchy. 
+3. 11/2/23. 1.37 Updated Android to OneSignal SDK 050003. Changed Init call.  Seems to work now.
+
 -------------------------------------------------------------------------------------------------------------------------
 
 DATA LOADS
