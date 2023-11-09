@@ -1,5 +1,6 @@
 <?php
 // ONE SIGNAL 5/24/18.  FREE SERVICE WITH NO LIMITS
+// Tested and working 11/6/23. RFB.
 $title = "TEST MESSAGE";
 $msg = "This is a test of OneSignal messaging. Please ignore.";
 
