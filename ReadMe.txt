@@ -129,7 +129,7 @@ Created 2/5 by Visual Studio - which is not needed by phonegap build:
 08/27/22. Ver 1.34		   Branch Ver134 created. This contains ver 1.34 and 1.35.
 08/18/23. Ver 1.36         Branch Ver136 created. Ver 1.36.xxxx
 09/06/23. Ver 1.36.081823  Android Production. Note this probably broke android notifications because of new OneSignal library.
-11/01/23. Ver 1.37		   Built on branch 1.36. Fix OneSignal notifications for Android by updating library calls.
+11/09/23. Ver 1.37		   Built on branch 1.36. Fix OneSignal notifications for Android by updating library calls. Android Prod 11/9, 2257
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 GIT CREATE NEW BRANCH
