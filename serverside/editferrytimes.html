@@ -10,16 +10,16 @@
 <body>
 <div class="w3-container" >
 <h1 class="w3-blue w3-text-white"><strong>&nbsp EDIT FERRY SCHEDULE </strong></h1>
-     (ver 3/5/21)
+     (ver 11/17C/23)
     <p>To Use:
     1. Click 'LOAD FULL SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3. Click on Format (). 4. Make changes using Edit box. 
     5 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 5. When done, select SAVE FULL SCHEDULE, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
-    <button onclick="LoadSchedule()">LOAD FULL SCHEDULE from dailycache</button><br/>
+    <button onclick="LoadSchedule()">LOAD FULL SCHEDULE from ferryscheduleinclude.txt</button><br/>
     <button onclick="CheckSchedule()"> Check </button>
     <button onclick="TestSchedule()"> Test all entries</button>
     <button onclick="DisplayFerrySchedule()">DISPLAY Schedule</button>
     <button onclick="SaveSchedule()"> SAVE FERRYS/A/K to Edit Box</button>
-    <button onclick="SaveDailyCache()"> SAVE DAILYCACHE.txt to Edit Box</button>
+    <button onclick="SaveDailyCache()"> SAVE ferryscheduleinclude.txt to Edit Box</button>
 
     <p>Rules for ferry time expression:<br/>
     <ul>
@@ -47,8 +47,8 @@
     <textarea cols="200" rows="4" id="editrule"></textarea>
 
     <h1 class="w3-blue w3-text-white">&nbsp SCHEDULE TABLE</h1>
-    <table id="ftable">
-            <tr><td>STEIL</td><td>rule</td><td>S</td><td>AI</td><td>Rule</td><td>S</td><td>KETR</td><td>Rule</td><td>S</td></tr>
+    <table id="ftable" style="display: block;overflow-x: auto; white-space: nowrap;">
+            <tr><td>STEIL</td><td style="width:35%">rule</td><td>S</td><td>AI</td><td style="width:35%" >Rule</td><td>S</td><td>KETR</td><td style="width:25%">Rule</td><td>S</td></tr>
 
     </table>
   <hr/>
@@ -153,9 +153,9 @@
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    //  GetDailyCache - retrieves the daily cache into the local storage objects 
+    //  GetDailyCache - retrieves ferryscheduleinclude.txt into the local storage objects 
     //  Load from server using ajax async request.
-    //  FERRYTIMESS,FERRYTIMESA,OPENHOURS,OPENHOURSEND,EMERGENCY,EMERGENCYEND
+    //  FERRYTIMESS,FERRYTIMESA
     //function GetDailyCache() {
     //     ajax async request
     //    var myurl = FixURL("dailycache.txt"); 
@@ -165,13 +165,8 @@
     //}
     function GetDailyCache() {
         // ajax async request
-        ////var myurl = FixURL("dailycache.txt");
-
-        //var myurl = FixURL("getdailycache.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
-        //    "&P=" + LSget("pagehits").substr(0, 30));
-        //var myurl = FixURL("getdailycachetest.php?VER=" + gVer + "&KIND=" + DeviceInfo() + "&N=" + localStorage.getItem("Cmain") +
-        //   "&P=" + LSget("pagehits").substr(0, 30));
-        var myurl = "https://www.anderson-island.org/dailycache.txt?" + Date.now(); // add date to turn off cache
+        //var myurl = "https://www.anderson-island.org/dailycache.txt?" + Date.now(); // add date to turn off cache
+        var myurl = "https://www.anderson-island.org/ferryscheduleinclude.txt?" + Date.now(); // add date to turn off cache
         // ajax request without jquery
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -198,12 +193,12 @@
 
         data = data.replace(/\r/g, ""); // remove all crs regular expression with global flag
         //var rows = data.split("\n"); //split into lines
-        if (data.substring(0, 10) != "DAILYCACHE") {
-            //alert("could not load updated values for ferry times and open hours");
-            //document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
-            alert("Could get dailycache.txt");
-            return;
-        }
+        // if (data.substring(0, 10) != "DAILYCACHE") {
+        //     //alert("could not load updated values for ferry times and open hours");
+        //     //document.getElementById("reloadreason").innerHTML = "Could not load dailycache data.";
+        //     alert("Could get dailycache.txt");
+        //     return;
+        // }
 
         //localStorage.setItem("dailycacheloaded", gMonthDay); // remember date time
         //parseCache(data, "ferrytimess", "FERRYTIMESS", "\n");
@@ -323,6 +318,7 @@
                 // Insert rule
                 row1col1 = row1.insertCell(1);
                 row1col1.style.border = "thin solid black";
+                row1col1.style.width="35%";
             //row1col1.innerHTML = "<textarea rows='2' cols='100'>" + ferrytimesS[i+1] + "</textarea>";
                 row1col1.innerHTML = ferrytimeS[i + 1];
                 row1col1.id = "S" + i.toFixed(); // id = yymmddhhmmS
@@ -342,6 +338,7 @@
                 // Insert rule
                 row1col2 = row1.insertCell(4);
                 row1col2.style.border = "thin solid black";
+                row1col2.style.width="35%";
                 //row1col2.innerHTML = "<textarea rows='2' cols='100'>" + ferrytimesA[i + 1] + "</textarea>";
                 row1col2.innerHTML = ferrytimesA[i + 1];
                 row1col2.id = "A" + i.toFixed(); // id = yymmddhhmmA
@@ -360,6 +357,7 @@
                 // Insert rule
                 row1col3 = row1.insertCell(7);
                 row1col3.style.border = "thin solid black";
+                row1col3.style.width="25%";
                 row1col3.innerHTML = ferrytimesK[i + 1];
                 row1col3.id = "K" + i.toFixed(); // id = yymmddhhmmS
                 row1col3.onclick = function () { fclick(this.id) };
