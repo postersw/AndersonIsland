@@ -179,22 +179,21 @@ function CheckRunTime($runtime) {
 //          otherwise return ""
 //
 function CheckHolidayFilename($filename){
-    // HOLIDAY day to letter table: mmdd, "l", .....
+    // HOLIDAY day to letter $dL must match displayferryoverflow.php, overflowcameras.php
+    $dL = array("","1","2","3","4","5","6","7","8", "X","Y","Z","L","M","N","I","J","K","O","P","Q", "S", "T", "U", "B", "C", "D");
+    $h  = array(0 ,  0,  0,  0,  0,  0,  0,  0,  0,1231,101,102,526,527,528,703,704,705,901,902,903,1127,1128,1129,1224,1225,1226);
     // dates for 2024  (Memorial Day, Labor Day, Thanksgiving). Must be adjusted every year.
-    $H = array(1231,"X", 101,"Y", 102,"Z", 
-        526,"L", 527,"M", 528,"N",
-        703,"I", 704,"J", 705,"K",
-        901,"K", 902,"L", 903,"M",
-        1127,"S", 1118,"T", 1129,"U",
-        1224,"B", 1225,"C", 1226,"D" );
 
     $mmdd = (int)(date("nd")); // mmdd  e.g. 523  or 1231
-    // loop through the holiday array and look for a date match
-    for($i=0;$i<count($H);$i+=2) {
-        if($mmdd == $H[$i]) {
-            return substr($filename,0,1) . $H[$i+1] . substr($filename,2);  // replace day with holiday code
-        }
-    }
+    $i = array_search($mmdd, $h);
+    if($i>0) return substr($filename,0,1) . $dL[$i] . substr($filename,2);  // replace day with holiday code
     return ""; // if no match 
+
+    // loop through the holiday array and look for a date match
+    //   for($i=0;$i<count($H);$i+=2) {
+    //       if($mmdd == $H[$i]) {
+    //           return substr($filename,0,1) . $H[$i+1] . substr($filename,2);  // replace day with holiday code
+    //       }
+    //    }
 }
 ?>
