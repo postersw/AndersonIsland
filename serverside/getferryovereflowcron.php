@@ -191,7 +191,7 @@ function CheckHolidayFilename($filename){
     $mmdd = (int)(date("nd")); // mmdd  e.g. 523  or 1231
     // loop through the holiday array and look for a date match
     for($i=0;$i<count($H);$i+=2) {
-        if($mmdd == $H($i)) {
+        if($mmdd == $H[$i]) {
             return substr($filename,0,1) . $H[$i+1] . substr($filename,2);  // replace day with holiday code
         }
     }
