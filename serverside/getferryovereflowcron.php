@@ -178,7 +178,7 @@ function CheckRunTime($runtime) {
 function CheckHolidayFilename($filename){
     // HOLIDAY day to letter $dL must match displayferryoverflow.php, overflowcameras.php
     $dL = array("","1","2","3","4","5","6","7","8", "X","Y","Z","L","M","N","I","J","K","O","P","Q", "S", "T", "U", "B", "C", "D");
-    $h  = array(0 ,  0,  0,  0,  0,  0,  0,  0,  0,1231,101,102,526,527,528,703,704,705,901,902,903,1127,1128,1129,1224,1225,1226);
+    $h  = array(0 ,  0,  0,  0,  0,  0,  0,  0,  0,1231,101,102,526,527,528,703,704,705,901,902,903,11270,11280,11290,1224,1225,1226);
     // dates for 2024  (Memorial Day, Labor Day, Thanksgiving). Must be adjusted every year.
 
     $mmdd = (int)(date("nd")); // mmdd  e.g. 523  or 1231
