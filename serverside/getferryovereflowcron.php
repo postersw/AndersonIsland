@@ -66,10 +66,7 @@ switch(substr($filename, 0, 1)) {
             if($position=="") break; // if no position
             if(strpos($position, "arriving @AI") > 0) break; // if the ferry has left St, use the last pictures taken
             if(strpos($position, "returning to AI") > 0) break; // if the ferry has left St, use the last pictures taken
-        }     
-        //  if no picture within 25 minutes
-        file_put_contents("L$filename.txt", "$dt Ferry did NOT leave $dock within 20 min."); // log date and time 
-        exit(0);                    
+        }                   
         break;
 
     case "A": // AI
@@ -94,19 +91,18 @@ switch(substr($filename, 0, 1)) {
             if(strpos($position, "arriving @St") > 0) break; // if the ferry has left AI, use the last pictures taken
             if(strpos($position, "returning to St") > 0) break; // if the ferry has left AI, use the last pictures taken 
         }
-        //  if no picture within 25 min
-        file_put_contents("L$filename.txt", "$dt Ferry did NOT leave $dock within 20 min."); // log date and time 
-        exit(0);      
         break;
 
     default:
         //echo " no run";
         exit();
 }
-// log it
 
-file_put_contents("L$filename.txt", "$dt Ferry leaving $dock"); // log date and time
-if($holidayfilename <> "") file_put_contents("L$holidayfilename.txt", "$dt Ferry leaving $dock");
+// log it
+if($i==12) $msg = "$dt Ferry did not leave $dock.";  // if timeout on loop
+else $msg = "$dt Ferry leaving $dock.";
+file_put_contents("L$filename.txt", $msg); // log date and time
+if($holidayfilename <> "") file_put_contents("L$holidayfilename.txt", $msg);
 file_put_contents("overflowlog.txt", "$dt: $filename\n", FILE_APPEND);  // write to log
 if($holidayfilename <> "")file_put_contents("overflowlog.txt", "$dt: $holidayfilename\n", FILE_APPEND);  // write to log
 if($holidayfilename <> "") echo "Holiday filename debug: $holidayfilename $dt "; // generate a debugging email
@@ -141,7 +137,8 @@ function CalcRunTime() {
 
 
 //////////////////////////////////////////////////////////////////////////////////
-//  CheckRunTime() d
+//  CheckRunTime() Returns filename iff it is time to capture a picture, based on 
+//              scheduled run time. Must be 0-5 minutes AFTER a scheduled run time. 
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //  entry   $runtime as dhhmm
 //  exit    returns Sdhhmm to capture steilacoom, Adhhmm to capture AI where dhhmm is the scheduled departure time
@@ -186,14 +183,7 @@ function CheckHolidayFilename($filename){
 
     $mmdd = (int)(date("nd")); // mmdd  e.g. 523  or 1231
     $i = array_search($mmdd, $h);
-    if($i>0) return substr($filename,0,1) . $dL[$i] . substr($filename,2);  // replace day with holiday code
-    return ""; // if no match 
-
-    // loop through the holiday array and look for a date match
-    //   for($i=0;$i<count($H);$i+=2) {
-    //       if($mmdd == $H[$i]) {
-    //           return substr($filename,0,1) . $H[$i+1] . substr($filename,2);  // replace day with holiday code
-    //       }
-    //    }
+    if($i===false) return "";
+    return substr($filename,0,1) . $dL[$i] . substr($filename,2);  // replace day with holiday code
 }
 ?>
