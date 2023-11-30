@@ -106,7 +106,7 @@ if($holidayfilename <> "") file_put_contents("L$holidayfilename.txt", $msg);
 file_put_contents("overflowlog.txt", "$dt: $filename\n", FILE_APPEND);  // write to log
 if($holidayfilename <> "")file_put_contents("overflowlog.txt", "$dt: $holidayfilename\n", FILE_APPEND);  // write to log
 if($holidayfilename <> "") echo "Holiday filename debug: $holidayfilename $dt "; // generate a debugging email
-echo "Debug: wrote $filename $dt";
+//echo "Debug: wrote $filename $dt";
 exit(0);
 
 ///////////////////////////////////////////////////////////////////////////////////
