@@ -63,47 +63,52 @@ function BuildRunTimeTable() {
     $amcolor = "#f0ffff";
     echo "  <a href='#holiday'>(Tap for Holiday traffic pics from last year)</a><br>";
     echo "<table>";
-
+    
+    // display each day
     for($d=1; $d<count($dL); $d++) {
 
         if($d==9) {  // holiday heading
             echo "<tr id='holiday'><td colspan='2' style='background-color:blue;color:white'><a style='color:white' >HOLIDAYS</td></tr>";
-            echo  "<tr><td colspan='2'>Shows day before and after: <br><a href='#New'>New Years</a> | <a href='#Mem'>Mem. Day</a> | <a href='#Jul'>July 4th</a> | " .
+            echo  "<tr><td colspan='2'>Shows days before and after: <br><a href='#New'>New Years</a> | <a href='#Mem'>Mem. Day</a> | <a href='#Jul'>July 4th</a> | " .
                     "<a href='#Lab'>Labor Day</a> | <a href='#Tha'>Thanksgiving</a> | <a href='#Xma'>XMas</a></td></tr>";
         }
         if(substr($Day[$d],0,1)=="0") continue; // skip a day beginning with 0 because we don't have data for it yet.
         $id = substr($Day[$d],0,3);  // id for the day
-        echo "<tr><td colspan='2' id='$id' style='background-color:blue;color:white'><a style='color:white' href='overflowcameras.php?f=$dL[$d]'>$Day[$d] [show all]</td></tr><tr><td style='background-color: lightblue'>Steilacoom&nbsp;&nbsp</td><td style='background-color: cyan'>Anderson Is&nbsp;&nbsp</td></tr>";
-        // all runs for the day
-        $s = 0;
-        if($d >5 ) $s = 1; // skip early runs on sat, sun, holiday
-        for($i=$s; $i<count($ST); $i++){
-            $Stime = formattime($ST[$i]);
-            $Atime = formattime($AI[$i]);
-            if($ST[$i]<1200) $stcolor= "#f0ffff";  // light blue in morning
-            else $stcolor="white";
-            $aicolor = $stcolor;
-            // find if it is marked as an overflow run in the STO or AIO array. Days only. Not for holidays.
-            if($d<9) {
-                $n = $d*10000 + $ST[$i];
-                for($j=0; $j<count($STO); $j++) {
-                    if($STO[$j] > $n) break;
-                    if($STO[$j] < $n) continue;
-                    $stcolor = "pink";
-                    break;
-                }
-                // find if it is an overflow run
-                $n = $d*10000 + $AI[$i];
-                for($j=0; $j<count($AIO); $j++) {
-                    if($AIO[$j] > $n) break;
-                    if($AIO[$j] < $n) continue;
-                    $aicolor = "pink";
-                    break;
-                }
-            }   
-            // generate the table entry with the reference to the overflow pictures.
-            echo "<tr><td style='background-color:$stcolor'><a href='overflowcameras.php?f=S$dL[$d]" . sprintf('%04d', $ST[$i]) . "'>$Stime</td>";
-            echo     "<td style='background-color:$aicolor'><a href='overflowcameras.php?f=A$dL[$d]" . sprintf('%04d', $AI[$i]) . "'>$Atime</td></tr>";
+        echo "<tr><td colspan='2' id='$id' style='background-color:blue;color:white'><a style='color:white' href='overflowcameras.php?f=$dL[$d]'>$Day[$d] [show all]</td></tr>";
+        if($d < 9) {  // if not a holiday, show all times.
+            
+            // for non-holidays, show all runs for the day
+            echo "<tr><td style='background-color: lightblue'>Steilacoom&nbsp;&nbsp</td><td style='background-color: cyan'>Anderson Is&nbsp;&nbsp</td></tr>";
+            $s = 0;
+            if($d >5 ) $s = 1; // skip early runs on sat, sun, holiday
+            for($i=$s; $i<count($ST); $i++){
+                $Stime = formattime($ST[$i]);
+                $Atime = formattime($AI[$i]);
+                if($ST[$i]<1200) $stcolor= "#f0ffff";  // light blue in morning
+                else $stcolor="white";
+                $aicolor = $stcolor;
+                // find if it is marked as an overflow run in the STO or AIO array. Days only. Not for holidays.
+                if($d<9) {
+                    $n = $d*10000 + $ST[$i];
+                    for($j=0; $j<count($STO); $j++) {
+                        if($STO[$j] > $n) break;
+                        if($STO[$j] < $n) continue;
+                        $stcolor = "pink";
+                        break;
+                    }
+                    // find if it is an overflow run
+                    $n = $d*10000 + $AI[$i];
+                    for($j=0; $j<count($AIO); $j++) {
+                        if($AIO[$j] > $n) break;
+                        if($AIO[$j] < $n) continue;
+                        $aicolor = "pink";
+                        break;
+                    }
+                }   
+                // generate the table entry with the reference to the overflow pictures.
+                echo "<tr><td style='background-color:$stcolor'><a href='overflowcameras.php?f=S$dL[$d]" . sprintf('%04d', $ST[$i]) . "'>$Stime</td>";
+                echo     "<td style='background-color:$aicolor'><a href='overflowcameras.php?f=A$dL[$d]" . sprintf('%04d', $AI[$i]) . "'>$Atime</td></tr>";
+            }
         }
         echo "<tr><td colspan='2'>&nbsp</td></tr>";
     }

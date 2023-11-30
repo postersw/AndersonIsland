@@ -1,11 +1,11 @@
 ﻿<?php
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  overflowcameras.php  display the overflow cameras for lanes and dock
-//  overflowcameras.php?f=Adhhmm         where A = A or S, d = 1-7 (8 for all days), hhmm = 24 hr time
-//                f=d where d=1-7 for all cameras for a day, 8=all days
-//                  X,Y,Z=-1,New Years Day,+1; L,M,N=-1,Memorial Day,+1; I,J,K=July3,4,5;    
+//  overflowcameras.php?f=Adhhmm         where A = A or S, d = 1-7,8-all,A-Z-holiday, hhmm = 24 hr time
+//                    OR f=d where d=1-7 for all cameras for a day, 8=all days, A-Z for holiday
+//        Holidays: X,Y,Z=-1,New Years Day,+1; L,M,N=-1,Memorial Day,+1; I,J,K=July3,4,5;    
 //                  K,L,M=-1,Labor Day,+1; S,T,U=-1,Thanksgiving,+1; B,C,D=-1,Christmas,+1;  
-//  Called by displayferryoverflow.php
+//  Called by displayferryoverflow.php when user selects a choice
 //  Entry: files stored in /Overflow by getferryovereflow.php
 //  File name is Adhhmm.jpg or Sdhhmm.jpg for lanes camers
 //              DAdhhmm.jpg or DShhmm.jpg for dock camera
@@ -17,7 +17,8 @@
 //       5/31/21 Accept 8 to display all days
 //       6/11/21 Fix random number use to prevent picture caching
 //       9/04.21 Show only 2 pictures. Simplify captions.
-//       11/26/23. Add holidays.
+//       11/26/23. Add holidays.           
+//       11/29/23. Remove dependence on time schedule when displaying all files for a day: f=d
 //
 //$Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 // $Day must match $Day in displayferryoverflow.php
@@ -43,6 +44,7 @@ $dL = array("","1","2","3","4","5","6","7","8","X","Y","Z","L","M","N","I","J","
     if($f == "") exit(0);
     $s = strlen($f);
 
+    // Display All runs for 1 Day.
     if($s==1) {  // 1 character is the day only
         // if "8", display entire week
         if($f=="8") {
@@ -50,14 +52,14 @@ $dL = array("","1","2","3","4","5","6","7","8","X","Y","Z","L","M","N","I","J","
         }
         else DisplayOneDay($f);
         if(is_numeric($f)) echo "<p/>Pictures from the last 7 days, taken just as the ferry leaves.";
+        else echo "<p/>Pictures from last Holiday (potentially last year), taken just as the ferry leaves.";
         echo "</div></body></html>";   
         exit(0);
     }
     if($s != 6) exit(); // must be 6
 
-    // $d = index into $dL and $Day arrays. 
-    // display cameras for the explicit time
-    $d = substr($f, 1, 1);
+    // Display ONE run for explicit time
+    $d = substr($f, 1, 1);     // $d = index into $dL and $Day arrays. 
     if($d == "8") {  // if display for entire week loop through all days for 1 time.
         for($i=1; $i<8; $i++) DisplayOneTime(substr($f, 0, 1) . $i . substr($f, 2)); //<S|A><1-7><hhmm>
     }
@@ -69,8 +71,9 @@ $dL = array("","1","2","3","4","5","6","7","8","X","Y","Z","L","M","N","I","J","
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // DisplayOneTime Show pictures for a time
-//  Entry   $f=f=Adhhmm      where A = A or S, d = 1-7, 8 for all days, x for holidays),
-//                           hhmm = 24 hr time
+//  Entry   $f=Adhhmm or Sdhhmm
+//          where A = A or S, d = 1-7, 8 for all days, x for holidays
+//                hhmm = 24 hr time
 //  Exit    writes html to display photos using <img ...>
 //
 function DisplayOneTime($f) {
@@ -89,10 +92,10 @@ function DisplayOneTime($f) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-//  DisplayOneDay All cameras for a day
+//  DisplayOneDayX All cameras for a day  OBSOLETE. Requires file time to match schedule.
 //  entry   $d = day index, single letter
 //
-function DisplayOneDay($d) {
+function DisplayOneDayX($d) {
     global $Day, $dL;
     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
@@ -111,6 +114,32 @@ function DisplayOneDay($d) {
     for($i=$s; $i<count($AI); $i++){
         $f = "A" . $d . sprintf('%04d', $AI[$i]);
         DisplayOneTime($f);
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//  DisplayOneDay Displays ALL cameras for a day without using run times
+//      Automatically compensates for changes in ferry schedule by displaying all files for a day.
+//      But could pick up garbage from leftover files.
+//
+//  entry   $d = day index, single letter, 1-7 (day of week), A-Z (holiday)
+//
+function DisplayOneDay($d) {
+    global $Day, $dL;
+
+    $files = scandir("/home/postersw/public_html/Overflow"); // list of all files, sorted alpha
+    $di = array_search($d, $dL);  // convert Day letter into index for $Day
+    echo "<strong>Overflow on $Day[$di] for Steilacoom: </strong><br/> ";
+    $fmatch = "LS" . $d;   //"LSd"
+    foreach($files as $f){  // loop through all L files for Steilacoom
+        if(substr($f, 0, 3) == $fmatch) DisplayOneTime(substr($f,1,6));   // display based on Sdhhmm
+    }
+
+    echo "<hr/><strong>Overflow on $Day[$di] for Anderson Island: </strong><br/> ";
+    $fmatch = "LA" . $d;   //"ASd"
+    foreach($files as $f){
+        if(substr($f, 0, 3) == $fmatch) DisplayOneTime(substr($f,1,6));   // display based on Adhhmm
     }
 }
 
