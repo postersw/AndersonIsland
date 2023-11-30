@@ -69,7 +69,7 @@ function BuildRunTimeTable() {
 
         if($d==9) {  // holiday heading
             echo "<tr id='holiday'><td colspan='2' style='background-color:blue;color:white'><a style='color:white' >HOLIDAYS</td></tr>";
-            echo  "<tr><td colspan='2'>Shows days before and after: <br><a href='#New'>New Years</a> | <a href='#Mem'>Mem. Day</a> | <a href='#Jul'>July 4th</a> | " .
+            echo  "<tr><td colspan='2'>Shows all runs for each day. <br><a href='#New'>New Years</a> | <a href='#Mem'>Mem. Day</a> | <a href='#Jul'>July 4th</a> | " .
                     "<a href='#Lab'>Labor Day</a> | <a href='#Tha'>Thanksgiving</a> | <a href='#Xma'>XMas</a></td></tr>";
         }
         if(substr($Day[$d],0,1)=="0") continue; // skip a day beginning with 0 because we don't have data for it yet.
