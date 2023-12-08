@@ -87,6 +87,7 @@
         1.35.030723. Handle a null schedule for a fully cancelled ferry. Fix ferrydate2 cutover time.
         1.36.081823. Rebuilt with targetSdkVersion=33 for google requirement. Fix IsPhonegap to test for localhost.. 
         1.37.110123. Fix OneSignal Init to ensure it is called. Use Android 13 engine.
+        1.38.120723. Improve Event display.
 
  * Copyright 2016-2023, Robert Bedoll, Poster Software, LLC
  * All Javascript removed from index.html
@@ -108,7 +109,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.37.110123";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.38.120723";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
@@ -3003,6 +3004,7 @@ function SetEventFilter(f) {
 //  exit    builds a DOM table of events
 //
 function DisplayComingEventsList(CE) {
+    var Monthname = [0, "Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
     var i;
     var row;
     var col;
@@ -3061,7 +3063,11 @@ function DisplayComingEventsList(CE) {
             col = row.insertCell(0);
             // test for this week
             if (iweek == thisweek) col.innerHTML = "This Week";
-            else col.innerHTML = "";
+            else if(iweek == (thisweek+1)) col.innerHTML = "Next Week";
+            else {
+                mweek = iweek - GetWeekofYear(t.substring(0,4) + "01") + 1;  // current week # - (1st week of the month #) + 1
+                (col.innerHTML) =  Monthname[Number(t.substring(2, 4))] + " week " + mweek; 
+            }
             col.colSpan = "4";
         }
 
