@@ -109,7 +109,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-const gVer = "1.38.120723";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
+const gVer = "1.38.120823";  // VERSION MUST be n.nn. ...  e.g. 1.07 for version comparison to work.
 var gMyVer; // 1st 4 char of gVer
 const cr = "copyright 2016-2023 Robert Bedoll, Poster Software LLC";
 
@@ -302,6 +302,9 @@ var gWeatherCurrentCount = 0; // number of weather current requests to debug API
 // icons
 var gIconSwitch = 1; // icon switch, : 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Only 1 and 4 are used.
 var gEventIcons = true;
+
+// constants
+const gDayColor = "#066AFF";
 
 //  TXTX - Text to Speech Object.
 var TXTS = {
@@ -2193,7 +2196,6 @@ function StartTicketApp() {
 function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
     var i;
     var ft;
-    var amcolor = "#f0ffff";
     const extrat = 29; // extra time in display 29 minutes
     var boldS = false, boldA = false, boldK = false;
     var validS = false, validA = false, validK = false; // true if runs are valid
@@ -2216,8 +2218,8 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             row1col1.style.border = "thin solid black";
             if (validS) {
                 row1col1.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesS[i]);
-                if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "lightgray";
-                if (ferrytimesS[i] < 1200) row1col1.style.backgroundColor = amcolor;
+                if (gTimehhmm > ferrytimesS[i]) row1col1.style.color = "gray";
+                row1col1.style.backgroundColor = ferrycellcolor(ferrytimesS[i]);
                 row1col1.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesS[i]) + "S"; // id = yymmddhhmmS
                 row1col1.onclick = function () { ferryclick(this.id) };
             } else {
@@ -2229,9 +2231,9 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             row1col2.style.border = "thin solid black";
             if (validA) {
                 row1col2.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesA[i]);
-                if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "lightgray";
+                if (gTimehhmm > ferrytimesA[i]) row1col2.style.color = "gray";
                 else row1col2.style.color = "darkblue";
-                if (ferrytimesA[i] < 1200) row1col2.style.backgroundColor = amcolor;
+                row1col2.style.backgroundColor = ferrycellcolor(ferrytimesA[i]);
                 row1col2.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesA[i]) + "A"; // id = yymmddhhmmA
                 row1col2.onclick = function () { ferryclick(this.id) };
             } else {
@@ -2241,12 +2243,12 @@ function BuildFerrySchedule(table, ferrytimesS, ferrytimesA, ferrytimesK) {
             // Ketron
             var row1col3 = row1.insertCell(2);
             row1col3.style.border = "thin solid black";
+            row1col3.style.backgroundColor = ferrycellcolor(ferrytimesA[i]); // intentionally use AI time because it is always set
             if (validK) {
                 row1col3.innerHTML = "&nbsp;&nbsp;" + FormatTime(ferrytimesK[i]);
-                if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "lightgray";
+                if (gTimehhmm > ferrytimesK[i]) row1col3.style.color = "gray";
                 else row1col3.style.color = "brown";
                 row1col3.style.border = "thin solid black";
-                if (ferrytimesK[i] < 1200) row1col3.style.backgroundColor = amcolor;
                 row1col3.id = gYYmmdd.toFixed(0) + formathhmm(ferrytimesK[i]) + "K"; // id = yymmddhhmmS
                 row1col3.onclick = function () { ferryclick(this.id) };
             }
@@ -2276,6 +2278,18 @@ function formathhmm(hhmm) {
     if (s.length == 4) return s;
     else return "0" + s;
 }
+
+////////////////////////////////////////////////////////////////
+//  ferrycellcolor - return color for cell
+//  entry   time = time as hhmm
+//  exit    returns string for cell color, based on time
+function ferrycellcolor(time) {
+    if(time==0) return "gray";
+    if (time < 1200) return "#e6ffff"; // am color  
+    else if (time > 1900) return "#f2f2f2"; // pm color
+    else return "#ffffff";  // day color
+}
+
 ///////////////////////////////////////////
 //  ferryclick - Add ferry time and date to calendar
 //  tc = cell id: date (yymmdd) time (hhmm) S/A/K as a string. 
@@ -2343,16 +2357,16 @@ function DisplayFerrySchedule(userdate) {
 
     row1 = table.insertRow(-1);
     row1col1 = row1.insertCell(0);
-    row1col1.style.backgroundColor = "blue";
+    row1col1.style.backgroundColor = gDayColor;
     row1col1.style.color = "white";
     if (userdate == "") row1col1.innerHTML = 'TODAY';
     else row1col1.innerHTML = gDayofWeekName[gDayofWeek];
     row1col1 = row1.insertCell(1);
-    row1col1.style.backgroundColor = "blue";
+    row1col1.style.backgroundColor = gDayColor;
     row1col1.style.color = "white";
     row1col1.innerHTML = gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
     row1col1 = row1.insertCell(2);
-    row1col1.style.backgroundColor = "blue";
+    row1col1.style.backgroundColor = gDayColor;
 
     InsertStAI(table);
     BuildFerrySchedule(table, UseFerryTime("S"), UseFerryTime("A"), UseFerryTime("K"));
@@ -2364,7 +2378,7 @@ function DisplayFerrySchedule(userdate) {
         row1 = table.insertRow(-1);
         row1col1 = row1.insertCell(0);
         row1col1.colSpan = "3";
-        row1col1.style.backgroundColor = "blue";
+        row1col1.style.backgroundColor = gDayColor;
         row1col1.style.color = "white";
         row1col1.innerHTML = gDayofWeekName[gDayofWeek] + " " + gMonth + "/" + gDayofMonth + (holiday ? " Holiday" : "");
         InsertStAI(table);
@@ -3085,8 +3099,10 @@ function DisplayComingEventsList(CE) {
         col.style.fontWeight = "bold";
         col = row.insertCell(1);
         col.innerHTML = ShortTime(Evt.startt) + "-" + ShortTime(Evt.endt); // compressed tim
+        col.style.backgroundColor = "white";
         var col2 = row.insertCell(2);
         col2.innerHTML = FormatEvent(Evt, "16");//event
+        col2.style.backgroundColor = "white";
         //col.onclick = function(){tabletext(this);}
         col = row.insertCell(3); col.innerHTML = Evt.loc;//where
         var color;
@@ -3882,10 +3898,14 @@ function ShowTideDataPage(periods, showcurrent) {
         var tidemmdd = period.mmdd;
         if (tidemmdd != olddate) {
             var row1; row1 = table.insertRow(-1);
-            var row1col1; row1.insertCell(0).innerHTML = " ";
+            row1.style.background = gDayColor; // blue
+            var row1col1 = row1.insertCell(0);
+            row1col1.style.color = "white";
+            row1col1.innerHTML = gDayofWeekShort[GetDayofWeek(period.mmdd)] + " " + formatDate(period.mmdd) + '&nbsp;';
             row1.insertCell(1).innerHTML = " ";
             row1.insertCell(2).innerHTML = " ";
             row1.insertCell(3).innerHTML = " ";
+            row1.insertCell(4).innerHTML = " ";
             olddate = tidemmdd;
         }
         // Insert New Row for table at end of table.
@@ -4656,6 +4676,8 @@ function generateWeatherForecastPage() {
         if (newdate != olddate) {
             row1 = table.insertRow(-1); // dummy row
             var row1col1 = row1.insertCell(0);
+            row1col1.style.color = "white";
+            row1col1.style.backgroundColor = gDayColor;
             row1col1.colSpan = "6";
             //row1.insertCell(1); row1.insertCell(2); row1.insertCell(3); row1.insertCell(4);
             var dow = fdate.getDay();;
@@ -4663,7 +4685,7 @@ function generateWeatherForecastPage() {
             olddate = newdate;
         }
         var row1 = table.insertRow(-1);
-        if ((t < 600) || (t > 1800)) row1.style.backgroundColor = "lightgray";
+        if ((t < 600) || (t > 1800)) row1.style.backgroundColor = "#f0f0f0"; //"lightgray";
         else row1.style.backgroundColor = "lightyellow";
 
         // Insert New Column for time
