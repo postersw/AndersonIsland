@@ -134,7 +134,8 @@ function CreateWeatherWarnings($jsonforecastdata) {
         // weather alerts
         if($rainalert=="") {  // if no alert
             if(array_search($r->weather[0]->id, $alertids)!==false) {  // if id code found in alertids array
-                if((strpos($r->weather[0]->description, "snow") == false) || ($lowtemp < 33))    // if snow, temp must be <33 to give warning
+                echo " code=" . $r->weather[0]->id . ", desc=" . $r->weather[0]->description . ", lowtemp=" . $lowtemp . "<br>";
+                if((strpos($r->weather[0]->description, "snow") === false) || ($lowtemp < 32))    // if snow, temp must be <32 to give warning
                     $rainalert = "<b>Weather alert for $dt: " . $r->weather[0]->description . "</b><br>";
                     echo $rainalert;
             }
