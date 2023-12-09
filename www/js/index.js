@@ -304,7 +304,7 @@ var gIconSwitch = 1; // icon switch, : 1=icon+lc,2=icon+uc,3=icon,4=uc,5=lc. Onl
 var gEventIcons = true;
 
 // constants
-const gDayColor = "#066AFF";
+const gDayColor = "#4040ff"; //"#066AFF";
 
 //  TXTX - Text to Speech Object.
 var TXTS = {
@@ -3042,12 +3042,12 @@ function DisplayComingEventsList(CE) {
     // add a new week header
     row = table.insertRow(-1);
     row.style.border = "solid thin gray";
-    row.style.backgroundColor = "lightblue";
+    row.style.backgroundColor = gDayColor;// "lightblue";
     row.style.fontWeight = "bold";
-    col = row.insertCell(0); col.innerHTML = "Day";
-    col = row.insertCell(1); col.innerHTML = "Time";
-    col = row.insertCell(2); col.innerHTML = "Event";
-    col = row.insertCell(3); col.innerHTML = "Location";
+    col = row.insertCell(0); col.innerHTML = "Day"; col.style.color = "#ffffff";
+    col = row.insertCell(1); col.innerHTML = "Time";col.style.color = "#ffffff";
+    col = row.insertCell(2); col.innerHTML = "Event";col.style.color = "#ffffff";
+    col = row.insertCell(3); col.innerHTML = "Location";col.style.color = "#ffffff";
 
     // calculate end month day. 6 for events, 1 for activities.
     //var endyymmdd;
@@ -3073,8 +3073,9 @@ function DisplayComingEventsList(CE) {
         // add a row for new week. won't work if schedule days are both same day of week
         if (iweek != lastweek) {
             row = table.insertRow(-1);
-            row.style.backgroundColor = "lightblue";
+            row.style.backgroundColor = gDayColor; // "lightblue";
             col = row.insertCell(0);
+            col.style.color = "#ffffff"; // white text
             // test for this week
             if (iweek == thisweek) col.innerHTML = "This Week";
             else if(iweek == (thisweek+1)) col.innerHTML = "Next Week";
