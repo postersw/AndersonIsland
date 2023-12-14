@@ -3197,7 +3197,7 @@ function tabletext(tc) {
             // create table entry. id = the numeric index into the CE array
             as += "<tr id='" + iCE.toFixed() + "'><td style='border:thin solid black'><strong>" +
                 formatDate(Evt.date) + " " + VeryShortTime(Evt.startt) + "-" + VeryShortTime(Evt.endt) + ":</strong> " +
-                Evt.title + " at " + Evt.loc + "<br/>Sponsor: " + Evt.sponsor + ". " + CreateLink(Evt.info) + "<br/>";
+                Evt.title + " at " + Evt.loc + "<br>Sponsor: " + Evt.sponsor + ".<br>" + CreateLink(Evt.info) + "<br>";
             // to include a link: must start with http and be at the end of the element and not have ' or "
             //if (aCE.length >= 8) as += CreateLink(aCE[7]) + "<br>";
             as += "<button onclick='AddToCal(" + iCE.toFixed() + ")'>Add to Calendar</button></td></tr>";
