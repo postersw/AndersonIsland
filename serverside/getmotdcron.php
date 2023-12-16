@@ -8,8 +8,14 @@
 //  Optional motd messages to always include. only 1 line up to the \n,  \n is stripped.
 //  </MOTD>
 //  // comment always skipped.
-//  <DATE mmddstart-mmddend [mmddstart-mmddend] ... >
-//   optional motd message to include, starting mmddstart, and ending mmddend.  As many time ranges may be added as needed.  only 1 line up to the \n. \n is stripped.
+//  <DATE mmddstart-mmddend[:hhmmend 24-hour endtime] [mmddstart-mmddend] ... >
+//          separated by space or comma.
+//          e.g. 0101-0131 0418,0503:1100,0610-0612:1300
+//   optional motd message to include, starting mmddstart, and ending mmddend @ hhmmend
+//            As many date ranges may be added as needed.  
+//            The endtime is optional and is separated by a :, in 24 hour time., e.g. 0503:1100
+//                   The message will be started at 0001 and removed the LAST day after hh:mmend. (but only every 4 hours.)
+//            Only 1 line up to the \n. \n is stripped.
 //  </DATE>
 //  .... repeated as necessary
 //  <MOTDLAST>
@@ -26,6 +32,7 @@
 //  9/6/22.  RFB. Remove 'lowtidewarning.txt' file include.  Remove \n from output. \n must be in the dailycache.txt file.
 //  9/11/22. RFB. Accept // for comments.
 //  10/3/22. RFB. Improve handling of // and blank lines.
+//  12/15/23. RFB. Accept end time. Accept comma a delimiter.
 
 $test = false;  // set true to go to dailycaCHE_test.txt
 $motdfile = "motd.txt";
@@ -65,33 +72,45 @@ if($ln != "</MOTD>\n") {
 if($ln != "</MOTD>\n")  exit("$motdfile missing &lt /MOTD &gt");
 
 // check for MOTD date rows:   <DATE mmdd1-mmdd2 [mmdd3-mmdd4] ... >\n msg \n</DATE> ...
-while(true) {
+while(true) {  // loop through file
     $ln = fgetnc($motdf);
     if(substr($ln, 0, 2) == "//") continue;  // skip comments
     if(substr($ln, 0, 5)== "<DATE") {
-        $dateranges = explode(" ", substr($ln, 6));  // get the date ranges
+        echo "--------------------------------------------------<br>\n";
+        $line = substr($ln, 6);
+        $line = str_replace(",", " ", $line);  // change comma into space
+        $line = str_replace(">", "", $line); // remove any trailing >
+        $line = trim(preg_replace("/\s{2,}/", " ", $line));  // collapse duplicate spaces
+        $dateranges = explode(" ", $line);  // get the date ranges
         if(count($dateranges) == 0) exit("no data range for $ln");
-        $ln = fgetnc($motdf);  // check the next line
-        if($ln == "</DATE>\n") continue;  // if no actual <DATE line, skip it
+        $ln = fgetnc($motdf);  // check the next line which is the message
+        if($ln == "</DATE>\n") continue;  // if no actual message line, skip it
         $skipped = true;
-        // loop through the date ranges mmdd1-mmdd2
+        // loop through the date ranges mmdd1-mmdd2:hhmm on the <DATE line
         foreach($dateranges as $dl) {
             if($dl=="") continue;
-            if($dl==">") break;
-            $dates = explode("-", $dl);  // split mmdd1-mmdd2 on the dash
-            $ds = preg_replace('~\D~', '', $dates[0]);  // strip all non digits
-            if($ds=="") continue;
-            if(count($dates)==1) $de = $ds;  // if just mmdd1
-            else $de = preg_replace('~\D~', '', $dates[1]); // else use mmdd2
-            //echo ("$dl: ds=$ds, de=$de  \n");
-            if(checkmotddate($ds, $de)) {  // if date is active
+            $tend = "2400";
+            $timepos = strpos($dl, ":");
+            if($timepos > 2) {  // if a:c or a-b:c, extract the time
+                $tend = substr($dl, $timepos+1);  // extract c from a:c or a-b:c
+                $dl = substr($dl, 0, $timepos);
+            }
+            $dates = explode("-", $dl);
+            $ds = $dates[0];
+            $de = $ds;
+            if(count($dates)==2) $de = $dates[1];  // if a-b
+            if(!is_numeric($ds)) exit("non-numeric ds: ds=$ds,de=$de,tend=$tend,dl=$dl for $ln ");
+            if(!is_numeric($de)) exit("non-numeric de: ds=$ds,de=$de,tend=$tend,dl=$dl for $ln ");
+            if(!is_numeric($tend)) exit("non-numeric tend: ds=$ds,de=$de,tend=$tend,dl=$dl for $ln ");
+            echo ("$dl: ds=$ds,de=$de,tend=$tend<br>  ");
+            if(checkmotddate($ds, $de, $tend)) {  // if date  and time is active
                 $motdout .= substr($ln, 0, strlen($ln)-1);  // add line without \n
-                echo ("Added ds=$ds-$de: $ln \n");
+                echo ("Added ds=$ds-$de:$tend: $ln <br>\n");
                 $skipped = false;
                 break; // don't bother with any more date ranges
             } 
         }
-        if($skipped) echo "Skipped: $ln\n";
+        if($skipped) echo "Skipped: $ln<br>\n";
         $ln = fgetnc($motdf);  // read line after msg. should be </DATE>
         if($ln != "</DATE>\n") exit("no ending /Date for $ln");
     }
@@ -132,7 +151,7 @@ exit();
 //          dend is end date, mmdd
 //  exit    true if current date is with date1-date2, else false
 //
-function checkmotddate($dstart, $dend) {
+function checkmotddate($dstart, $dend, $tend) {
     $d1 = intval($dstart);
     $d2 = intval($dend);
 
@@ -142,7 +161,17 @@ function checkmotddate($dstart, $dend) {
 
     $dnow = intval(date("md"));  // get mmdd
     //echo ("d1=$d1, d2=$d2, dnow=$dnow. ");
-    if(($d1<=$dnow) && ($dnow<=$d2)) {return true;}
+    if(($d1<=$dnow) && ($dnow<=$d2)) {
+        echo "  DATE TRUE, ";
+        if($d2==$dend  && $tend!="2400") {  // check time cutoff on last day of range
+            if(intval(date("Hi"))>intval($tend)) { 
+                echo " TIME FALSE <br>\n";
+                return false;
+            } else echo "  TIME TRUE<br>\n";
+        }
+        return true;
+    }
+    echo ("    DATE FALSE: $d1 <= $dnow  and $dnow <= $d2 <br>\n");
     return false;    
 }
 
@@ -153,6 +182,7 @@ function checkmotddate($dstart, $dend) {
 //
 function fgetnc($fh) {
     while($ln = fgets($fh)){
+        //echo "$ln<br>\n";
         if(($ln!="\n") && substr($ln, 0,2)!="//") return $ln;
     }
     echo "fgetnc return null";
