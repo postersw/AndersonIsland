@@ -57,13 +57,14 @@ function BuildRunTimeTable() {
     $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "ALL WEEK",
     "0New Year's Eve", "0New Year's Day (Jan 1)", "0Jan 2", "0Memorial Day Eve","0Memorial Day","0Day after Memorial Day","0July 3","0July 4","0July 5",
      "0Labor Day Eve","0Labor Day","0Day after Labor Day",
-     "Thanksgiving Eve","Thanksgiving","Fri after Thanskgiving", "0XMas Eve Dec 24","0Xmas Dec 25","0Dec 26"
+     "Thanksgiving Eve","Thanksgiving","Fri after Thanskgiving", "XMas Eve Dec 24","Xmas Dec 25","Dec 26"
            );
     $dL = array("","1","2","3","4","5","6","7","8","X","Y","Z","L","M","N","I","J","K","O","P","Q","S","T","U","B","C","D"); // must batch $Day
     $amcolor = "#f0ffff";
-    echo "  <a href='#holiday'>(Tap for Holiday traffic pics from last year)</a><br>";
+    //echo "  <a >Tap for Holiday traffic pics from last year)</a><br>";
     echo "<table>";
-    
+    echo "<tr ><td colspan='2' style='background-color:blue;color:white'><a href='#holiday' style='color:white' >Holidays [tap here]</td></tr>";
+    echo "<tr><td colspan='2'>&nbsp</td></tr>";     
     // display each day
     for($d=1; $d<count($dL); $d++) {
 
