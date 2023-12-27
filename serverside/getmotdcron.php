@@ -163,7 +163,7 @@ function checkmotddate($dstart, $dend, $tend) {
     //echo ("d1=$d1, d2=$d2, dnow=$dnow. ");
     if(($d1<=$dnow) && ($dnow<=$d2)) {
         echo "  DATE TRUE, ";
-        if($d2==$dend  && $tend!="2400") {  // check time cutoff on last day of range
+        if($dnow==$dend  && $tend!="2400") {  // check time cutoff on last day of range
             if(intval(date("Hi"))>intval($tend)) { 
                 echo " TIME FALSE <br>\n";
                 return false;
