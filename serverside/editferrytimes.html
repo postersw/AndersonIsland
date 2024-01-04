@@ -10,16 +10,17 @@
 <body>
 <div class="w3-container" >
 <h1 class="w3-blue w3-text-white"><strong>&nbsp EDIT FERRY SCHEDULE </strong></h1>
-     (ver 11/17C/23)
+     (ver 12/28/23)
     <p>To Use:
     1. Click 'LOAD FULL SCHEDULE'. 2. Click on an S entry to move it to the Edit box. 3. Click on Format (). 4. Make changes using Edit box. 
-    5 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 5. When done, select SAVE FULL SCHEDULE, which copies the full schedule to the Edit box. 5 Select All in edit box, copy, and paste into dailycache.txt.</p>
-    <button onclick="LoadSchedule()">LOAD FULL SCHEDULE from ferryscheduleinclude.txt</button><br/>
+    5 Click 'Save Edit box to SA/AI' to save back to S and A (30 min later). 6. When done, select SAVE SCHEDULE, which copies the full schedule to the Edit box.
+    7.Click UPLOAD FILE to save the edit box back to ferryscheduleinclude.txt on the server. </p>
+    <button onclick="LoadSchedule()">0. LOAD FULL SCHEDULE from ferryscheduleinclude.txt</button><br/>
     <button onclick="CheckSchedule()"> Check </button>
     <button onclick="TestSchedule()"> Test all entries</button>
     <button onclick="DisplayFerrySchedule()">DISPLAY Schedule</button>
-    <button onclick="SaveSchedule()"> SAVE FERRYS/A/K to Edit Box</button>
-    <button onclick="SaveDailyCache()"> SAVE ferryscheduleinclude.txt to Edit Box</button>
+    <button onclick="SaveSchedule()"> SAVE Schedule to Edit Box</button>
+    <!--<button onclick="SaveDailyCache()"> SAVE ferryscheduleinclude.txt to Edit Box</button>-->
 
     <p>Rules for ferry time expression:<br/>
     <ul>
@@ -34,7 +35,7 @@
         <li>RFB. 6/3/18.</li>              
         </ul>
 
-    <h1 class="w3-blue w3-text-white">&nbsp EDIT AREA</h1>
+    <h2 class="w3-blue w3-text-white">&nbsp EDIT AREA</h2>
     <label>gMonthDay</label><input type="number" id="monthday" size="4"/>
     <label>gDayofWeek</label><input type="number" id="dayofweek" size="1"/>
     <label>gWeekofMonth</label><input type="number" id="weekofmonth" size="1"/><p />
@@ -44,15 +45,23 @@
     <button onclick="PCountEdit()">() Count</button> 
     <button onclick="SaveEdit(0)">Save Edit box and time to 1 schedule</button>
     <button onclick="SaveEdit(1)">Save Edit box to ST and AI (don't change AI time)</button><br/>
-    <textarea cols="200" rows="4" id="editrule"></textarea>
+    <button onclick="SaveUpdateFerryScheduleFile()">1. FORMAT Schedule for Upload</button><br><br>
 
-    <h1 class="w3-blue w3-text-white">&nbsp SCHEDULE TABLE</h1>
+    <form action="https://www.anderson-island.org/updateferryschedule.php" method="post" >
+    <textarea cols="200" rows="4" id="editrule" name="newschedule"></textarea><br><br>
+    <h2 class="w3-blue w3-text-white">&nbsp UPDATE ferryscheduleinclude</h2>
+    <b>UPDATE ferryscheduleinclude: </b><label>Update password</label><input type="text" id="pw" name="pw" required/><br>
+     You MUST first push "Format Schedule for Upload" above. 
+    <input type="submit" value="2. UPLOAD ferryscheduleinclude" name="submit" /><br>
+</form>
+    <br>
+    <h2 class="w3-blue w3-text-white">&nbsp SCHEDULE TABLE</h2>
     <table id="ftable" style="display: block;overflow-x: auto; white-space: nowrap;">
             <tr><td>STEIL</td><td style="width:35%">rule</td><td>S</td><td>AI</td><td style="width:35%" >Rule</td><td>S</td><td>KETR</td><td style="width:25%">Rule</td><td>S</td></tr>
 
     </table>
   <hr/>
-        <h1 class="w3-blue w3-text-white">&nbsp RESULTS TABLE</h1>
+        <h2 class="w3-blue w3-text-white">&nbsp RESULTS TABLE</h2>
     <table id="ferrytable">
 
     </table>
@@ -658,13 +667,34 @@
          return true;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // UpdateFerryScheduleInclude() - replaces the ferryscheduleinclude.txt file on the SERVER 
+    //      with the context of the new saved schedule.
+    //  entry editrules.value = values to replace in ferryscheduleinclude.txt
+    // //  exit  posted to server replaceferryschedule.php
+    // function UpdateFerryScheduleInclude() {
+    //     const serverURL = "https://www.anderson-island.org/replaceferryschedule.php"
+    //     // Get the text box element by its id
+    //     var value = document.getElementById ("editrule").value;
+    //     // Create a new XMLHttpRequest object
+    //     var xhr = new XMLHttpRequest ();
+    //     // Open a POST request to the server URL
+    //     xhr.open ("POST", "serverURL", true);
+    //     // Set the content type header to application/x-www-form-urlencoded
+    //     xhr.setRequestHeader ("Content-Type", "application/x-www-form-urlencoded");
+    //     // Send the value as a key-value pair
+    //     xhr.send ("value=" + value);
+    // }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
-    //  UpdateDailyCache() Replaces the ferry info in DailyCache with the edited Ferry values
+    //  UpdateFerryScheduleFile() Loads the edit box with the updated ferry schedule values, 
+    //      replacing FERRYTS/A/K ONLY with the new values.
+    //      Leading comments are not changed.  FERRYTS2/A2/K2 are not changed.
     //  entry: ferrytimeA/S/K array = edited schedule
     //  exit: true if no error, 
-    //        clipboard and document.editrule = entire formatted dailycache.txt contents.
+    //        clipboard and document.editrule = entire formatted ferryscheduleinclude.txt contents.
     //
-    function SaveDailyCache() {
+    function SaveUpdateFerryScheduleFile() {
         if (!SaveSchedule()) return false;
         InitializeDates(0);
         // schedule is now in the editrule.value
@@ -687,7 +717,7 @@
 
         /* Copy the text inside the text field */
         document.execCommand("copy");
-        alert("replacement for dailycache.txt is now in the clipboard")
+        alert("replacement for ferryscheduleinclude.txt is now in the edit box and clipboard")
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
