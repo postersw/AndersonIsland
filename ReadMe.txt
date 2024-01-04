@@ -378,12 +378,16 @@ IOS DEBUG/BUILD
 
 -----------------------------------------------------------------------------------------------------------------------
 
-IOS CERTIFICATES  updated 4/18/23.
+IOS CERTIFICATES  updated 12/30/23.
+ALL CERTIFICATES are now on my Macbook Air and my icloud drive. 12/30/23.  The virtual mac has been cancelled.
+Rewrite these instructions substituting the MacBook Air for LA952:
+
 Certificates last just 1 year. Provisioning profiles last 1 year. certSigningRequests last 5 years.
 HISTORY
 These files are on the desktop of the virtual mac. They are duplicated in OneDrive/Documents/PhoneGap/Keys, but actually were created on my virtual mac
  and the developer.apple.com web site.
 2024: Need to create new certificate signing requests.
+12/30/23 VirtualMac LA952 cancelled. Use my macbook air under my apple developer account.
 4/18/23 on LA952.New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest. 
        AIADev0423.cer/p12. AndersonIslandDevPush.0423.MobileProvision.  AIAProd0423.cer/p12. AIADistributionPush0423.MobileProvision. Uploaded to OneDrive/AIAssistant/IOS
 5/5/22 on LA952. New Development and Prod cer, certificate, p12, and mobileprovision file, using old certificatesigningrequest.
@@ -504,6 +508,7 @@ HOW TO Create new Development/Production Certificate  EVERY YEAR when the old on
 APN (Apple Push Notification) CERTIFICATE YEARLY RENEWAL. Renewed 8/15/23.. Expires 9/15/24.
 Last updated 8/15/23.
 NOTE: There is a new way to do APN that does not require a yearly certificate renewal.  See OneSignal.
+For 2024, switch over to the new way.   NOTE: There is no longer a virtual mac LA952. This must be done on my MacBook air.
 
 For OneSignal 7/13/21. Allow about 1 hour.
 1. Bring up Virtual Mac.Macincloud: Windows Accessories->remote desktop to 	LA952.macincloud.com,user168917, pw=pxt77203. This is the $25/m virtual mac.
