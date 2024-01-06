@@ -24,7 +24,8 @@
     <button onclick="SaveSchedule()"> SAVE Schedule to Edit Box</button>
     <!--<button onclick="SaveDailyCache()"> SAVE ferryscheduleinclude.txt to Edit Box</button>-->
 
-    <p>Rules for ferry time expression:<br/>
+    <p>Rules for ferry time expression:  <button onclick="ShowHide('R1')" >Show</button>
+    <div id='R1' style='display:none;'>
     <ul>
         <li>Times are 2400, NO leading zero. 0=midnight. 1200=noon. </li>
         <li>Time = D to delete row. I to insert row.</li>
@@ -36,6 +37,7 @@
         <li>Most useful function:  InList(variabletotest, l1, l2, ...).  Returns TRUE if variabletotest is l1 or l2 or ... Can take any number of list elements.</li>
         <li>RFB. 1/5/24.</li>              
         </ul>
+    </div>
 
     <h2 class="w3-blue w3-text-white">&nbsp EDIT AREA</h2>
     <label>gMonthDay</label><input type="number" id="monthday" size="4"/>
@@ -1145,6 +1147,19 @@ function UseFerryTime(SA) {
             return ferrytimeK;
             break;
     }
+}
+/////////////////////////////////////////////////////////////////////////
+//  ShowHide - call to show or hide a Div with id=x
+function ShowHide(x) {
+	//var y = document.getElementById("D" + x).innerHTML;
+   var d = document.getElementById(x).style.display;
+   if(d == "none") {
+      document.getElementById(x).style.display = "block";
+	  //document.getElementById("D" + x).innerHTML = y.substr(0, y.length-5) + '&#9650;';
+   } else {
+      document.getElementById(x).style.display = "none";
+	  //document.getElementById("D" + x).innerHTML = y.substr(0, y.length-5) + '&#9660;';
+   }
 }
     </script>
 
