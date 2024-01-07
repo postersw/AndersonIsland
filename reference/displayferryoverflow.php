@@ -55,9 +55,9 @@ function BuildRunTimeTable() {
     $AIO = array(11110,11245,11515, 21245,21515, 31245,31515, 41245,41515, 51245,51515); // AI overflow times:  dhhss, where d = 1-7 M-S
     // Day or holiday names. Note: Days beginning with 0 are not displayed because there is no data yet.
     $Day = array("", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "ALL WEEK",
-    "0New Year's Eve", "0New Year's Day (Jan 1)", "0Jan 2", "0Memorial Day Eve","0Memorial Day","0Day after Memorial Day","0July 3","0July 4","0July 5",
+    "New Year's Eve 2023", "New Year's Day (Jan 1)", "Jan 2", "0Memorial Day Eve","0Memorial Day","0Day after Memorial Day","0July 3","0July 4","0July 5",
      "0Labor Day Eve","0Labor Day","0Day after Labor Day",
-     "Thanksgiving Eve","Thanksgiving","Fri after Thanskgiving", "XMas Eve Dec 24","Xmas Dec 25","Dec 26"
+     "Thanksgiving Eve 2023","Thanksgiving","Fri after Thanskgiving", "XMas Eve Dec 24, 2023","Xmas Dec 25","Dec 26"
            );
     $dL = array("","1","2","3","4","5","6","7","8","X","Y","Z","L","M","N","I","J","K","O","P","Q","S","T","U","B","C","D"); // must batch $Day
     $amcolor = "#f0ffff";
@@ -70,7 +70,7 @@ function BuildRunTimeTable() {
 
         if($d==9) {  // holiday heading
             echo "<tr id='holiday'><td colspan='2' style='background-color:blue;color:white'><a style='color:white' >HOLIDAYS</td></tr>";
-            echo  "<tr><td colspan='2'>Shows all runs for each day. <br><a href='#New'>New Years</a> | <a href='#Mem'>Mem. Day</a> | <a href='#Jul'>July 4th</a> | " .
+            echo  "<tr><td colspan='2'>Shows all runs for each holiday from last year. <br><a href='#New'>New Years</a> | <a href='#Mem'>Mem. Day</a> | <a href='#Jul'>July 4th</a> | " .
                     "<a href='#Lab'>Labor Day</a> | <a href='#Tha'>Thanksgiving</a> | <a href='#Xma'>XMas</a></td></tr>";
         }
         if(substr($Day[$d],0,1)=="0") continue; // skip a day beginning with 0 because we don't have data for it yet.
