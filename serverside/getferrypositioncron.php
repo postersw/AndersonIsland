@@ -1,15 +1,20 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // getferrypositioncron.php - retrieves current ferry position and calculates an eta.
+//  Run every 3 min. by cron.
 // leaves the results in <ferryposition.txt> file.  This will be picked up by the getalert script
 // which will tuck it into the FERRY/FERRYEND alert messages.
-// Ferry position is retrieved from marinetraffic.com.  
+// Ferry position is retrieved from marinetraffic.com.  Max allowed call rate is once/3 minutes.
 //
 //  Files: ferryposition.txt = message to display.
 //         ferrypositionsave.json = saved and restored data in json format. in $SAVED[] as an associative array.
 //                          [MMSI id] = last port for that boat
 //                          [ferrystate] = last ferry state (toAI, atAI, toST, atST). Not valid if 2 boats running.
 //                          [arrivaltimeAI|ST] = arrival time at that port, in min since midnight
+//          ferryrunlog.txt = 1 line/ferry run with departure time and late status
+//                           unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+//          ferrylatelog.txt = 1 line per late ferry run.
+//          ferrypositionlog.csv = 1 line/script run. For debugging.
 //
 //  MarineTraffic.com data by subscription for Robert Bedoll:
 //  MMSI, IMO, SHIP_ID, LAT, LON, SPEED, HEADING, COURSE, STATUS, TIMESTAMP, DSRC, UTC_SECONDS
@@ -40,8 +45,9 @@
 //  1.48 7/3/23.   Add 2 boat message if 2 boats and Fri, Sun, Mon
 //  1.49 10/23/23. Change location of ferry times to 'ferryscheduleinclude.txt'
 //  1.50 12/30/23. Change OnTime and Late msg to be white text on colored background.
+//  1.51 1/7/24.   Add ferryrunlog.txt. 
 
-$ver = "1.50"; // 12/30/23.
+$ver = "1.51"; // 12/30/23.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -425,6 +431,7 @@ function logPosition($log) {
 //  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
 //          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
+//          Writes ontime/late msg to ferryrunlog.txt if the ferry has left: datetime,S/A,Ontime/LATE,delay,scheduledruntime
 //  side effects:  if late, writes to ferrylatelog.txt and stdout
 //          $SAVED["ferrystate"] = ferry state: atST, atAI, toST, toAI
 //          $SAVED["ferrivarrivaltimeAI"], "ferryarrivaltimeST" = arrival time in min since midnight
@@ -465,7 +472,7 @@ function checkforLateFerry() {
 
         case "toAI": // travelling to AI
             if($priorferrystate == "atST") {
-                //echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
+                LogFerryRun("ST");
                 if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
             }
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
@@ -487,7 +494,10 @@ function checkforLateFerry() {
             break;
 
         case "toST": // travelling to ST
-            if($priorferrystate == "atAI" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND);  // if ferry just left
+            if($priorferrystate == "atAI") {
+                LogFerryRun("AI");
+                if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND);  // if ferry just left
+            }
             $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight 
             $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay       
@@ -499,6 +509,8 @@ function checkforLateFerry() {
     }
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
+
+    $SAVED['nextrun'] = $nextrun; // time of next run
     $SAVED["delaytime"] = $delaytime;  
     if($debug) echo "delaytime=$delaytime<br>";
     if($nextrun==0) return "";  // if no nextrun
@@ -513,6 +525,8 @@ function checkforLateFerry() {
         ftime($ferryarrivaltime) . ", $dETD |";  
     file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
     if($delaytime > 12) echo $latedebug . "\n $delaymsg";
+    // skipped run -experimental
+    if($delaytime > 45) LogFerryRun($ferryport, "CANCELLED"); // run is cancelled
     return $delaymsg;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -693,6 +707,7 @@ function ValidFerryRun($flag) {
 	$flag = str_replace("gM", '$gM', $flag);
 	$flag = str_replace("gW", '$gW', $flag);
 	$flag = str_replace("memorialday", "529", $flag);
+
 	$flag = str_replace("laborday", "904", $flag);
 	$flag = str_replace("thanksgiving", "1123", $flag);
     $r = eval('return' . $flag . ";");
@@ -728,7 +743,7 @@ function InList() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// GetSchedule - read dailycache.txt and extract the ferry schedule, which is one line
+// GetSchedule - read ferryscheduleinclude.txt and extract the ferry schedule, which is one line
 //  entry   file
 //          keyword
 //  exit    schedule string
@@ -741,6 +756,22 @@ function GetSchedule($file, $keyword) {
     $j = strpos($f, "\n", $i);
     if($j < $i) die ("no end of line in file string");
     return substr($f, $i, $j-$i); // return the substring
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//  LogFerryRun - log the run to ferryrunlog.txt
+//  Entry: SA = S or A
+//      $ont = ontime value. Defaults to Ontime.
+//  Exit Log the ferry sailing to ferryrunlog.txt
+//    unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+function LogFerryRun($SA, $ont = "") {
+    global $SAVED;
+    if($ont==""){
+        if($SAVED["delaytime"]>10) $ont = "LATE";
+        else $ont = "ONTIME";
+    }
+    $msg = time() . "," . date('m/d/y H:i') . ",$SA,$ont,$SAVED[delaytime],{$SAVED['nextrun']}\n";
+    file_put_contents("ferryrunlog.txt", $msg, FILE_APPEND );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
