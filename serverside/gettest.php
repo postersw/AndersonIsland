@@ -12,12 +12,15 @@
     echo " utc=" . date("m/d/y h:i:s", $utc);
     date_default_timezone_set("America/Los_Angeles"); // set UTC
     echo " pst" . date("m/d/y h:i:s", $utc);
-    return;
+
     $pt = time();
     echo " utc=" . date("m/d/y h:m:s");
     $delta = ($pt-$utc) / 3600;
     echo "utc=$utc, pt=$pt, delta=$delta";
+
+    ComputeFerryPerformance();
     return;
+
 // AIR QUALITY: read the Air Quality page and extract the data for peninsula
 
     $str = file_get_contents($link);
@@ -82,5 +85,56 @@ curl_setopt($ch, CURLOPT_URL,$url);
         return $result;
     }
 
+//////////////////////////////////////////////////////////////////////////////
+// ComputeFerryPerformance - reads the ferryrunlog.txt and computes the ontime performance
+// called after a ferry run is logged.
+//  Entry: reads ferryrunlog.txt: unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+//  Exit: writes the answer to ferryperformance.txt.
+function ComputeFerryPerformance() {
+    define("SecInWeek", 7*24*3600);
+    define("SecInMonth", 30*24*3600);
+    define("SecInYear",365*24*3600);
+    echo SecInWeek; echo "<br>";
+    echo SecInMonth; echo "<br>";
+    $t = time();  // unix timestamp in seconds
+    $D7Ontime = 0; $D7runs=0; // 7 day ontime
+    $D30Ontime=0; $D30runs=0; // 30 day ontime
+    $D365Ontime=0; $D365runs=0; //365 days
 
+    $handle = fopen("ferryrunlog.txt", "r"); // open the file for reading
+    if ($handle) {
+        while (($line = fgets($handle)) !== false) { // read a line
+            // process the line
+            $A = explode(",", $line); // split into unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+            if(count($A)==6) {
+                $dt = $t - (int)($A[0]);  // elapsed time in sec
+                echo "dt=$dt<br>";
+                if($dt < SecInYear) {  // year
+                    $ontime=((int)$A[4] < 10);  // true if ontime
+                    $D365runs++;
+                    if($ontime) $D365Ontime++; // if delay < 10
+                    echo "D365=$D365runs<br>";
+                    if($dt < SecInMonth) {  // month
+                        $D30runs++;
+                        if($ontime) $D30Ontime++; // if delay < 10
+                        echo "D30runs=$D30runs<br>";
+                        if($dt < SecInWeek) {  // week
+                            $D7runs++;
+                            if($ontime) $D7Ontime++; // if delay < 10
+                            echo "D7runs=$D7runs, D7Ontime=$D7Ontime<br>";
+                        }
+                    } 
+                }
+            }
+        }
+        fclose($handle); // close the file
+    }
+    // compute percent and write to ferryperformance.txt.
+    if($D7runs>0) {
+        $D7Ontime--;
+        $m = "Ferry OnTime: Last 7 Days " . intval($D7Ontime*100/$D7runs) . "%, Last 30 days " . intval($D30Ontime*100/$D30runs) . "%\n";
+        file_put_contents("ferryperformance.txt", $m);
+        echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
+    }
+}
 ?>

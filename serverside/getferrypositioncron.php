@@ -11,9 +11,9 @@
 //                          [MMSI id] = last port for that boat
 //                          [ferrystate] = last ferry state (toAI, atAI, toST, atST). Not valid if 2 boats running.
 //                          [arrivaltimeAI|ST] = arrival time at that port, in min since midnight
-//          ferryrunlog.txt = 1 line/ferry run with departure time and late status
+//          ferryrunlog.txt = 1 line/ferry run with departure time and late status. ADDED 1/8/24.
 //                           unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
-//          ferrylatelog.txt = 1 line per late ferry run.
+//          (ferrylatelog.txt = 1 line per late ferry run. OBSOLETE 1/8/24)
 //          ferrypositionlog.csv = 1 line/script run. For debugging.
 //
 //  MarineTraffic.com data by subscription for Robert Bedoll:
@@ -426,13 +426,14 @@ function logPosition($log) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// check for late - check for ferry being late and adds a message
+// check for late - check for ferry being late and adds a message. Writes 'ferryrunlog.txt' for statistics.
 //      Don't call if running 2 ferrys. Its too confusing and $ferrystate is unsafe for multiple boats.
 //  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
 //          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
 //          Writes ontime/late msg to ferryrunlog.txt if the ferry has left: datetime,S/A,Ontime/LATE,delay,scheduledruntime
-//  side effects:  if late, writes to ferrylatelog.txt and stdout
+//          When ferry leaves, writes to 'ferryrunlog.txt'
+//  side effects:  if late, writes to stdout
 //          $SAVED["ferrystate"] = ferry state: atST, atAI, toST, toAI
 //          $SAVED["ferrivarrivaltimeAI"], "ferryarrivaltimeST" = arrival time in min since midnight
 //          $SAVED["delaytime"] = $delaytime in min
@@ -468,12 +469,13 @@ function checkforLateFerry() {
             $nextrun = getTimeofNextRun("ST", 50);  // next run time in minutes-since-midnight. up to 50 minutes late for next run.
             $delaytime = $ETD - $nextrun;
             $ferryport = "St";
+            if($delaytime > 46) LogFerryRun($ferryport, "CANCELLED"); // run is cancelled
             break;
 
         case "toAI": // travelling to AI
             if($priorferrystate == "atST") {
                 LogFerryRun("ST");
-                if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
+                //if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
             }
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
             $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
@@ -491,12 +493,13 @@ function checkforLateFerry() {
             $nextrun = getTimeofNextRun("AI", 50);  // next run time minutes since midnight second. up to 50 min late.
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "AI";
+            if($delaytime > 46) LogFerryRun($ferryport, "CANCELLED"); // run is cancelled
             break;
 
         case "toST": // travelling to ST
             if($priorferrystate == "atAI") {
                 LogFerryRun("AI");
-                if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND);  // if ferry just left
+                //if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND);  // if ferry just left
             }
             $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight 
             $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
@@ -523,17 +526,17 @@ function checkforLateFerry() {
     $delaymsg = "<span style='color:white;background-color:red'>&nbsp;Late&nbsp;</span><span style='color:red'>&nbsp;$delaytime m for $ferryport " . ftime($nextrun)  . " run. $dETD</span>";  
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftime($ferryarrivaltime) . ", $dETD |";  
-    file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
+    //file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
     if($delaytime > 12) echo $latedebug . "\n $delaymsg";
-    // skipped run -experimental
-    if($delaytime > 45) LogFerryRun($ferryport, "CANCELLED"); // run is cancelled
     return $delaymsg;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
 //  ftime - format time in minutes since midnight to hh:mm. e.g. 65 becomes 01:05
 function ftime($t) {
+    $am = "a";
+    if($t >= 12*60) $am = "p";
     if($t >= 13*60) $t = $t - 12*60;
-    return  floor($t/60) . ":" . sprintf("%02d", ($t%60));
+    return  floor($t/60) . ":" . sprintf("%02d", ($t%60)) . $am;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -759,8 +762,9 @@ function GetSchedule($file, $keyword) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  LogFerryRun - log the run to ferryrunlog.txt
-//  Entry: SA = S or A
+//  LogFerryRun - log the run to ferryrunlog.txt.  
+//  This routine is called one 3 minute period AFTER the ferry leaves.
+//  Entry: SA = ST or AI
 //      $ont = ontime value. Defaults to Ontime.
 //  Exit Log the ferry sailing to ferryrunlog.txt
 //    unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
@@ -770,8 +774,60 @@ function LogFerryRun($SA, $ont = "") {
         if($SAVED["delaytime"]>10) $ont = "LATE";
         else $ont = "ONTIME";
     }
-    $msg = time() . "," . date('m/d/y H:i') . ",$SA,$ont,$SAVED[delaytime],{$SAVED['nextrun']}\n";
+    $t = time() - 3*60; // backup 3 minutes
+    $msg = $t . "," . date('m/d/y H:i', $t) . ",$SA,$ont,$SAVED[delaytime]," . ftime($SAVED['nextrun']) . "\n";
     file_put_contents("ferryrunlog.txt", $msg, FILE_APPEND );
+    echo $msg; 
+    ComputeFerryPerformance();  // compute ferry performance to ferryperformance.txt
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// ComputeFerryPerformance - reads the ferryrunlog.txt and computes the ontime performance
+// called after a ferry run is logged.
+//  Entry: reads ferryrunlog.txt: unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+//  Exit: writes the answer to ferryperformance.txt.
+function ComputeFerryPerformance() {
+    define("SecInWeek", 7*24*3600);
+    define("SecInMonth", 30*24*3600);
+    define("SecInYear",365*24*3600);
+    $t = time();  // unix timestamp in seconds
+    $D7Ontime = 0; $D7runs=0; // 7 day ontime
+    $D30Ontime=0; $D30runs=0; // 30 day ontime
+    $D365Ontime=0; $D365runs=0; //365 days
+
+    $handle = fopen("ferryrunlog.txt", "r"); // open the file for reading
+    if ($handle) {
+        while (($line = fgets($handle)) !== false) { // read a line
+            // process the line
+            $A = explode(",", $line); // split into unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+            if(count($A)==6) {
+                $dt = $t - (int)($A[0]);  // elapsed time in sec
+                if($dt < SecInYear) {  // year
+                    $D365runs++;
+                    $ontime=((int)$A[4] < 10);  // true if ontime
+                    if($ontime) $D365Ontime++; // if delay < 10
+
+                    if($dt < SecInMonth) {  // month
+                        $D30runs++;
+                        if($ontime) $D30Ontime++; // if delay < 10
+
+                        if($dt < SecInWeek) {  // week
+                            $D7runs++;
+                            if($ontime) $D7Ontime++; // if delay < 10
+                        }
+                    } 
+                }
+            }
+        }
+        fclose($handle); // close the file
+    }
+    // compute percent and write to ferryperformance.txt.
+    if($D7runs>0) {
+        $runslate = ($D7runs-$D7Ontime);
+        $m = "<a href='https://www.anderson-island.org/ferryontime.html'><i class='material-icons'>&#xe8b5;</i><b>Ferry OnTime:</b></a> Last 7 Days " . intval($D7Ontime*100/$D7runs) . "% ($runslate runs late), Last 30 days " . intval($D30Ontime*100/$D30runs) . "%<br><br>\n";
+        file_put_contents("ferryperformanceinclude.txt", $m);
+        echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

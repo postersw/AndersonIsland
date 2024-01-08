@@ -1,16 +1,17 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  getferryalertsTEST - gets the ferry alerts from the rss feed and saves the latest one in alerts.txt
-//  also creates the ferrymessageinclude.txt file which contains all active alerts.
+//  getferryalertsTEST - gets the ferry alerts from the Hornblower web site and saves the latest one in alerts.txt
+//  also creates the ferrymessageinclude.txt file which contains all active alerts and ferry performance alerts.
 //  Run by cron every 5 minutes.
 //  Alerts are cleared after 12 hours.
 //  To change the default message (from "") change $DefaultMessage in function ClearAlertFile().
 //
 //  Files:
 //      alert.txt - alert file read by getalerts.php from AIA every minute
-//      alerthistory.txt - history of the alerts to be displayed by AIA. Not used since 9/22 and can probably be discarded.
+//      (alerthistory.txt - history of the alerts to be displayed by AIA. Not used since 9/22 and can probably be discarded.)
 //      alertlog.txt - log of each alert issued and cleared.
 //      ferryalertsave.json - json save of persistent data.
+//      ferrymessageinclude.txt - messages displayed on ferry schedule detail page.
 //
 //  ferryalertsave.json:
 //      alerttimestamp = numeric time of last alert
@@ -44,6 +45,7 @@
 //      12/10/22. Added ferryalertsave.json, json persistent storage. removed ferryalerttimestamp, ferryactivemessagelist..
 //      12/13/22. Fix errors in ferrylogmessage.
 //      12/28/22. Add click to bring up details for ferry messages.
+//      1/8/24.   Improve format of alert messages on ferry schedule page.
 //
 //  Sample JSON feed: from  "https://us-central1-nyc-ferry.cloudfunctions.net/service_alerts?propertyId=hprcectyf";
 //[{"createdDate":"1652555109859",
@@ -368,7 +370,7 @@ function getNewestAlertfromHornblower() {
 
     // write out all the active alerts for dailycache
     //echo "<br/>activemsglist = $newactivemsglist"; 
-    if($ferrymsg!="") $ferrymsg = "<a href='https://www.piercecountywa.gov/7691/All-Ferry-Alerts'>$ferrymsg</a>"; // add click to bring up details
+    if($ferrymsg!="") $ferrymsg = "<a href='https://www.piercecountywa.gov/7691/All-Ferry-Alerts'><i class='material-icons'>&#xe002;</i><b>Ferry Alerts: (tap for details)</b><br></a>$ferrymsg"; // add click to bring up details
     file_put_contents($ferrymsgfile, $ferrymsg);
     $SAVED['ferryactivemsglist'] = $newactivemsglist;  // save new active messages
 
