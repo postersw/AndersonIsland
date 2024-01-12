@@ -516,7 +516,7 @@ function checkforLateFerry() {
             if($priorferrystate == "atAI") {  // if ferry just left AI
                 LogFerryRun("AI");
             }
-            $SAVED['WaitingforRun'] = "";
+            $SAVED['waitingforrun'] = "";
             $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight 
             $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay       
