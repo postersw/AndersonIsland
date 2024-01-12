@@ -814,7 +814,7 @@ function ComputeFerryPerformance() {
     $t = time();  // unix timestamp in seconds
     $D7Ontime = 0; $D7runs=0; $D7=0; $D7late=0; $D7cancelled=0;// 7 day ontime
     $D30Ontime=0; $D30runs=0; $D30=0; $D30late=0; $D30cancelled=0;// 30 day ontime
-    $D365Ontime=0; $D365runs=0; $D365=0; //365 days
+    $D365Ontime=0; $D365runs=0; $D365=0; $D365late=0; $D365cancelled=0;//365 days
 
 
     $handle = fopen("ferryrunlog.txt", "r"); // open the file for reading
