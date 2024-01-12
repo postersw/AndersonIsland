@@ -2734,17 +2734,32 @@ function ShowOneBusinessFullPage(id) {
     var openinrange = false; // false = closed, true = open
     var rangespan = "";
 
+    // Find each range which contains 'today' mmdd
+
     for (var i = 0; i < Oh.Sc.length; i++) { // loop through each date range for the business
         var active = false;
-        if (((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
-            ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {
-            openinrange = true;
-            openlist += "<span style='color:green;font-weight:bold'>";
-            rangespan = "<span style='margin-left:10px;color:black;'>"
-        } else {
-            openinrange = false;
-            openlist += "<span style='color:gray;font-weight:bold'>";
-            rangespan = "<span style='margin-left:10px;color:gray;'>"
+        openinrange = false;
+        openlist += "<span style='color:gray;font-weight:bold'>";
+        rangespan = "<span style='margin-left:10px;color:gray;'>"
+        //if (((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
+        //    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {
+        //    if (((mmdd7 >= Oh.Sc[i].From) && (mmdd <= Oh.Sc[i].To)) ||
+        //    ((Oh.Sc[i].From > Oh.Sc[i].To) && ((mmdd <= Oh.Sc[i].To) || (mmdd7 >= Oh.Sc[i].From)))) {
+        //    openinrange = true;
+        //    openlist += "<span style='color:green;font-weight:bold'>";
+        //    rangespan = "<span style='margin-left:10px;color:black;'>"
+        if(Oh.Sc[i].From <= Oh.Sc[i].To) {  // Standard range: from <= to  e.g 101-1231
+            if(mmdd>=Oh.Sc[i].From && mmdd<=Oh.Sc[i].To) {   // if today is in the from-to range
+                openinrange = true;
+                openlist += "<span style='color:green;font-weight:bold'>";
+                rangespan = "<span style='margin-left:10px;color:black;'>"
+            }
+        } else {  // Reversed range to<=from eg  901-301
+            if(mmdd>=Oh.Sc[i].To || mmdd<=Oh.Sc[i].From) {  // if today is >from and <to
+                openinrange = true;
+                openlist += "<span style='color:green;font-weight:bold'>";
+                rangespan = "<span style='margin-left:10px;color:black;'>"
+            }
         }
 
         // print date range if there is > 1  (Oh.Sc.length>1)
