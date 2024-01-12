@@ -94,34 +94,37 @@ function ComputeFerryPerformance() {
     define("SecInWeek", 7*24*3600);
     define("SecInMonth", 30*24*3600);
     define("SecInYear",365*24*3600);
-    echo SecInWeek; echo "<br>";
-    echo SecInMonth; echo "<br>";
+    define("SecInDay",24*3600); 
     $t = time();  // unix timestamp in seconds
-    $D7Ontime = 0; $D7runs=0; // 7 day ontime
-    $D30Ontime=0; $D30runs=0; // 30 day ontime
-    $D365Ontime=0; $D365runs=0; //365 days
+    $D7Ontime = 0; $D7runs=0; $D7=0; $D7late=0; $D7cancelled=0;// 7 day ontime
+    $D30Ontime=0; $D30runs=0; $D30=0; $D30late=0; $D30cancelled=0;// 30 day ontime
+    $D365Ontime=0; $D365runs=0; $D365=0; //365 days
+
 
     $handle = fopen("ferryrunlog.txt", "r"); // open the file for reading
     if ($handle) {
         while (($line = fgets($handle)) !== false) { // read a line
             // process the line
-            $A = explode(",", $line); // split into unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+            $A = explode(",", $line); // split into 0unixtimestamp,1date,2A/S,3ONTIME/LATE/CANCELLED,4delaytime in min, 5next run time
             if(count($A)==6) {
                 $dt = $t - (int)($A[0]);  // elapsed time in sec
-                echo "dt=$dt<br>";
                 if($dt < SecInYear) {  // year
-                    $ontime=((int)$A[4] < 10);  // true if ontime
+                    if($D365==0) $D365= (int)($dt/SecInDay); // elapsed days
                     $D365runs++;
-                    if($ontime) $D365Ontime++; // if delay < 10
-                    echo "D365=$D365runs<br>";
+                    if($A[3]=="CANCELLED") $D365cancelled++;
+                    elseif($A[3]=="LATE") $D365late++;
+
                     if($dt < SecInMonth) {  // month
+                        if($D30==0) $D30= (int)(($dt/SecInDay)+1); // elapsed days
                         $D30runs++;
-                        if($ontime) $D30Ontime++; // if delay < 10
-                        echo "D30runs=$D30runs<br>";
+                        if($A[3]=="CANCELLED") $D30cancelled++;
+                        elseif($A[3]=="LATE") $D30late++;
+
                         if($dt < SecInWeek) {  // week
+                            if($D7==0) $D7= (int)(($dt/SecInDay)+1); // elapsed days
                             $D7runs++;
-                            if($ontime) $D7Ontime++; // if delay < 10
-                            echo "D7runs=$D7runs, D7Ontime=$D7Ontime<br>";
+                            if($A[3]=="CANCELLED") $D7cancelled++;
+                            elseif($A[3]=="LATE") $D7late++;
                         }
                     } 
                 }
@@ -131,10 +134,12 @@ function ComputeFerryPerformance() {
     }
     // compute percent and write to ferryperformance.txt.
     if($D7runs>0) {
-        $D7Ontime--;
-        $m = "Ferry OnTime: Last 7 Days " . intval($D7Ontime*100/$D7runs) . "%, Last 30 days " . intval($D30Ontime*100/$D30runs) . "%\n";
-        file_put_contents("ferryperformance.txt", $m);
+        $runsontime = $D7runs-($D7late+$D7cancelled);
+        $D30runsontime = $D30runs-($D30late+$D30cancelled);
+        $m = "<a href='https://www.anderson-island.org/ferryontime.html'><i class='material-icons'>&#xe8b5;</i><b>Ferry OnTime:</b></a> Last $D7 Days " . intval($runsontime*100/$D7runs) . "% ($D7late runs > 10min late, $D7cancelled cancelled), Last $D30 days " . intval($D30runsontime*100/$D30runs) . "%<br><br>\n";
+        file_put_contents("ferryperformanceinclude.txt", $m);
         echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
     }
 }
+
 ?>
