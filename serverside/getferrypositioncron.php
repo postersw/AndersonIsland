@@ -472,12 +472,16 @@ function checkforLateFerry() {
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
             $nextrun = getTimeofNextRun("ST", 50);  // next run time in minutes-since-midnight. up to 50 minutes late for next run.
-            $waitingforrun = $SAVED['waitingforrun'];
+            $waitingforrun = $SAVED['waitingforrunST'];
             // If the run we are waiting on changed in port, the previous run must have been cancelled. 
+            // Detect cancelled run
             if($waitingforrun!="") {
-                if($nextrun>$waitingforrun) LogFerryRun("St", "CANCELLED", $waitingforrun); // prior run is cancelled
+                if($nextrun>$waitingforrun) {
+                    LogFerryRun("St", "CANCELLED", $waitingforrun); // prior run is cancelled
+                    echo " ST $waitingforrun is CANCELLED. $ferrystate, nextrun=$nextrun priorferrystate=$priorferrystate\n";
+                }
             }
-            $SAVED['waitingforrun'] = $nextrun; // remember the run we are waiting on
+            $SAVED['waitingforrunST'] = $nextrun; // remember the run we are waiting on
             $delaytime = $ETD - $nextrun;
             $ferryport = "St";
             break;
@@ -485,9 +489,18 @@ function checkforLateFerry() {
         case "toAI": // travelling to AI
             if($priorferrystate == "atST") {  // if ferry just jeft ST
                 LogFerryRun("ST");
+                $SAVED['waitingforrunST'] = "";  // just sailed. clear waiting for run to ST
             }
-            $SAVED['waitingforrun'] = "";
+            $waitingforrun = $SAVED['waitingforrunAI'];
             $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
+            // Detect cancelled run
+            if($waitingforrun!="") {  // if we are waiting for a run
+                if($nextrun>$waitingforrun) {
+                    LogFerryRun("AI", "CANCELLED", $waitingforrun); // prior run is cancelled
+                    echo " AI $waitingforrun is CANCELLED. $ferrystate, nextrun=$nextrun priorferrystate=$priorferrystate\n";
+                }
+            }
+            $SAVED['waitingforrunAI'] = $nextrun; // remember the run we are waiting on
             $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
             $delaytime = $ETD - $nextrun;  // calculate delay    
             $ferryport = "AI";
@@ -501,12 +514,16 @@ function checkforLateFerry() {
             if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
             $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
             $nextrun = getTimeofNextRun("AI", 50);  // next run time minutes since midnight second. up to 50 min late.
-            $waitingforrun = $SAVED['waitingforrun'];
+            $waitingforrun = $SAVED['waitingforrunAI'];
             // If the run we are waiting on changed in port, the previous run must have been cancelled.  Except for ???
+            // Detect cancelled run
             if($waitingforrun!="") {  // if we are waiting for a run
-                if($nextrun>$waitingforrun) LogFerryRun("AI", "CANCELLED", $waitingforrun); // prior run is cancelled
+                if($nextrun>$waitingforrun) {
+                    LogFerryRun("AI", "CANCELLED", $waitingforrun); // prior run is cancelled
+                    echo " AI $waitingforrun is CANCELLED. $ferrystate, nextrun=$nextrun priorferrystate=$priorferrystate\n";
+                }
             }
-            $SAVED['waitingforrun'] = $nextrun; // remember the run we are waiting on
+            $SAVED['waitingforrunAI'] = $nextrun; // remember the run we are waiting on
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "AI";
             //if($delaytime > 46) LogFerryRun($ferryport, "CANCELLED"); // run is cancelled
@@ -515,9 +532,18 @@ function checkforLateFerry() {
         case "toST": // travelling to ST
             if($priorferrystate == "atAI") {  // if ferry just left AI
                 LogFerryRun("AI");
+                $SAVED['waitingforrunAI'] = "";
             }
-            $SAVED['waitingforrun'] = "";
+            $waitingforrun = $SAVED['waitingforrunST'];
             $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight 
+            // Detect cancelled run
+            if($waitingforrun!="") {  // if we are waiting for a run and it changes, the run we were waiting on must have been cancelled.
+                if($nextrun>$waitingforrun) {
+                    LogFerryRun("St", "CANCELLED", $waitingforrun); // prior run is cancelled
+                    echo " ST $waitingforrun is CANCELLED. $ferrystate, nextrun=$nextrun priorferrystate=$priorferrystate\n";
+                }
+            }
+            $SAVED['waitingforrunST'] = $nextrun; // remember the run we are waiting on
             $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
             $delaytime = $ETD - $nextrun;  // calculate delay       
             $ferryport = "St";
