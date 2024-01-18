@@ -46,8 +46,9 @@
 //  1.49 10/23/23. Change location of ferry times to 'ferryscheduleinclude.txt'
 //  1.50 12/30/23. Change OnTime and Late msg to be white text on colored background.
 //  1.51 1/7/24.   Add ferryrunlog.txt. 
+//  1.52 1/18/24.  Correct the ferry state when it stops enroute.
 
-$ver = "1.51"; // 12/30/23.
+$ver = "1.52"; // 1/18/24.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -325,12 +326,13 @@ function reportatdock() {
         $ri = "report";
         $ta = (((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * 4);  // approx miles to AI
         $ts = (((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * 4);  // approx miles to Steilacoom
-        $ferrystate = "toAI"; // travelling to AI;
+
+        // if ferry was in port, assume its travelling to the other port
+        if($SAVED[$MMSI] == "A") $ferrystate = "toST"; // travelling to AI;
+        else $ferrystate = "toAI";
         $timetoarrival = 10;
         if($ta<$ts) return "stopped " . round($ta,1) . " miles from AI";
-
         // if closer to Steilacoom
-        $ferrystate = "toST"; 
         $timetoarrival = 10;
         return "stopped " . round($ts,1) . " miles from Steilacoom";
     }
