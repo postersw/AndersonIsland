@@ -883,7 +883,7 @@ function ComputeFerryPerformance() {
         $D30runsontime = $D30runs-($D30late+$D30cancelled);
         $m = "<a href='https://www.anderson-island.org/ferryontime.php'><i class='material-icons'>&#xe8b5;</i><b>Ferry OnTime:</a> Last $D7 Days</b> " . 
         intval($runsontime*100/$D7runs) . "% ($D7late runs > 10min late, $D7cancelled cancelled),<br><b> Last $D30 days</b> " .
-        intval($D30runsontime*100/$D30runs) . "%, <b>Last $D365</b> days " .
+        intval($D30runsontime*100/$D30runs) . "%, <b>Last $D365 days</b> " .
         intval(($D365runs-$D365cancelled-$D365late)*100/$D365runs) . "%<br><br>\n";
         file_put_contents("ferryperformanceinclude.txt", $m);
         //echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
