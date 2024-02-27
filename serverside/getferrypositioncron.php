@@ -47,8 +47,9 @@
 //  1.50 12/30/23. Change OnTime and Late msg to be white text on colored background.
 //  1.51 1/7/24.   Add ferryrunlog.txt. 
 //  1.52 1/18/24.  Correct the ferry state when it stops enroute.
+//  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 
-$ver = "1.52"; // 1/18/24.
+$ver = "1.53"; // 2/26/24.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -825,7 +826,7 @@ function LogFerryRun($SA, $ont = "", $waitingforrun="") {
     $t = time() - 3*60; // backup 3 minutes
     $msg = $t . "," . date('m/d/y H:i', $t) . ",$SA,$ont,$SAVED[delaytime]," . ftime($run) . "\n";
     file_put_contents("ferryrunlog.txt", $msg, FILE_APPEND );
-    echo $msg; 
+    //echo $msg; 
     ComputeFerryPerformance();  // compute ferry performance to ferryperformance.txt
 }
 
@@ -885,7 +886,7 @@ function ComputeFerryPerformance() {
         intval($D30runsontime*100/$D30runs) . "%, Last $D365 days " .
         intval(($D365runs-$D365cancelled-$D365late)*100/$D365runs) . "%<br><br>\n";
         file_put_contents("ferryperformanceinclude.txt", $m);
-        echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
+        //echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
     }
 }
 
