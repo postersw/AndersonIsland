@@ -1275,6 +1275,7 @@ function CheckForCancelledRuns($waitingforMM) {
             echo "Ferry run CANCELLED 2 {$gFerryLoc[$i]}, {$gFerryTimes[$i]}, waiting for $waitingforMM.<br> ";
         }
     }
+    $SAVED['gFerryStatus'] = $gFerryStatus;  // save status
 }   
 
 /////////////////////////////////////////////////////
