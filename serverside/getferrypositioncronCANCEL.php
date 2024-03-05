@@ -1,15 +1,21 @@
 <?php
 //////////////////////////////////////////////////////////////////////////////
 // getferrypositioncron.php - retrieves current ferry position and calculates an eta.
+//  Run every 3 min. by cron.
+// Calculates CANCELLED runs.
 // leaves the results in <ferryposition.txt> file.  This will be picked up by the getalert script
 // which will tuck it into the FERRY/FERRYEND alert messages.
-// Ferry position is retrieved from marinetraffic.com.  
+// Ferry position is retrieved from marinetraffic.com.  Max allowed call rate is once/3 minutes.
 //
 //  Files: ferryposition.txt = message to display.
 //         ferrypositionsave.json = saved and restored data in json format. in $SAVED[] as an associative array.
 //                          [MMSI id] = last port for that boat
 //                          [ferrystate] = last ferry state (toAI, atAI, toST, atST). Not valid if 2 boats running.
 //                          [arrivaltimeAI|ST] = arrival time at that port, in min since midnight
+//          ferryrunlog.txt = 1 line/ferry run with departure time and late status. ADDED 1/8/24.
+//                           unixtimestamp,date,A/S,ONTIME/LATE/CANCELLED,delaytime in min, next run time
+//          (ferrylatelog.txt = 1 line per late ferry run. OBSOLETE 1/8/24)
+//          ferrypositionlog.csv = 1 line/script run. For debugging.
 //
 //  MarineTraffic.com data by subscription for Robert Bedoll:
 //  MMSI, IMO, SHIP_ID, LAT, LON, SPEED, HEADING, COURSE, STATUS, TIMESTAMP, DSRC, UTC_SECONDS
@@ -35,9 +41,17 @@
 //  1.43 12/12/22. Revise ketron latitude.
 //  1.44 12/16/22. Add debug printouts under control of $debug to make it easy to turn on debug.
 //  1.45 12/19/22  Improve Ketron times
-//  1.46 1/9/23  Issue message if last ferry sailing didn't happen
+//  1.46 1/20/23.  Change ketron times to not assume boat will always go to ST.  Use previous port to determine next port.
+//  1.47 1/31/23.  Look back 50 minutes to find run time if At ST or At AI.
+//  1.48 7/3/23.   Add 2 boat message if 2 boats and Fri, Sun, Mon
+//  1.49 10/23/23. Change location of ferry times to 'ferryscheduleinclude.txt'
+//  1.50 12/30/23. Change OnTime and Late msg to be white text on colored background.
+//  1.51 1/7/24.   Add ferryrunlog.txt. 
+//  1.52 1/18/24.  Correct the ferry state when it stops enroute.
+//  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
+//  1.54 3/3/24.   Calculates Cancelled runs using an array of runs.
 
-$ver = "1.46"; // 1/9/23.
+$ver = "1.54"; // 3/4/24.
 $longAI = -122.677; $latAI = 47.17869;   // AI Dock
 $longSt = -122.603; $latSt = 47.17347;  // Steilacoom Dock
 $longKe = -122.6289; $latKe = 47.1622; // ketron dock
@@ -60,7 +74,8 @@ $fa = []; // ferry array, 0, 1, or 2 arrays of data
 $mi = "<i class='material-icons mptext'>";
 $ri = "";
 $debug = false;
-
+$debug = true; /////////////////////////////////////DEBUG
+if($debug) echo "$ver <br>";
 
 // instantanious position retrieved from maringtraffic.com
 $speed = 0;  // speed in  knots tenths
@@ -75,6 +90,13 @@ $status = 0;  // 0 = normal, other=wierd
 $ferrystate = ""; // 1 =at ST, 2 =moving to AI, 3=at AI, 4=moving to ST
 $timetoarrival = 0;  // minutes to arrival
 
+// ferry run time arrays.  Loaded/saved in $SAVED.  Initialized daily by BuildFerrySchedule
+$gFerryi = 0; // index of current or last run
+$gFerryTimes = []; // run times in minutes since midnight
+$gFerryLoc = []; // ferry location: ST or AI
+$gFerryStatus = []; // status: blank = not run yet, T = ran on time, L = ran late, C = skipped or cancelled
+$gFerryMonthDay = 0; // month and day of the ferry times in the array: mmdd
+
 // start
 //echo "started <br/>";
 chdir("/home/postersw/public_html");  // move to web root
@@ -87,6 +109,11 @@ if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7
 // reload persistant data
 $SAVED = json_decode(file_get_contents($ferryjsonsavefile), TRUE); // load persistant data
 //var_dump($SAVED);  // print out what was loaded
+$gFerryi = $SAVED['gFerryi'];
+$gFerryMonthDay = $SAVED['gFerryMonthDay'];
+$gFerryTimes = $SAVED['gFerryTimes'];
+$gFerryLoc = $SAVED['gFerryLoc'];
+$gFerryStatus = $SAVED['gFerryStatus'];
 
 // get position
 $fa = getposition();
@@ -102,6 +129,7 @@ for($i=0; $i < count($fa); $i++) {
     if($MMSI=="")  abortme("MMSI is empty");
     if($MMSI == $MMSICA) $ferryname = "'CA'";
     elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
+    //if($ferryname == "'CA'") continue; // skip CA///////////////////////////////////////////////
     checktimestamp($timestamp); 
     //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
     //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctly
@@ -127,7 +155,11 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 
 // if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-if($pi==1) $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+if($pi==1) {
+    $ferrylate = checkforLateFerry();  //  if running 1 boat, calculate if ferry is late and add message
+} elseif($pi==2) {
+    $ferrylate = checkforTwoBoats();  // if running 2 boats, issue 2 boat msg on fri, sun, mon
+}
 $pstr = "$ferrylate<br><span style='color:darkblue'>&nbsp;&nbsp;$pstr</span>";  // build message as <pstr><ferrylate>
 
 // save output and info
@@ -174,31 +206,41 @@ function timetocross() {
     $latKeNTip = 47.1673; // ketron northern tip
     $ketron = "";
     $ketronDockTime = 6; // avg ketron dock time
-    $ketronToStTime = 11; // avg Ke to St time
+    $ketronToStTime = 8; // avg Ke to St time
+    $ketronToAITime = 18; // avg Ke to AI time
+    $ferryport = $SAVED[$MMSI];  // get last port based on ship id
 
     // Ketron Special Case:   (assumes any trip to Ketron then goes on to St)
     //   if below the tip of Ketron, OR if above the tip of ketron but headed SE
     //      do a general stopping  with estimated arrival based on latitude, or leaving based on course
     if(($lat <= $latKeNTip) || ($lat<47.177 && $long>-122.640 && $long<-122.624 && $course>100 && $course <180 )) { // if southerly westerly course, assume arriving.
-        $ferrystate = "toST"; // travelling to steilacoom but via ketron
+        // set ferry state based on previous port. Assume ferry will continue to next port after Ketron.
+        $ferrystate = ($ferryport=="A" ? "toST": "toAI"); // set ferry state based on previous port. Assume ferry will continue to next port after Ketron.
         if(($long<$longKe) || ($course>99 & $course < 340))  { // if southerly westerly course, assume arriving.
             $ri = "file_download";
             $t = floor(abs(($lat-$latKe)/(47.177-$latKe)) * 10);  // min left based on latitude left
-            if($t <= 0) {
-                $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
-                if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
-                else return "docking @Ke, arriving @St in $timetoarrival m";
+            //    $timetoarrival =  floor($ketronDockTime + $ketronToStTime  - $deltamin); // time to arrival at steilacoom
+            //    if($speed > 50) $t = 1;// if boat > 5 knts, give 1 more minute
+            //    else return "docking @Ke, arriving @St in $timetoarrival m";
+            if($ferrystate == "toST") {  // if headint to St
+                $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
+                return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
+            } else {  // heading to AI
+                $timetoarrival = floor($t + $ketronDockTime + $ketronToAITime - $deltamin); // time to arrival at steilacoom
+                return "stopping @Ke in $t m, arriving @AI in $timetoarrival m";    
             }
-            $timetoarrival = floor($t + $ketronDockTime + $ketronToStTime - $deltamin); // time to arrival at steilacoom
-            return "stopping @Ke in $t m, arriving @St in $timetoarrival m";
         } else { 
             // if not arriving, it must be leaving
-            $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
-            return "leaving Ke, arriving @St in $timetoarrival m";
+            if($ferrystate == "toST") {  // heading to St
+                $timetoarrival = floor($ketronToStTime - $deltamin); // time to arrive in steilacoom
+                return "leaving Ke, arriving @St in $timetoarrival m";
+            } else {  // heading to AI
+                $timetoarrival = floor($ketronToAITime - $deltamin); // time to arrive in steilacoom
+                return "leaving Ke, arriving @AI in $timetoarrival m";    
+            }
         }
     }
 
-    $ferryport = $SAVED[$MMSI];  // get last fort based on ship id
     // Default: if coming from S, it is headed to A, . Added 1.29 2/22/21
     // $courseto = destination port.  $ferryport = previous port
     if($ferryport=="S") $courseto = "A";
@@ -262,12 +304,12 @@ function reportatdock() {
     global $ferrystate, $timetoarrival;
     global $SAVED;
     $ketronDockTime = 6; // avg ketron dock time
-    $ketronToStTime = 11; // avg Ke to St time
+    $ketronToStTime = 8; // avg Ke to St time
+    $ketronToAITime = 18; // avg Ke to AI time
 
     $latKeIs = 47.167; // north tip of ketron //$longKe = -122.6289;
     if($long > ($longAI-$longE) && $long < ($longAI+$longE))  {  
         // At AI
-        //file_put_contents($MMSI, "A");
         $SAVED[$MMSI] = "A"; // remember last position of ferry
         $ri = "font_download";
         $ferrystate = "atAI";  // at AI
@@ -275,34 +317,37 @@ function reportatdock() {
 
     } elseif($long > ($longSt-$longE) && $long < ($longSt+$longE))  {
         // At Steilacoom
-        //file_put_contents($MMSI, "S");
         $SAVED[$MMSI] = "S"; 
         $ri = "home";
         $ferrystate = "atST";  // at steilacoom
         return "docked @St";
 
     } elseif($long > ($longKe-.001) && $long < ($longKe+.002) && ($lat < $latKeIs) ) {
-        // special case for monday morning ketron run that is steilacoom-ketron-steilacoom onlyh
-        if($lt[2]>=16 && $lt[2]<=17) {
-            //file_put_contents($MMSI, "A");  //  if 9am, always pretend it came from anderson so it will report returning to Steilacoom
-            $SAVED[$MMSI] = "A";
-        }
+        // At Ketron
         $ri = "do_not_disturb_on";
-        $ferrystate = "toST"; // moving to ST;
-        $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
-        return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
+        //ferrystate = "toST"; // moving to ST;  disabled 1/20/23 to allow for stops in run from ST to AI
+        if($SAVED[$MMSI] == "A"){  // if boat came from AI, assume it will continue to ST
+            $ferrystate = "toST";
+            $timetoarrival =  floor($ketronDockTime/2 + $ketronToStTime - $deltamin); // time to arrival at ST in minutes
+            return "docked @Ke, arriving @St in $timetoarrival m";  // allow for extended docking
+        } else {  // boat was at ST, assume it will go to AI
+            $ferrystate = "toAI";
+            $timetoarrival =  floor($ketronDockTime/2 + $ketronToAITime - $deltamin); // time to arrival at ST in minutes
+            return "docked @Ke, arriving @AI in $timetoarrival m";  // allow for extended docking
+        }
 
     } else {
         // stopped somewhere. Report distance to AI or Steilacoom
         $ri = "report";
         $ta = (((abs($long-$longAI) + abs($lat-$latAI)*.67)/ $DAItoSt ) * 4);  // approx miles to AI
         $ts = (((abs($longSt-$long) + abs($latSt-$lat)*.67)/ $DAItoSt ) * 4);  // approx miles to Steilacoom
-        $ferrystate = "toAI"; // travelling to AI;
+
+        // if ferry was in port, assume its travelling to the other port
+        if($SAVED[$MMSI] == "A") $ferrystate = "toST"; // travelling to AI;
+        else $ferrystate = "toAI";
         $timetoarrival = 10;
         if($ta<$ts) return "stopped " . round($ta,1) . " miles from AI";
-
         // if closer to Steilacoom
-        $ferrystate = "toST"; 
         $timetoarrival = 10;
         return "stopped " . round($ts,1) . " miles from Steilacoom";
     }
@@ -376,7 +421,8 @@ function abortme($msg) {
 function logPosition($log) {
     global $fa, $px, $MMSICA;
     global $ver, $deltamin;
-
+    
+    if(count($fa)==0) return; // if no poisiton data
     $tlh = fopen($log, 'a');  // append to log
     $s1 = ""; $s2 = "";
     //  this mess is to ensure that the boats are always in the same column if there are 2 boats
@@ -398,17 +444,24 @@ function logPosition($log) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// check for late - check for ferry being late and adds a message
-//      Don't call if running 2 ferrys. Its too confusing.
-//  entry   globals $ferrystate = atST, toAI, atAI, toST
+// check for late ferry - V2 uses gFerryTimes array
+//    - check for ferry being late and adds a message. Writes 'ferryrunlog.txt' for statistics.
+//      Don't call if running 2 ferrys. Its too confusing and $ferrystate is unsafe for multiple boats.
+//  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
 //          $timetoarrival = min to arrival if state = toAI/toST
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
-//  side effects:  if late, writes to ferrylatelog.txt and stdout
+//          Writes ontime/late msg to ferryrunlog.txt if the ferry has left: datetime,S/A,Ontime/LATE,delay,scheduledruntime
+//          When ferry leaves, writes to 'ferryrunlog.txt'
+//  side effects:  if late, writes to stdout
 //          $SAVED["ferrystate"] = ferry state: atST, atAI, toST, toAI
-//          $SAVED["ferrivarrivaltimeAI"], "ferryarrivaltimeST" = arrival time in min since midnight
+//          $SAVED["ferrivarrivaltimeMMAI"], "ferryarrivaltimeMMST" = arrival time in min since midnight
 //          $SAVED["delaytime"] = $delaytime in min
 //
-function checkforLateFerry() {
+//  Detecting CANCELLED runs: When the time of next run changes from the time of the run you are waiting on,
+//      the run you are waiting on is assumed to be cancelled and is logged as a cancelled run.  
+//      This should happen 51 minutes after the scheduled run time.
+//
+function checkforLateFerry2() {
     global $ferrystate, $timetoarrival;
     global $SAVED;
     global $deltamin; // age of ferry status
@@ -423,61 +476,90 @@ function checkforLateFerry() {
     $dockingtime = 3; // time to dock the ferry and begin unloading - 1 3 min cycle
     date_default_timezone_set("America/Los_Angeles"); // set PDT
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
-    $now = $loctime[2] * 60 + $loctime[1]; // - 3;  // local time in minutes since midnight. 
+    $nowMM = $loctime[2] * 60 + $loctime[1]; // - 3;  // local time in minutes since midnight. 
     if($loctime[2] >= 20) $loadtime = 5; // if >8pm, load time is just 5 minutes. 
-    $ferryarrivaltime = 0;
+    $ferryarrivaltimeMM = 0;
 
-    // All arithmetic is done in minutes since midnight.
+    // All arithmetic is done in minutes since midnight: xxxxMM
     switch($ferrystate) {
         case "atST": // docked at ST
             if($priorferrystate != "atST") {  // if ferry was coming to ST, it has just arrived, so save its arrival time
-                $ferryarrivaltime = $now - floor($deltamin); // adjust for age of ferry position data
-                $SAVED['ferryarrivaltimeST'] = $ferryarrivaltime;  //  file_put_contents("ferryarrivaltimeST", $now);
-            } else $ferryarrivaltime = $SAVED['ferryarrivaltimeST'];  // file_get_contents("ferryarrivaltimeST");
-            if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrivaltime has to be before now. allow for end of day and wierd stuff
-            $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $priorrun = $SAVED['nextrunST'];
-            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight. up to 30 minutes late for next run.
-            // if ferry didn't take next run, use prior run as time of next run
-            if($now < $nextrun) {  // if its before the next run, then did it sail on previous run
-                if($ferryarrivaltime>0 && ($now-$ferryarrivaltime>30))  { // if it didn't sail on previous run
-                    $nextrun = $priorrun;
-                } 
+                $ferryarrivaltimeMM = $nowMM - floor($deltamin); // adjust for age of ferry position data
+                $SAVED['ferryarrivaltimeMMST'] = $ferryarrivaltimeMM;  //  file_put_contents("ferryarrivaltimeMMST", $nowMM);
+            } else $ferryarrivaltimeMM = $SAVED['ferryarrivaltimeMMST'];  // file_get_contents("ferryarrivaltimeST");
+            if($ferryarrivaltimeMM > $nowMM) $ferryarrivaltimeMM = 0; // arrivaltime has to be before nowMM. allow for end of day and wierd stuff
+            $ETDMM = max($nowMM, $ferryarrivaltimeMM+$loadtime); // ETDMM = arrival time + load time.
+            $nextrunMM = gettimeofnextrunMM("ST", 50);  // next run time in minutes-since-midnight. up to 50 minutes late for next run.
+            $waitingforrunMM = $SAVED['waitingforrunMMST'];
+            // If the run we are waiting on changed in port, the previous run must have been cancelled. 
+            if($waitingforrunMM!="") {
+                if($nextrunMM>$waitingforrunMM) {
+                    CheckForCancelledRuns($waitingforrunMM);  // check for cancelled runs
+                }
             }
-            $SAVED['nextrunST'] = $nextrun; // save time of next run
-            $delaytime = $ETD - $nextrun;
+            $SAVED['waitingforrunMMST'] = $nextrunMM; // remember the run we are waiting on
+            $delaytime = $ETDMM - $nextrunMM;
             $ferryport = "St";
             break;
 
-        case "toAI": // travelling to AI
-            if($priorferrystate == "atST") {
-                //echo ("priorferrystate=$priorferrystate with delaytime = {$SAVED["delaytime"]}"); // debug
-                $SAVED["leftSTtime"] = $now; // left ST, in minutes since midnight
-                if($SAVED["delaytime"]>0) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftSt at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND); // if ferry just left
+        case "toAI": // travelling from ST to AI
+            if($priorferrystate == "atST") {  // if ferry just jeft ST
+                LogFerryRun("ST");
+                CheckForCancelledRuns($SAVED['waitingforrunMMST']);  // check for cancelled runs
+                $SAVED['waitingforrunMMST'] = "";  // just sailed. clear waiting for run to ST
             }
-            $nextrun = getTimeofNextRun("AI"); // next run time minutes since midnight second
-            $ETD = $now + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
-            $delaytime = $ETD - $nextrun;  // calculate delay    
+            $waitingforrunMM = $SAVED['waitingforrunMMAI'];
+            $nextrunMM = gettimeofnextrunMM("AI"); // next run time minutes since midnight second
+            // Detect cancelled run
+            if($waitingforrunMM!="") {  // if we are waiting for a run
+                if($nextrunMM>$waitingforrunMM) {
+                    CheckForCancelledRuns($waitingforrunMM);  // check for cancelled runs
+                }
+            }
+            $SAVED['waitingforrunMMAI'] = $nextrunMM; // remember the run we are waiting on
+            $ETDMM = $nowMM + $traveltime + $loadtime + $dockingtime; // ESTIMATED TIME OF DEPARTURE. 
+            $delaytime = $ETDMM - $nextrunMM;  // calculate delay    
             $ferryport = "AI";
             break;
 
         case "atAI": // docked at AI
             if($priorferrystate != "atAI") {  // if ferry was coming to AI, it has just arrived, so save its arrival time
-                $ferryarrivaltime = $now -floor($deltamin);  // adjust for age of ferry position message
-                $SAVED["ferryarrivaltimeAI"] = $ferryarrivaltime; //  file_put_contents("ferryarrivaltimeAI", $now);
-            } else $ferryarrivaltime = $SAVED["ferryarrivaltimeAI"]; //$ferryarrivaltime = file_get_contents("ferryarrivaltimeAI");
-            if($ferryarrivaltime > $now) $ferryarrivaltime = 0; // arrival time has to be before now. allow for end of day and wierd stuff
-            $ETD = max($now, $ferryarrivaltime+$loadtime); // ETD = arrival time + load time.
-            $nextrun = getTimeofNextRun("AI");  // next run time minutes since midnight second
-            $delaytime = $ETD - $nextrun;  // calculate delay       
+                $ferryarrivaltimeMM = $nowMM -floor($deltamin);  // adjust for age of ferry position message
+                $SAVED["ferryarrivaltimeMMAI"] = $ferryarrivaltime; //  file_put_contents("ferryarrivaltimeMMAI", $nowMM);
+            } else $ferryarrivaltimeMM = $SAVED["ferryarrivaltimeMMAI"]; //$ferryarrivaltimeMM = file_get_contents("ferryarrivaltimeMMAI");
+            if($ferryarrivaltimeMM > $nowMM) $ferryarrivaltimeMM = 0; // arrival time has to be before nowMM. allow for end of day and wierd stuff
+            $ETDMM = max($nowMM, $ferryarrivaltimeMM+$loadtime); // ETDMM = arrival time + load time.
+            $nextrunMM = gettimeofnextrunMM("AI", 50);  // next run time minutes since midnight second. up to 50 min late.
+            $waitingforrunMM = $SAVED['waitingforrunMMAI'];
+            // If the run we are waiting on changed in port, the previous run must have been cancelled.  
+            if($waitingforrunMM!="") {  // if we are waiting for a run
+                if($nextrunMM>$waitingforrunMM) {
+                    CheckForCancelledRuns($waitingforrunMM);  // check for cancelled runs
+                }
+            }
+            $SAVED['waitingforrunMMAI'] = $nextrunMM; // remember the run we are waiting on
+            $delaytime = $ETDMM - $nextrunMM;  // calculate delay       
             $ferryport = "AI";
+            //if($delaytime > 46) LogFerryRun($ferryport, "CANCELLED"); // run is cancelled
             break;
 
-        case "toST": // travelling to ST
-            if($priorferrystate == "atAI" && ($SAVED["delaytime"]>0)) file_put_contents("ferrylatelog.txt", date('m/d H:i ') . "leftAI at " . ftime($now-$deltamin-1) . ", delaytime={$SAVED['delaytime']}\n", FILE_APPEND);  // if ferry just left
-            $nextrun = getTimeofNextRun("ST");  // next run time in minutes-since-midnight 
-            $ETD = $now + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
-            $delaytime = $ETD - $nextrun;  // calculate delay       
+        case "toST": // travelling from AI to ST
+            if($priorferrystate == "atAI") {  // if ferry just left AI
+                LogFerryRun("AI");
+                CheckForCancelledRuns($SAVED['waitingforrunMMAI']);  // check for cancelled runs
+                $SAVED['waitingforrunMMAI'] = "";
+            }
+            $waitingforrunMM = $SAVED['waitingforrunMMST'];
+            $nextrunMM = gettimeofnextrunMM("ST");  // next run time in minutes-since-midnight 
+            // Detect cancelled run
+            if($waitingforrunMM!="") {  // if we are waiting for a run and it changes, the run we were waiting on must have been cancelled.
+                if($nextrunMM>$waitingforrunMM) {
+                    CheckForCancelledRuns($waitingforrunMM);  // check for cancelled runs
+                }
+            }
+            $SAVED['waitingforrunMMST'] = $nextrunMM; // remember the run we are waiting on
+            $ETDMM = $nowMM + $traveltime + $loadtime + $dockingtime;  // ESTIMATED TIME OF DEPARTURE
+            $delaytime = $ETDMM - $nextrunMM;  // calculate delay       
             $ferryport = "St";
             break;
         
@@ -486,25 +568,49 @@ function checkforLateFerry() {
     }
 
     // $delaytime = delay in minutes, i.e. time past the next scheduled run. if <0 it is not late.
+
+    $SAVED['nextrunMM'] = $nextrunMM; // time of next run
     $SAVED["delaytime"] = $delaytime;  
     if($debug) echo "delaytime=$delaytime<br>";
-    if($nextrun==0) return "";  // if no nextrun
-    if($delaytime <5) return "<span style='color:darkgreen'>OnTime for $ferryport " . ftime($nextrun)  . " run.</span>";  // give 5 minutes of grace for a late boat
+    if($nextrunMM==0) return "";  // if no nextrun
+    //if($delaytime <5) return "<span style='color:darkgreen'>OnTime for $ferryport " . ftimeMM($nextrunMM)  . " run.</span>";  // give 5 minutes of grace for a late boat
+    if($delaytime <5) return "<span style='color:white;background-color:green'>&nbsp;OnTime&nbsp;</span><span style='color:darkgreen'>&nbsp;for $ferryport " . ftimeMM($nextrunMM)  . " run.</span>";  // give 5 minutes of grace for a late boat
     //if($delaytime <=6) return "";  // give 5 minutes of grace for a late boat
-    if($now > $ETD) $dETD = "";  // if the ETD is > now, display it. Otherwise don't.
-    else $dETD = "ETD " . ftime($ETD);  
-    $delaymsg = "<span style='color:red'>Late $delaytime m for $ferryport " . ftime($nextrun)  . " run. $dETD</span>";  
-    $latedebug =  date('m/d H:i ') . " $ferrystate: time=$now,  nextrun=" . ftime($nextrun) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
-        ftime($ferryarrivaltime) . ", $dETD |";  
-    file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
-    echo $latedebug . "\n $delaymsg";
+    if($nowMM > $ETDMM) $dETDMM = "";  // if the ETDMM is > nowMM, display it. Otherwise don't.
+    else $dETDMM = "ETD " . ftimeMM($ETDMM);  
+    //$delaymsg = "<span style='color:red'>Late $delaytime m for $ferryport " . ftimeMM($nextrunMM)  . " run. $dETDMM</span>";  
+    $delaymsg = "<span style='color:white;background-color:red'>&nbsp;Late&nbsp;</span><span style='color:red'>&nbsp;$delaytime m for $ferryport " . ftimeMM($nextrunMM)  . " run. $dETD</span>";  
+    $latedebug =  date('m/d H:i ') . " $ferrystate: time=$nowMM,  nextrun=" . ftimeMM($nextrunMM) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
+        ftimeMM($ferryarrivaltimeMM) . ", $dETDMM |";  
+    //file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
+
+    if($delaytime > 12) echo $latedebug . "\n $delaymsg";
     return $delaymsg;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
-//  ftime - format time in minutes since midnight to hh:mm. e.g. 65 becomes 01:05
-function ftime($t) {
+//  ftimeMM - format time in Minutes since Midnight to hh:mm. e.g. 65 becomes 01:05
+function ftimeMM($t) {
+    $am = "a";
+    if($t >= 12*60) $am = "p";
     if($t >= 13*60) $t = $t - 12*60;
-    return  floor($t/60) . ":" . sprintf("%02d", ($t%60));
+    return  floor($t/60) . ":" . sprintf("%02d", ($t%60)) . $am;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+//  checkforTwoBoats - returns message if two boats are running. Only call if pi=2.
+//  entry   none
+//  exit    returns 2 boat message if FRI,SAT,MON afternoon between late may and early september
+//
+function checkforTwoBoats() {
+    date_default_timezone_set("America/Los_Angeles"); // set PDT
+    $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday, 7-dayofyear (0-365)
+    // Sun, Mon, Fri 12 - 1200 - 1800 
+    //echo "loctime 6=" . $loctime[6] . ", loctime[2]=" . $loctime[2];
+    if(($loctime[7]>140 && $loctime[7]<250) && ($loctime[6]==0 || $loctime[6]==1 || $loctime[6]==5) && ($loctime[2]>=12 && $loctime[2]<=18)) {
+        //echo " two boats";
+        return "<span style='color:darkgreen'>Two boat service now.</span>"; 
+    }
+    return "";
 }
 
 // //////////////////////////////////////////////////////////////////////////////////
@@ -516,7 +622,7 @@ function ftime($t) {
 // //  CAUTION: resets global timezone to PT
 // //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
 // //    30 minutes late.  After 30 minutes late it will find the next run.
-// function getTimeofNextRun($STAI)  {
+// function gettimeofnextrunMM($STAI)  {
 //     // this array also used in getferryoverflow.php and should be in a shared file.
 //     $ST = array(445,545,705,820,930,1035,1210,1445,1550,1700,1810,1920,2035,2220); // ST departures
 //     $AI = array(515,620,735,855,1005,1110,1245,1515,1625,1735,1845,1955,2110,2250); // AI departures
@@ -550,92 +656,133 @@ function ftime($t) {
 // }
 
 ////////////  Use Dailycache.txt 12/6/22. ////////////////////////////////////////////////////////////////////////////////////////////////////////
-//445;(gDayofWeek>0)&&(gDayofWeek<6)&&!InList(gMonthDay,1231,101,221,memorialday,619,704,laborday,1111,thanksgiving,thanksgiving+1,1224,1225);545;*;705;*;820;*;
-//930;(!(gDayofWeek==1&&(gWeekofMonth==1||gWeekofMonth==3)));1035;*;1210;*;
-//1230;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1445;*;
-//1515;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1550;*;
-//1625;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1700;*;
-//1735;(InList(gMonthDay,memorialday-3,memorialday-1,704))||((InList(gDayofWeek,5,0,1)&&(gMonthDay>=817)&&(gMonthDay<(906))));1810;*;
-//1920;*;2035;*;2220;(!InList(gMonthDay,1015,1113))
+
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
 $gMonthDay = 0;
 $gWeekofMonth = 0;
+
 //////////////////////////////////////////////////////////////////////////////////
-// getTimeofNextRun2();  
-// Returns time of next run, using the ferry times in dailycache.txt.
+// gettimeofnextrunMM - Returns time of next run, using the ferry times in ferryscheduleinclude.txt (formerly dailycache.txt.
 //  That way dailycache.txt rules are used by the AndersonIslandAssistant AND this code.
-//  Once each half hour, this will read the schedule from dailycache.txt, extract the ferry schedule, and evaluate it
-//  to determine the next scheduled run.  Based on the code in index.js in the app.
+//  Every morning, BuildFerryTimes reads ferryscheduleinclude.txt and builds gFerryTimes[] 
+//      with times for all the valid runs.
 // 
 // next run time in unix seconds. up to 30 minutes late for next run.
 // Run time array = [hhmm,....] where  hh = 00-23, mm=0-60
 //
-//  entry   $STAI = "AI" or "ST"
+//  entry   gFerryTimes[] = run times, gFerryLoc[] = location
+//          $backup = how many minutes to turn back the clock to find the next run.
+//          
 //  exit    returns time of scheduled run, as minutes since midnight: hh*60+mm.  0 if no run.
+//
 //  CAUTION: resets global timezone to PT
 //  NOTE: this looks for the next run based on current time -30.  This makes up for a run being up to
 //    30 minutes late.  After 30 minutes late it will find the next run.
-function getTimeofNextRun($STAI)  {
+function gettimeofnextrunMM($STAI, $backup=30)  {
     global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
+    global $gFerryi, $gFerryTimes, $gFerryLoc, $gFerryStatus, $gFerryMonthDay;
     global $SAVED;  // persistent data
     global $debug;
 
-    $dailycache = "dailycache.txt";
     date_default_timezone_set("America/Los_Angeles"); // set PDT
-    $gtimestamp = time(); // time
-    $loctime = localtime($gtimestamp - 30*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    $gtimestamp = time(); // time in seconds
+    $loctime = localtime($gtimestamp - $backup*60);  // Backup 30 min. returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $s = 0;
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
     if($debug) echo "lt=$lt <br>";//DEBUG
-
+    
+    // Build the FerryTimes array:
+    if($gFerryMonthDay!= $gMonthDay) BuildFerryTimes();
+    
     //  Steilacoom
     if($STAI == "ST") { // if Steilacoom
-        $nextSTRun = intval($SAVED['NextSTRun']); // last saved time
-        //echo " Saved nextSTRun = $nextSTRun<br>";
-        if(($lt<$nextSTRun) && ($nextSTRun-$lt<800)) return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // return min since midnight
-        if($nextSTRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
-	    $STschedule = getschedule($dailycache, "FERRYTS");  // get the schedule
-        if($debug) echo "---ST Schedule read.<br>";  // DEBUG
-	    $ST = explode(";", $STschedule); //create array
         // loop through steilacoom and find the next scheduled run
-        for($i=0; $i<count($ST); $i=$i+2){
-            if($lt < intval($ST[$i])) {
-                if($debug) echo " ST found = {$ST[$i]}<br>";  // debug
-			    if(ValidFerryRun($ST[$i+1]))break;
+        for($i=0; $i<count($gFerryTimes); $i++){
+            if(gFerryStatus[$i]=="") {  // if not run yet today
+                if (($gFerryLoc[$i]=="ST") && ($lt < $gFerryTimes[$i])) {
+                    if($debug) echo " ST found = {$gFerryTimes[$i]}<br>";  // debug
+			        break;
+                }
 		    }
         }
-        if($i == count($ST)) $nextSTRun = 0; // if past last run, return 0
-        else $nextSTRun = intval($ST[$i]);
-        $SAVED['NextSTRun'] = $nextSTRun;  // save it
-        if($debug) echo "ST Local time-30m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
-        return (floor($nextSTRun/100)*60) + ($nextSTRun%100);  // convert hhmm to min since midnight
+        if($i >= count($gFerryTimes)) $nextSTRun = 0; // if past last run, return 0
+        else $nextSTRun = $gFerryTimes[$i];
+        $gFerryi = $i;
+        $SAVED['gFerryi'] = $gFerryi;
+        $SAVED['NextSTRun'] = $nextSTRun;  // next run hhmm
+        if($debug) echo "ST Local time-50m=$lt. Next Run=$nextSTRun ----------------------<br>"; // DEBUG
+        return hhmmtoMM($nextSTRun); //(floor($nextSTRun/100)*60) + ($nextSTRun%100);  // convert hhmm to min since midnight
 
     } else {
 
         //  Anderson Island
-        $nextAIRun = intval($SAVED['NextAIRun']); // last saved time
-        if($debug) echo " Saved nextAIRun = $nextAIRun<br>";
-        if(($lt<$nextAIRun)&& ($nextAIRun-$lt<800)) return (floor($nextAIRun/100)*60) + ($nextAIRun%100);  // return min since midnight
-        if($nextAIRun==0 && $lt>2100) return 0; // after 9pm a return of 0 for last run is ok.
-        $AIschedule = getschedule($dailycache, "FERRYTA");
-        if($debug) echo "---AI schedule read<br>";  // DEBUG
-	    $AI = explode(";", $AIschedule); //create array
-        // loop through AI
-        for($i=0; $i<count($AI); $i=$i+2){
-           if($lt < intval($AI[$i])) {
-                if(ValidFerryRun($AI[$i+1]))break;
-           }
+        for($i=0; $i<count($gFerryTimes); $i++){
+            if(gFerryStatus[$i]=="") {  // if not run yet today
+                if(($gFerryLoc[$i]=="AI") && ($lt < $gFerryTimes[$i])) {
+                    if($debug) echo " AI found = {$gFerryTimes[$i]}<br>";  // debug
+                    break;
+                }
+            }
         }
-        if($i == count($AI)) $nextAIRun = 0;
-        else $nextAIRun = intval($AI[$i]);  // save it
-        $SAVED['NextAIRun'] = $nextAIRun;
-        if($debug) echo "$STAI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
-        return (floor($nextAIRun/100)*60) + ($nextAIRun%100);      // convert hhmm to min since midnight
-   }
-   return 0;
+        if($i >= count($gFerryTimes)) $nextAIRun = 0;
+        else $nextAIRun = $gFerryTimes[$i];  // save it
+        $gFerryi = $i;
+        $SAVED['gFerryi'] = $gFerryi;
+        $SAVED['NextAIRun'] = $nextAIRun;  // next run hhmm
+        if($debug) echo "AI Local time-30m $lt. Next Run =$nextAIRun ------------------------<br>"; // DEBUG
+        return hhmmtoMM($nextAIRun); //(floor($nextAIRun/100)*60) + ($nextAIRun%100);      // convert hhmm to min since midnight
+    }
+    return 0;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//  BuildFerryTimes - build gFerryTimes array that contains the ferry time
+//  Runs once/day when the date is different from gFerryMonthDay
+//  reads file ferryscheduleinclude.txt.
+//  Entry: none
+//  Exit: builds gFerryTimes, gFerryLoc, gFerryStatus, gFerryi, gFerryMonthDay
+//        saves them in $SAVED
+//
+function BuildFerryTimes() {
+    global $gtimestamp, $gDayofWeek, $gDayofMonth, $gMonthDay, $gWeekofMonth;
+    global $gFerryi, $gFerryTimes, $gFerryLoc, $gFerryStatus, $gFerryMonthDay;
+    global $debug;
+    global $SAVED;
+    
+    $dailycache = "ferryscheduleinclude.txt";
+    $STschedule = GetSchedule($dailycache, "FERRYTS");  // get the schedule
+    $AIschedule = GetSchedule($dailycache, "FERRYTA");  // get the schedule
+    $AI = explode(";", $AIschedule); //create array
+    $ST = explode(";", $STschedule); //create array
+    // loop through schedules
+    $j = 0;
+    for($i=0; $i<count($AI); $i=$i+2){
+        if(ValidFerryRun($ST[$i+1])) {
+            $gFerryTimes[$j] = intval($ST[$i]);
+            $gFerryLoc[$j] = "ST";
+            $gFerryStatus[$j] = "";
+            $j++;
+        }
+        if(ValidFerryRun($AI[$i+1])) {
+            $gFerryTimes[$j] = intval($AI[$i]);
+            $gFerryLoc[$j] = "AI";
+            $gFerryStatus[$j] = "";
+            $j++;
+        }
+    }
+    $gFerryi = 0;
+    $gFerryMonthDay = $gMonthDay;
+    $SAVED['gFerryTimes'] = $gFerryTimes;  // save for later reload
+    $SAVED['gFerryLoc'] = $gFerryLoc;
+    $SAVED['gFerryStatus'] = $gFerryStatus;
+    $SAVED['gFerryMonthDay'] = $gFerryMonthDay;
+    $SAVED['gFerryi'] = $gFerryi;
+    echo "gFerry for $gFerryMonthDay: $j entries. <br>";
+    var_dump($gFerryTimes);
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //  ValidFerryRun - matches the ValidFerryRun routine in index.js.  Use Eval to determine valid run.
@@ -658,6 +805,7 @@ function ValidFerryRun($flag) {
 	$flag = str_replace("gM", '$gM', $flag);
 	$flag = str_replace("gW", '$gW', $flag);
 	$flag = str_replace("memorialday", "529", $flag);
+
 	$flag = str_replace("laborday", "904", $flag);
 	$flag = str_replace("thanksgiving", "1123", $flag);
     $r = eval('return' . $flag . ";");
@@ -693,7 +841,7 @@ function InList() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// GetSchedule - read dailycache.txt and extract the ferry schedule, which is one line
+// GetSchedule - read ferryscheduleinclude.txt and extract the ferry schedule, which is one line
 //  entry   file
 //          keyword
 //  exit    schedule string
@@ -709,6 +857,140 @@ function GetSchedule($file, $keyword) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+//  LogFerryRun - log the run to ferryrunlog.txt and marks gFerryStatus
+//  This routine is called one 3 minute period AFTER the ferry leaves.
+//  Entry: SA = ST or AI
+//      $ont = ontime value. Defaults to Ontime.
+//      $waitingforrunMM = time of next run. if "", use $SAVED[nextrun]
+//  Exit Log the ferry sailing to ferryrunlog.txt
+//    unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+//      Marks FerryStatus array for sailing time as O or L.  This helps us find skipped/cancelled runs.
+//
+
+function LogFerryRun($SA, $ont = "", $waitingforrunMM="") {
+    global $gFerryTimes, $gFerryStatus;
+    global $SAVED;
+    if($ont==""){
+        if($SAVED["delaytime"]>10) $ont = "LATE";
+        else $ont = "ONTIME";
+    }
+    if($waitingforrunMM=="")  $runMM = $SAVED['nextrunMM'];
+    else $runMM = $waitingforrunMM;
+    $t = time() - 3*60; // backup 3 minutes
+    $msg = $t . "," . date('m/d/y H:i', $t) . ",$SA,$ont,$SAVED[delaytime]," . ftimeMM($runMM) . "\n";
+    file_put_contents("ferryrunlog.txt", $msg, FILE_APPEND );
+    //echo $msg;
+
+    //  find run we are waiting on and mark it O or L
+    $runt = MMtohhmm($runMM); // convert MM to hhmm
+    $i = array_search($runt, $gFerryTimes);
+    if($i===false) {
+        echo "ERROR LogFerryRun: cant find run time $runMM $ont for $SA in gFerryTimes)";
+        return;
+    }
+    $gFerryStatus[$i] = substr($ont, 0, 1); // save status O or L 
+    $SAVED['gFerryStatus'] = $gFerryStatus;
+    ComputeFerryPerformance();  // compute ferry performance to ferryperformance.txt
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+//  CheckForCancelledRuns - finds any prior runs in the array that are skipped, i.e. not marked
+//      and marks them CANCELLED and logs them in run log
+//  Skipped runs are runs that occurred before $waitingfor and are still status ""
+//
+//  Entry $waitingforMM = run we were waiting for, Minutes since Midnight
+//  Exit    skipped runs marked C in gFerryStatus;
+//
+function CheckForCancelledRuns($waitingforMM) {
+    global $gFerryTimes, $gFerryLoc, $gFerryStatus;
+    if($waitingforMM == "") return; // if no time
+    $wfhhmm = MMtohhmm($waitingforMM);
+    // find all runs prior to $waitingforMM
+    for($i=0; $i<count($FerryTimes); $i++) {
+        if(($wfhhmm >= $gFerryTimes[$i]) && ($gFerryStatus[$i]=="")) {
+            // Run has been skipped. Mark it and log it.
+            LogFerryRun($gFerryLoc[$i], "CANCELLED", $gFerryTimes[$i]);
+            echo "Ferry run CANCELLED {$gFerryLoc[$i]}, {$gFerryTimes[$i]}, waiting for $waitingfor.<br> ";
+        }
+    }
+}   
+
+/////////////////////////////////////////////////////
+// MMtohhmm -- minutes to midnight converted to hhmm
+//  entry   MM (minutes to midnight)  h*60+m
+//  exit    hhmm (hours, minutes)     h*100+m
+function MMtohhmm($MM) {
+    return floor($MM/60)*100 + ($MM%60); 
+}
+//////////////////////////////////////////////////////
+// hhmmtoMMM -- hhmm converted to minutes to midnight
+//  entry    hhmm (hours, minutes)     h*100+m
+//  exit     MM (minutes to midnight)  h*60+m
+function hhmmtoMM($hhmm) {
+    return floor($hhmm/100)*60 + ($hhmm%100); 
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// ComputeFerryPerformance - reads the ferryrunlog.txt and computes the ontime performance
+// called after a ferry run is logged.
+//  Entry: reads ferryrunlog.txt: unixtimestamp,date,A/S,ONTIME/LATE,delaytime in min, next run time
+//  Exit: writes the answer to ferryperformance.txt.
+function ComputeFerryPerformance() {
+    define("SecInWeek", 7*24*3600);
+    define("SecInMonth", 30*24*3600);
+    define("SecInYear",365*24*3600);
+    define("SecInDay",24*3600); 
+    $t = time();  // unix timestamp in seconds
+    $D7Ontime = 0; $D7runs=0; $D7=0; $D7late=0; $D7cancelled=0;// 7 day ontime
+    $D30Ontime=0; $D30runs=0; $D30=0; $D30late=0; $D30cancelled=0;// 30 day ontime
+    $D365Ontime=0; $D365runs=0; $D365=0; $D365late=0; $D365cancelled=0;//365 days
+
+
+    $handle = fopen("ferryrunlog.txt", "r"); // open the file for reading
+    if ($handle) {
+        while (($line = fgets($handle)) !== false) { // read a line
+            // process the line
+            $A = explode(",", $line); // split into 0unixtimestamp,1date,2A/S,3ONTIME/LATE/CANCELLED,4delaytime in min, 5next run time
+            if(count($A)==6) {
+                $dt = $t - (int)($A[0]);  // elapsed time in sec
+                if($dt < SecInYear) {  // year
+                    if($D365==0) $D365= (int)($dt/SecInDay); // elapsed days
+                    $D365runs++;
+                    if($A[3]=="CANCELLED") $D365cancelled++;
+                    elseif($A[3]=="LATE") $D365late++;
+
+                    if($dt < SecInMonth) {  // month
+                        if($D30==0) $D30= (int)(($dt/SecInDay)+1); // elapsed days
+                        $D30runs++;
+                        if($A[3]=="CANCELLED") $D30cancelled++;
+                        elseif($A[3]=="LATE") $D30late++;
+
+                        if($dt < SecInWeek) {  // week
+                            if($D7==0) $D7= (int)(($dt/SecInDay)+1); // elapsed days
+                            $D7runs++;
+                            if($A[3]=="CANCELLED") $D7cancelled++;
+                            elseif($A[3]=="LATE") $D7late++;
+                        }
+                    } 
+                }
+            }
+        }
+        fclose($handle); // close the file
+    }
+    // compute percent and write to ferryperformance.txt.
+    if($D7runs>0) {
+        $runsontime = $D7runs-($D7late+$D7cancelled);
+        $D30runsontime = $D30runs-($D30late+$D30cancelled);
+        $m = "<a href='https://www.anderson-island.org/ferryontime.php'><i class='material-icons'>&#xe8b5;</i><b>Ferry OnTime:</a> Last $D7 Days</b> " . 
+        intval($runsontime*100/$D7runs) . "% ($D7late runs > 10min late, $D7cancelled cancelled),<br><b> Last $D30 days</b> " .
+        intval($D30runsontime*100/$D30runs) . "%, <b>Last $D365 days</b> " .
+        intval(($D365runs-$D365cancelled-$D365late)*100/$D365runs) . "%<br><br>\n";
+        file_put_contents("ferryperformanceinclude.txt", $m);
+        //echo "D7Ontime-$D7Ontime, D7runs=$D7runs, D30Ontime=$D30Ontime,D30runs=$D30runs,M=$m"; // debug
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // testgetnextrun
 //
 function testgetnextrun() {
@@ -720,7 +1002,7 @@ function testgetnextrun() {
         $hhmm = date("H:m", $gtimestamp);
         $nrST = getTimeofNextRun2("ST");
         $nrAI = getTimeofNextRun2("AI");
-        echo "$hhmm ST=" . ftime($nrST) . ", AI=" . ftime($nrAI) . "<br><br>";
+        echo "$hhmm ST=" . ftimeMM($nrST) . ", AI=" . ftimeMM($nrAI) . "<br><br>";
     }
 }
 
