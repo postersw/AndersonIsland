@@ -179,7 +179,8 @@ WEB LOCAL DEBUG
 	Use Developer tools to debug.
 
 ANDROID DEBUG/BUILD
-	Build on Volt build.  Then download the apk using the bar code scanner to open the download web page.
+	Build on Volt build. https://volt.build.
+    Then download the apk using the bar code scanner to open the download web page.
 	Alernatively run PhoneGap build on the phone and click on the apk icon to download it.
 	Download.  Then find the downloaded file and click on it, which will install it.
 	Test on: 1 My phone, 2 Sue's phone, 3 my old motorola E phone

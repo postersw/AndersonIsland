@@ -112,8 +112,8 @@ if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7
 // reload persistant data
 $SAVED = json_decode(file_get_contents($ferryjsonsavefile), TRUE); // load persistant data
 //var_dump($SAVED);  // print out what was loaded
-$gFerryi = $SAVED['gFerryi'] ?? 0;
-$gFerryMonthDay = $SAVED['gFerryMonthDay'] ?? 0;
+$gFerryi = $SAVED['gFerryi'];
+$gFerryMonthDay = $SAVED['gFerryMonthDay'];
 $gFerryTimes = $SAVED['gFerryTimes'];
 $gFerryLoc = $SAVED['gFerryLoc'];
 $gFerryStatus = $SAVED['gFerryStatus'];
@@ -1260,6 +1260,7 @@ function LogFerryRun2($SA, $ont = "", $waitingforrunMM="") {
 //
 function CheckForCancelledRuns($waitingforMM) {
     global $gFerryTimes, $gFerryLoc, $gFerryStatus;
+    global $SAVED;
     if($waitingforMM == "") return; // if no time
     $wfhhmm = MMtohhmm($waitingforMM);
     echo "CheckForCancelledRuns waitingforMM=$waitingforMM, wfhhmm=$wfhhmm<br>";
