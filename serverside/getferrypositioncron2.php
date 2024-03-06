@@ -7,7 +7,7 @@
 // Ferry position is retrieved from marinetraffic.com.  Max allowed call rate is once/3 minutes.
 //
 //  Files: ferryposition.txt = message to display.
-//         ferrypositionsave.json = saved and restored data in json format. in $SAVED[] as an associative array.
+//         ferrypositionsave.json = saved and restored data in json format. in $SAVED[] as an associative array.debug
 //                          [MMSI id] = last port for that boat
 //                          [ferrystate] = last ferry state (toAI, atAI, toST, atST). Not valid if 2 boats running.
 //                          [arrivaltimeAI|ST] = arrival time at that port, in min since midnight
@@ -50,7 +50,7 @@
 //  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
 
-$ver = "1.54"; // 3/4/24.
+$ver = "1.54.5"; // 3/4/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -975,6 +975,7 @@ function checkforLateFerry2() {
     // All arithmetic is done in minutes since midnight: xxxxMM
     switch($ferrystate) {
         case "atST": // docked at ST
+            // Save Ferry arrival time at ST
             if($priorferrystate != "atST") {  // if ferry was coming to ST, it has just arrived, so save its arrival time
                 $ferryarrivaltimeMM = $nowMM - floor($deltamin); // adjust for age of ferry position data
                 $SAVED['ferryarrivaltimeMMST'] = $ferryarrivaltimeMM;  //  file_put_contents("ferryarrivaltimeMMST", $nowMM);
@@ -995,9 +996,12 @@ function checkforLateFerry2() {
             break;
 
         case "toAI": // travelling from ST to AI
+            // Ferry just left ST for AI.  Log ST departure for 'waitingforrunMMSTI' run.
             if($priorferrystate == "atST") {  // if ferry just jeft ST
-                LogFerryRun2("ST");
-                CheckForCancelledRuns($SAVED['waitingforrunMMST']);  // check for cancelled runs
+                if($debug) "Ferry left ST for AI: run {$SAVED['waitingforrunMMST']} \n";
+                $ont = ($SAVED["delaytime"]>=10)? "Late" : "Ontime";
+                LogFerryRun2("ST", $ont, $SAVED['waitingforrunMMST']);
+                CheckForCancelledRuns($SAVED['waitingforrunMMST']);  // check for cancelled runs occuring before the run that just left.
                 $SAVED['waitingforrunMMST'] = "";  // just sailed. clear waiting for run to ST
             }
             $waitingforrunMM = $SAVED['waitingforrunMMAI'];
@@ -1015,6 +1019,7 @@ function checkforLateFerry2() {
             break;
 
         case "atAI": // docked at AI
+            // Save ferry arrival time at AI
             if($priorferrystate != "atAI") {  // if ferry was coming to AI, it has just arrived, so save its arrival time
                 $ferryarrivaltimeMM = $nowMM -floor($deltamin);  // adjust for age of ferry position message
                 $SAVED["ferryarrivaltimeMMAI"] = $ferryarrivaltimeMM; //  file_put_contents("ferryarrivaltimeMMAI", $nowMM);
@@ -1032,12 +1037,14 @@ function checkforLateFerry2() {
             $SAVED['waitingforrunMMAI'] = $nextrunMM; // remember the run we are waiting on
             $delaytime = $ETDMM - $nextrunMM;  // calculate delay       
             $ferryport = "AI";
-            //if($delaytime > 46) LogFerryRun2($ferryport, "CANCELLED"); // run is cancelled
             break;
 
         case "toST": // travelling from AI to ST
+            // Ferry just left AI for ST.  Log AI departure for 'waitingforrunMMAI' run.
             if($priorferrystate == "atAI") {  // if ferry just left AI
-                LogFerryRun2("AI");
+                if($debug) "Ferry left AI for ST: run " . MMtohhmm($SAVED['waitingforrunMMAI']) . " \n";
+                $ont = ($SAVED["delaytime"]>=10)? "Late" : "Ontime";
+                LogFerryRun2("AI", $ont, $SAVED['waitingforrunMMAI']);
                 CheckForCancelledRuns($SAVED['waitingforrunMMAI']);  // check for cancelled runs
                 $SAVED['waitingforrunMMAI'] = "";
             }
@@ -1209,25 +1216,22 @@ function BuildFerryTimes() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  LogFerryRun - log the run to ferryrunlog.txt and marks gFerryStatus
+//  LogFerryRun2 - log the run to ferryrunlog.txt and marks gFerryStatus
 //  This routine is called one 3 minute period AFTER the ferry leaves.
 //  DEBUG - writes to ferryrunlog2.txt
 //  Entry: SA = ST or AI
-//      $ont = ontime value. Defaults to Ontime.
-//      $waitingforrunMM = time of next run. if "", use $SAVED[nextrun]
+//      $ont = ontime/late text string.
+//      $waitingforrunMM = time of next run in minutes since midnight.
 //  Exit Log the ferry sailing to ferryrunlog.txt
 //    unixtimestamp,date,A/S,ONTIME/LATE/CANCLLED,delaytime in min, next run time
 //      Marks FerryStatus array for sailing time as O or L.  This helps us find skipped/cancelled runs.
 //
 
-function LogFerryRun2($SA, $ont = "", $waitingforrunMM="") {
+function LogFerryRun2($SA, $ont, $waitingforrunMM) {
     global $gFerryTimes, $gFerryStatus;
     global $debug;
     global $SAVED;
-    if($ont==""){
-        if($SAVED["delaytime"]>10) $ont = "LATE";
-        else $ont = "ONTIME";
-    }
+
     if($waitingforrunMM=="")  $runMM = $SAVED['nextrunMM'];
     else $runMM = $waitingforrunMM;
     $t = time() - 3*60; // backup 3 minutes
@@ -1243,11 +1247,11 @@ function LogFerryRun2($SA, $ont = "", $waitingforrunMM="") {
         echo "ERROR LogFerryRun: cant find run time $runMM $ont for $SA in gFerryTimes)<br>";
         return;
     }
+    if($gFerryStatus[$i]!="") echo "ERROR LogFerryRun, FerryStatus not blank: i=$i, gFerryStatus[i]={$gFerryStatus[$i]}\n";
     $gFerryStatus[$i] = substr($ont, 0, 1); // save status O or L 
     $SAVED['gFerryStatus'] = $gFerryStatus;
     if($debug) echo " set gFerryStatus i=$i, $ont";
-    //ComputeFerryPerformance();  // compute ferry performance to ferryperformance.txt
-    echo "skipped ComputeFerryPerformance2<br>";
+    ComputeFerryPerformance();  // compute ferry performance to ferryperformance.txt
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -1273,7 +1277,7 @@ function CheckForCancelledRuns($waitingforMM) {
             $t = time() - 3*60; // backup 3 minutes
             $msg = $t . "," . date('m/d/y H:i', $t) . ",$gFerryLoc[$i],CANCELLED,0," . $gFerryTimes[$i] . "\n";
             file_put_contents("ferryrunlog2.txt", $msg, FILE_APPEND );
-            echo "Ferry run CANCELLED 2 {$gFerryLoc[$i]}, {$gFerryTimes[$i]}, waiting for $waitingforMM.<br> ";
+            echo "Ferry run CANCELLED 2 {$gFerryLoc[$i]}, {$gFerryTimes[$i]}, waiting for $waitingforMM.<br> \n";
         }
     }
     $SAVED['gFerryStatus'] = $gFerryStatus;  // save status
