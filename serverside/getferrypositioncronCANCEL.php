@@ -700,12 +700,12 @@ function gettimeofnextrunMM($STAI, $backup=30)  {
     if($STAI == "ST") { // if Steilacoom
         // loop through steilacoom and find the next scheduled run
         for($i=0; $i<count($gFerryTimes); $i++){
-            if(gFerryStatus[$i]=="") {  // if not run yet today
+            //if(gFerryStatus[$i]=="") {  // if not run yet today   REMOVED TO ALLOW FOR FUEL RUNS
                 if (($gFerryLoc[$i]=="ST") && ($lt < $gFerryTimes[$i])) {
                     if($debug) echo " ST found = {$gFerryTimes[$i]}<br>";  // debug
 			        break;
                 }
-		    }
+		    //}
         }
         if($i >= count($gFerryTimes)) $nextSTRun = 0; // if past last run, return 0
         else $nextSTRun = $gFerryTimes[$i];
@@ -719,12 +719,12 @@ function gettimeofnextrunMM($STAI, $backup=30)  {
 
         //  Anderson Island
         for($i=0; $i<count($gFerryTimes); $i++){
-            if(gFerryStatus[$i]=="") {  // if not run yet today
+            //if(gFerryStatus[$i]=="") {  // if not run yet today  REMOVED TO ALLOW FOR FUEL RUNS 3/7/24
                 if(($gFerryLoc[$i]=="AI") && ($lt < $gFerryTimes[$i])) {
                     if($debug) echo " AI found = {$gFerryTimes[$i]}<br>";  // debug
                     break;
                 }
-            }
+            //}
         }
         if($i >= count($gFerryTimes)) $nextAIRun = 0;
         else $nextAIRun = $gFerryTimes[$i];  // save it

@@ -50,7 +50,7 @@
 //  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
 
-$ver = "1.54.6"; // 3/4/24.
+$ver = "1.54.7"; // 3/7/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -1124,12 +1124,12 @@ function gettimeofnextrunMM($STAI, $backup=30)  {
     if($STAI == "ST") { // if Steilacoom
         // loop through steilacoom and find the next scheduled run
         for($i=0; $i<count($gFerryTimes); $i++){
-            if($gFerryStatus[$i]=="") {  // if not run yet today
+            //if($gFerryStatus[$i]=="") {  // if not run yet today.  Skipped to handle fuel runs.
                 if (($gFerryLoc[$i]=="ST") && ($lt < $gFerryTimes[$i])) {
                     if($debug) echo " ST found = {$gFerryTimes[$i]}<br>";  // debug
 			        break;
                 }
-		    }
+		    //}
         }
         if($i >= count($gFerryTimes)) $nextSTRun = 0; // if past last run, return 0
         else $nextSTRun = $gFerryTimes[$i];
@@ -1143,12 +1143,12 @@ function gettimeofnextrunMM($STAI, $backup=30)  {
 
         //  Anderson Island
         for($i=0; $i<count($gFerryTimes); $i++){
-            if($gFerryStatus[$i]=="") {  // if not run yet today
+            //if($gFerryStatus[$i]=="") {  // if not run yet today  Skipped to handle fuel runs.
                 if(($gFerryLoc[$i]=="AI") && ($lt < $gFerryTimes[$i])) {
                     if($debug) echo " AI found = {$gFerryTimes[$i]}<br>";  // debug
                     break;
                 }
-            }
+            //}
         }
         if($i >= count($gFerryTimes)) $nextAIRun = 0;
         else $nextAIRun = $gFerryTimes[$i];  // save it
@@ -1234,6 +1234,10 @@ function LogFerryRun2($SA, $delaytime, $waitingforrunMM) {
     //echo $msg;
 
     //  find run we are waiting on and mark it O or L
+    if($delaytime < -10) {  // special case for fuel runs because code will try to mark a run complete after a skipped run.
+        echo "ERROR LogFerryRun2 Run NOT marked because delay time = $delaytime";
+        return;
+    }
     $runt = MMtohhmm($runMM); // convert MM to hhmm
     $i = array_search($runt, $gFerryTimes);
     if($i===false) {
