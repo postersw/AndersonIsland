@@ -50,7 +50,7 @@
 //  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
 
-$ver = "1.54.7"; // 3/7/24.
+$ver = "1.54.8"; // 3/7/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -133,7 +133,7 @@ for($i=0; $i < count($fa); $i++) {
     if($MMSI == $MMSICA) $ferryname = "'CA'";
     elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
     //if($ferryname == "'CA'") continue; // skip CA///////////////////////////////////////////////
-    if($ferryname == "'S2'") continue; // skip S2///////////////////////////////////////////////
+    //if($ferryname == "'S2'") continue; // skip S2///////////////////////////////////////////////
     checktimestamp($timestamp); 
     //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
     //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctly
@@ -141,7 +141,7 @@ for($i=0; $i < count($fa); $i++) {
 
     // calculate location and arrival;
     if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) continue;  // skip boat if it is stopped & docked at the backup-boat dock
-    if($speed < 10) $s = reportatdock();  // at dock if speed< 1 knot
+    if($speed <= 10) $s = reportatdock();  // at dock if speed<= 1 knot
     else $s = timetocross();
     $p =  $p . "$ferryname $s"; 
     $px[$pi] = "$mi$ri</i><i> $ferryname $s</i>";
@@ -1254,7 +1254,7 @@ function LogFerryRun2($SA, $delaytime, $waitingforrunMM) {
 ///////////////////////////////////////////////////////////////////////////////////
 //  CheckForCancelledRuns - finds any prior runs in the array that are skipped, i.e. not marked
 //      and marks them CANCELLED and logs them in run log
-//  Skipped runs are runs that occurred before $waitingfor and are still status ""
+//  Skipped runs are runs that occurred before min($waitingfor, now) and are still status ""
 //
 //  Entry $waitingforMM = run we were waiting for, Minutes since Midnight
 //  Exit    skipped runs marked C in gFerryStatus;
@@ -1264,7 +1264,13 @@ function CheckForCancelledRuns($waitingforMM) {
     global $SAVED;
     if($waitingforMM == "") return; // if no time
     $wfhhmm = MMtohhmm($waitingforMM);
+
+    // if now is earlier than the run we are waiting for, check for cancelled run before now
+    $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
+    $nowhhmm = $loctime[2] * 100 + $loctime[1]; // - 3;  // local time in minutes since midnight. 
+    if($nowhhmm < $wfhhmm) $wfhhmm = $nowhhmm; // use current time if < run we are waiting for.
     echo "CheckForCancelledRuns waitingforMM=$waitingforMM, wfhhmm=$wfhhmm<br>";
+
     // find all runs prior to $waitingforMM
     for($i=0; $i<count($gFerryTimes); $i++) {
         if(($wfhhmm >= $gFerryTimes[$i]) && ($gFerryStatus[$i]=="")) {
@@ -1273,8 +1279,8 @@ function CheckForCancelledRuns($waitingforMM) {
             // log it
             $t = time() - 3*60; // backup 3 minutes
             $msg = $t . "," . date('m/d/y H:i', $t) . ",$gFerryLoc[$i],CANCELLED,0," . $gFerryTimes[$i] . "\n";
-            file_put_contents("ferryrunlog2.txt", $msg, FILE_APPEND );
-            echo "Ferry run CANCELLED 2 {$gFerryLoc[$i]}, {$gFerryTimes[$i]}, waiting for $waitingforMM.<br> \n";
+            file_put_contents("ferryrunlog.txt", $msg, FILE_APPEND );
+            echo "Ferry run CANCELLED {$gFerryLoc[$i]}, {$gFerryTimes[$i]}, waiting for $waitingforMM.<br> \n";
         }
     }
     $SAVED['gFerryStatus'] = $gFerryStatus;  // save status
