@@ -1229,7 +1229,7 @@ function LogFerryRun2($SA, $delaytime, $waitingforrunMM) {
     else $runMM = $waitingforrunMM;
     $t = time() - 3*60; // backup 3 minutes
     $msg = $t . "," . date('m/d/y H:i', $t) . ",$SA,$ont,$SAVED[delaytime]," . ftimeMM($runMM) . "\n";
-    echo "LogFerryRun2: SA=$SA, ont=$ont, waitingforrunMM=$waitingforrunMM, msg=$msg<br>\n";
+    if($debug) echo "LogFerryRun2: SA=$SA, ont=$ont, waitingforrunMM=$waitingforrunMM, msg=$msg<br>\n";
     file_put_contents("ferryrunlog.txt", $msg, FILE_APPEND );
     //echo $msg;
 
@@ -1269,7 +1269,7 @@ function CheckForCancelledRuns($waitingforMM) {
     $loctime = localtime();  // returns array of local time in correct time zone. 1=min, 2=hours, 6=weekday
     $nowhhmm = $loctime[2] * 100 + $loctime[1]; // - 3;  // local time in minutes since midnight. 
     if($nowhhmm < $wfhhmm) $wfhhmm = $nowhhmm; // use current time if < run we are waiting for.
-    echo "CheckForCancelledRuns waitingforMM=$waitingforMM, wfhhmm=$wfhhmm<br>";
+    //echo "CheckForCancelledRuns waitingforMM=$waitingforMM, wfhhmm=$wfhhmm<br>";
 
     // find all runs prior to $waitingforMM
     for($i=0; $i<count($gFerryTimes); $i++) {
