@@ -50,7 +50,7 @@
 //  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
 
-$ver = "1.54.8"; // 3/7/24.
+$ver = "1.54.9"; // 3/13/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -161,6 +161,8 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $gtimestamp = time();
 CalcDays();  // set $gMonthDay, etc used to evaluate ferry fules
+// Build the FerryTimes array:
+if($gFerryMonthDay!= $gMonthDay || $gFerryTimes==null || $gFerryMonthDay==null) BuildFerryTimes();
 
 // Display OnTime / LATE message
 // if running 1 ferry and it is actually late, make the time red.
@@ -929,11 +931,12 @@ function testgetnextrun() {
 ///////////// version 2 FerryLate /////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////
-// check for late ferry - V2 uses gFerryTimes array
+//  checkforLateFerry2 - check for late ferry - V2 uses gFerryTimes array
 //    - check for ferry being late and adds a message. Writes 'ferryrunlog.txt' for statistics.
 //      Don't call if running 2 ferrys. Its too confusing and $ferrystate is unsafe for multiple boats.
 //  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
 //          $timetoarrival = min to arrival if state = toAI/toST
+//          $gFerry... arrays filled
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
 //          Writes ontime/late msg to ferryrunlog.txt if the ferry has left: datetime,S/A,Ontime/LATE,delay,scheduledruntime
 //          When ferry leaves, writes to 'ferryrunlog.txt'
@@ -1116,9 +1119,6 @@ function gettimeofnextrunMM($STAI, $backup=30)  {
     $s = 0;
     $lt = $loctime[2] * 100 + $loctime[1];  // local time in hhmm.
     if($debug) echo "lt=$lt, gFerryMonthDay=$gFerryMonthDay, gMonthDay=$gMonthDay<br>";//DEBUG
-    
-    // Build the FerryTimes array:
-    if($gFerryMonthDay!= $gMonthDay) BuildFerryTimes();
     
     //  Steilacoom
     if($STAI == "ST") { // if Steilacoom
