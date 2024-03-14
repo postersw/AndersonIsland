@@ -50,7 +50,7 @@
 //  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
 
-$ver = "1.54.9"; // 3/13/24.
+$ver = "1.54.10"; // 3/14/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -107,7 +107,7 @@ chdir("/home/postersw/public_html");  // move to web root
 date_default_timezone_set("UTC"); // set UTC
 $lt = localtime();   // time in UTC:  [0]=sec,[1]=min,[2] = hour, [3]=minday,[4]=mon,[5]=year,[6]=weekay,[7]=yearday
 //echo " hour=" . $lt[2] . " ";
-if($lt[2]>7 && $lt[2]<12) exit(0); //DEBUG"time");  // don't run midnight - 4 (7-12 UTC)
+if($lt[2]>7 && $lt[2]<11) exit(0); //DEBUG"time");  // don't run midnight - 4 (7-12 UTC)
 
 // reload persistant data
 $SAVED = json_decode(file_get_contents($ferryjsonsavefile), TRUE); // load persistant data
@@ -995,9 +995,11 @@ function checkforLateFerry2() {
         case "toAI": // travelling from ST to AI
             // Ferry just left ST for AI.  Log ST departure for 'waitingforrunMMST' run.
             if($priorferrystate == "atST") {  // if ferry just jeft ST
-                if($debug) "Ferry left ST for AI: run {$SAVED['waitingforrunMMST']} \n";
-                LogFerryRun2("ST", $SAVED["delaytime"], $SAVED['waitingforrunMMST']);
-                CheckForCancelledRuns($SAVED['waitingforrunMMST']);  // check for cancelled runs occuring before the run that just left.
+                $wfrST = $SAVED['waitingforrunMMST'];
+                if($wfrST=="" || $wfrST==0 || $wfrST==null) $wfrst = gettimeofnextrunMM("ST"); // if not waiting for a run, get run time 30 min ago
+                if($debug) "Ferry left ST for AI: run $wfrST \n";
+                LogFerryRun2("ST", $SAVED["delaytime"], $wfrST);
+                CheckForCancelledRuns($wfrST);  // check for cancelled runs occuring before the run that just left.
                 $SAVED['waitingforrunMMST'] = "";  // just sailed. clear waiting for run to ST
             }
             $waitingforrunMM = $SAVED['waitingforrunMMAI'];
