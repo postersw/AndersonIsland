@@ -49,8 +49,10 @@
 //  1.52 1/18/24.  Correct the ferry state when it stops enroute.
 //  1.53 2/26/24.  Only echo msg if ferry is cancelled or late.
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
+//  1.55 4/1/24.   When 2 ferries are detected, continue to use the one we were using until it goes away.
+//                  Handles ferry testing runs and ferry switching runs.
 
-$ver = "1.54.10"; // 3/14/24.
+$ver = "1.55.1"; // 3/31/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -143,6 +145,14 @@ for($i=0; $i < count($fa); $i++) {
     if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) continue;  // skip boat if it is stopped & docked at the backup-boat dock
     if($speed <= 10) $s = reportatdock();  // at dock if speed<= 1 knot
     else $s = timetocross();
+    // handle 2 ferries
+    if($MMSI == $MMSICA) {  // CA
+         $ferrystateCA = $ferrystate;
+         $timetoarrivalCA = $timetoarrival;
+    } else {  // S2
+        $ferrystateS2 = $ferrystate;
+        $timetoarrivalS2 = $timetoarrival;   
+    }
     $p =  $p . "$ferryname $s"; 
     $px[$pi] = "$mi$ri</i><i> $ferryname $s</i>";
     $pi++;
@@ -161,16 +171,24 @@ else $pstr = $px[0] . "<br/>" . $px[1];
 date_default_timezone_set("America/Los_Angeles"); // set PDT
 $gtimestamp = time();
 CalcDays();  // set $gMonthDay, etc used to evaluate ferry fules
-// Build the FerryTimes array:
-if($gFerryMonthDay!= $gMonthDay || $gFerryTimes==null || $gFerryMonthDay==null) BuildFerryTimes();
+
+// New Day:  Build the FerryTimes array:
+if($gFerryMonthDay!= $gMonthDay || $gFerryTimes==null || $gFerryMonthDay==null) {
+    BuildFerryTimes();
+    $SAVED['useferry'] = $ferryname;  // reset useferry 
+}
 
 // Display OnTime / LATE message
 // if running 1 ferry and it is actually late, make the time red.
 $ferrylate = "";
-if($pi==1) {
-    $ferrylate = checkforLateFerry2();  //  if running 1 boat, calculate if ferry is late and add message
-} elseif($pi==2) {
+if($pi==1) {  // if 1 boat
+    $ferrylate = checkforLateFerry2("");  //  if running 1 boat, calculate if ferry is late and add message
+    $SAVED['useferry'] = $ferryname; // save ferry name
+} elseif($pi==2) {  // if 2 boats
     $ferrylate = checkforTwoBoats();  // if running 2 boats, issue 2 boat msg on fri, sun, mon
+    if($ferrylate=="") { // if not officially running 2 boats, continue to use the ferry we were using and pretend it is the only boat
+        $ferrylate = checkforLateFerry2($SAVED['useferry']);  // use the last ferry
+    }
 }
 $pstr = "$ferrylate<br><span style='color:darkblue'>&nbsp;&nbsp;$pstr</span>";  // build message as <pstr><ferrylate>
 if($debug) echo $pstr;
@@ -934,27 +952,48 @@ function testgetnextrun() {
 //  checkforLateFerry2 - check for late ferry - V2 uses gFerryTimes array
 //    - check for ferry being late and adds a message. Writes 'ferryrunlog.txt' for statistics.
 //      Don't call if running 2 ferrys. Its too confusing and $ferrystate is unsafe for multiple boats.
-//  entry   globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
+//  entry   $ferrytouse = name of ferry to use, CA or S2.  "" to just use globals..
+//          globals $ferrystate = atST, toAI, atAI, toST.  NOT SAFE FOR MULTIPLE BOATS
 //          $timetoarrival = min to arrival if state = toAI/toST
 //          $gFerry... arrays filled
 //  exit    returns prefix to ferry message: "LATE nn m for XX hh:mm run", or "ONTIME for XX hh:mm run", or ""
 //          Writes ontime/late msg to ferryrunlog.txt if the ferry has left: datetime,S/A,Ontime/LATE,delay,scheduledruntime
 //          When ferry leaves, writes to 'ferryrunlog.txt'
-//  side effects:  if late, writes to stdout
+//          side effects:  if late, writes to stdout
 //          $SAVED["ferrystate"] = ferry state: atST, atAI, toST, toAI
-//          $SAVED["ferrivarrivaltimeMMAI"], "ferryarrivaltimeMMST" = arrival time in min since midnight
+//          $SAVED["ferrivarrivaltimeMMAI"], []"ferryarrivaltimeMMST"] = arrival time in MM - min since midnight
 //          $SAVED["delaytime"] = $delaytime in min
+//          $SAVED['waitingforrunMMST'], ['waitingforrunMMAI'] = the ferry run we are waiting for, in MM
+//          $SAVED['nextrunMM'] = time of next run
 //
 //  Detecting CANCELLED runs: When the time of next run changes from the time of the run you are waiting on,
 //      the run you are waiting on is assumed to be cancelled and is logged as a cancelled run.  
 //      This should happen 51 minutes after the scheduled run time.
 //
-function checkforLateFerry2() {
+function checkforLateFerry2($ferrytouse) {
     global $ferrystate, $timetoarrival;
     global $SAVED;
     global $deltamin; // age of ferry status
     global $debug;
+    global $ferrystateCA, $timetoarrivalCA, $ferrystateS2, $timetoarrivalS2;
     
+    // handle 2 ferries by continuing to use the one we used previously.
+    //  Only uses ferrystate and timetoarrival.   Will get confused if we switch ferries.
+
+    if($ferrytouse != "") {
+        echo "checkforLateFerry2 running 2 ferries. using $ferrytouse \n";
+        if($ferrytouse == "'CA'") {  // CA
+            echo "LateFerry2: Using CA. ";
+            $ferrystate = $ferrystateCA;
+            $timetoarrival = $timetoarrivalCA;
+        } else {  // S2
+            echo "LateFerry2: Using S2.";
+            $ferrystate = $ferrystateS2;
+            $timetoarrival = $timetoarrivalS2;
+        }
+        echo "ferrystate=$ferrystate<br>\n";
+    }
+
     if($debug) echo "ferrystate=$ferrystate<br>";
 
     if($ferrystate=="") return "";  // unable to determine state;
@@ -1078,7 +1117,6 @@ function checkforLateFerry2() {
     $delaymsg = "<span style='color:white;background-color:red'>&nbsp;Late&nbsp;</span><span style='color:red'>&nbsp;$delaytime m for $ferryport " . ftimeMM($nextrunMM)  . " run. $dETDMM</span>";  
     $latedebug =  date('m/d H:i ') . " $ferrystate: time=$nowMM,  nextrun=" . ftimeMM($nextrunMM) . ", traveltime=$traveltime, delaytime=$delaytime, arrivaltime=" .
         ftimeMM($ferryarrivaltimeMM) . ", $dETDMM |";  
-    //file_put_contents("ferrylatelog.txt",  $latedebug . $delaymsg . "\n", FILE_APPEND);
 
     if($delaytime > 12) echo $latedebug . "\n $delaymsg";
     return $delaymsg;
@@ -1226,6 +1264,11 @@ function LogFerryRun2($SA, $delaytime, $waitingforrunMM) {
     global $debug;
     global $SAVED;
 
+    if($delaytime < -10) {  // special case for fuel runs because code will try to mark a run complete after a skipped run.
+        echo "ERROR LogFerryRun2 Run NOT marked because delay time = $delaytime";
+        return;
+    }
+
     $ont = ($delaytime>=10)? "LATE" : "ONTIME";
     if($waitingforrunMM=="")  $runMM = $SAVED['nextrunMM'];
     else $runMM = $waitingforrunMM;
@@ -1236,10 +1279,7 @@ function LogFerryRun2($SA, $delaytime, $waitingforrunMM) {
     //echo $msg;
 
     //  find run we are waiting on and mark it O or L
-    if($delaytime < -10) {  // special case for fuel runs because code will try to mark a run complete after a skipped run.
-        echo "ERROR LogFerryRun2 Run NOT marked because delay time = $delaytime";
-        return;
-    }
+
     $runt = MMtohhmm($runMM); // convert MM to hhmm
     $i = array_search($runt, $gFerryTimes);
     if($i===false) {
