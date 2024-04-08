@@ -48,6 +48,7 @@
 //  09/14/2019 - ignore \n in event description 
 //  12/1/2022 - fixed $me at line 60 in next year calculation
 //  1/21/2023 - allow for no description in event object
+//  4/7/2024 - add the word "More..." to the location of the 2nd event so it is displayed on the main screen for Events.
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -90,7 +91,7 @@ $n=0;
 
 fwrite($fce, "0101;0000;0000;E;$y Happy New Year\r\n");  // write year
 echo "0101;0000;0000;E;$y Happy New Year<br/>";
-$n = fcopy("xMES", $y);
+$n = fcopyMore("xMES", $y);
 echo $n . " Events.<br/>";
 
 
@@ -140,6 +141,62 @@ function fcopy($etype, $ys) {
             // now write it to the file
             echo $r . "<br/>\r\n";
             fwrite($fce, $r . "\r\n");
+        }
+    }
+    return $n;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+// fcopyMore - copy the calendar events from the jreply structure to a file
+//              Add "More..." to the location of the 2nd day
+// entry: etype = allowable calendar event types (1st letter of event)
+//        ys = year e.g. '2017'
+// globals: jreply = the calendar list as a json object
+//          fce = the file to write to
+//
+function fcopyMore($etype, $ys) {
+    global $jreply, $fce;
+    $n = 0;
+    if(strpos($etype, "A") > 0) {  // if Activities
+        $nlimit = 100; // limit to 100 activities
+    } else {
+        $nlimit = 999; // no limit on events
+    }
+    $r1 = ""; $r2 = ""; $lastdate = "";
+    $ndate = 0;
+    foreach ($jreply->items as $event) {  // loop through each calendar item
+        $k = substr($event->summary, 0, 1); // k=the key letter of the event
+        if(strpos($etype, $k) > 0) {  // if desired event
+            //2016-06-28T18:30:00-07:00;2016-06-28T19:30:00-07:00;
+
+            // now write previous line  to the file.  
+            // We do this because we want to append the word "More" to the location of the LAST event in day 2.
+            if($r1!="") {
+                // if a new day, then for day 2 add "More..." to the location.
+                if(substr($event->start->dateTime,0,10) != $lastdate) {
+                    $ndate = $ndate + 1;
+                    if($ndate == 2) $r1 = $r1 . "<br>More ...";  // add More
+                    $lastdate = substr($event->start->dateTime,0,10);
+                }
+                echo $r1 . $r2 . "<br/>\r\n";
+                fwrite($fce, $r1 . $r2 . "\r\n");
+            }
+
+            if(substr($event->start->dateTime,0,4) != $ys) {  // if year rollover, write the new year
+                $ys = substr($event->start->dateTime,0,4);
+                fwrite($fce, "0101;0000;0000;E;$ys Happy New Year\r\n");  // write year
+                echo "0101;0000;0000;E;$ys Happy New Year generated for event year change<br/>";
+            }
+            if(property_exists($event, "description")) $desc = str_replace("\n", " ", $event->description); // remove line feeds
+            else $desc = "";
+            // build the line to print on the next iteration;
+            $r1 = substr($event->start->dateTime,5,2) . substr($event->start->dateTime,8,2) . ";" . substr($event->start->dateTime,11,2) . substr($event->start->dateTime,14,2) . ";" .
+                substr($event->end->dateTime,11,2) . substr($event->end->dateTime,14,2)  . ";" .
+                $k . ";" . substr($event->summary, 2) . ";" . $event->location ;
+            $r2 =  ";" . $desc ;
+            $n++;
+            if($n > $nlimit) break;  // limit to 100 activities to prevent too much data on phone.  (5/18/18).
+
         }
     }
     return $n;
