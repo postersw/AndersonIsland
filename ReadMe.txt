@@ -149,24 +149,29 @@ GIT CREATE NEW BRANCH
 		1. Select 'master' in the Branch dropdown.   
 		2. Select the Branch dropdown again, and fill in the name of the new branch, e.g. Ver131. Then select Create.
 		3. Then go to  Visual Studio Code on local machine and create a new local branch from this branch: 
-			a. Select Source control -> ... -> Fetch.   This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
+			a. Select Source control -> ... -> FETCH. This will update the list of remote branches (you will now see origin/newbranchname as a remote branch) 
+			   YOU MUST DO A FETCH, or you will NOT see the new branch.
 			b. Click on the branch name in the lower lefthand corner, e.g. Ver130.  This will open the list of branches.
 			c. Select origin/newbranchname, e.g. origin/Ver131
 			   This will create a new local branch of the same name (e.g. Ver131) and check it out and set it to track the remote.
 
-	3a. Alternative to #2: I don't recommend this. Create new branch (e.g. Ver19) directly in Visual Studio. 
-		1. Select "Branches" menu
-		2. Select "AndersonIsland" repository in branch list, right click, and -> Create New Local Branch
-		3. Fill in new branch name (e.g. Ver19) and then source branch (Master)
-		4. After branch appears in the Branches list select the branch, right click, and select "Publish Branch".
- 		   Then it will appear in the 'remotes/origin' list.
-	4. New branch will be on GitHub as origin/newbranchname.  Be sure to use it on other PCs.
-	5. Switch other PCs to new branch. NOTE: If new branch does not show on Visual Studio Code GIT/Branches list, 
-	   try  running Fetch. Or set the VS branch to Master, and then run Fetch.
-	   If that doesn't work, try 'git fetch' from the command line.
-	   or run GitUI and click on "Remote -> Fetch from Origin" which will update things. Then restart Visual Studio Code.
+-------------------------------------------------------------------------------------------------------------------------------------------
+	GIT BACK UP TO A SPECIFIC COMMIT -  THROW AWAY CHANGES AFTER A SPECIFIC COMMIT 
+	Permanently Discard Commits: If you want to permanently discard all commits after a certain point, you can use git reset. 
+	Be cautious with this approach, especially if you’ve already pushed these commits to a remote repository. Here are the steps:
+	# WARNING: This will destroy any local modifications!
+	# Don't do it if you have uncommitted work you want to keep.
+	git reset --hard <commit-hash>
 
-------------------------------------------------------------------------------------------------------------------------
+	# Alternatively, if you want to keep your changes:
+	git stash
+	git reset --hard <commit-hash>
+	git stash pop
+The first option (git reset --hard) discards local changes completely. The second option (git stash) saves your modifications,
+ then reapplies them after resetting.Remember to replace <commit-hash> with the actual commit hash you want to revert to. 
+ Choose the appropriate method based on whether you want to explore or permanently discard commits. ----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------
 BUILD/DEBUG
 
 WEB DEBUG/BUILD
