@@ -49,6 +49,7 @@
 //  12/1/2022 - fixed $me at line 60 in next year calculation
 //  1/21/2023 - allow for no description in event object
 //  4/7/2024 - add the word "More..." to the location of the 2nd event so it is displayed on the main screen for Events.
+//  4/28/2024   Test for $location before using it.
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -175,7 +176,7 @@ function fcopyMore($etype, $ys) {
                 // if a new day, then for day 2 add "More..." to the location.
                 if(substr($event->start->dateTime,0,10) != $lastdate) {
                     $ndate = $ndate + 1;
-                    if($ndate == 2) $r1 = $r1 . "<br>More ...";  // add More
+                    if($ndate == 2) $r1 = $r1 . "<br><b>More ...</b>";  // add More
                     $lastdate = substr($event->start->dateTime,0,10);
                 }
                 echo $r1 . $r2 . "<br/>\r\n";
@@ -189,10 +190,12 @@ function fcopyMore($etype, $ys) {
             }
             if(property_exists($event, "description")) $desc = str_replace("\n", " ", $event->description); // remove line feeds
             else $desc = "";
+            if(property_exists($event, "location")) $loc = $event->location;
+            else $loc = "";
             // build the line to print on the next iteration;
             $r1 = substr($event->start->dateTime,5,2) . substr($event->start->dateTime,8,2) . ";" . substr($event->start->dateTime,11,2) . substr($event->start->dateTime,14,2) . ";" .
                 substr($event->end->dateTime,11,2) . substr($event->end->dateTime,14,2)  . ";" .
-                $k . ";" . substr($event->summary, 2) . ";" . $event->location ;
+                $k . ";" . substr($event->summary, 2) . ";" . $loc;
             $r2 =  ";" . $desc ;
             $n++;
             if($n > $nlimit) break;  // limit to 100 activities to prevent too much data on phone.  (5/18/18).
