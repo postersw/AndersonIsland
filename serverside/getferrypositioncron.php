@@ -51,6 +51,7 @@
 //  1.54 3/4/24.   Ver 2 of LateFerry. build an array.
 //  1.55 4/1/24.   When 2 ferries are detected, continue to use the one we were using until it goes away.
 //                  Handles ferry testing runs and ferry switching runs.
+//  1.56 4/27/24   Ensure we skip ferry outside of boundary.
 
 $ver = "1.55.1"; // 3/31/24.
 $gtimestamp = 0;
@@ -132,17 +133,19 @@ for($i=0; $i < count($fa); $i++) {
     $MMSI = $fa[$i][0]; $lat = $fa[$i][3]; $long = $fa[$i][4]; $speed = $fa[$i][5]; $course = $fa[$i][7]; 
     $status = $fa[$i][8]; $timestamp = $fa[$i][9];
     if($MMSI=="")  abortme("MMSI is empty");
+    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
+    if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) continue;  // skip boat if it is stopped & docked at the backup-boat dock
+    
     if($MMSI == $MMSICA) $ferryname = "'CA'";
     elseif($MMSI == $MMSIS2) $ferryname = "'S2'";
     //if($ferryname == "'CA'") continue; // skip CA///////////////////////////////////////////////
     //if($ferryname == "'S2'") continue; // skip S2///////////////////////////////////////////////
     checktimestamp($timestamp); 
     //echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
-    //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctly
-    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
+    //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctl
 
     // calculate location and arrival;
-    if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) continue;  // skip boat if it is stopped & docked at the backup-boat dock
+
     if($speed <= 10) $s = reportatdock();  // at dock if speed<= 1 knot
     else $s = timetocross();
     // handle 2 ferries
