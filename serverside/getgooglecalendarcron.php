@@ -50,6 +50,7 @@
 //  1/21/2023 - allow for no description in event object
 //  4/7/2024 - add the word "More..." to the location of the 2nd event so it is displayed on the main screen for Events.
 //  4/28/2024   Test for $location before using it.
+//  5/12/24     Turn off dump of events to stdout
 //
 chdir("/home/postersw/public_html");  // move to web root
 $y = date("Y"); // year, e.g. 2017
@@ -140,7 +141,7 @@ function fcopy($etype, $ys) {
             $n++;
             if($n > $nlimit) break;  // limit to 100 activities to prevent too much data on phone.  (5/18/18).
             // now write it to the file
-            echo $r . "<br/>\r\n";
+            //echo $r . "<br/>\r\n";
             fwrite($fce, $r . "\r\n");
         }
     }

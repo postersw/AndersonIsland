@@ -52,8 +52,9 @@
 //  1.55 4/1/24.   When 2 ferries are detected, continue to use the one we were using until it goes away.
 //                  Handles ferry testing runs and ferry switching runs.
 //  1.56 4/27/24   Ensure we skip ferry outside of boundary.
+//       5/12/24   Turn off BuildFerryTimes dump
 
-$ver = "1.55.1"; // 3/31/24.
+$ver = "1.56.2"; // 3/31/24.
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -1246,8 +1247,8 @@ function BuildFerryTimes() {
     $SAVED['gFerryStatus'] = $gFerryStatus;
     $SAVED['gFerryMonthDay'] = $gFerryMonthDay;
     $SAVED['gFerryi'] = $gFerryi;
-    echo "BuildFerryTimes: gFerryMonthDay= $gFerryMonthDay: $j entries. <br>\n";
-    var_dump($gFerryTimes);
+    //echo "BuildFerryTimes: gFerryMonthDay= $gFerryMonthDay: $j entries. <br>\n";
+    //var_dump($gFerryTimes);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
