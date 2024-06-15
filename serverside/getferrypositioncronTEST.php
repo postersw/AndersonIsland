@@ -67,8 +67,8 @@
 //  1.59 6/9/24.   Handle 2 ferries.  Add ability to run locally in test mode against an input file from ferrypositionlog.csv.
 
 $ver = "1.59.1"; // 3/31/24.
-//$gUseTestData = false;
-$gUseTestData = true; 
+$gUseTestData = false;
+//$gUseTestData = true; 
 $gtimestamp = 0;
 $gDayofWeek = 0;
 $gDayofMonth = 0;
@@ -192,8 +192,8 @@ for($i=0; $i < count($fa); $i++) {
 
     //if($ferryname == "CA") continue; // skip CA///////////////////////////////////////////////
     //if($ferryname == "S2") continue; // skip S2///////////////////////////////////////////////
-     checktimestamp($timestamp); 
-    echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
+    checktimestamp($timestamp); 
+    if($debug) echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
     //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctl
 
     // calculate location and arrival;
@@ -827,14 +827,13 @@ function checkforLateFerry2($ferrytouse, $ferrystate, $timetoarrival) {
     //global $ferrystate, $timetoarrival; PASSED IN
     global $SAVED;
     global $deltamin; // age of ferry status
-    global $gUseTestData;
+    global $gUseTestData, $debug;
     
     // handle 2 ferries by continuing to use the one we used previously.
     //  Only uses ferrystate and timetoarrival.  
 
     if($ferrytouse =="") echo "ERROR ferrytouse = null in checkforLastFerry2";
 
-    $debug=true;  //// debug
     if($debug) echo "ferrytouse=$ferrytouse,ferrystate=$ferrystate,timetoarrival=$timetoarrival<br>\n";
 
     if($ferrystate=="") return "";  // unable to determine state;
