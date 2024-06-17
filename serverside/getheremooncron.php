@@ -6,6 +6,11 @@
 //  Called by cron every morning at midnight
 //  Bob Bedoll. 10/31/19  Replaced the navy site because it is down till april 2020. Free account at here.com.
 //  1/15/23. Changed file name to moondatainclude.txt.
+//  6/15/24. Request comes up unauthorized.  Got new credentials but it still comes up Unauthorized.  
+//           Can't get it to work. Abandoned.
+//  New keys 6/15/24:
+//  here.com app id = P0heauAYz72Rp4VuKJH7
+//  here.com api key=cPxMQ5P7fCJdZhZ3xrTKVzS-4L8yjNzzsglTR5MpSrA
 //
 //  API RETURN:
 //  {"astronomy":{"astronomy":[{"sunrise":"7:51AM","sunset":"5:55PM","moonrise":"11:58AM","moonset":"8:45PM","moonPhase":0.105,"moonPhaseDesc":"Waxing crescent","iconName":"cw_waxing_crescent"
@@ -17,16 +22,20 @@ chdir("/home/postersw/public_html");  // move to web root
 // code to get moon rise/set & phase
 
 date_default_timezone_set("America/Los_Angeles"); // set PDT
-$link = "https://weather.api.here.com/weather/1.0/report.json?app_id=HkBK0Kns18xl1CnGanFm&app_code=iyHvhhPZD4nQlBA2XVu2hw&product=forecast_astronomy&zipcode=98303";
+//$link = "https://weather.api.here.com/weather/1.0/report.json?app_id=P0heauAYz72Rp4VuKJH7&appKey=cPxMQ5P7fCJdZhZ3xrTKVzS-4L8yjNzzsglTR5MpSrA&product=forecast_astronomy&name=seattle";
+$link = "https://weather.api.here.com/weather/1.0/report.json?appKey=cPxMQ5P7fCJdZhZ3xrTKVzS-4L8yjNzzsglTR5MpSrA&product=forecast_astronomy&name=seattle";
 
-//echo $link; //debug
+echo $link; //debug
+//return;
 
 // Get the moon data - retry 10 times
 $str = GetData($link);
+if($str==false) exit("no data");
+if($str=="") exit("no data");
 
 // reformat the reply
 $strout = FormatHtml($str);  // reformat
-//echo "<br/>$strout<br/>"; //debug
+echo "<br/>$strout<br/>"; //debug
 $j = file_put_contents($file, $strout);  // save the data
 if($j <= 0) {  // if not success
     echo("moon cron run: file_put_contents ERROR !!!\n $j $strout");
