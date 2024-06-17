@@ -1,10 +1,10 @@
 <?php
 /////////////////////////////////////////////////////////////
-//  getmooncron - gets the moon json structure from https://api.pulsewise.com/astronomy
+//  getmooncron - gets the moon json structure from api.ipgeolocation.io.
 //  web site and writes it to moondatainclude.txt.
-//  https://api.pulsewise.com/astronomy?latitude=47.17869&22.677&timestamp=1700410825
 //  this file is picked up by the include referenbe in dailycache.txt which is read by getdailycache.
-//  Called by cron every morning at midnight
+//  Called by cron every 6 hours.
+//
 //  Bob Bedoll. 10/31/19  Replaced the navy site because it is down till april 2020. Free account at here.com.
 //  1/15/23. Changed file name to moondatainclude.txt.
 //  6/15/24. Free account at here.com no longer works.  Changed to ipgeolocation.io.  Free. Login with Google.
@@ -20,8 +20,7 @@ date_default_timezone_set("America/Los_Angeles"); // set PDT
 $ts="timestamp=" . time();
 $link = "https://api.ipgeolocation.io/astronomy?apiKey=3875e20b21824feab11a2cbee8212ed5&lat=47.17869&long=-122.677";
 //$latlong = "&longitude=-122.67700&latitude=47.17869";  // anderson island
-//$latlong = "";
-//$link = $link . $latlong;
+
 // Get the moon data 
 echo "$link\n";
 
@@ -61,7 +60,7 @@ function FormatHtml($reply) {
     $risetime = toAMPM($jreply->moonrise);
     $settime = toAMPM($jreply->moonset);
     $status = $jreply->moon_status;
-    echo "risetime $risetime, settime $settime, status $status <br>";
+    //echo "risetime $risetime, settime $settime, status $status <br>";
     $angle = (int)$jreply->moon_parallactic_angle;
     $visible = (int)(cos(deg2rad($angle))/2*100);  // compute visible portion
     $times = "Rise $risetime, Set $settime, Visible $visible%";
