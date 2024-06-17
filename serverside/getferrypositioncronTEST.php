@@ -1162,12 +1162,13 @@ function LogFerryRun2($SA, $delaytime, $waitingforrunMM, $ferrytouse) {
         echo "ERROR LogFerryRun2: cant find run time $runMM $ont for $SA in gFerryTimes for ferry $ferrytouse)<br>\n";
         return;
     }
-    // if found, mark it L or O
+    // if found but already logged
     if($gFerryStatus[$i]!="") {
-        echo "ERROR LogFerryRun2, FerryStatus not blank: i=$i, gFerryStatus[i]={$gFerryStatus[$i]} for {$gFerryTimes[$i]} {$gFerryLoc[$i]} }\n";
+        //echo "ERROR LogFerryRun2, FerryStatus not blank: i=$i, gFerryStatus[i]={$gFerryStatus[$i]} for {$gFerryTimes[$i]} {$gFerryLoc[$i]} }\n";
         return;
     }
 
+    // log it and mark it L or O
     file_put_contents($ferryrunlog, $msg, FILE_APPEND );  // log the runj
     $gFerryStatus[$i] = substr($ont, 0, 1); // save status O (Onlime) or L (Late) 
     $SAVED['gFerryStatus'] = $gFerryStatus;
