@@ -66,7 +66,7 @@
 //       5/12/24   Turn off BuildFerryTimes dump
 //  1.59 6/9/24.   Handle 2 ferries.  Add ability to run locally in test mode against an input file from ferrypositionlog.csv.
 
-$ver = "1.59.1"; // 3/31/24.
+$ver = "1.60.0"; // 6/23/24
 $gUseTestData = false;
 //$gUseTestData = true; 
 $gtimestamp = 0;
@@ -158,6 +158,7 @@ if(!$gUseTestData) if($lt[2]>7 && $lt[2]<11) exit(0); //DEBUG"time");  // don't 
 // reload persistant data
 
 $SAVED = json_decode(file_get_contents($ferryjsonsavefile), TRUE); // load persistant data
+$oldferrystateCA = $SAVED['ferrystateCA']; $oldferrystateS2 = $SAVED['ferrystateS2']; // for debugging
 //var_dump($SAVED);  // print out what was loaded
 $gFerryMonthDay = $SAVED['gFerryMonthDay'];
 $gFerryTimes = $SAVED['gFerryTimes'];
@@ -177,6 +178,7 @@ if($gUseTestData) {
 if($debug) echo ("ferry count = " . count($fa) . "<br>\n");
 $p = ""; $pi = 0; $pstr = "";
 
+
 // loop through reply. There will be 0, 1, or 2 rows (1 row/ferry)
 $i = 0; $pj = 0;
 $px = array();  // text string
@@ -186,14 +188,21 @@ for($i=0; $i < count($fa); $i++) {
     if($MMSI == $MMSICA) $ferryname = "CA";
     elseif($MMSI == $MMSIS2) $ferryname = "S2";
     else continue; // abortme("MMSI is invalid: $MMSI");
+    if($debug) echo "-->i=$i, mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp\n";
     $s = ""; 
-    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) continue; // if outside boundaries
-    if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) continue;  // skip boat if it is stopped & docked at the backup-boat dock
+    if($long < $longMIN || $long > $longMAX || $lat < $latMIN || $lat > $latMAX) {  // if outside boundaries
+        if($debug) echo "  $MMSI outside boundary\n";
+        continue;
+    } 
+    if($speed < 3 && $long >= -122.6036 && $long <= -122.6034) {  // skip boat if it is stopped & docked at the backup-boat dock
+        if($debug) echo "  $MMSI at backup boat dock\n";
+        continue;
+    }
 
     //if($ferryname == "CA") continue; // skip CA///////////////////////////////////////////////
     //if($ferryname == "S2") continue; // skip S2///////////////////////////////////////////////
     checktimestamp($timestamp); 
-    if($debug) echo " mmsi=$MMSI, lat=$lat, long=$long, speed=$speed, course=$course, status=$status, timestamp=$timestamp, ";
+
     //if($status != 0) continue; // skip if not normal. Doesn't work because transponder status is not set correctl
 
     // calculate location and arrival;
@@ -246,6 +255,7 @@ if($pi==1) {  // if 1 boat
 
 } elseif($pi==2) {  // if 2 boats
     $running2ferries = checkforTwoBoats();  // if running 2 boats, issue 2 boat msg on fri, sun, mon
+    if($debug) echo " running2ferries=$running2ferries \n";
     if($running2ferries) { // if  officially running 2 boats
         // kludge for state change.  Mark runs complete before we check for late ferry.
         if(substr($SAVED['ferrystateS2'],0,2)=='at' && substr($ferrystateS2,0,2)=='to') {   // if S2 ferry just left the dock
@@ -258,7 +268,7 @@ if($pi==1) {  // if 1 boat
         }
         $ferrylate = "2 ferry service now.<br>" . checkforLateFerry2("CA", $ferrystateCA, $timetoarrivalCA) . "$fps$ferrymsgCA</span>";
         $ferrylate .= "<br>" . checkforLateFerry2("S2", $ferrystateS2, $timetoarrivalS2) . "$fps$ferrymsgS2</span>";
-    } else {  // if only 1 valid boat
+    } else {  // if 2 boats are not scheduled, but 2 are running, try to pick the correct one to use
         //continue to use the ferry we were using and pretend it is the only boat
         switch($SAVED['useferry']) {
             case "CA": $ferrylate = checkforLateFerry2("CA", $ferrystateCA, $timetoarrivalCA) . "$fps$ferrymsgCA</span>"; break;
@@ -588,6 +598,8 @@ function abortme($msg) {
 function logPosition($log) {
     global $fa, $px, $MMSICA;
     global $ver, $deltamin;
+    global $oldferrystateCA,$oldferrystateS2;
+    global $SAVED;
     
     if(count($fa)==0) return; // if no poisiton data
     $tlh = fopen($log, 'a');  // append to log
@@ -606,7 +618,7 @@ function logPosition($log) {
         else $s1 = ",,,,,,,,,,,,";
     }
     date_default_timezone_set("America/Los_Angeles"); // set UTC
-    fwrite($tlh, date('c', timeX()) . ",$ver,$s1,$s2," . round($deltamin,1) ."\n");
+    fwrite($tlh, date('c', timeX()) . ",$ver,$s1/$oldferrystateCA/{$SAVED['ferrystateCA']}/,$s2/$oldferrystateS2/{$SAVED['ferrystateS2']}/," . round($deltamin,1) ."\n");
     fclose($tlh);
 }
 
@@ -631,7 +643,7 @@ function checkforTwoBoats() {
     // Sun, Mon, Fri 12 - 1200 - 1800 
     //echo "loctime 6=" . $loctime[6] . ", loctime[2]=" . $loctime[2];
     if(($loctime[7]>140 && $loctime[7]<250) && ($loctime[6]==0 || $loctime[6]==1 || $loctime[6]==5) && 
-      ($loctime[2]>=12) && (($loctime[2]*100 + $loctime[1]) <=1820)) {
+      ($loctime[2]>=12) && (($loctime[2]*100 + $loctime[1]) <=1840)) {
         //echo " two boats";
         return true; //"<span style='color:darkgreen'>Two boat service now.</span>"; 
     }

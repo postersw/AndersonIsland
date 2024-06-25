@@ -5,6 +5,10 @@
     $link = "https://secure.pscleanair.org/AirQuality/BurnBan";
     $link = "https://www.piercecountywa.gov/RSSFeed.aspx?ModID=1&CID=All-newsflash.xml";
     
+    $dir=getcwd();
+    echo $dir;
+    exit();
+    
     chdir("/home/postersw/public_html");  // move to web root
 
     date_default_timezone_set("UTC"); // set UTC
